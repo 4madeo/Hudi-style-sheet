@@ -1,0 +1,921 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hudi Style sheet</title>
+  <style>
+    @font-face { font-family: "OCRA Fixed"; src: url("assets/fonts/OCRAStdFIXED-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
+    @font-face { font-family: "Syne Hudi"; src: url("assets/fonts/Syne-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+    @font-face { font-family: "Syne Hudi"; src: url("assets/fonts/Syne-Bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
+    @font-face { font-family: "Syne Mono Hudi"; src: url("assets/fonts/SyneMono-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+
+    :root {
+      --paper: #fafcff;
+      --ink: #171717;
+      --muted: #717683;
+      --dark-grey: #71809e;
+      --light-grey: #a9a9a9;
+      --outline-blue: #e6f4ff;
+      --outline-blue-2: #e2f2ff;
+      --select-blue: #8bccff;
+      --gain: #01fd90;
+      --gain-soft: #96ffd2;
+      --gain-text: #127e4b;
+      --pink: #fd01ba;
+      --pink-soft: #ffe7f6;
+      --loss: #ff92e2;
+      --loss-text: #e630a0;
+      --yellow: #f2ff00;
+      --shadow: 3px 7px 10px rgba(0, 63, 131, .13);
+      --ocr: "OCRA Fixed", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --mono: "Syne Mono Hudi", "Syne Mono", ui-monospace, monospace;
+      --sans: "Syne Hudi", Syne, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(90deg, rgba(207, 228, 251, .42) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(207, 228, 251, .34) 1px, transparent 1px),
+        var(--paper);
+      background-size: 44px 44px;
+      color: var(--ink);
+      font-family: var(--sans);
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, textarea { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .shell { width: min(1500px, calc(100vw - 36px)); margin: 0 auto; padding: 24px 0 64px; }
+
+    .masthead {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid #d9dde4;
+      background: linear-gradient(180deg, rgba(250,252,255,.96), rgba(250,252,255,.88));
+      backdrop-filter: blur(10px);
+    }
+
+    .masthead-inner {
+      width: min(1500px, calc(100vw - 36px));
+      min-height: 72px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 18px;
+    }
+
+    h1 { margin: 0; font-family: var(--sans); font-size: clamp(34px, 4.4vw, 64px); line-height: .95; font-weight: 400; color: #71809e; }
+
+    .nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+    .nav a {
+      height: 31px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 12px;
+      border: 1px solid #cfe4fb;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #fff 0%, #f0f1f4 100%);
+      color: #535964;
+      font-family: var(--ocr);
+      font-size: 10px;
+      text-decoration: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.96);
+    }
+    .nav a:hover { border-color: #bedcff; background: linear-gradient(180deg, #fbfdff 0%, #c9dcf6 100%); }
+
+    .section { margin-top: 28px; scroll-margin-top: 96px; }
+    .section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin: 0 0 12px; }
+    .section-title h2 { margin: 0; font-family: var(--sans); font-size: 24px; line-height: 1.1; font-weight: 400; color: #171717; }
+    .section-title span { color: var(--muted); font-family: var(--ocr); font-size: 11px; }
+
+    .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; align-items: stretch; }
+    .grid > * { min-width: 0; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+
+    .card {
+      min-width: 0;
+      border: 4px solid var(--outline-blue);
+      border-radius: 18px;
+      background: rgba(255,255,255,.94);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 58px;
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid rgba(0,0,0,.05);
+    }
+
+    .card h3 { margin: 0 0 4px; font-family: var(--sans); font-size: 18px; line-height: 1.05; font-weight: 400; color: #171717; }
+    .card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .demo { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; padding: 18px 16px; }
+    .demo.column { align-items: stretch; flex-direction: column; }
+    .demo.center { justify-content: center; min-height: 180px; }
+
+    .copy-css {
+      min-width: 86px;
+      height: 30px;
+      border: 2px solid var(--outline-blue-2);
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: none;
+      color: var(--dark-grey);
+      font-size: 11px;
+      font-weight: 400;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .copy-css:hover { border-color: var(--select-blue); color: var(--ink); }
+    .copy-css:active { transform: translateY(1px); }
+
+    .hudi-trade-button {
+      --pill-bg: #01fd90;
+      --pill-inner-shadow: rgba(0,95,60,.34);
+      --pill-label: #007b92;
+      --pill-label-shadow: rgba(255,255,255,.72);
+      align-items: center;
+      background: var(--pill-bg);
+      height: 46px;
+      min-width: 149px;
+      padding: 0 28px;
+      border: 4px solid var(--outline-blue-2);
+      border-radius: 23px;
+      box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow);
+      font-family: var(--ocr);
+      font-size: 17px;
+      letter-spacing: -0.55px;
+      color: var(--pill-label);
+      cursor: pointer;
+      display: inline-flex;
+      justify-content: center;
+      line-height: 1;
+      overflow: hidden;
+      position: relative;
+      text-transform: lowercase;
+      transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+      will-change: transform;
+    }
+    .hudi-trade-button::before { background: linear-gradient(0.24deg, rgba(255,255,255,.23) 20.46%, rgba(255,255,255,.91) 99.78%); content: ""; height: 69.4%; left: -0.33%; mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2035 347' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M178 0H1888C1966 0 2035 48 2035 126C2035 224 1953 277 1814 277H190C103 277 57 306 0 347C4 278 6 205 18 148C34 65 92 16 178 0Z'/%3E%3C/svg%3E"); mask-repeat: no-repeat; mask-size: 100% 100%; pointer-events: none; position: absolute; top: 0; width: 95%; -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2035 347' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M178 0H1888C1966 0 2035 48 2035 126C2035 224 1953 277 1814 277H190C103 277 57 306 0 347C4 278 6 205 18 148C34 65 92 16 178 0Z'/%3E%3C/svg%3E"); -webkit-mask-repeat: no-repeat; -webkit-mask-size: 100% 100%; }
+    .hudi-trade-button::after { background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: inherit; content: ""; filter: blur(1.43px); height: 18%; left: 9%; opacity: .9; pointer-events: none; position: absolute; right: 9%; top: 0; }
+    .hudi-trade-button .pill-bottom-highlight { background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%); border-radius: inherit; filter: blur(1.43px); height: 66.2%; left: 1%; pointer-events: none; position: absolute; right: 1%; top: 34%; }
+    .hudi-trade-button .pill-label { color: var(--pill-label); position: relative; text-shadow: 0 .7px 0 var(--pill-label-shadow); top: 4.8%; z-index: 2; }
+    .hudi-trade-button .pill-shine { background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 34%, rgba(255,255,255,.72) 48%, rgba(255,255,255,0) 64%, transparent 100%); height: 150%; left: -80%; pointer-events: none; position: absolute; top: -25%; transform: skewX(-18deg); width: 52%; z-index: 3; }
+    .hudi-trade-button.long { --pill-bg: #01fd90; --pill-inner-shadow: rgba(0,95,60,.34); }
+    .hudi-trade-button.short { --pill-bg: #ff0fc4; --pill-inner-shadow: rgba(118,0,82,.34); --pill-label: #ffffff; --pill-label-shadow: rgba(55,0,42,.35); }
+    .hudi-trade-button.confirm { --pill-bg: #e9eef5; --pill-inner-shadow: rgba(62,88,116,.28); --pill-label: #71809e; --pill-label-shadow: rgba(255,255,255,.9); border-radius: 28px; font-size: 23px; height: 56px; min-width: 241px; }
+    .hudi-trade-button.confirm .pill-label { top: -1px; }
+    .hudi-trade-button:hover { filter: brightness(1.015) saturate(1.03); transform: translateY(-1px) scale(1.01); box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow); }
+    .hudi-trade-button:hover .pill-shine { animation: hudi-pill-shine 760ms ease-out; }
+    .hudi-trade-button:active, .hudi-trade-button.is-pressed { filter: brightness(.93) saturate(.96); transform: translateY(1px) scale(.99); box-shadow: inset 0 1px 14px var(--pill-inner-shadow); }
+    @keyframes hudi-pill-shine { from { left: -80%; } to { left: 130%; } }
+
+    .hudi-small-button {
+      min-width: 64px;
+      height: 22px;
+      border: 4px solid #e7e9ee;
+      border-radius: 11px;
+      background: #fff;
+      color: var(--light-grey);
+      font-size: 12px;
+      font-weight: 400;
+      cursor: pointer;
+    }
+    .hudi-small-button:hover { border-color: var(--outline-blue); color: var(--dark-grey); }
+    .hudi-small-button:active { transform: translateY(1px); }
+
+    .hudi-slider { --track: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%); width: min(315px, 100%); }
+    .hudi-slider.short { --track: linear-gradient(270deg, #fd01ba 0%, #ffe4fe 100%); }
+    .hudi-slider-row { display: grid; grid-template-columns: 1fr 58px; gap: 13px; align-items: center; width: 100%; }
+    .hudi-slider output { font-family: var(--ocr); color: var(--dark-grey); font-size: 12px; text-align: right; }
+    .hudi-slider input[type="range"] { appearance: none; width: 100%; height: 34px; background: transparent; cursor: pointer; }
+    .hudi-slider-markers { display: grid; grid-template-columns: repeat(6, 1fr); margin-top: 10px; color: #a1a8b5; font-family: var(--ocr); font-size: 11px; line-height: 1; }
+    .hudi-slider-markers span { text-align: center; }
+    .hudi-slider input::-webkit-slider-runnable-track { height: 14px; border: 4px solid var(--outline-blue-2); border-radius: 13px; background: var(--track); }
+    .hudi-slider input::-webkit-slider-thumb { appearance: none; width: 26px; height: 26px; box-sizing: content-box; margin-top: -15px; border: 4px solid var(--outline-blue-2); border-radius: 50%; background: radial-gradient(36.34% 18.06% at 50% 1%, #fff 0%, rgba(255,255,255,.14) 100%), radial-gradient(64% 46% at 50% 20%, rgba(255,255,255,.96) 0 50%, rgba(255,255,255,.58) 62%, transparent 63%), linear-gradient(180deg, #f5faff 0%, #d9e4ec 42%, #b8c8d4 100%); box-shadow: inset 0 -3px 16px rgba(67,88,109,.28); }
+    .hudi-slider input::-moz-range-thumb { width: 26px; height: 26px; box-sizing: content-box; border: 4px solid var(--outline-blue-2); border-radius: 50%; background: radial-gradient(36.34% 18.06% at 50% 1%, #fff 0%, rgba(255,255,255,.14) 100%), radial-gradient(64% 46% at 50% 20%, rgba(255,255,255,.96) 0 50%, rgba(255,255,255,.58) 62%, transparent 63%), linear-gradient(180deg, #f5faff 0%, #d9e4ec 42%, #b8c8d4 100%); box-shadow: inset 0 -3px 16px rgba(67,88,109,.28); }
+
+    .hudi-pill {
+      min-height: 30px;
+      padding: 2px 14px 0;
+      border: 4px solid var(--outline-blue);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--light-grey);
+      font-family: var(--ocr);
+      font-size: 12px;
+      cursor: pointer;
+      transition: border-color .14s ease, color .14s ease, transform .14s ease;
+    }
+    .hudi-pill:hover { border-color: #bddfff; color: var(--dark-grey); }
+    .hudi-pill[aria-pressed="true"], .hudi-pill.is-selected { border-color: var(--select-blue); color: var(--dark-grey); }
+    .hudi-pill-icon { position: relative; top: -2px; display: inline-block; margin-right: 5px; }
+    .hudi-pill:active { transform: scale(.97); }
+
+    .time-selector { --active-index: 2; --segment-width: 53.6px; --selected-width: 52px; --active-center: 134px; box-sizing: border-box; position: relative; display: inline-grid; grid-template-columns: repeat(5, var(--segment-width)); width: 276px; height: 35px; padding: 0; border: 4px solid var(--outline-blue); border-radius: 18px; background: #fff; overflow: visible; }
+    .time-selector::before { content: ""; box-sizing: border-box; position: absolute; top: -4px; bottom: -4px; left: calc(var(--active-center) - (var(--selected-width) / 2)); width: var(--selected-width); border: 4px solid var(--select-blue); border-radius: 22px; background: #fff; transition: left 180ms ease; z-index: 2; }
+    .time-selector button { position: relative; top: 2px; z-index: 3; display: grid; place-items: center; height: 27px; padding: 0; border: 0; border-radius: 14px; background: transparent; color: var(--light-grey); font-family: var(--ocr); font-size: 13px; line-height: 1; cursor: pointer; }
+    .time-selector button span { display: inline-block; }
+    .time-selector button[aria-pressed="true"] { color: var(--dark-grey); }
+
+    .hudi-status { display: inline-flex; align-items: center; gap: 7px; min-height: 25px; padding: 2px 12px 0 9px; border: 4px solid var(--gain); border-radius: 54px; background: var(--gain-soft); color: var(--gain-text); font-family: var(--ocr); font-size: 11px; letter-spacing: .02em; }
+    .hudi-status::before { content: ""; position: relative; top: -1px; width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: currentColor; }
+    .hudi-status.closed { border-color: var(--loss); background: var(--pink-soft); color: var(--loss-text); }
+
+    .metric-pill { display: inline-flex; align-items: center; gap: 16px; min-height: 30px; padding: 2px 12px 0; border: 4px solid var(--outline-blue); border-radius: 44px; background: #fff; font-family: var(--ocr); }
+    .metric-pill span:first-child { color: rgba(9,9,9,.35); font-size: 11px; letter-spacing: .02em; }
+    .metric-pill strong { color: var(--dark-grey); font-size: 13px; font-weight: 400; letter-spacing: -.02em; }
+
+    .gain-chip { display: inline-flex; align-items: center; justify-content: center; min-height: 20px; padding: 2px 8px 0; border-radius: 53px; background: var(--gain-soft); color: var(--gain-text); font-family: var(--ocr); font-size: 11px; letter-spacing: .01em; }
+    .gain-chip.loss { background: var(--pink-soft); color: var(--loss-text); letter-spacing: -.01em; }
+    .chart-label { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 13px; padding-top: 2px; background: var(--gain); color: #000; font-family: var(--ocr); font-size: 11px; letter-spacing: -.01em; }
+    .chart-label.small-gain { background: var(--gain-soft); }
+    .chart-label.big-loss { background: var(--pink); color: #fff; }
+    .chart-label.small-loss { background: var(--loss); color: #fff; }
+
+    .stock-list { display: flex; flex-wrap: wrap; gap: 10px; }
+    .stock-pill { display: inline-grid; grid-template-columns: 16px 38px 50px 10px; align-items: center; gap: 6px; width: 135px; height: 30px; border: 4px solid var(--outline-blue); border-radius: 15px; background: #fff; cursor: pointer; }
+    .stock-pill:hover, .stock-pill[aria-pressed="true"] { border-color: var(--select-blue); }
+    .stock-dot { width: 14px; height: 14px; margin-left: 7px; border-radius: 50%; background: radial-gradient(circle at 35% 22%, #fff 0 16%, #00ffbf 33%, #24d0ff 100%); }
+    .stock-name { color: var(--light-grey); font-size: 12px; }
+    .stock-change { font-family: var(--ocr); font-size: 10px; color: #2ab976; }
+    .stock-change.loss { color: var(--loss-text); }
+    .stock-arrow { width: 8px; height: 8px; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: rotate(-45deg); color: currentColor; }
+
+    .hudi-panel { border: 4px solid var(--outline-blue); border-radius: 18px; background: #fff; box-shadow: var(--shadow); overflow: hidden; }
+    .hudi-panel-header { display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 16px; border-bottom: 1px solid rgba(0,0,0,.05); font-family: var(--ocr); color: var(--dark-grey); }
+    .hudi-panel-header span { position: relative; top: 2px; }
+    .panel-sample { position: relative; align-self: start; justify-self: center; width: fit-content; max-width: 100%; }
+    .panel-sample > .copy-css { position: absolute; left: calc(100% + 12px); top: 14px; box-shadow: var(--shadow); white-space: nowrap; }
+    .orderbook-panel { width: 216px; padding-top: 8px; }
+
+    .orderbook { width: 100%; margin-inline: auto; border-collapse: collapse; font-family: var(--ocr); font-size: 12px; }
+    .orderbook th { padding: 10px 10px 6px; color: rgba(9,9,9,.35); font-weight: 400; text-align: right; border-bottom: 0; }
+    .orderbook th:first-child, .orderbook td:first-child { text-align: left; }
+    .orderbook th:nth-child(2), .orderbook td:nth-child(2) { width: 92px; }
+    .orderbook td { position: relative; padding: 6px 10px 2px; color: var(--dark-grey); text-align: right; border-bottom: 0; }
+    .orderbook tr { cursor: pointer; }
+    .orderbook tr:hover td { background: #f5fbff; }
+    .depth { position: absolute; inset: 2px 0 2px auto; width: var(--w); border-radius: 0; opacity: .78; pointer-events: none; z-index: 0; }
+    .orderbook td { z-index: 1; }
+    .orderbook td > * { z-index: -1; }
+    .ask .depth { background: #ff92e2; }
+    .bid .depth { background: #96ffd2; }
+    .ask .price { color: #fd01ba; }
+    .bid .price { color: #01dc79; }
+    .mark-row td { padding: 18px 0 16px; color: var(--dark-grey); font-size: 27px; line-height: 1; text-align: center !important; letter-spacing: -.04em; }
+
+    .chat-sample { justify-self: center; }
+    .chat-panel { width: min(408px, 100%); border: 4px solid var(--outline-blue); border-radius: 18px; background: #fff; box-shadow: var(--shadow); overflow: hidden; }
+    .chat-header { display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 16px; border-bottom: 1px solid rgba(0,0,0,.05); font-family: var(--ocr); color: var(--dark-grey); }
+    .chat-tabs { display: flex; gap: 6px; }
+    .chat-tabs button { height: 22px; padding: 0 9px; border: 1px solid #d8dee8; border-radius: 999px; background: #fff; color: var(--light-grey); font-family: var(--ocr); font-size: 9px; cursor: pointer; }
+    .chat-tabs button[aria-pressed="true"] { border-color: var(--select-blue); color: var(--dark-grey); }
+    .chat-list { max-height: 370px; overflow: auto; }
+    .chat-row { display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; min-height: 64px; padding: 9px 14px; border-bottom: 1px solid rgba(0,0,0,.05); }
+    .pfp-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--pfp-bg, #dff4ff); border: 1px solid rgba(113,128,158,.2); display: grid; place-items: center; overflow: hidden; }
+    .pfp-avatar svg { width: 26px; height: 26px; display: block; }
+    .pfp-avatar .head { fill: var(--pfp-head, #f2ff00); stroke: var(--pfp-stroke, #171717); stroke-linejoin: miter; stroke-miterlimit: 2.6; stroke-width: 3.6; }
+    .pfp-avatar .eye-base { fill: var(--pfp-eye, #ffffff); }
+    .pfp-avatar .pupil { fill: var(--pfp-pupil, #171717); }
+    .chat-row strong { display: block; font-size: 12px; }
+    .chat-row div span { display: block; margin-top: 2px; color: var(--muted); font-family: var(--mono); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .chat-time { color: rgba(9,9,9,.35); font-family: var(--ocr); font-size: 9px; }
+    .chat-compose { display: grid; grid-template-columns: 1fr 72px; gap: 10px; align-items: center; padding: 12px; }
+    .chat-compose input { height: 34px; min-width: 0; border: 4px solid var(--outline-blue); border-radius: 18px; padding: 0 12px; font-family: var(--mono); outline: none; }
+    .chat-compose input:focus { border-color: var(--select-blue); }
+    .chat-compose .hudi-small-button { width: 72px; height: 34px; border-color: var(--outline-blue); border-radius: 18px; font-family: var(--sans); font-size: 12px; }
+    @media (max-width: 720px) {
+      .panel-sample > .copy-css { position: static; margin: 10px 0 0; }
+    }
+
+    .hudi-stock-orb { --orb-base: #24d0ff; --orb-sheen: #00ffbf; --orb-shadow: rgba(0,50,157,.4); --orb-text-deep: #000925; --orb-text-light: #95afff; --orb-text-glow: #0558da; position: relative; display: grid; place-items: center; width: 100px; aspect-ratio: 1; border-radius: 50%; background-color: var(--orb-base); background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%); box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow); overflow: hidden; }
+    .hudi-stock-orb.pink { --orb-base: #fd01ba; --orb-sheen: #ff6ff2; --orb-shadow: rgba(62,0,45,.4); --orb-text-glow: #d705a8; }
+    .hudi-stock-orb.yellow { --orb-base: #ffd400; --orb-sheen: #ffff99; --orb-shadow: rgba(107,84,0,.4); --orb-text-glow: #d69b00; }
+    .hudi-stock-orb.green { --orb-base: #47e6b8; --orb-sheen: #b8ffe7; --orb-shadow: rgba(0,122,90,.4); --orb-text-glow: #04b78c; }
+    .hudi-stock-orb::before { background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%); border-radius: 50px; content: ""; height: 46%; left: 18.6%; position: absolute; top: 3.8%; width: 64%; z-index: 1; }
+    .hudi-stock-orb::after { background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: 50%; content: ""; height: 18.06%; left: 32.05%; position: absolute; top: -.23%; width: 36.34%; z-index: 1; }
+    .hudi-stock-orb__ticker, .hudi-stock-orb__number { background: radial-gradient(180% 173% at 50% -16%, var(--orb-text-light) 0%, var(--orb-text-deep) 48%, var(--orb-text-deep) 100%); background-clip: text; -webkit-background-clip: text; color: transparent; filter: drop-shadow(0 0 1.52px var(--orb-text-glow)); position: absolute; -webkit-text-fill-color: transparent; z-index: 2; }
+    .hudi-stock-orb__ticker { font-family: var(--sans); font-size: 18px; font-weight: 700; line-height: 1; text-align: center; top: 43.6%; width: 99.64%; }
+    .hudi-stock-orb__number { font-family: var(--ocr); font-size: 8px; letter-spacing: .06em; opacity: .75; top: 9px; }
+    .orb-maker-demo { display: grid; grid-template-columns: 128px minmax(0, 1fr); gap: 18px; align-items: start; }
+    .orb-preview-stage { display: grid; justify-items: center; gap: 10px; }
+    .orb-preview-stage .hudi-stock-orb { width: 120px; }
+    .orb-preview-stage .hudi-stock-orb__ticker { font-size: 21px; }
+    .orb-preview-stage .hudi-stock-orb__number { font-size: 9px; top: 11px; }
+    .orb-maker-controls { display: grid; gap: 12px; min-width: 0; }
+    .orb-presets { display: flex; flex-wrap: wrap; gap: 8px; }
+    .orb-preset { width: 30px; height: 30px; border: 3px solid var(--outline-blue); border-radius: 50%; background: linear-gradient(180deg, var(--preset-sheen), var(--preset-base)); box-shadow: inset 0 -3px 14px var(--preset-shadow); cursor: pointer; }
+    .orb-preset[aria-pressed="true"] { border-color: var(--select-blue); }
+    .orb-field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .orb-field { display: grid; gap: 4px; color: var(--muted); font-size: 11px; }
+    .orb-field span { font-family: var(--ocr); font-size: 9px; }
+    .orb-field input[type="text"] { min-width: 0; height: 30px; border: 2px solid var(--outline-blue); border-radius: 999px; padding: 0 10px; color: var(--dark-grey); font-family: var(--ocr); font-size: 11px; outline: none; }
+    .orb-field input[type="text"]:focus { border-color: var(--select-blue); }
+    .orb-color-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .orb-color { display: grid; gap: 5px; color: var(--muted); font-family: var(--ocr); font-size: 9px; }
+    .orb-color input { width: 100%; height: 28px; padding: 2px; border: 2px solid var(--outline-blue); border-radius: 999px; background: #fff; cursor: pointer; }
+
+    .chart-demo { --mx: 50%; --my: 50%; --spacing: 34px; position: relative; width: 100%; min-width: 0; height: 520px; border: 6px solid var(--outline-blue); border-radius: 36px; background: #fff; cursor: crosshair; overflow: hidden; }
+    .chart-toolbar { display: none; }
+    .chart-readout { display: inline-flex; gap: 14px; align-items: center; min-height: 28px; padding: 0 10px; border: 4px solid var(--outline-blue); border-radius: 999px; background: rgba(255,255,255,.82); color: var(--dark-grey); font-family: var(--ocr); font-size: 11px; }
+    .chart-orbs { position: absolute; left: 24px; top: 24px; z-index: 4; pointer-events: none; }
+    .chart-orbs .hudi-stock-orb { width: 94px; }
+    .chart-orbs .hudi-stock-orb__ticker { font-size: 21px; }
+    .chart-orbs .hudi-stock-orb__number { font-size: 9px; top: 9px; }
+    .chart-orbs .mini-orb { position: absolute; left: 82px; top: 10px; width: 45px; opacity: .92; }
+    .chart-orbs .mini-orb .hudi-stock-orb__ticker { font-size: 13px; }
+    .chart-orbs .mini-orb .hudi-stock-orb__number { font-size: 5px; top: 5px; }
+    .chart-scroll { width: 100%; max-width: 100%; height: 100%; overflow: hidden; cursor: crosshair; overscroll-behavior: contain; }
+    .chart-scroll.is-dragging { cursor: grabbing; }
+    .chart-track { position: relative; width: max(100%, calc((var(--count) * var(--spacing)) + 128px)); height: 100%; background: #fff; }
+    .price-axis { position: absolute; top: 0; right: 0; z-index: 6; width: 84px; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0), #fff 34%); color: rgba(9,9,9,.38); font-family: var(--ocr); font-size: 18px; pointer-events: none; }
+    .price-axis span { position: absolute; right: 22px; transform: translateY(-50%); }
+    .time-axis { position: absolute; left: 0; right: 84px; bottom: 18px; height: 24px; color: rgba(9,9,9,.38); font-family: var(--ocr); font-size: 18px; pointer-events: none; }
+    .time-axis span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+    .candle { --body-w: clamp(14px, calc(var(--spacing) - 12px), 26px); position: absolute; left: calc(64px + (var(--i) * var(--spacing))); top: var(--high-y); width: var(--spacing); height: calc(var(--low-y) - var(--high-y)); border: 0; background: transparent; cursor: pointer; padding: 0; transform: translateX(-50%); }
+    .candle-wick { position: absolute; left: 50%; width: 1px; background: rgba(0,0,0,.45); transform: translateX(-50%); pointer-events: none; }
+    .candle-wick.top { top: 0; height: calc(var(--body-y) - var(--high-y)); }
+    .candle-wick.bottom { top: calc(var(--body-y) - var(--high-y) + var(--body-h)); height: calc(var(--low-y) - var(--body-y) - var(--body-h)); }
+    .candle-body { position: absolute; left: 50%; top: calc(var(--body-y) - var(--high-y)); width: var(--body-w); height: max(var(--body-h), 3px); border: 1px solid #000; background: var(--c); transform: translateX(-50%); pointer-events: none; }
+    .candle[aria-pressed="true"] .candle-body { outline: 4px solid var(--select-blue); outline-offset: 3px; z-index: 4; }
+    .candle:hover .candle-body { filter: brightness(1.06); }
+    .selected-price, .cursor-price, .cursor-time { position: absolute; z-index: 7; height: 18px; display: inline-flex; align-items: center; justify-content: center; background: var(--gain); color: #000; font-family: var(--ocr); font-size: 11px; pointer-events: none; }
+    .selected-price, .cursor-price { right: 84px; top: var(--selected-y, 50%); min-width: 62px; transform: translateY(-50%); }
+    .cursor-price { top: var(--my); opacity: 0; }
+    .cursor-time { left: var(--mx); bottom: 8px; min-width: 56px; padding: 0 6px; transform: translateX(-50%); opacity: 0; }
+    .cursor-v, .cursor-h, .cursor-crosshair { position: absolute; pointer-events: none; opacity: 0; z-index: 5; }
+    .chart-demo.is-tracking .selected-price { opacity: 0; }
+    .chart-demo.is-tracking .cursor-v, .chart-demo.is-tracking .cursor-h, .chart-demo.is-tracking .cursor-crosshair, .chart-demo.is-tracking .cursor-price, .chart-demo.is-tracking .cursor-time { opacity: 1; }
+    .cursor-v { left: var(--mx); top: 0; bottom: 12px; width: 4px; border-radius: 4px; transform: translateX(-50%); background: repeating-linear-gradient(180deg, #d43fc9 0 12px, transparent 12px 24px); mask-image: linear-gradient(180deg, #000 0 calc(var(--my) - 14px), transparent calc(var(--my) - 14px) calc(var(--my) + 14px), #000 calc(var(--my) + 14px)); -webkit-mask-image: linear-gradient(180deg, #000 0 calc(var(--my) - 14px), transparent calc(var(--my) - 14px) calc(var(--my) + 14px), #000 calc(var(--my) + 14px)); }
+    .cursor-h { left: 0; right: 84px; top: var(--my); height: 4px; border-radius: 4px; transform: translateY(-50%); background: repeating-linear-gradient(90deg, #d43fc9 0 12px, transparent 12px 24px); mask-image: linear-gradient(90deg, #000 0 calc(var(--mx) - 14px), transparent calc(var(--mx) - 14px) calc(var(--mx) + 14px), #000 calc(var(--mx) + 14px)); -webkit-mask-image: linear-gradient(90deg, #000 0 calc(var(--mx) - 14px), transparent calc(var(--mx) - 14px) calc(var(--mx) + 14px), #000 calc(var(--mx) + 14px)); }
+    .cursor-crosshair { left: var(--mx); top: var(--my); width: 23px; height: 23px; transform: translate(-50%, -50%); z-index: 6; }
+    .cursor-crosshair::before, .cursor-crosshair::after { content: ""; position: absolute; background: var(--yellow); border: 1px solid var(--dark-grey); border-radius: 4px; box-sizing: border-box; }
+    .cursor-crosshair::before { left: 10px; top: 0; width: 3px; height: 23px; }
+    .cursor-crosshair::after { left: 0; top: 10px; width: 23px; height: 3px; }
+
+    details.reference { border-top: 1px solid rgba(0,0,0,.05); background: #f8fbff; }
+    details.reference summary { padding: 10px 16px; color: var(--muted); font-family: var(--ocr); font-size: 10px; cursor: pointer; }
+    .refs { display: flex; gap: 10px; padding: 0 16px 14px; overflow: auto; }
+    .refs img { width: 108px; height: 82px; object-fit: contain; border: 1px solid #dbe7f3; border-radius: 8px; background: #fff; }
+
+    @media (max-width: 1100px) {
+      .span-3, .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 6; }
+      .masthead-inner { grid-template-columns: 1fr; padding: 12px 0; }
+      .nav { justify-content: flex-start; }
+    }
+    @media (max-width: 720px) {
+      .shell, .masthead-inner { width: min(100% - 24px, 1500px); }
+      .span-3, .span-4, .span-5, .span-6, .span-7, .span-8, .span-12 { grid-column: span 12; }
+      .card-head { flex-direction: column; }
+      .copy-css { align-self: flex-start; }
+      .time-selector { width: 276px; max-width: 100%; }
+      .orb-maker-demo { grid-template-columns: 1fr; }
+      h1 { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div>
+        <h1>Hudi Style sheet</h1>
+      </div>
+      <nav class="nav" aria-label="Component sections">
+        <a href="#actions">actions</a>
+        <a href="#selectors">selectors</a>
+        <a href="#market">market</a>
+        <a href="#panels">panels</a>
+        <a href="#chart">chart</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="section" id="actions">
+      <div class="section-title"><h2>Actions</h2><span>buttons / sliders / pressed feedback</span></div>
+      <div class="grid">
+        <article class="card span-6">
+          <div class="card-head"><div><h3>Trade buttons</h3><p>Clickable long, short, and confirm buttons with hover and pressed states.</p></div><button class="copy-css" data-copy="Trade buttons">Copy CSS</button></div>
+          <div class="demo">
+            <button class="hudi-trade-button confirm" type="button"><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">confirm</span></button>
+            <button class="hudi-trade-button long" type="button"><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">long</span></button>
+            <button class="hudi-trade-button short" type="button"><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">short</span></button>
+          </div>
+          <details class="reference"><summary>reference PNGs</summary><div class="refs"><img src="Important%20Buttons/Confirm%20Button%20Preview.png" alt=""><img src="Important%20Buttons/Long%20Preview.png" alt=""><img src="Important%20Buttons/Short%20Preview.png" alt=""></div></details>
+        </article>
+
+        <article class="card span-6">
+          <div class="card-head"><div><h3>Leverage sliders</h3><p>Native range controls styled to match the long and short leverage bars.</p></div><button class="copy-css" data-copy="Leverage slider">Copy CSS</button></div>
+          <div class="demo column">
+            <label class="hudi-slider"><span class="hudi-slider-row"><span><input type="range" min="0" max="5" step="1" value="2" data-leverage-values="1,2,5,10,15,20"><span class="hudi-slider-markers" aria-hidden="true"><span>1x</span><span>2x</span><span>5x</span><span>10x</span><span>15x</span><span>20x</span></span></span><output>5x</output></span></label>
+            <label class="hudi-slider short"><span class="hudi-slider-row"><span><input type="range" min="0" max="5" step="1" value="1" data-leverage-values="1,2,5,10,15,20"><span class="hudi-slider-markers" aria-hidden="true"><span>1x</span><span>2x</span><span>5x</span><span>10x</span><span>15x</span><span>20x</span></span></span><output>2x</output></span></label>
+          </div>
+          <details class="reference"><summary>reference PNGs</summary><div class="refs"><img src="Slider/Long%20Leverage%20Preview.png" alt=""><img src="Slider/Short%20leverage%20preview.png" alt=""></div></details>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="selectors">
+      <div class="section-title"><h2>Selectors</h2><span>tabs / pills / status chips</span></div>
+      <div class="grid">
+        <article class="card span-4">
+          <div class="card-head"><div><h3>Time selector</h3><p>Segmented interval selector with selected blue outline.</p></div><button class="copy-css" data-copy="Pills and selectors">Copy CSS</button></div>
+          <div class="demo">
+            <div class="time-selector" role="group" aria-label="Time interval">
+              <button type="button"><span>1H</span></button><button type="button"><span>4H</span></button><button type="button" aria-pressed="true"><span>1D</span></button><button type="button"><span>1W</span></button><button type="button"><span>1M</span></button>
+            </div>
+          </div>
+        </article>
+        <article class="card span-4">
+          <div class="card-head"><div><h3>Order view buttons</h3><p>Pill controls for selected and unselected dashboard views.</p></div><button class="copy-css" data-copy="Pills and selectors">Copy CSS</button></div>
+          <div class="demo">
+            <button class="hudi-pill" type="button" aria-pressed="true"><span class="hudi-pill-icon" aria-hidden="true">▦</span>ORDERBOOK</button>
+          </div>
+        </article>
+        <article class="card span-4">
+          <div class="card-head"><div><h3>Market state</h3><p>Open and closed chips plus metadata pills.</p></div><button class="copy-css" data-copy="Status chips">Copy CSS</button></div>
+          <div class="demo">
+            <button class="hudi-status" type="button">OPEN</button>
+            <button class="hudi-status closed" type="button">CLOSED</button>
+            <div class="metric-pill"><span>OPEN INTEREST</span><strong>142.0M</strong></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="market">
+      <div class="section-title"><h2>Market Components</h2><span>stocks / gains / order book</span></div>
+      <div class="grid">
+        <article class="card span-4">
+          <div class="card-head"><div><h3>Stock pills</h3><p>Selectable stock tokens with gain/loss variants.</p></div><button class="copy-css" data-copy="Pills and selectors">Copy CSS</button></div>
+          <div class="demo">
+            <div class="stock-list">
+              <button class="stock-pill" type="button"><span class="stock-dot"></span><span class="stock-name">TSMC</span><span class="stock-change">+1.78%</span><span class="stock-arrow"></span></button>
+              <button class="stock-pill" type="button"><span class="stock-dot"></span><span class="stock-name">NVDA</span><span class="stock-change loss">-1.78%</span><span class="stock-arrow"></span></button>
+              <button class="stock-pill" type="button" aria-pressed="true"><span class="stock-dot"></span><span class="stock-name">JYPCV</span><span class="stock-change">+4.12%</span><span class="stock-arrow"></span></button>
+            </div>
+          </div>
+        </article>
+        <article class="card span-4">
+          <div class="card-head"><div><h3>Gain chips</h3><p>Rounded percent markers used in stock rows and position PNL.</p></div><button class="copy-css" data-copy="Gain chips">Copy CSS</button></div>
+          <div class="demo">
+            <span class="gain-chip">+27.95%</span><span class="gain-chip loss">-4.27%</span>
+          </div>
+        </article>
+        <article class="card span-4">
+          <div class="card-head"><div><h3>Chart labels</h3><p>Square overlay labels for trading-view gain and loss markers.</p></div><button class="copy-css" data-copy="Chart labels">Copy CSS</button></div>
+          <div class="demo">
+            <span class="chart-label">+1W</span><span class="chart-label small-gain">+1W</span><span class="chart-label big-loss">-1W</span><span class="chart-label small-loss">-1W</span>
+          </div>
+        </article>
+        <article class="card span-8">
+          <div class="card-head"><div><h3>Orbs</h3></div><button class="copy-css" data-copy="Orb">Copy current CSS</button></div>
+          <div class="demo orb-maker-demo">
+            <div class="orb-preview-stage">
+              <div class="hudi-stock-orb" id="orb-preview" style="--orb-base:#24d0ff;--orb-sheen:#00ffbf;--orb-shadow:rgba(0,50,157,.4);--orb-text-glow:#0558da;"><span class="hudi-stock-orb__number">3428</span><strong class="hudi-stock-orb__ticker">JYPCV</strong></div>
+            </div>
+            <div class="orb-maker-controls" data-orb-maker>
+              <div class="orb-presets" role="group" aria-label="Orb presets">
+                <button class="orb-preset" type="button" aria-pressed="true" aria-label="blue orb" data-base="#24d0ff" data-sheen="#00ffbf" data-shadow="rgba(0,50,157,.4)" style="--preset-base:#24d0ff;--preset-sheen:#00ffbf;--preset-shadow:rgba(0,50,157,.4)"></button>
+                <button class="orb-preset" type="button" aria-label="pink orb" data-base="#fd01ba" data-sheen="#ff6ff2" data-shadow="rgba(62,0,45,.4)" style="--preset-base:#fd01ba;--preset-sheen:#ff6ff2;--preset-shadow:rgba(62,0,45,.4)"></button>
+                <button class="orb-preset" type="button" aria-label="yellow orb" data-base="#ffd400" data-sheen="#ffff99" data-shadow="rgba(107,84,0,.4)" style="--preset-base:#ffd400;--preset-sheen:#ffff99;--preset-shadow:rgba(107,84,0,.4)"></button>
+                <button class="orb-preset" type="button" aria-label="green orb" data-base="#47e6b8" data-sheen="#b8ffe7" data-shadow="rgba(0,122,90,.4)" style="--preset-base:#47e6b8;--preset-sheen:#b8ffe7;--preset-shadow:rgba(0,122,90,.4)"></button>
+              </div>
+              <div class="orb-field-grid">
+                <label class="orb-field"><span>ticker</span><input data-orb-field="ticker" type="text" value="JYPCV" maxlength="7"></label>
+                <label class="orb-field"><span>number</span><input data-orb-field="number" type="text" value="3428" maxlength="8"></label>
+              </div>
+              <div class="orb-color-row">
+                <label class="orb-color">base<input data-orb-field="base" type="color" value="#24d0ff"></label>
+                <label class="orb-color">sheen<input data-orb-field="sheen" type="color" value="#00ffbf"></label>
+                <label class="orb-color">shadow<input data-orb-field="shadow" type="color" value="#00329d"></label>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="panels">
+      <div class="section-title"><h2>Panels</h2><span>orderbook / chat / dashboard surface</span></div>
+      <div class="grid">
+        <div class="panel-sample span-7">
+          <article class="hudi-panel orderbook-panel">
+              <table class="orderbook">
+                <thead><tr><th>PRICE</th><th>SIZE</th></tr></thead>
+                <tbody>
+                  <tr class="ask"><td class="price">58.43</td><td><div class="depth" style="--w:72%"></div>3.1K</td></tr>
+                  <tr class="ask"><td class="price">58.43</td><td><div class="depth" style="--w:92%"></div>4.9K</td></tr>
+                  <tr class="ask"><td class="price">58.43</td><td><div class="depth" style="--w:50%"></div>1.8K</td></tr>
+                  <tr class="ask"><td class="price">58.43</td><td><div class="depth" style="--w:56%"></div>2.8K</td></tr>
+                  <tr class="mark-row"><td colspan="2">$58.43</td></tr>
+                  <tr class="bid"><td class="price">58.43</td><td><div class="depth" style="--w:34%"></div>1.8K</td></tr>
+                  <tr class="bid"><td class="price">58.43</td><td><div class="depth" style="--w:52%"></div>2.3K</td></tr>
+                  <tr class="bid"><td class="price">58.43</td><td><div class="depth" style="--w:66%"></div>2.8K</td></tr>
+                  <tr class="bid"><td class="price">58.43</td><td><div class="depth" style="--w:88%"></div>4.9K</td></tr>
+                </tbody>
+              </table>
+          </article>
+          <button class="copy-css" data-copy="Dashboard panel">Copy CSS</button>
+        </div>
+
+        <div class="panel-sample chat-sample span-5">
+          <article class="chat-panel">
+              <div class="chat-header"><span>CHAT</span><div class="chat-tabs"><button type="button" aria-pressed="true">chat</button><button type="button">browse</button><button type="button">info</button></div></div>
+              <div class="chat-list">
+                <div class="chat-row"><span class="pfp-avatar" style="--pfp-bg:#e2f2ff;--pfp-head:#f2ff00;--pfp-eye:#fff;--pfp-pupil:#171717;"><svg aria-hidden="true" viewBox="-8 -8 207 192"><path class="head" d="M59.437 16.8641L59.6136 16.8833C60.1503 17.2084 74.1963 48.7976 75.6525 52.0669C76.405 50.7974 77.8333 48.9575 78.7469 47.7156L84.7027 39.6816C92.1044 29.6271 99.6254 19.6582 107.264 9.77699C107.284 11.0117 107.851 13.2087 108.138 14.503L109.624 21.3027C111.294 29.0319 113.005 36.7519 114.757 44.463C115.722 48.6355 117.303 54.5316 117.991 58.5907C128.049 50.7305 138.065 43.0497 148.659 35.9003C150.523 34.6426 154.292 32.6597 155.741 31.182C155.346 35.3428 154.687 39.7766 154.169 43.951L151.24 67.3845L149.928 77.9131C149.759 79.292 149.508 82.1954 149.18 83.4158C150.759 83.7792 153.371 84.0282 155.099 84.2533L163.789 85.4468C169.376 86.1838 175.196 87.2531 180.814 87.6237C179.634 88.895 178.173 90.172 176.942 91.4739L162.377 106.971C160.137 109.346 157.241 112.228 155.182 114.68C158.16 116.196 163.211 119.378 165.927 120.459C163.223 123.694 160.433 125.482 156.963 127.78C154.431 129.549 149.904 131.961 147.1 133.422C150.033 138.34 152.523 143.647 155.715 148.466C156.859 150.194 158.141 152.302 159.088 154.127C152.733 154.516 146.381 154.96 140.034 155.462C128.144 156.398 116.809 157.8 105.077 159.929C95.1306 161.734 86.0722 164.276 75.8861 163.023C71.1161 162.435 68.2366 162.301 63.4355 160.87C60.6148 160.053 57.8756 158.987 55.2511 157.684C52.0013 156.048 48.9557 154.054 45.6096 152.508C44.1765 151.753 42.5021 151.293 41.0688 150.57C35.2304 147.626 29.1449 145.139 23.2513 142.328C25.1141 138.666 28.1307 132.347 29.5388 128.571C25.8871 125.75 21.6945 123.242 18.5859 119.719C16.8197 117.717 15.103 114.931 13.6849 112.66C15.2693 112.411 16.8338 112.048 18.3659 111.575C21.9343 110.459 24.8732 108.869 26.6616 105.507C26.6091 103.314 25.6714 100.01 25.1188 97.8506C24.4584 95.2758 23.8146 92.6971 23.1876 90.1142C21.2759 82.3357 19.5408 74.5155 17.9835 66.6593C23.3343 67.9093 30.5835 68.7235 36.15 69.7167C39.1237 61.6655 41.9967 53.6805 45.1813 45.7059C49.1804 35.691 53.1983 25.7988 59.437 16.8641Z"/><path class="eye-base" d="M116.824 118.248C117.376 118.053 117.873 117.882 118.34 117.73C120.304 117.09 121.733 116.794 124.438 116.558C125.979 118.585 127.391 121.668 128.002 124.155C129.262 129.278 128.44 134.692 125.717 139.21C121.634 145.892 114.777 148.229 107.298 148.894C104.178 149.173 99.8849 149.683 97.0987 147.974C96.3571 142.885 96.5666 140.151 98.1028 135.52C98.1563 135.358 98.2107 135.199 98.2659 135.04C101.447 125.924 107.605 121.505 116.824 118.248Z"/><path class="eye-base" d="M41.858 115.567C43.8504 115.03 46.3697 115.432 48.9166 116.27C51.2558 117.039 53.6184 118.176 55.6176 119.289C61.1639 122.378 65.3208 128.322 67.8717 133.537C69.7633 137.404 70.7718 140.871 70.8086 142.475C70.8546 144.477 69.5019 147.434 69.5019 147.434C69.5019 147.434 66.7027 150.577 63.8486 150.313C56.8526 149.666 50.9896 144.631 46.8457 139.675C42.1601 134.072 38.9642 127.118 39.8106 119.652C39.9732 116.535 40.7265 115.835 41.858 115.567Z"/><path class="pupil" d="M108.85 144.934C115.717 145.496 121.844 139.093 122.536 130.633C122.956 125.489 121.27 120.769 118.34 117.733C117.873 117.885 117.376 118.057 116.824 118.251C107.605 121.508 101.447 125.927 98.2658 135.043C99.7926 140.493 103.823 144.523 108.85 144.934Z"/><path class="pupil" d="M48.9162 116.266C51.2554 117.036 53.618 118.172 55.6172 119.286C61.1635 122.375 65.3204 128.318 67.8712 133.533C68.0715 138.38 66.5479 142.259 63.5396 143.434C58.93 145.235 52.5801 140.004 49.3568 131.752C47.0023 125.724 46.9673 119.75 48.9162 116.266Z"/></svg></span><div><strong>Lex</strong><span>watching the 1D candle here</span></div><time class="chat-time">20 sec</time></div>
+                <div class="chat-row"><span class="pfp-avatar" style="--pfp-bg:#ffe7f6;--pfp-head:#fd01ba;--pfp-eye:#fff;--pfp-pupil:#171717;"><svg aria-hidden="true" viewBox="-8 -8 207 192"><path class="head" d="M59.437 16.8641L59.6136 16.8833C60.1503 17.2084 74.1963 48.7976 75.6525 52.0669C76.405 50.7974 77.8333 48.9575 78.7469 47.7156L84.7027 39.6816C92.1044 29.6271 99.6254 19.6582 107.264 9.77699C107.284 11.0117 107.851 13.2087 108.138 14.503L109.624 21.3027C111.294 29.0319 113.005 36.7519 114.757 44.463C115.722 48.6355 117.303 54.5316 117.991 58.5907C128.049 50.7305 138.065 43.0497 148.659 35.9003C150.523 34.6426 154.292 32.6597 155.741 31.182C155.346 35.3428 154.687 39.7766 154.169 43.951L151.24 67.3845L149.928 77.9131C149.759 79.292 149.508 82.1954 149.18 83.4158C150.759 83.7792 153.371 84.0282 155.099 84.2533L163.789 85.4468C169.376 86.1838 175.196 87.2531 180.814 87.6237C179.634 88.895 178.173 90.172 176.942 91.4739L162.377 106.971C160.137 109.346 157.241 112.228 155.182 114.68C158.16 116.196 163.211 119.378 165.927 120.459C163.223 123.694 160.433 125.482 156.963 127.78C154.431 129.549 149.904 131.961 147.1 133.422C150.033 138.34 152.523 143.647 155.715 148.466C156.859 150.194 158.141 152.302 159.088 154.127C152.733 154.516 146.381 154.96 140.034 155.462C128.144 156.398 116.809 157.8 105.077 159.929C95.1306 161.734 86.0722 164.276 75.8861 163.023C71.1161 162.435 68.2366 162.301 63.4355 160.87C60.6148 160.053 57.8756 158.987 55.2511 157.684C52.0013 156.048 48.9557 154.054 45.6096 152.508C44.1765 151.753 42.5021 151.293 41.0688 150.57C35.2304 147.626 29.1449 145.139 23.2513 142.328C25.1141 138.666 28.1307 132.347 29.5388 128.571C25.8871 125.75 21.6945 123.242 18.5859 119.719C16.8197 117.717 15.103 114.931 13.6849 112.66C15.2693 112.411 16.8338 112.048 18.3659 111.575C21.9343 110.459 24.8732 108.869 26.6616 105.507C26.6091 103.314 25.6714 100.01 25.1188 97.8506C24.4584 95.2758 23.8146 92.6971 23.1876 90.1142C21.2759 82.3357 19.5408 74.5155 17.9835 66.6593C23.3343 67.9093 30.5835 68.7235 36.15 69.7167C39.1237 61.6655 41.9967 53.6805 45.1813 45.7059C49.1804 35.691 53.1983 25.7988 59.437 16.8641Z"/><path class="eye-base" d="M116.824 118.248C117.376 118.053 117.873 117.882 118.34 117.73C120.304 117.09 121.733 116.794 124.438 116.558C125.979 118.585 127.391 121.668 128.002 124.155C129.262 129.278 128.44 134.692 125.717 139.21C121.634 145.892 114.777 148.229 107.298 148.894C104.178 149.173 99.8849 149.683 97.0987 147.974C96.3571 142.885 96.5666 140.151 98.1028 135.52C98.1563 135.358 98.2107 135.199 98.2659 135.04C101.447 125.924 107.605 121.505 116.824 118.248Z"/><path class="eye-base" d="M41.858 115.567C43.8504 115.03 46.3697 115.432 48.9166 116.27C51.2558 117.039 53.6184 118.176 55.6176 119.289C61.1639 122.378 65.3208 128.322 67.8717 133.537C69.7633 137.404 70.7718 140.871 70.8086 142.475C70.8546 144.477 69.5019 147.434 69.5019 147.434C69.5019 147.434 66.7027 150.577 63.8486 150.313C56.8526 149.666 50.9896 144.631 46.8457 139.675C42.1601 134.072 38.9642 127.118 39.8106 119.652C39.9732 116.535 40.7265 115.835 41.858 115.567Z"/><path class="pupil" d="M108.85 144.934C115.717 145.496 121.844 139.093 122.536 130.633C122.956 125.489 121.27 120.769 118.34 117.733C117.873 117.885 117.376 118.057 116.824 118.251C107.605 121.508 101.447 125.927 98.2658 135.043C99.7926 140.493 103.823 144.523 108.85 144.934Z"/><path class="pupil" d="M48.9162 116.266C51.2554 117.036 53.618 118.172 55.6172 119.286C61.1635 122.375 65.3204 128.318 67.8712 133.533C68.0715 138.38 66.5479 142.259 63.5396 143.434C58.93 145.235 52.5801 140.004 49.3568 131.752C47.0023 125.724 46.9673 119.75 48.9162 116.266Z"/></svg></span><div><strong>Miko</strong><span>short pressure fading</span></div><time class="chat-time">1 min</time></div>
+                <div class="chat-row"><span class="pfp-avatar" style="--pfp-bg:#f2ff00;--pfp-head:#ffffff;--pfp-eye:#01fd90;--pfp-pupil:#171717;"><svg aria-hidden="true" viewBox="-8 -8 207 192"><path class="head" d="M59.437 16.8641L59.6136 16.8833C60.1503 17.2084 74.1963 48.7976 75.6525 52.0669C76.405 50.7974 77.8333 48.9575 78.7469 47.7156L84.7027 39.6816C92.1044 29.6271 99.6254 19.6582 107.264 9.77699C107.284 11.0117 107.851 13.2087 108.138 14.503L109.624 21.3027C111.294 29.0319 113.005 36.7519 114.757 44.463C115.722 48.6355 117.303 54.5316 117.991 58.5907C128.049 50.7305 138.065 43.0497 148.659 35.9003C150.523 34.6426 154.292 32.6597 155.741 31.182C155.346 35.3428 154.687 39.7766 154.169 43.951L151.24 67.3845L149.928 77.9131C149.759 79.292 149.508 82.1954 149.18 83.4158C150.759 83.7792 153.371 84.0282 155.099 84.2533L163.789 85.4468C169.376 86.1838 175.196 87.2531 180.814 87.6237C179.634 88.895 178.173 90.172 176.942 91.4739L162.377 106.971C160.137 109.346 157.241 112.228 155.182 114.68C158.16 116.196 163.211 119.378 165.927 120.459C163.223 123.694 160.433 125.482 156.963 127.78C154.431 129.549 149.904 131.961 147.1 133.422C150.033 138.34 152.523 143.647 155.715 148.466C156.859 150.194 158.141 152.302 159.088 154.127C152.733 154.516 146.381 154.96 140.034 155.462C128.144 156.398 116.809 157.8 105.077 159.929C95.1306 161.734 86.0722 164.276 75.8861 163.023C71.1161 162.435 68.2366 162.301 63.4355 160.87C60.6148 160.053 57.8756 158.987 55.2511 157.684C52.0013 156.048 48.9557 154.054 45.6096 152.508C44.1765 151.753 42.5021 151.293 41.0688 150.57C35.2304 147.626 29.1449 145.139 23.2513 142.328C25.1141 138.666 28.1307 132.347 29.5388 128.571C25.8871 125.75 21.6945 123.242 18.5859 119.719C16.8197 117.717 15.103 114.931 13.6849 112.66C15.2693 112.411 16.8338 112.048 18.3659 111.575C21.9343 110.459 24.8732 108.869 26.6616 105.507C26.6091 103.314 25.6714 100.01 25.1188 97.8506C24.4584 95.2758 23.8146 92.6971 23.1876 90.1142C21.2759 82.3357 19.5408 74.5155 17.9835 66.6593C23.3343 67.9093 30.5835 68.7235 36.15 69.7167C39.1237 61.6655 41.9967 53.6805 45.1813 45.7059C49.1804 35.691 53.1983 25.7988 59.437 16.8641Z"/><path class="eye-base" d="M116.824 118.248C117.376 118.053 117.873 117.882 118.34 117.73C120.304 117.09 121.733 116.794 124.438 116.558C125.979 118.585 127.391 121.668 128.002 124.155C129.262 129.278 128.44 134.692 125.717 139.21C121.634 145.892 114.777 148.229 107.298 148.894C104.178 149.173 99.8849 149.683 97.0987 147.974C96.3571 142.885 96.5666 140.151 98.1028 135.52C98.1563 135.358 98.2107 135.199 98.2659 135.04C101.447 125.924 107.605 121.505 116.824 118.248Z"/><path class="eye-base" d="M41.858 115.567C43.8504 115.03 46.3697 115.432 48.9166 116.27C51.2558 117.039 53.6184 118.176 55.6176 119.289C61.1639 122.378 65.3208 128.322 67.8717 133.537C69.7633 137.404 70.7718 140.871 70.8086 142.475C70.8546 144.477 69.5019 147.434 69.5019 147.434C69.5019 147.434 66.7027 150.577 63.8486 150.313C56.8526 149.666 50.9896 144.631 46.8457 139.675C42.1601 134.072 38.9642 127.118 39.8106 119.652C39.9732 116.535 40.7265 115.835 41.858 115.567Z"/><path class="pupil" d="M108.85 144.934C115.717 145.496 121.844 139.093 122.536 130.633C122.956 125.489 121.27 120.769 118.34 117.733C117.873 117.885 117.376 118.057 116.824 118.251C107.605 121.508 101.447 125.927 98.2658 135.043C99.7926 140.493 103.823 144.523 108.85 144.934Z"/><path class="pupil" d="M48.9162 116.266C51.2554 117.036 53.618 118.172 55.6172 119.286C61.1635 122.375 65.3204 128.318 67.8712 133.533C68.0715 138.38 66.5479 142.259 63.5396 143.434C58.93 145.235 52.5801 140.004 49.3568 131.752C47.0023 125.724 46.9673 119.75 48.9162 116.266Z"/></svg></span><div><strong>Alice</strong><span>open interest up again</span></div><time class="chat-time">4 min</time></div>
+                <div class="chat-row"><span class="pfp-avatar" style="--pfp-bg:#96ffd2;--pfp-head:#24d0ff;--pfp-eye:#fff;--pfp-pupil:#171717;"><svg aria-hidden="true" viewBox="-8 -8 207 192"><path class="head" d="M59.437 16.8641L59.6136 16.8833C60.1503 17.2084 74.1963 48.7976 75.6525 52.0669C76.405 50.7974 77.8333 48.9575 78.7469 47.7156L84.7027 39.6816C92.1044 29.6271 99.6254 19.6582 107.264 9.77699C107.284 11.0117 107.851 13.2087 108.138 14.503L109.624 21.3027C111.294 29.0319 113.005 36.7519 114.757 44.463C115.722 48.6355 117.303 54.5316 117.991 58.5907C128.049 50.7305 138.065 43.0497 148.659 35.9003C150.523 34.6426 154.292 32.6597 155.741 31.182C155.346 35.3428 154.687 39.7766 154.169 43.951L151.24 67.3845L149.928 77.9131C149.759 79.292 149.508 82.1954 149.18 83.4158C150.759 83.7792 153.371 84.0282 155.099 84.2533L163.789 85.4468C169.376 86.1838 175.196 87.2531 180.814 87.6237C179.634 88.895 178.173 90.172 176.942 91.4739L162.377 106.971C160.137 109.346 157.241 112.228 155.182 114.68C158.16 116.196 163.211 119.378 165.927 120.459C163.223 123.694 160.433 125.482 156.963 127.78C154.431 129.549 149.904 131.961 147.1 133.422C150.033 138.34 152.523 143.647 155.715 148.466C156.859 150.194 158.141 152.302 159.088 154.127C152.733 154.516 146.381 154.96 140.034 155.462C128.144 156.398 116.809 157.8 105.077 159.929C95.1306 161.734 86.0722 164.276 75.8861 163.023C71.1161 162.435 68.2366 162.301 63.4355 160.87C60.6148 160.053 57.8756 158.987 55.2511 157.684C52.0013 156.048 48.9557 154.054 45.6096 152.508C44.1765 151.753 42.5021 151.293 41.0688 150.57C35.2304 147.626 29.1449 145.139 23.2513 142.328C25.1141 138.666 28.1307 132.347 29.5388 128.571C25.8871 125.75 21.6945 123.242 18.5859 119.719C16.8197 117.717 15.103 114.931 13.6849 112.66C15.2693 112.411 16.8338 112.048 18.3659 111.575C21.9343 110.459 24.8732 108.869 26.6616 105.507C26.6091 103.314 25.6714 100.01 25.1188 97.8506C24.4584 95.2758 23.8146 92.6971 23.1876 90.1142C21.2759 82.3357 19.5408 74.5155 17.9835 66.6593C23.3343 67.9093 30.5835 68.7235 36.15 69.7167C39.1237 61.6655 41.9967 53.6805 45.1813 45.7059C49.1804 35.691 53.1983 25.7988 59.437 16.8641Z"/><path class="eye-base" d="M116.824 118.248C117.376 118.053 117.873 117.882 118.34 117.73C120.304 117.09 121.733 116.794 124.438 116.558C125.979 118.585 127.391 121.668 128.002 124.155C129.262 129.278 128.44 134.692 125.717 139.21C121.634 145.892 114.777 148.229 107.298 148.894C104.178 149.173 99.8849 149.683 97.0987 147.974C96.3571 142.885 96.5666 140.151 98.1028 135.52C98.1563 135.358 98.2107 135.199 98.2659 135.04C101.447 125.924 107.605 121.505 116.824 118.248Z"/><path class="eye-base" d="M41.858 115.567C43.8504 115.03 46.3697 115.432 48.9166 116.27C51.2558 117.039 53.6184 118.176 55.6176 119.289C61.1639 122.378 65.3208 128.322 67.8717 133.537C69.7633 137.404 70.7718 140.871 70.8086 142.475C70.8546 144.477 69.5019 147.434 69.5019 147.434C69.5019 147.434 66.7027 150.577 63.8486 150.313C56.8526 149.666 50.9896 144.631 46.8457 139.675C42.1601 134.072 38.9642 127.118 39.8106 119.652C39.9732 116.535 40.7265 115.835 41.858 115.567Z"/><path class="pupil" d="M108.85 144.934C115.717 145.496 121.844 139.093 122.536 130.633C122.956 125.489 121.27 120.769 118.34 117.733C117.873 117.885 117.376 118.057 116.824 118.251C107.605 121.508 101.447 125.927 98.2658 135.043C99.7926 140.493 103.823 144.523 108.85 144.934Z"/><path class="pupil" d="M48.9162 116.266C51.2554 117.036 53.618 118.172 55.6172 119.286C61.1635 122.375 65.3204 128.318 67.8712 133.533C68.0715 138.38 66.5479 142.259 63.5396 143.434C58.93 145.235 52.5801 140.004 49.3568 131.752C47.0023 125.724 46.9673 119.75 48.9162 116.266Z"/></svg></span><div><strong>Hudi</strong><span>JYPCV crossing previous high</span></div><time class="chat-time">8 min</time></div>
+              </div>
+              <form class="chat-compose"><input aria-label="Chat message" placeholder="type message"><button class="hudi-small-button" type="submit">send</button></form>
+          </article>
+          <button class="copy-css" data-copy="Dashboard panel">Copy CSS</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="chart">
+      <div class="section-title"><h2>Trading View</h2><span>candles / labels / crosshair</span></div>
+      <div class="grid">
+        <article class="card span-12">
+          <div class="card-head"><div><h3>Interactive chart primitives</h3></div><button class="copy-css" data-copy="Trading chart">Copy CSS</button></div>
+          <div class="demo column">
+            <div class="chart-demo">
+              <div class="chart-toolbar">
+                <div class="chart-readout"><span data-chart-symbol>JYPCV</span><strong data-chart-price>$58.43</strong><span data-chart-time>29 APR</span></div>
+              </div>
+              <div class="chart-orbs" aria-hidden="true">
+                <div class="hudi-stock-orb yellow"><span class="hudi-stock-orb__number">3325</span><strong class="hudi-stock-orb__ticker">SMSNG</strong></div>
+                <div class="hudi-stock-orb mini-orb"><span class="hudi-stock-orb__number">084</span><strong class="hudi-stock-orb__ticker">KRX</strong></div>
+              </div>
+              <div class="chart-scroll" tabindex="0" aria-label="Scalable trading chart">
+                <div class="chart-track" style="--count:44">
+                  <button class="candle" type="button" aria-pressed="false" data-index="0" data-price="$55.24" data-time="27 APR" data-y="277.0319999999999" style="--i:0;--high-y:264.86px;--body-y:274.03px;--body-h:6.00px;--low-y:302.30px;--c:#96ffd2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="1" data-price="$56.02" data-time="27 APR" data-y="256.42892917196014" style="--i:1;--high-y:225.74px;--body-y:244.25px;--body-h:24.35px;--low-y:292.83px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="2" data-price="$56.69" data-time="27 APR" data-y="228.10213325087767" style="--i:2;--high-y:192.95px;--body-y:218.61px;--body-h:18.98px;--low-y:254.96px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="3" data-price="$56.49" data-time="27 APR" data-y="221.04954422349317" style="--i:3;--high-y:186.93px;--body-y:215.86px;--body-h:10.37px;--low-y:234.99px;--c:#ff92e2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="4" data-price="$55.54" data-time="27 APR" data-y="246.02360610549204" style="--i:4;--high-y:201.98px;--body-y:229.52px;--body-h:33.00px;--low-y:280.50px;--c:#fd01ba"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="5" data-price="$54.67" data-time="27 APR" data-y="282.56502700358936" style="--i:5;--high-y:247.47px;--body-y:269.31px;--body-h:26.51px;--low-y:320.39px;--c:#fd01ba"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="6" data-price="$54.48" data-time="27 APR" data-y="303.86308545260164" style="--i:6;--high-y:287.72px;--body-y:300.86px;--body-h:6.00px;--low-y:329.62px;--c:#ff92e2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="7" data-price="$54.74" data-time="27 APR" data-y="297.75829875728107" style="--i:7;--high-y:278.40px;--body-y:293.22px;--body-h:9.07px;--low-y:326.15px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="8" data-price="$54.67" data-time="27 APR" data-y="291.6593344345357" style="--i:8;--high-y:264.33px;--body-y:287.45px;--body-h:8.42px;--low-y:312.62px;--c:#fd01ba"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="9" data-price="$53.90" data-time="28 APR" data-y="307.26686915026204" style="--i:9;--high-y:261.25px;--body-y:289.38px;--body-h:35.78px;--low-y:334.61px;--c:#ff92e2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="10" data-price="$53.35" data-time="28 APR" data-y="334.5969536763249" style="--i:10;--high-y:294.28px;--body-y:322.96px;--body-h:23.27px;--low-y:364.80px;--c:#fd01ba"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="11" data-price="$53.26" data-time="28 APR" data-y="352.58136972473267" style="--i:11;--high-y:324.94px;--body-y:349.58px;--body-h:6.00px;--low-y:374.92px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="12" data-price="$53.84" data-time="28 APR" data-y="341.923663181357" style="--i:12;--high-y:310.45px;--body-y:327.41px;--body-h:29.03px;--low-y:383.12px;--c:#96ffd2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="13" data-price="$54.59" data-time="28 APR" data-y="315.5242492147341" style="--i:13;--high-y:288.13px;--body-y:299.02px;--body-h:33.01px;--low-y:355.49px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="14" data-price="$54.92" data-time="28 APR" data-y="292.0807260280103" style="--i:14;--high-y:266.33px;--body-y:286.33px;--body-h:11.50px;--low-y:313.95px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="15" data-price="$54.89" data-time="28 APR" data-y="283.8887433261323" style="--i:15;--high-y:253.69px;--body-y:280.25px;--body-h:7.27px;--low-y:297.69px;--c:#ff92e2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="16" data-price="$55.08" data-time="28 APR" data-y="283.11314291267485" style="--i:16;--high-y:251.08px;--body-y:280.11px;--body-h:6.00px;--low-y:300.40px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="17" data-price="$55.88" data-time="28 APR" data-y="263.9796862602477" style="--i:17;--high-y:222.64px;--body-y:249.47px;--body-h:29.03px;--low-y:303.68px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="18" data-price="$56.95" data-time="29 APR" data-y="231.21824755388144" style="--i:18;--high-y:188.23px;--body-y:208.69px;--body-h:45.06px;--low-y:280.37px;--c:#96ffd2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="19" data-price="$57.56" data-time="29 APR" data-y="200.48737492311434" style="--i:19;--high-y:173.97px;--body-y:185.41px;--body-h:30.15px;--low-y:238.62px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="20" data-price="$57.15" data-time="29 APR" data-y="195.39279816477028" style="--i:20;--high-y:173.12px;--body-y:189.57px;--body-h:11.65px;--low-y:216.69px;--c:#fd01ba"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="21" data-price="$56.51" data-time="29 APR" data-y="212.40696761182673" style="--i:21;--high-y:175.16px;--body-y:199.45px;--body-h:25.92px;--low-y:236.23px;--c:#ff92e2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="22" data-price="$56.39" data-time="29 APR" data-y="224.50884586425786" style="--i:22;--high-y:190.46px;--body-y:219.04px;--body-h:10.95px;--low-y:249.69px;--c:#fd01ba"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="23" data-price="$56.88" data-time="29 APR" data-y="217.7618614113341" style="--i:23;--high-y:183.26px;--body-y:211.54px;--body-h:12.43px;--low-y:249.44px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="true" data-index="24" data-price="$57.27" data-time="29 APR" data-y="203.4512908101966" style="--i:24;--high-y:172.89px;--body-y:196.39px;--body-h:14.12px;--low-y:237.03px;--c:#96ffd2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="25" data-price="$56.88" data-time="29 APR" data-y="206.27218752648184" style="--i:25;--high-y:185.78px;--body-y:201.12px;--body-h:10.29px;--low-y:234.04px;--c:#fd01ba"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="26" data-price="$55.81" data-time="29 APR" data-y="235.31534988465364" style="--i:26;--high-y:205.66px;--body-y:218.26px;--body-h:34.11px;--low-y:267.18px;--c:#fd01ba"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="27" data-price="$54.93" data-time="30 APR" data-y="271.02476225377654" style="--i:27;--high-y:234.63px;--body-y:256.04px;--body-h:29.98px;--low-y:297.57px;--c:#ff92e2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="28" data-price="$55.16" data-time="30 APR" data-y="280.2969082625582" style="--i:28;--high-y:249.59px;--body-y:276.92px;--body-h:6.75px;--low-y:303.93px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="29" data-price="$56.11" data-time="30 APR" data-y="255.56138225904772" style="--i:29;--high-y:211.76px;--body-y:240.74px;--body-h:29.64px;--low-y:296.08px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="30" data-price="$56.88" data-time="30 APR" data-y="223.16057343453866" style="--i:30;--high-y:185.30px;--body-y:211.27px;--body-h:23.79px;--low-y:261.46px;--c:#96ffd2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="31" data-price="$56.88" data-time="30 APR" data-y="213.82519959091525" style="--i:31;--high-y:191.82px;--body-y:210.83px;--body-h:6.00px;--low-y:233.40px;--c:#fd01ba"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="32" data-price="$56.44" data-time="30 APR" data-y="222.2106175827945" style="--i:32;--high-y:206.66px;--body-y:216.38px;--body-h:11.66px;--low-y:242.19px;--c:#fd01ba"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="33" data-price="$56.42" data-time="30 APR" data-y="231.9495507152774" style="--i:33;--high-y:210.93px;--body-y:228.95px;--body-h:6.00px;--low-y:247.05px;--c:#96ffd2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="34" data-price="$57.23" data-time="30 APR" data-y="215.1235782159543" style="--i:34;--high-y:172.80px;--body-y:198.15px;--body-h:33.95px;--low-y:252.88px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="35" data-price="$58.38" data-time="30 APR" data-y="174.73055191149518" style="--i:35;--high-y:125.34px;--body-y:154.21px;--body-h:41.05px;--low-y:221.18px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="36" data-price="$59.03" data-time="1 MAY" data-y="138.36811431903604" style="--i:36;--high-y:101.48px;--body-y:129.23px;--body-h:18.28px;--low-y:173.76px;--c:#96ffd2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="37" data-price="$58.90" data-time="1 MAY" data-y="129.02128565680172" style="--i:37;--high-y:101.64px;--body-y:123.90px;--body-h:10.25px;--low-y:155.83px;--c:#fd01ba"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="38" data-price="$58.51" data-time="1 MAY" data-y="141.69407834872757" style="--i:38;--high-y:120.61px;--body-y:134.30px;--body-h:14.79px;--low-y:162.57px;--c:#fd01ba"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="39" data-price="$58.53" data-time="1 MAY" data-y="151.46923659628303" style="--i:39;--high-y:134.04px;--body-y:148.33px;--body-h:6.28px;--low-y:167.55px;--c:#96ffd2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="40" data-price="$59.02" data-time="1 MAY" data-y="142.38201905670115" style="--i:40;--high-y:107.10px;--body-y:129.81px;--body-h:25.14px;--low-y:176.25px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="41" data-price="$59.39" data-time="1 MAY" data-y="123.9866635790978" style="--i:41;--high-y:87.59px;--body-y:115.55px;--body-h:16.87px;--low-y:158.54px;--c:#01fd90"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="42" data-price="$59.18" data-time="1 MAY" data-y="117.87161677989059" style="--i:42;--high-y:83.35px;--body-y:112.13px;--body-h:11.48px;--low-y:149.69px;--c:#ff92e2"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <button class="candle" type="button" aria-pressed="false" data-index="43" data-price="$58.60" data-time="1 MAY" data-y="131.14847462613392" style="--i:43;--high-y:91.82px;--body-y:116.80px;--body-h:28.69px;--low-y:166.69px;--c:#fd01ba"><span class="candle-wick top"></span><span class="candle-body"></span><span class="candle-wick bottom"></span></button>
+                  <div class="time-axis"><span style="left:calc(64px + (0 * var(--spacing)))">27</span><span style="left:calc(64px + (9 * var(--spacing)))">28</span><span style="left:calc(64px + (18 * var(--spacing)))">29</span><span style="left:calc(64px + (27 * var(--spacing)))">30</span><span style="left:calc(64px + (36 * var(--spacing)))">MAY</span></div>
+                </div>
+              </div>
+              <div class="price-axis"><span style="top:54.00px">61.00</span><span style="top:92.20px">60.00</span><span style="top:130.40px">59.00</span><span style="top:168.60px">58.00</span><span style="top:206.80px">57.00</span><span style="top:245.00px">56.00</span><span style="top:283.20px">55.00</span><span style="top:321.40px">54.00</span><span style="top:359.60px">53.00</span><span style="top:397.80px">52.00</span><span style="top:436.00px">51.00</span></div>
+              <span class="selected-price">$58.43</span>
+              <span class="cursor-price">$58.43</span>
+              <span class="cursor-time">29 APR</span>
+              <span class="cursor-v"></span>
+              <span class="cursor-h"></span>
+              <span class="cursor-crosshair"></span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script id="css-snippets" type="application/json">{"Trade buttons":".hudi-trade-button {\n  --pill-bg: #01fd90;\n  --pill-inner-shadow: rgba(0, 95, 60, 0.34);\n  --pill-label: #007b92;\n  --pill-label-shadow: rgba(255,255,255,.72);\n  align-items: center;\n  background: var(--pill-bg);\n  border: 4px solid #e2f2ff;\n  border-radius: 23px;\n  box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow);\n  color: var(--pill-label);\n  cursor: pointer;\n  display: inline-flex;\n  font-family: \"OCRA Fixed\", \"SF Mono\", Menlo, Monaco, Consolas, monospace;\n  font-size: 17px;\n  height: 46px;\n  justify-content: center;\n  letter-spacing: -0.55px;\n  line-height: 1;\n  min-width: 149px;\n  overflow: hidden;\n  padding: 0 28px;\n  position: relative;\n  text-transform: lowercase;\n  transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;\n  will-change: transform;\n  white-space: nowrap;\n}\n.hudi-trade-button::before {\n  background: linear-gradient(0.24deg, rgba(255,255,255,.23) 20.46%, rgba(255,255,255,.91) 99.78%);\n  content: \"\";\n  height: 69.4%;\n  left: -0.33%;\n  mask-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2035 347' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M178 0H1888C1966 0 2035 48 2035 126C2035 224 1953 277 1814 277H190C103 277 57 306 0 347C4 278 6 205 18 148C34 65 92 16 178 0Z'/%3E%3C/svg%3E\");\n  mask-repeat: no-repeat;\n  mask-size: 100% 100%;\n  pointer-events: none;\n  position: absolute;\n  top: 0;\n  width: 95%;\n  -webkit-mask-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2035 347' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M178 0H1888C1966 0 2035 48 2035 126C2035 224 1953 277 1814 277H190C103 277 57 306 0 347C4 278 6 205 18 148C34 65 92 16 178 0Z'/%3E%3C/svg%3E\");\n  -webkit-mask-repeat: no-repeat;\n  -webkit-mask-size: 100% 100%;\n}\n.hudi-trade-button::after {\n  background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%);\n  border-radius: inherit;\n  content: \"\";\n  filter: blur(1.43px);\n  height: 18%;\n  left: 9%;\n  opacity: .9;\n  pointer-events: none;\n  position: absolute;\n  right: 9%;\n  top: 0;\n}\n.hudi-trade-button .pill-bottom-highlight {\n  background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%);\n  border-radius: inherit;\n  filter: blur(1.43px);\n  height: 66.2%;\n  left: 1%;\n  pointer-events: none;\n  position: absolute;\n  right: 1%;\n  top: 34%;\n}\n.hudi-trade-button .pill-label {\n  position: relative;\n  text-shadow: 0 .7px 0 var(--pill-label-shadow);\n  top: 4.8%;\n  z-index: 2;\n}\n.hudi-trade-button .pill-shine {\n  background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 34%, rgba(255,255,255,.72) 48%, rgba(255,255,255,0) 64%, transparent 100%);\n  height: 150%;\n  left: -80%;\n  pointer-events: none;\n  position: absolute;\n  top: -25%;\n  transform: skewX(-18deg);\n  width: 52%;\n  z-index: 3;\n}\n.hudi-trade-button.long { --pill-bg: #01fd90; --pill-inner-shadow: rgba(0,95,60,.34); }\n.hudi-trade-button.short { --pill-bg: #ff0fc4; --pill-inner-shadow: rgba(118,0,82,.34); --pill-label: #ffffff; --pill-label-shadow: rgba(55,0,42,.35); }\n.hudi-trade-button.confirm { --pill-bg: #e9eef5; --pill-inner-shadow: rgba(62,88,116,.28); --pill-label: #71809e; --pill-label-shadow: rgba(255,255,255,.9); border-radius: 28px; font-size: 23px; height: 56px; min-width: 241px; }\n.hudi-trade-button.confirm .pill-label { top: -1px; }\n.hudi-trade-button:hover {\n  filter: brightness(1.015) saturate(1.03);\n  transform: translateY(-1px) scale(1.01);\n  box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow);\n}\n.hudi-trade-button:hover .pill-shine { animation: hudi-pill-shine 760ms ease-out; }\n.hudi-trade-button:active,\n.hudi-trade-button.is-pressed { filter: brightness(.93) saturate(.96); transform: translateY(1px) scale(.99); box-shadow: inset 0 1px 14px var(--pill-inner-shadow); }\n@keyframes hudi-pill-shine { from { left: -80%; } to { left: 130%; } }","Leverage slider":".hudi-slider {\n  --track: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%);\n  width: min(315px, 100%);\n}\n.hudi-slider input[type=\"range\"] {\n  appearance: none;\n  width: 100%;\n  height: 34px;\n  background: transparent;\n  cursor: pointer;\n}\n.hudi-slider-markers {\n  display: grid;\n  grid-template-columns: repeat(6, 1fr);\n  margin-top: 10px;\n  color: #a1a8b5;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  line-height: 1;\n}\n.hudi-slider-markers span { text-align: center; }\n.hudi-slider input::-webkit-slider-runnable-track {\n  height: 14px;\n  border: 4px solid #e2f2ff;\n  border-radius: 13px;\n  background: var(--track);\n}\n.hudi-slider input::-webkit-slider-thumb {\n  appearance: none;\n  width: 26px;\n  height: 26px;\n  box-sizing: content-box;\n  margin-top: -15px;\n  border: 4px solid #e2f2ff;\n  border-radius: 50%;\n  background:\n    radial-gradient(36.34% 18.06% at 50% 1%, #fff 0%, rgba(255,255,255,.14) 100%),\n    radial-gradient(64% 46% at 50% 20%, rgba(255,255,255,.96) 0 50%, rgba(255,255,255,.58) 62%, transparent 63%),\n    linear-gradient(180deg, #f5faff 0%, #d9e4ec 42%, #b8c8d4 100%);\n  box-shadow: inset 0 -3px 16px rgba(67, 88, 109, .28);\n}\n.hudi-slider input::-moz-range-thumb {\n  width: 26px;\n  height: 26px;\n  box-sizing: content-box;\n  border: 4px solid #e2f2ff;\n  border-radius: 50%;\n  background:\n    radial-gradient(36.34% 18.06% at 50% 1%, #fff 0%, rgba(255,255,255,.14) 100%),\n    radial-gradient(64% 46% at 50% 20%, rgba(255,255,255,.96) 0 50%, rgba(255,255,255,.58) 62%, transparent 63%),\n    linear-gradient(180deg, #f5faff 0%, #d9e4ec 42%, #b8c8d4 100%);\n  box-shadow: inset 0 -3px 16px rgba(67, 88, 109, .28);\n}\n.hudi-slider.short { --track: linear-gradient(270deg, #fd01ba 0%, #ffe4fe 100%); }","Pills and selectors":".hudi-pill {\n  min-height: 30px;\n  border: 4px solid #e6f4ff;\n  border-radius: 999px;\n  background: #fff;\n  color: #a9a9a9;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 12px;\n  padding-top: 2px;\n  cursor: pointer;\n  transition: border-color .14s ease, color .14s ease, transform .14s ease;\n}\n.hudi-pill:hover { border-color: #bddfff; color: #71809e; }\n.hudi-pill[aria-pressed=\"true\"],\n.hudi-pill.is-selected { border-color: #8bccff; color: #71809e; }\n.hudi-pill-icon {\n  position: relative;\n  top: -2px;\n  display: inline-block;\n  margin-right: 5px;\n}\n.hudi-pill:active { transform: scale(.97); }","Status chips":".hudi-status {\n  display: inline-flex;\n  align-items: center;\n  gap: 7px;\n  min-height: 25px;\n  padding: 0 12px 0 9px;\n  border: 4px solid #01fd90;\n  border-radius: 54px;\n  background: #96ffd2;\n  color: #127e4b;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: .02em;\n  padding-top: 2px;\n}\n.hudi-status::before {\n  content: \"\";\n  position: relative;\n  top: -1px;\n  width: 8px;\n  height: 8px;\n  flex: 0 0 8px;\n  border-radius: 50%;\n  background: currentColor;\n}\n.hudi-status.closed {\n  border-color: #ff92e2;\n  background: #ffe7f6;\n  color: #e630a0;\n}","Gain chips":".gain-chip {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-height: 20px;\n  padding: 0 8px;\n  border-radius: 53px;\n  background: #96ffd2;\n  color: #127e4b;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: .01em;\n  padding-top: 2px;\n}\n.gain-chip.loss {\n  background: #ffe7f6;\n  color: #e630a0;\n  letter-spacing: -.01em;\n}","Chart labels":".chart-label {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 48px;\n  height: 13px;\n  background: #01fd90;\n  color: #000;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: -.01em;\n  padding-top: 2px;\n}\n.chart-label.small-gain { background: #96ffd2; }\n.chart-label.big-loss { background: #fd01ba; color: #fff; }\n.chart-label.small-loss { background: #ff92e2; color: #fff; }","Trading chart":".chart-demo {\n  --mx: 50%;\n  --my: 50%;\n  --spacing: 22px;\n  position: relative;\n  width: 100%;\n  height: 420px;\n  border: 4px solid #e6f4ff;\n  border-radius: 18px;\n  background: #fff;\n  overflow: hidden;\n}\n.chart-scroll {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  cursor: crosshair;\n  overscroll-behavior: contain;\n}\n.chart-scroll.is-dragging { cursor: grabbing; }\n.chart-track {\n  position: relative;\n  width: max(100%, calc((var(--count) * var(--spacing)) + 128px));\n  height: 100%;\n  background:\n    linear-gradient(rgba(207,228,251,.45) 1px, transparent 1px),\n    linear-gradient(90deg, rgba(207,228,251,.45) 1px, transparent 1px),\n    #fff;\n  background-size: 28px 28px;\n}\n.candle {\n  --body-w: clamp(8px, calc(var(--spacing) - 10px), 18px);\n  position: absolute;\n  left: calc(64px + (var(--i) * var(--spacing)));\n  top: var(--high-y);\n  width: var(--spacing);\n  height: calc(var(--low-y) - var(--high-y));\n  border: 0;\n  background: transparent;\n  cursor: pointer;\n  padding: 0;\n  transform: translateX(-50%);\n}\n.candle-wick {\n  position: absolute;\n  left: 50%;\n  width: 1px;\n  background: #000;\n  transform: translateX(-50%);\n}\n.candle-wick.top { top: 0; height: calc(var(--body-y) - var(--high-y)); }\n.candle-wick.bottom { top: calc(var(--body-y) - var(--high-y) + var(--body-h)); height: calc(var(--low-y) - var(--body-y) - var(--body-h)); }\n.candle-body {\n  position: absolute;\n  left: 50%;\n  top: calc(var(--body-y) - var(--high-y));\n  width: var(--body-w);\n  height: max(var(--body-h), 3px);\n  border: 1px solid #000;\n  background: var(--c);\n  transform: translateX(-50%);\n}\n.candle[aria-pressed=\"true\"] .candle-body { outline: 4px solid #1687ff; outline-offset: 3px; }\n.cursor-v,\n.cursor-h,\n.cursor-crosshair {\n  position: absolute;\n  pointer-events: none;\n  opacity: 0;\n  z-index: 5;\n}\n.chart-demo.is-tracking .cursor-v,\n.chart-demo.is-tracking .cursor-h,\n.chart-demo.is-tracking .cursor-crosshair { opacity: 1; }\n.cursor-v { left: var(--mx); top: 44px; bottom: 34px; width: 1px; transform: translateX(-50%); background: repeating-linear-gradient(180deg, #fd01ba 0 8px, transparent 8px 13px); mask-image: linear-gradient(180deg, #000 0 calc(var(--my) - 14px), transparent calc(var(--my) - 14px) calc(var(--my) + 14px), #000 calc(var(--my) + 14px)); -webkit-mask-image: linear-gradient(180deg, #000 0 calc(var(--my) - 14px), transparent calc(var(--my) - 14px) calc(var(--my) + 14px), #000 calc(var(--my) + 14px)); }\n.cursor-h { left: 0; right: 52px; top: var(--my); height: 1px; transform: translateY(-50%); background: repeating-linear-gradient(90deg, #fd01ba 0 8px, transparent 8px 13px); mask-image: linear-gradient(90deg, #000 0 calc(var(--mx) - 14px), transparent calc(var(--mx) - 14px) calc(var(--mx) + 14px), #000 calc(var(--mx) + 14px)); -webkit-mask-image: linear-gradient(90deg, #000 0 calc(var(--mx) - 14px), transparent calc(var(--mx) - 14px) calc(var(--mx) + 14px), #000 calc(var(--mx) + 14px)); }\n.cursor-crosshair {\n  left: var(--mx);\n  top: var(--my);\n  width: 23px;\n  height: 23px;\n  transform: translate(-50%, -50%);\n  z-index: 6;\n}\n.cursor-crosshair::before,\n.cursor-crosshair::after { content: \"\"; position: absolute; background: #f2ff00; border: 1px solid #71809e; border-radius: 4px; box-sizing: border-box; }\n.cursor-crosshair::before { left: 10px; top: 0; width: 3px; height: 23px; }\n.cursor-crosshair::after { left: 0; top: 10px; width: 23px; height: 3px; }","Dashboard panel":".hudi-panel {\n  border: 4px solid #e6f4ff;\n  border-radius: 18px;\n  background: #fff;\n  box-shadow: 3px 7px 10px rgba(0,63,131,.13);\n}\n","Orb":".hudi-stock-orb {\n  --orb-base: #24d0ff;\n  --orb-sheen: #00ffbf;\n  --orb-shadow: #00329d;\n  --orb-text-deep: #000925;\n  --orb-text-light: #95afff;\n  --orb-text-glow: #0558da;\n  position: relative;\n  display: grid;\n  place-items: center;\n  width: 100px;\n  aspect-ratio: 1;\n  border-radius: 50%;\n  background-color: var(--orb-base);\n  background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%);\n  box-shadow: inset 0 -6.1625px 64.3984px color-mix(in srgb, var(--orb-shadow) 40%, transparent);\n  overflow: hidden;\n}\n.hudi-stock-orb::before {\n  background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%);\n  border-radius: 50px;\n  content: \"\";\n  height: 46%;\n  left: 18.6%;\n  position: absolute;\n  top: 3.8%;\n  width: 64%;\n  z-index: 1;\n}\n.hudi-stock-orb::after {\n  background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%);\n  border-radius: 50%;\n  content: \"\";\n  height: 18.06%;\n  left: 32.05%;\n  position: absolute;\n  top: -.23%;\n  width: 36.34%;\n  z-index: 1;\n}\n.hudi-stock-orb__ticker,\n.hudi-stock-orb__number {\n  background: radial-gradient(180% 173% at 50% -16%, var(--orb-text-light) 0%, var(--orb-text-deep) 48%, var(--orb-text-deep) 100%);\n  background-clip: text;\n  -webkit-background-clip: text;\n  color: transparent;\n  filter: drop-shadow(0 0 1.52px var(--orb-text-glow));\n  position: absolute;\n  -webkit-text-fill-color: transparent;\n  z-index: 2;\n}\n.hudi-stock-orb__ticker {\n  font-family: \"Syne Hudi\", Syne, sans-serif;\n  font-size: 18px;\n  font-weight: 700;\n  line-height: 1;\n  text-align: center;\n  top: 43.6%;\n  width: 99.64%;\n}\n.hudi-stock-orb__number {\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 8px;\n  letter-spacing: .06em;\n  opacity: .75;\n  top: 9px;\n}"}</script>
+  <script>
+    const snippets = JSON.parse(document.getElementById("css-snippets").textContent);
+    const orbPreview = document.getElementById("orb-preview");
+    const orbControls = document.querySelector("[data-orb-maker]");
+
+    function hexToRgba(hex, alpha = .4) {
+      const clean = hex.replace("#", "");
+      const r = parseInt(clean.slice(0, 2), 16);
+      const g = parseInt(clean.slice(2, 4), 16);
+      const b = parseInt(clean.slice(4, 6), 16);
+      return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+    }
+
+    function getOrbState() {
+      return {
+        ticker: orbControls?.querySelector('[data-orb-field="ticker"]')?.value.toUpperCase().slice(0, 7) || "JYPCV",
+        number: orbControls?.querySelector('[data-orb-field="number"]')?.value.replace(/\s/g, "").slice(0, 8) || "3428",
+        base: orbControls?.querySelector('[data-orb-field="base"]')?.value || "#24d0ff",
+        sheen: orbControls?.querySelector('[data-orb-field="sheen"]')?.value || "#00ffbf",
+        shadowHex: orbControls?.querySelector('[data-orb-field="shadow"]')?.value || "#00329d",
+      };
+    }
+
+    function buildOrbCss(state) {
+      const shadow = hexToRgba(state.shadowHex, .4);
+      return `/* Current orb preview: ${state.ticker} ${state.number} */
+.hudi-stock-orb {
+  --orb-base: ${state.base};
+  --orb-sheen: ${state.sheen};
+  --orb-shadow: ${shadow};
+  --orb-text-deep: #000925;
+  --orb-text-light: #95afff;
+  --orb-text-glow: #0558da;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: var(--orb-base);
+  background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%);
+  box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow);
+  overflow: hidden;
+}
+.hudi-stock-orb::before {
+  content: "";
+  position: absolute;
+  left: 18.6%;
+  top: 3.8%;
+  width: 64%;
+  height: 46%;
+  border-radius: 50px;
+  background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%);
+  z-index: 1;
+}
+.hudi-stock-orb::after {
+  content: "";
+  position: absolute;
+  left: 32.05%;
+  top: -.23%;
+  width: 36.34%;
+  height: 18.06%;
+  border-radius: 50%;
+  background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%);
+  z-index: 1;
+}
+.hudi-stock-orb__ticker,
+.hudi-stock-orb__number {
+  background: radial-gradient(180% 173% at 50% -16%, var(--orb-text-light) 0%, var(--orb-text-deep) 48%, var(--orb-text-deep) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 1.52px var(--orb-text-glow));
+  position: absolute;
+  -webkit-text-fill-color: transparent;
+  z-index: 2;
+}
+.hudi-stock-orb__ticker {
+  font-family: "Syne Hudi", Syne, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  top: 43.6%;
+  width: 99.64%;
+}
+.hudi-stock-orb__number {
+  font-family: "OCRA Fixed", ui-monospace, monospace;
+  font-size: 8px;
+  letter-spacing: .06em;
+  opacity: .75;
+  top: 9px;
+}`;
+    }
+
+    function updateOrbPreview() {
+      if (!orbPreview || !orbControls) return;
+      const state = getOrbState();
+      const shadow = hexToRgba(state.shadowHex, .4);
+      orbPreview.style.setProperty("--orb-base", state.base);
+      orbPreview.style.setProperty("--orb-sheen", state.sheen);
+      orbPreview.style.setProperty("--orb-shadow", shadow);
+      orbPreview.querySelector(".hudi-stock-orb__ticker").textContent = state.ticker;
+      orbPreview.querySelector(".hudi-stock-orb__number").textContent = state.number;
+      snippets.Orb = buildOrbCss(state);
+    }
+    updateOrbPreview();
+
+    function updateTimeSelector(selector) {
+      const activeButton = selector?.querySelector('button[aria-pressed="true"]');
+      const active = activeButton?.querySelector("span");
+      if (!selector || !active) return;
+      const buttons = [...selector.querySelectorAll("button")];
+      const index = buttons.indexOf(activeButton);
+      const selectorRect = selector.getBoundingClientRect();
+      const activeRect = active.getBoundingClientRect();
+      const styles = getComputedStyle(selector);
+      const borderLeft = parseFloat(styles.borderLeftWidth) || 0;
+      const selectedWidth = parseFloat(styles.getPropertyValue("--selected-width")) || 52;
+      let center = activeRect.left + activeRect.width / 2 - selectorRect.left - borderLeft;
+      if (index === 0) center = selectedWidth / 2;
+      if (index === buttons.length - 1) center = selectorRect.width - selectedWidth / 2;
+      selector.style.setProperty("--active-center", center + "px");
+    }
+
+    document.querySelectorAll(".time-selector").forEach(updateTimeSelector);
+    document.fonts?.ready.then(() => document.querySelectorAll(".time-selector").forEach(updateTimeSelector));
+    window.addEventListener("resize", () => document.querySelectorAll(".time-selector").forEach(updateTimeSelector));
+
+    document.addEventListener("click", async (event) => {
+      const copy = event.target.closest("[data-copy]");
+      if (copy) {
+        await navigator.clipboard.writeText(snippets[copy.dataset.copy] || "");
+        const label = copy.textContent;
+        copy.textContent = "Copied";
+        setTimeout(() => copy.textContent = label, 900);
+      }
+
+      const pressedButton = event.target.closest(".hudi-pill, .stock-pill");
+      if (pressedButton) {
+        const group = pressedButton.closest(".demo, .stock-list");
+        group?.querySelectorAll(".hudi-pill, .stock-pill").forEach((button) => button.setAttribute("aria-pressed", String(button === pressedButton)));
+      }
+
+      const segmented = event.target.closest(".time-selector button, .chat-tabs button");
+      if (segmented) {
+        segmented.parentElement.querySelectorAll("button").forEach((button) => button.setAttribute("aria-pressed", String(button === segmented)));
+        if (segmented.parentElement.classList.contains("time-selector")) {
+          const index = [...segmented.parentElement.children].indexOf(segmented);
+          segmented.parentElement.style.setProperty("--active-index", index);
+          updateTimeSelector(segmented.parentElement);
+        }
+      }
+
+      const status = event.target.closest(".hudi-status");
+      if (status) {
+        status.classList.toggle("closed");
+        status.textContent = status.classList.contains("closed") ? "CLOSED" : "OPEN";
+      }
+
+      const orbPreset = event.target.closest(".orb-preset");
+      if (orbPreset && orbControls) {
+        orbControls.querySelectorAll(".orb-preset").forEach((button) => button.setAttribute("aria-pressed", String(button === orbPreset)));
+        orbControls.querySelector('[data-orb-field="base"]').value = orbPreset.dataset.base;
+        orbControls.querySelector('[data-orb-field="sheen"]').value = orbPreset.dataset.sheen;
+        const shadowMatch = orbPreset.dataset.shadow.match(/rgba\((\d+),(\d+),(\d+),/);
+        if (shadowMatch) {
+          const toHex = (value) => Number(value).toString(16).padStart(2, "0");
+          orbControls.querySelector('[data-orb-field="shadow"]').value = "#" + toHex(shadowMatch[1]) + toHex(shadowMatch[2]) + toHex(shadowMatch[3]);
+        }
+        updateOrbPreview();
+      }
+    });
+
+    document.addEventListener("input", (event) => {
+      if (event.target.matches('.hudi-slider input[type="range"]')) {
+        const values = (event.target.dataset.leverageValues || "").split(",").filter(Boolean);
+        const value = values[event.target.value] || event.target.value;
+        event.target.closest(".hudi-slider-row")?.querySelector("output").replaceChildren(value + "x");
+      }
+      if (event.target.matches('[data-orb-field]')) {
+        updateOrbPreview();
+      }
+    });
+
+    document.querySelectorAll(".chart-demo").forEach((chart) => {
+      const scroll = chart.querySelector(".chart-scroll");
+      const track = chart.querySelector(".chart-track");
+      const price = chart.querySelector("[data-chart-price]");
+      const time = chart.querySelector("[data-chart-time]");
+      const selectedPrice = chart.querySelector(".selected-price");
+      const cursorPrice = chart.querySelector(".cursor-price");
+      const cursorTime = chart.querySelector(".cursor-time");
+      let spacing = 34;
+
+      function selectCandle(candle) {
+        chart.querySelectorAll(".candle").forEach((button) => button.setAttribute("aria-pressed", String(button === candle)));
+        price.textContent = candle.dataset.price;
+        time.textContent = candle.dataset.time;
+        selectedPrice.textContent = candle.dataset.price;
+        selectedPrice.style.setProperty("--selected-y", candle.dataset.y + "px");
+        candle.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      }
+
+      function setSpacing(nextSpacing, anchorX = scroll.clientWidth / 2) {
+        const previous = spacing;
+        spacing = Math.min(58, Math.max(18, nextSpacing));
+        const before = scroll.scrollLeft + anchorX;
+        track.style.setProperty("--spacing", spacing + "px");
+        chart.style.setProperty("--spacing", spacing + "px");
+        scroll.scrollLeft = (before / previous) * spacing - anchorX;
+      }
+
+      function nearestCandle(clientX) {
+        const rect = scroll.getBoundingClientRect();
+        const x = clientX - rect.left + scroll.scrollLeft;
+        const index = Math.round((x - 64) / spacing);
+        return chart.querySelector('.candle[data-index="' + index + '"]');
+      }
+
+      function updateCursor(event) {
+        const rect = chart.getBoundingClientRect();
+        const y = Math.min(rect.height - 32, Math.max(18, event.clientY - rect.top));
+        chart.classList.add("is-tracking");
+        chart.style.setProperty("--mx", (event.clientX - rect.left) + "px");
+        chart.style.setProperty("--my", y + "px");
+        const candle = nearestCandle(event.clientX);
+        if (candle) {
+          cursorPrice.textContent = candle.dataset.price;
+          cursorTime.textContent = candle.dataset.time;
+        }
+      }
+
+      const initial = chart.querySelector('.candle[aria-pressed="true"]');
+      if (initial) selectCandle(initial);
+
+      chart.querySelectorAll(".candle").forEach((candle) => {
+        candle.addEventListener("click", () => selectCandle(candle));
+      });
+
+      chart.addEventListener("pointermove", updateCursor);
+      chart.addEventListener("pointerleave", () => chart.classList.remove("is-tracking"));
+
+      let dragStart = null;
+      scroll.addEventListener("pointerdown", (event) => {
+        if (event.target.closest(".candle")) return;
+        dragStart = { x: event.clientX, left: scroll.scrollLeft };
+        scroll.classList.add("is-dragging");
+        scroll.setPointerCapture(event.pointerId);
+      });
+      scroll.addEventListener("pointermove", (event) => {
+        if (!dragStart) return;
+        scroll.scrollLeft = dragStart.left - (event.clientX - dragStart.x);
+      });
+      scroll.addEventListener("pointerup", () => { dragStart = null; scroll.classList.remove("is-dragging"); });
+      scroll.addEventListener("pointercancel", () => { dragStart = null; scroll.classList.remove("is-dragging"); });
+      scroll.addEventListener("wheel", (event) => {
+        const rect = scroll.getBoundingClientRect();
+        const anchorX = event.clientX - rect.left;
+        event.preventDefault();
+        if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
+          scroll.scrollLeft += event.deltaX;
+          return;
+        }
+        setSpacing(spacing + (event.deltaY < 0 ? 3 : -3), anchorX);
+        updateCursor(event);
+      }, { passive: false });
+    });
+
+    document.querySelectorAll(".chat-compose").forEach((form) => {
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const input = form.querySelector("input");
+        if (!input.value.trim()) return;
+        const row = document.createElement("div");
+        row.className = "chat-row";
+        row.innerHTML = '<span class="pfp-avatar" style="--pfp-bg:#e2f2ff;--pfp-head:#f2ff00;--pfp-eye:#fff;--pfp-pupil:#171717;"><svg aria-hidden="true" viewBox="-8 -8 207 192"><path class="head" d="M59.437 16.8641L59.6136 16.8833C60.1503 17.2084 74.1963 48.7976 75.6525 52.0669C76.405 50.7974 77.8333 48.9575 78.7469 47.7156L84.7027 39.6816C92.1044 29.6271 99.6254 19.6582 107.264 9.77699C107.284 11.0117 107.851 13.2087 108.138 14.503L109.624 21.3027C111.294 29.0319 113.005 36.7519 114.757 44.463C115.722 48.6355 117.303 54.5316 117.991 58.5907C128.049 50.7305 138.065 43.0497 148.659 35.9003C150.523 34.6426 154.292 32.6597 155.741 31.182C155.346 35.3428 154.687 39.7766 154.169 43.951L151.24 67.3845L149.928 77.9131C149.759 79.292 149.508 82.1954 149.18 83.4158C150.759 83.7792 153.371 84.0282 155.099 84.2533L163.789 85.4468C169.376 86.1838 175.196 87.2531 180.814 87.6237C179.634 88.895 178.173 90.172 176.942 91.4739L162.377 106.971C160.137 109.346 157.241 112.228 155.182 114.68C158.16 116.196 163.211 119.378 165.927 120.459C163.223 123.694 160.433 125.482 156.963 127.78C154.431 129.549 149.904 131.961 147.1 133.422C150.033 138.34 152.523 143.647 155.715 148.466C156.859 150.194 158.141 152.302 159.088 154.127C152.733 154.516 146.381 154.96 140.034 155.462C128.144 156.398 116.809 157.8 105.077 159.929C95.1306 161.734 86.0722 164.276 75.8861 163.023C71.1161 162.435 68.2366 162.301 63.4355 160.87C60.6148 160.053 57.8756 158.987 55.2511 157.684C52.0013 156.048 48.9557 154.054 45.6096 152.508C44.1765 151.753 42.5021 151.293 41.0688 150.57C35.2304 147.626 29.1449 145.139 23.2513 142.328C25.1141 138.666 28.1307 132.347 29.5388 128.571C25.8871 125.75 21.6945 123.242 18.5859 119.719C16.8197 117.717 15.103 114.931 13.6849 112.66C15.2693 112.411 16.8338 112.048 18.3659 111.575C21.9343 110.459 24.8732 108.869 26.6616 105.507C26.6091 103.314 25.6714 100.01 25.1188 97.8506C24.4584 95.2758 23.8146 92.6971 23.1876 90.1142C21.2759 82.3357 19.5408 74.5155 17.9835 66.6593C23.3343 67.9093 30.5835 68.7235 36.15 69.7167C39.1237 61.6655 41.9967 53.6805 45.1813 45.7059C49.1804 35.691 53.1983 25.7988 59.437 16.8641Z"/><path class="eye-base" d="M116.824 118.248C117.376 118.053 117.873 117.882 118.34 117.73C120.304 117.09 121.733 116.794 124.438 116.558C125.979 118.585 127.391 121.668 128.002 124.155C129.262 129.278 128.44 134.692 125.717 139.21C121.634 145.892 114.777 148.229 107.298 148.894C104.178 149.173 99.8849 149.683 97.0987 147.974C96.3571 142.885 96.5666 140.151 98.1028 135.52C98.1563 135.358 98.2107 135.199 98.2659 135.04C101.447 125.924 107.605 121.505 116.824 118.248Z"/><path class="eye-base" d="M41.858 115.567C43.8504 115.03 46.3697 115.432 48.9166 116.27C51.2558 117.039 53.6184 118.176 55.6176 119.289C61.1639 122.378 65.3208 128.322 67.8717 133.537C69.7633 137.404 70.7718 140.871 70.8086 142.475C70.8546 144.477 69.5019 147.434 69.5019 147.434C69.5019 147.434 66.7027 150.577 63.8486 150.313C56.8526 149.666 50.9896 144.631 46.8457 139.675C42.1601 134.072 38.9642 127.118 39.8106 119.652C39.9732 116.535 40.7265 115.835 41.858 115.567Z"/><path class="pupil" d="M108.85 144.934C115.717 145.496 121.844 139.093 122.536 130.633C122.956 125.489 121.27 120.769 118.34 117.733C117.873 117.885 117.376 118.057 116.824 118.251C107.605 121.508 101.447 125.927 98.2658 135.043C99.7926 140.493 103.823 144.523 108.85 144.934Z"/><path class="pupil" d="M48.9162 116.266C51.2554 117.036 53.618 118.172 55.6172 119.286C61.1635 122.375 65.3204 128.318 67.8712 133.533C68.0715 138.38 66.5479 142.259 63.5396 143.434C58.93 145.235 52.5801 140.004 49.3568 131.752C47.0023 125.724 46.9673 119.75 48.9162 116.266Z"/></svg></span><div><strong>You</strong><span class="message-text"></span></div><time class="chat-time">now</time>';
+        row.querySelector(".message-text").textContent = input.value.trim();
+        form.previousElementSibling.prepend(row);
+        input.value = "";
+      });
+    });
+  </script>
+</body>
+</html>
