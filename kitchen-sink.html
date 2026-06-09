@@ -269,8 +269,8 @@
     .hudi-slider-control { --slider-percent: 40%; position: relative; display: block; height: 34px; }
     .hudi-slider output { display: inline-grid; height: 16px; min-width: 36px; overflow: hidden; color: var(--dark-grey); font-family: var(--ocr); font-size: 12px; line-height: 16px; text-align: right; }
     .hudi-slider output span { display: block; will-change: transform, opacity; }
-    .hudi-slider output.is-up span { animation: hudi-leverage-roll-up 180ms ease-out; }
-    .hudi-slider output.is-down span { animation: hudi-leverage-roll-down 180ms ease-out; }
+    .hudi-slider output.is-up span, .leverage-panel output.is-up span { animation: hudi-leverage-roll-up 180ms ease-out; }
+    .hudi-slider output.is-down span, .leverage-panel output.is-down span { animation: hudi-leverage-roll-down 180ms ease-out; }
     @keyframes hudi-leverage-roll-up { from { opacity: .35; transform: translateY(100%); } to { opacity: 1; transform: translateY(0); } }
     @keyframes hudi-leverage-roll-down { from { opacity: .35; transform: translateY(-100%); } to { opacity: 1; transform: translateY(0); } }
     .hudi-slider input[type="range"] { appearance: none; position: absolute; inset: 0; z-index: 3; width: 100%; height: 34px; background: transparent; cursor: pointer; opacity: 0; }
@@ -282,24 +282,24 @@
     .hudi-slider input::-webkit-slider-runnable-track { height: 34px; background: transparent; }
     .hudi-slider input::-webkit-slider-thumb { appearance: none; width: 34px; height: 34px; }
     .hudi-slider input::-moz-range-thumb { width: 34px; height: 34px; border: 0; background: transparent; }
-    .leverage-panel { --lev-fill: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%); width: min(760px, 100%); margin: 0 auto; padding: 34px 32px 28px; display: grid; gap: 22px; }
+    .leverage-panel { --lev-fill: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%); width: min(420px, 100%); margin: 0 auto; padding: 18px 16px 16px; display: grid; gap: 12px; }
     .leverage-panel.is-short { --lev-fill: linear-gradient(90deg, #ffe4fe 0%, #fd01ba 100%); }
-    .leverage-panel__top { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; }
-    .leverage-panel__title { color: var(--dark-grey); font-family: var(--ocr); font-size: 22px; letter-spacing: .12em; text-transform: uppercase; }
+    .leverage-panel__top { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+    .leverage-panel__title { color: var(--dark-grey); font-family: var(--ocr); font-size: 18px; letter-spacing: .12em; text-transform: uppercase; }
     .leverage-panel__actions { display: inline-flex; align-items: center; gap: 12px; }
     .leverage-theme { display: inline-flex; gap: 6px; }
     .leverage-theme button { min-width: 54px; height: 28px; padding: 2px 10px 0; border: 2px solid var(--outline-blue); border-radius: 999px; background: #fff; color: var(--dark-grey); cursor: pointer; font-family: var(--ocr); font-size: 10px; }
     .leverage-theme button[aria-pressed="true"] { border-color: var(--select-blue); }
     .leverage-panel .hudi-slider { width: 100%; }
-    .leverage-panel .hudi-slider-row { grid-template-columns: minmax(0, 1fr) 96px; gap: 26px; align-items: start; }
-    .leverage-panel .hudi-slider-control { height: 60px; }
-    .leverage-panel .hudi-slider input[type="range"] { height: 60px; }
-    .leverage-panel .hudi-slider-visual { height: 24px; border-width: 7px; border-radius: 999px; background: var(--lev-fill) 0 0 / var(--slider-percent) 100% no-repeat, #fff; }
+    .leverage-panel .hudi-slider-row { display: block; }
+    .leverage-panel .hudi-slider-control { height: 34px; }
+    .leverage-panel .hudi-slider input[type="range"] { height: 34px; }
+    .leverage-panel .hudi-slider-visual { height: 14px; border-width: 4px; border-radius: 999px; background: var(--lev-fill) 0 0 / var(--slider-percent) 100% no-repeat, #fff; }
     .leverage-panel .hudi-slider.short .hudi-slider-visual { background: var(--lev-fill) 0 0 / var(--slider-percent) 100% no-repeat, #fff; }
-    .leverage-panel .hudi-slider-puck { width: 52px; height: 52px; border-width: 7px; box-shadow: inset 0 -6px 22px rgba(67,88,109,.25); }
-    .leverage-panel .hudi-slider-markers { margin-top: -4px; color: #a6a6a6; font-size: 20px; }
+    .leverage-panel .hudi-slider-puck { width: 26px; height: 26px; border-width: 4px; box-shadow: inset 0 -3px 16px rgba(67,88,109,.28); }
+    .leverage-panel .hudi-slider-markers { margin-top: 10px; color: #a6a6a6; font-size: 13px; }
     .leverage-panel .hudi-slider-markers span[aria-current="true"] { color: var(--dark-grey); }
-    .leverage-panel .hudi-slider output { display: inline-grid; place-items: center; width: 86px; height: 72px; min-width: 86px; border: 7px solid var(--outline-blue); border-radius: 999px; background: #fff; color: #28b979; font-size: 26px; line-height: 1; text-align: center; }
+    .leverage-panel output { display: inline-grid; place-items: center; width: 58px; height: 38px; min-width: 58px; border: 4px solid var(--outline-blue); border-radius: 999px; background: #fff; color: #28b979; font-family: var(--ocr); font-size: 19px; line-height: 1; text-align: center; overflow: hidden; }
 
     .hudi-pill {
       min-height: 30px;
@@ -472,17 +472,10 @@
     .hudi-nav-pill::after { background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: inherit; content: ""; filter: blur(1.43px); height: 18%; left: 9%; opacity: .9; pointer-events: none; position: absolute; right: 9%; top: -.5px; }
     .hudi-nav-pill:hover { filter: brightness(1.04) saturate(1.04); transform: translateY(-1px); }
     .hudi-nav-pill.is-teleporting { animation: none !important; transition: none !important; }
-    .hudi-nav-pill[data-slot="0"] { left: 274px; top: 148px; animation: hudi-nav-float-a 4.2s ease-in-out infinite alternate; }
-    .hudi-nav-pill[data-slot="1"] { left: 172px; top: 188px; animation: hudi-nav-float-b 3.8s ease-in-out infinite alternate; }
+    .hudi-nav-pill[data-slot="0"] { left: 274px; top: 148px; }
+    .hudi-nav-pill[data-slot="1"] { left: 172px; top: 188px; }
     .hudi-nav-menu.is-switching .hudi-nav-selected { animation: hudi-nav-selected-slot 420ms cubic-bezier(.2,.85,.2,1); }
-    .hudi-nav-menu.is-switching .hudi-nav-pill { animation-duration: 560ms; }
-    .hudi-nav-menu.is-switching .hudi-nav-pill[data-slot="0"] { animation-name: hudi-nav-orbit-a; }
-    .hudi-nav-menu.is-switching .hudi-nav-pill[data-slot="1"] { animation-name: hudi-nav-orbit-b; }
     @keyframes hudi-nav-selected-slot { from { translate: var(--selected-from-x, -22px) var(--selected-from-y, 54px); scale: .86; opacity: .72; } to { translate: 0 0; scale: 1; opacity: 1; } }
-    @keyframes hudi-nav-orbit-a { 0% { translate: -76px 48px; } 55% { translate: -26px -18px; } 100% { translate: -2px 1px; } }
-    @keyframes hudi-nav-orbit-b { 0% { translate: 98px -38px; } 55% { translate: 34px 18px; } 100% { translate: 2px -1px; } }
-    @keyframes hudi-nav-float-a { from { translate: -2px 1px; } to { translate: 3px -2px; } }
-    @keyframes hudi-nav-float-b { from { translate: 2px -1px; } to { translate: -2px 3px; } }
 
     .chart-demo { --mx: 50%; --my: 50%; --spacing: 34px; position: relative; width: 100%; min-width: 0; height: 520px; border: 6px solid var(--outline-blue); border-radius: 36px; background: #fff; cursor: crosshair; overflow: hidden; }
     .chart-toolbar { display: none; }
@@ -603,7 +596,7 @@
     <section class="section" id="actions">
       <div class="section-title"><h2>Actions</h2><span>buttons / sliders / pressed feedback</span></div>
       <div class="grid">
-        <article class="card span-12">
+        <article class="card span-6">
           <div class="card-head"><div><h3>Trade buttons</h3><p>Clickable long, short, and confirm buttons with hover and pressed states.</p></div><button class="copy-css" data-copy="Trade buttons">Copy current CSS</button></div>
           <div class="demo column">
             <div class="trade-button-row">
@@ -646,20 +639,21 @@
           <details class="reference"><summary>reference PNGs</summary><div class="refs"><img src="Sections/Long%20%2B%20Short%20Toggle/Toggle-Preview.png" alt=""><img src="Sections/Long%20%2B%20Short%20Toggle/pill-bed-preview.png" alt=""><img src="Sections/Long%20%2B%20Short%20Toggle/toggle-stroke-preview.png" alt=""></div></details>
         </article>
 
-        <article class="card span-12">
+        <article class="card span-6">
           <div class="card-head"><div><h3>Leverage slider</h3><p>Large leverage control with long and short fill variants.</p></div><button class="copy-css" data-copy="Leverage slider">Copy CSS</button></div>
           <div class="demo">
             <div class="leverage-panel is-short" data-leverage-panel>
               <div class="leverage-panel__top">
                 <span class="leverage-panel__title">LEVERAGE</span>
                 <span class="leverage-panel__actions">
+                  <output data-last-index="2" aria-live="polite"><span>5x</span></output>
                   <span class="leverage-theme" role="group" aria-label="Leverage side">
                     <button type="button" data-leverage-theme="long" aria-pressed="false">long</button>
                     <button type="button" data-leverage-theme="short" aria-pressed="true">short</button>
                   </span>
                 </span>
               </div>
-              <label class="hudi-slider short"><span class="hudi-slider-row"><span><span class="hudi-slider-control" style="--slider-percent: 40%"><span class="hudi-slider-visual" aria-hidden="true"></span><span class="hudi-slider-puck" aria-hidden="true"></span><input type="range" min="0" max="5" step="1" value="2" data-leverage-values="1,2,5,10,15,20"></span><span class="hudi-slider-markers" aria-hidden="true"><span>x1</span><span>x2</span><span aria-current="true">x5</span><span>x10</span><span>x15</span><span>x20</span></span></span><output data-last-index="2" aria-live="polite"><span>5x</span></output></span></label>
+              <label class="hudi-slider short"><span class="hudi-slider-row"><span><span class="hudi-slider-control" style="--slider-percent: 40%"><span class="hudi-slider-visual" aria-hidden="true"></span><span class="hudi-slider-puck" aria-hidden="true"></span><input type="range" min="0" max="5" step="1" value="2" data-leverage-values="1,2,5,10,15,20"></span><span class="hudi-slider-markers" aria-hidden="true"><span>1x</span><span>2x</span><span aria-current="true">5x</span><span>10x</span><span>15x</span><span>20x</span></span></span></span></label>
             </div>
           </div>
           <details class="reference"><summary>reference PNGs</summary><div class="refs"><img src="Slider/Long%20Leverage%20Preview.png" alt=""><img src="Slider/Short%20leverage%20preview.png" alt=""></div></details>
@@ -1318,46 +1312,17 @@
 .hudi-nav-pill[data-slot="0"] {
   left: 274px;
   top: 148px;
-  animation: hudi-nav-float-a 4.2s ease-in-out infinite alternate;
 }
 .hudi-nav-pill[data-slot="1"] {
   left: 172px;
   top: 188px;
-  animation: hudi-nav-float-b 3.8s ease-in-out infinite alternate;
 }
 .hudi-nav-menu.is-switching .hudi-nav-selected {
   animation: hudi-nav-selected-slot 420ms cubic-bezier(.2,.85,.2,1);
 }
-.hudi-nav-menu.is-switching .hudi-nav-pill {
-  animation-duration: 560ms;
-}
-.hudi-nav-menu.is-switching .hudi-nav-pill[data-slot="0"] {
-  animation-name: hudi-nav-orbit-a;
-}
-.hudi-nav-menu.is-switching .hudi-nav-pill[data-slot="1"] {
-  animation-name: hudi-nav-orbit-b;
-}
 @keyframes hudi-nav-selected-slot {
   from { translate: var(--selected-from-x, -22px) var(--selected-from-y, 54px); scale: .86; opacity: .72; }
   to { translate: 0 0; scale: 1; opacity: 1; }
-}
-@keyframes hudi-nav-orbit-a {
-  0% { translate: -76px 48px; }
-  55% { translate: -26px -18px; }
-  100% { translate: -2px 1px; }
-}
-@keyframes hudi-nav-orbit-b {
-  0% { translate: 98px -38px; }
-  55% { translate: 34px 18px; }
-  100% { translate: 2px -1px; }
-}
-@keyframes hudi-nav-float-a {
-  from { translate: -2px 1px; }
-  to { translate: 3px -2px; }
-}
-@keyframes hudi-nav-float-b {
-  from { translate: 2px -1px; }
-  to { translate: -2px 3px; }
 }`;
     }
 
@@ -1476,17 +1441,14 @@
   width: 100%;
 }
 .hudi-slider-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 96px;
-  gap: 26px;
-  align-items: start;
+  display: block;
   width: 100%;
 }
 .hudi-slider-control {
   --slider-percent: 40%;
   position: relative;
   display: block;
-  height: 60px;
+  height: 34px;
 }
 .hudi-slider input[type="range"] {
   appearance: none;
@@ -1494,32 +1456,32 @@
   inset: 0;
   z-index: 3;
   width: 100%;
-  height: 60px;
+  height: 34px;
   background: transparent;
   cursor: pointer;
   opacity: 0;
 }
 .leverage-panel {
   --lev-fill: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%);
-  width: min(760px, 100%);
+  width: min(420px, 100%);
   margin: 0 auto;
-  padding: 34px 32px 28px;
+  padding: 18px 16px 16px;
   display: grid;
-  gap: 22px;
+  gap: 12px;
 }
 .leverage-panel.is-short {
   --lev-fill: linear-gradient(90deg, #ffe4fe 0%, #fd01ba 100%);
 }
 .leverage-panel .hudi-slider input[type="range"] {
-  height: 60px;
+  height: 34px;
 }
 .hudi-slider-visual {
   position: absolute;
   left: 0;
   right: 0;
   top: 50%;
-  height: 24px;
-  border: 7px solid #e2f2ff;
+  height: 14px;
+  border: 4px solid #e2f2ff;
   border-radius: 999px;
   background: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%) 0 0 / var(--slider-percent) 100% no-repeat, #fff;
   transform: translateY(-50%);
@@ -1533,16 +1495,16 @@
   position: absolute;
   left: var(--slider-percent);
   top: 50%;
-  width: 52px;
-  height: 52px;
+  width: 26px;
+  height: 26px;
   box-sizing: content-box;
-  border: 7px solid #e2f2ff;
+  border: 4px solid #e2f2ff;
   border-radius: 50%;
   background:
     radial-gradient(36.34% 18.06% at 50% 1%, #fff 0%, rgba(255,255,255,.14) 100%),
     radial-gradient(64% 46% at 50% 20%, rgba(255,255,255,.96) 0 50%, rgba(255,255,255,.58) 62%, transparent 63%),
     linear-gradient(180deg, #f5faff 0%, #d9e4ec 42%, #b8c8d4 100%);
-  box-shadow: inset 0 -6px 22px rgba(67,88,109,.25);
+  box-shadow: inset 0 -3px 16px rgba(67,88,109,.28);
   transform: translate(-50%, -50%);
   transition: left 220ms cubic-bezier(.2,.8,.2,1);
   pointer-events: none;
@@ -1550,10 +1512,10 @@
 .hudi-slider-markers {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  margin-top: -4px;
+  margin-top: 10px;
   color: #a6a6a6;
   font-family: "OCRA Fixed", ui-monospace, monospace;
-  font-size: 20px;
+  font-size: 13px;
   line-height: 1;
 }
 .hudi-slider-markers span {
@@ -1562,18 +1524,18 @@
 .hudi-slider-markers span[aria-current="true"] {
   color: #71809e;
 }
-.hudi-slider output {
+.leverage-panel output {
   display: inline-grid;
   place-items: center;
-  width: 86px;
-  height: 72px;
-  min-width: 86px;
-  border: 7px solid #e2f2ff;
+  width: 58px;
+  height: 38px;
+  min-width: 58px;
+  border: 4px solid #e2f2ff;
   border-radius: 999px;
   background: #fff;
   color: #28b979;
   font-family: "OCRA Fixed", ui-monospace, monospace;
-  font-size: 26px;
+  font-size: 19px;
   line-height: 1;
   text-align: center;
   overflow: hidden;
@@ -1883,7 +1845,7 @@
         updateLeverageSlider(event.target);
         const values = (event.target.dataset.leverageValues || "").split(",").filter(Boolean).map(Number);
         const index = Number(event.target.value);
-        const output = event.target.closest(".hudi-slider-row")?.querySelector("output");
+        const output = event.target.closest("[data-leverage-panel]")?.querySelector("output") || event.target.closest(".hudi-slider-row")?.querySelector("output");
         if (output) {
           const previous = Number(output.dataset.lastIndex ?? index);
           output.dataset.lastIndex = String(index);
