@@ -1554,14 +1554,22 @@
 
     function updatePillTopContour(svg) {
       if (!svg) return;
+      const owner = svg.closest(".hudi-trade-button, .hudi-nav-pill, .hudi-side-toggle__pill");
       const renderedWidth = svg.getBoundingClientRect().width;
-      const width = renderedWidth > 0 ? Math.max(80, renderedWidth) : 151;
+      const ownerWidth = owner?.getBoundingClientRect().width || 0;
+      const width = renderedWidth > 0 ? renderedWidth : Math.max(80, ownerWidth - 7.5, 151);
       svg.setAttribute("viewBox", "0 0 " + formatPathNumber(width) + " 35");
       svg.querySelector("path")?.setAttribute("d", buildPillTopContourPath(width));
     }
 
     function updatePillTopContours(root = document) {
       root.querySelectorAll(".pill-top-contour").forEach(updatePillTopContour);
+    }
+
+    function queuePillTopContours(root = document) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => updatePillTopContours(root));
+      });
     }
 
     function updateOrbPreview() {
@@ -1606,9 +1614,11 @@
       buttonControls.querySelector("[data-button-width-output]").textContent = state.width + "px";
       snippets["Trade buttons"] = buildButtonCss(state);
       updatePillTopContour(buttonPreview.querySelector(".pill-top-contour"));
+      queuePillTopContours(buttonPreview);
     }
     updateButtonPreview();
     updatePillTopContours();
+    queuePillTopContours();
 
     function updateHudiNav(menu, selected = menu?.dataset.selected || "markets", animate = false, sourceButton = null) {
       if (!menu) return;
@@ -1655,7 +1665,7 @@
         button.querySelector(".pill-label")?.replaceChildren(page);
         button.setAttribute("aria-label", page);
       });
-      updatePillTopContours(menu);
+      queuePillTopContours(menu);
     }
     document.querySelectorAll("[data-hudi-nav]").forEach((menu) => updateHudiNav(menu));
 
@@ -1691,9 +1701,10 @@
 
     document.querySelectorAll(".time-selector").forEach(updateTimeSelector);
     document.fonts?.ready.then(() => document.querySelectorAll(".time-selector").forEach(updateTimeSelector));
+    document.fonts?.ready.then(() => queuePillTopContours());
     window.addEventListener("resize", () => {
       document.querySelectorAll(".time-selector").forEach(updateTimeSelector);
-      updatePillTopContours();
+      queuePillTopContours();
     });
 
     function updateLeverageSlider(input) {
