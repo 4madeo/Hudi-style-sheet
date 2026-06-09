@@ -404,7 +404,7 @@
     .chat-tabs button[aria-pressed="true"] { border-color: var(--select-blue); color: var(--dark-grey); }
     .chat-list { max-height: 370px; overflow: auto; }
     .chat-row { display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; min-height: 64px; padding: 9px 14px; border-bottom: 1px solid rgba(0,0,0,.05); }
-    .pfp-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--pfp-bg, #dff4ff); border: 1px solid rgba(113,128,158,.2); display: grid; place-items: center; overflow: hidden; }
+    .pfp-avatar { width: 32px; height: 32px; border-radius: 0; background: transparent; border: 0; display: grid; place-items: center; overflow: visible; }
     .pfp-avatar svg { width: 26px; height: 26px; display: block; }
     .pfp-avatar .head { fill: var(--pfp-head, #f2ff00); stroke: var(--pfp-stroke, #171717); stroke-linejoin: miter; stroke-miterlimit: 2.6; stroke-width: 3.6; }
     .pfp-avatar .eye-base { fill: var(--pfp-eye, #ffffff); }
@@ -472,6 +472,21 @@
     .hudi-nav-pill[data-slot="1"] { left: 172px; top: 188px; }
     .hudi-nav-menu.is-switching .hudi-nav-selected { animation: hudi-nav-selected-slot 420ms cubic-bezier(.2,.85,.2,1); }
     @keyframes hudi-nav-selected-slot { from { translate: var(--selected-from-x, -22px) var(--selected-from-y, 54px); scale: .86; opacity: .72; } to { translate: 0 0; scale: 1; opacity: 1; } }
+    .hudi-linear-nav-menu { --orb-size: 150px; position: relative; width: min(860px, 100%); min-height: 208px; margin: 0 auto; }
+    .hudi-linear-nav-menu .hudi-nav-bar { position: absolute; left: 56px; right: 22px; top: 78px; z-index: 0; }
+    .hudi-linear-nav-menu .hudi-logo-orb { position: absolute; left: 24px; top: 20px; z-index: 3; width: var(--orb-size); }
+    .hudi-linear-nav-items { position: absolute; left: 255px; right: 34px; top: 91px; z-index: 4; display: flex; align-items: center; gap: 34px; }
+    .hudi-linear-nav-button.hudi-trade-button { --pill-bg: #28c4f5; --pill-inner-shadow: rgba(0,98,158,.34); --pill-label: #fff; width: max-content; min-width: 0; height: 42px; padding: 0 34px; border: 4px solid var(--outline-blue-2); border-radius: 23px; color: #fff; font-family: var(--sans); font-size: 25px; letter-spacing: 0; transition: transform 180ms ease, filter 160ms ease, box-shadow 180ms ease, background-color 180ms ease; }
+    .hudi-linear-nav-button.hudi-trade-button .pill-label { background: none; color: #fff; text-shadow: none; top: -1px; -webkit-text-fill-color: #fff; }
+    .hudi-linear-nav-button[aria-pressed="true"] { background: #eef2ff; border: 0; color: #71809e; box-shadow: inset 0 4px 13px rgba(0,0,0,.28), inset 0 4px 50px rgba(0,0,0,.16); transform: scale(.94); }
+    .hudi-linear-nav-button[aria-pressed="true"]::before { content: ""; position: absolute; left: 0; right: 0; top: -.5px; height: 69%; border-radius: inherit; background: linear-gradient(.24deg, rgba(255,255,255,.16) 20.46%, rgba(255,255,255,.88) 99.78%); opacity: .74; pointer-events: none; z-index: 1; }
+    .hudi-linear-nav-button[aria-pressed="true"]::after { background: linear-gradient(360deg, rgba(255,255,255,.42) -14.15%, rgba(255,255,255,.86) 5.5%, rgba(255,255,255,.26) 38%); border-radius: inherit; bottom: 0; content: ""; filter: blur(1.4px); height: 66%; left: 1%; opacity: 1; pointer-events: none; position: absolute; right: 1%; top: auto; z-index: 1; }
+    .hudi-linear-nav-button[aria-pressed="true"] .pill-top-contour,
+    .hudi-linear-nav-button[aria-pressed="true"] .pill-bottom-highlight,
+    .hudi-linear-nav-button[aria-pressed="true"] .pill-shine { opacity: 0; }
+    .hudi-linear-nav-button[aria-pressed="true"] .pill-label { color: #71809e; z-index: 2; -webkit-text-fill-color: #71809e; }
+    .hudi-linear-nav-button.is-compressing { animation: hudi-linear-nav-compress 220ms cubic-bezier(.2,.8,.2,1); }
+    @keyframes hudi-linear-nav-compress { 0% { transform: scale(1); } 62% { transform: scale(.88); } 100% { transform: scale(.94); } }
 
     .chart-demo { --mx: 50%; --my: 50%; --spacing: 34px; position: relative; width: 100%; min-width: 0; height: 520px; border: 6px solid var(--outline-blue); border-radius: 36px; background: #fff; cursor: crosshair; overflow: hidden; }
     .chart-toolbar { display: none; }
@@ -530,7 +545,7 @@
       .button-maker-demo { grid-template-columns: 1fr; }
       .orb-maker-demo { grid-template-columns: 1fr; }
       .hudi-logo-demo { grid-template-columns: 1fr; }
-      .hudi-nav-menu { transform: scale(.82); transform-origin: left top; width: 122%; min-height: 230px; }
+      .hudi-nav-menu, .hudi-linear-nav-menu { transform: scale(.82); transform-origin: left top; width: 122%; min-height: 230px; }
       .hudi-top-bar-sample { width: 100%; }
       h1 { font-size: 34px; }
     }
@@ -760,7 +775,7 @@
     </section>
 
     <section class="section" id="navigation">
-      <div class="section-title"><h2>Navigation</h2><span>hudi orb / radial nav</span></div>
+      <div class="section-title"><h2>Navigation</h2><span>hudi orb / radial and linear nav</span></div>
       <div class="grid">
         <article class="card span-5">
           <div class="card-head"><div><h3>Hudi orb</h3><p>Logo orb generator using the stock orb material.</p></div><button class="copy-css" data-copy="Hudi orb">Copy CSS</button></div>
@@ -781,7 +796,7 @@
           </div>
         </article>
         <article class="card span-7">
-          <div class="card-head"><div><h3>Hudi nav bar</h3><p>Radial top navigation with the selected item seated into the bar.</p></div><button class="copy-css" data-copy="Hudi nav bar">Copy CSS</button></div>
+          <div class="card-head"><div><h3>Hudi nav bar</h3><p>Radial and linear top navigation with selected items seated into the bar.</p></div><button class="copy-css" data-copy="Hudi nav bar">Copy CSS</button></div>
           <div class="demo hudi-nav-demo">
             <div class="hudi-nav-menu" data-hudi-nav data-selected="markets">
               <div class="hudi-nav-bar"></div>
@@ -794,6 +809,20 @@
               <div class="hudi-nav-selected"><span>markets</span></div>
               <button class="hudi-trade-button hudi-nav-pill is-auto-white" type="button" data-nav-option="vault" data-slot="0"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">vault</span></button>
               <button class="hudi-trade-button hudi-nav-pill is-auto-white" type="button" data-nav-option="leaderboard" data-slot="1"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">leaderboard</span></button>
+            </div>
+            <div class="hudi-linear-nav-menu" data-hudi-linear-nav>
+              <div class="hudi-nav-bar"></div>
+              <div class="hudi-logo-orb" style="--orb-base:#24d0ff;--orb-sheen:#00bfff;--orb-shadow:rgba(0,50,157,.4);--logo-inner:#93c0ff;">
+                <svg class="hudi-logo-mark" width="47" height="49" viewBox="0 0 47 49" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <g filter="url(#hudi-logo-filter-linear)"><path d="M27.1405 48.0754C24.2967 48.0778 22.6508 45.9399 22.641 43.2398L22.5569 26.5795C22.5466 24.0301 20.9258 22.4611 18.4584 22.3485C15.1435 22.1982 21.5146 22.2441 18.1987 22.3269C15.5118 22.3984 13.9658 24.3797 13.9074 27.0385C13.7827 32.6096 13.9316 38.1338 13.6907 43.7113C13.578 46.2465 11.6705 48.0207 9.27112 48.0043L4.45862 47.9715C1.7311 47.9469 -0.0108297 45.9046 0.000347114 43.0949L0.160873 4.38224C0.170878 1.86718 2.2011 0.175674 4.437 0.0543588C6.11221 -0.0349212 7.62286 -0.00149948 9.25643 0.0666769C11.7717 0.165773 13.7002 1.72225 13.8331 4.40236C13.9218 6.16397 13.8599 9.76153 14.1877 11.5721C14.5423 13.5061 16.0413 14.7387 18.1468 14.7608L34.9218 14.9852C37.2186 15.0149 38.8885 16.2551 39.6939 18.2868C41.183 22.0346 46.0871 21.3893 46.0696 25.7752L45.9972 43.9769C45.9876 46.396 43.9299 48.1148 41.7286 48.1197L27.1405 48.0823L27.1405 48.0754Z" fill="url(#hudi-logo-gradient-linear)"/></g>
+                  <defs><filter id="hudi-logo-filter-linear" x="0" y="0" width="46.0693" height="48.1191" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset/><feGaussianBlur stdDeviation="1.1"/><feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix type="matrix" values="0 0 0 0 0.574688 0 0 0 0 0.751902 0 0 0 0 1 0 0 0 1 0"/><feBlend mode="normal" in2="shape" result="effect1_innerShadow_121_362"/></filter><radialGradient id="hudi-logo-gradient-linear" cx="0" cy="0" r="1" gradientTransform="matrix(-0.000709991 82.9873 -82.8097 0.000702805 22.9657 -7.59041)" gradientUnits="userSpaceOnUse"><stop stop-color="white"/><stop offset="0.379952" stop-color="white"/><stop offset="0.681343" stop-color="#F2FBFF"/></radialGradient></defs>
+                </svg>
+              </div>
+              <div class="hudi-linear-nav-items">
+                <button class="hudi-trade-button hudi-linear-nav-button is-auto-white" type="button" data-linear-nav-option="market" aria-pressed="true"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">market</span></button>
+                <button class="hudi-trade-button hudi-linear-nav-button is-auto-white" type="button" data-linear-nav-option="vault" aria-pressed="false"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">vault</span></button>
+                <button class="hudi-trade-button hudi-linear-nav-button is-auto-white" type="button" data-linear-nav-option="leaderboard" aria-pressed="false"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">leaderboard</span></button>
+              </div>
             </div>
           </div>
         </article>
@@ -1095,6 +1124,7 @@
   top: ${labelTop};
   z-index: 2;
   ${buttonLabelCss(labelMode)}
+}
 }`;
     }
 
@@ -1315,6 +1345,102 @@
 @keyframes hudi-nav-selected-slot {
   from { translate: var(--selected-from-x, -22px) var(--selected-from-y, 54px); scale: .86; opacity: .72; }
   to { translate: 0 0; scale: 1; opacity: 1; }
+}
+.hudi-linear-nav-menu {
+  --orb-size: 150px;
+  position: relative;
+  width: min(860px, 100%);
+  min-height: 208px;
+}
+.hudi-linear-nav-menu .hudi-nav-bar {
+  position: absolute;
+  left: 56px;
+  right: 22px;
+  top: 78px;
+}
+.hudi-linear-nav-menu .hudi-logo-orb {
+  position: absolute;
+  left: 24px;
+  top: 20px;
+  z-index: 3;
+  width: var(--orb-size);
+}
+.hudi-linear-nav-items {
+  position: absolute;
+  left: 255px;
+  right: 34px;
+  top: 91px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 34px;
+}
+.hudi-linear-nav-button.hudi-trade-button {
+  --pill-bg: #28c4f5;
+  --pill-inner-shadow: rgba(0,98,158,.34);
+  --pill-label: #fff;
+  width: max-content;
+  min-width: 0;
+  height: 42px;
+  padding: 0 34px;
+  border: 4px solid #e2f2ff;
+  border-radius: 23px;
+  color: #fff;
+  font-family: "Syne Hudi", Syne, sans-serif;
+  font-size: 25px;
+  letter-spacing: 0;
+  transition: transform 180ms ease, filter 160ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+.hudi-linear-nav-button.hudi-trade-button .pill-label {
+  background: none;
+  color: #fff;
+  top: -1px;
+  text-shadow: none;
+  -webkit-text-fill-color: #fff;
+}
+.hudi-linear-nav-button[aria-pressed="true"] {
+  background: #eef2ff;
+  border: 0;
+  color: #71809e;
+  box-shadow: inset 0 4px 13px rgba(0,0,0,.28), inset 0 4px 50px rgba(0,0,0,.16);
+  transform: scale(.94);
+}
+.hudi-linear-nav-button[aria-pressed="true"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -.5px;
+  height: 69%;
+  border-radius: inherit;
+  background: linear-gradient(.24deg, rgba(255,255,255,.16) 20.46%, rgba(255,255,255,.88) 99.78%);
+  opacity: .74;
+  pointer-events: none;
+  z-index: 1;
+}
+.hudi-linear-nav-button[aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  left: 1%;
+  right: 1%;
+  bottom: 0;
+  height: 66%;
+  border-radius: inherit;
+  background: linear-gradient(360deg, rgba(255,255,255,.42) -14.15%, rgba(255,255,255,.86) 5.5%, rgba(255,255,255,.26) 38%);
+  filter: blur(1.4px);
+  pointer-events: none;
+  z-index: 1;
+}
+.hudi-linear-nav-button[aria-pressed="true"] .pill-top-contour,
+.hudi-linear-nav-button[aria-pressed="true"] .pill-bottom-highlight,
+.hudi-linear-nav-button[aria-pressed="true"] .pill-shine {
+  opacity: 0;
+}
+.hudi-linear-nav-button[aria-pressed="true"] .pill-label {
+  color: #71809e;
+  z-index: 2;
+  -webkit-text-fill-color: #71809e;
+}
 }`;
     }
 
@@ -1775,6 +1901,16 @@
       const navButton = event.target.closest(".hudi-nav-pill[data-nav-option]");
       if (navButton) {
         updateHudiNav(navButton.closest("[data-hudi-nav]"), navButton.dataset.navOption, true, navButton);
+      }
+
+      const linearNavButton = event.target.closest("[data-hudi-linear-nav] [data-linear-nav-option]");
+      if (linearNavButton) {
+        linearNavButton.closest("[data-hudi-linear-nav]")?.querySelectorAll("[data-linear-nav-option]").forEach((button) => {
+          button.setAttribute("aria-pressed", String(button === linearNavButton));
+          button.classList.remove("is-compressing");
+        });
+        linearNavButton.offsetHeight;
+        linearNavButton.classList.add("is-compressing");
       }
 
       const marketLimitButton = event.target.closest("[data-market-limit-selector] [data-order-type]");
