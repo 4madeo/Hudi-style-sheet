@@ -56,7 +56,7 @@
 
     .masthead {
       position: sticky;
-      top: 0;
+      top: -.5px;
       z-index: 20;
       border-bottom: 1px solid #d9dde4;
       background: linear-gradient(180deg, rgba(250,252,255,.96), rgba(250,252,255,.88));
@@ -167,7 +167,6 @@
       --pill-bg: #01fd90;
       --pill-inner-shadow: rgba(0,95,60,.34);
       --pill-label: #007b92;
-      --pill-label-shadow: rgba(255,255,255,.72);
       align-items: center;
       background: var(--pill-bg);
       height: 46px;
@@ -190,40 +189,65 @@
       transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
       will-change: transform;
     }
-    .hudi-trade-button::before { background: linear-gradient(0.24deg, rgba(255,255,255,.23) 20.46%, rgba(255,255,255,.91) 99.78%); content: ""; height: 69.4%; left: -0.33%; mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2035 347' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M178 0H1888C1966 0 2035 48 2035 126C2035 224 1953 277 1814 277H190C103 277 57 306 0 347C4 278 6 205 18 148C34 65 92 16 178 0Z'/%3E%3C/svg%3E"); mask-repeat: no-repeat; mask-size: 100% 100%; pointer-events: none; position: absolute; top: 0; width: 95%; -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2035 347' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M178 0H1888C1966 0 2035 48 2035 126C2035 224 1953 277 1814 277H190C103 277 57 306 0 347C4 278 6 205 18 148C34 65 92 16 178 0Z'/%3E%3C/svg%3E"); -webkit-mask-repeat: no-repeat; -webkit-mask-size: 100% 100%; }
-    .hudi-trade-button::after { background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: inherit; content: ""; filter: blur(1.43px); height: 18%; left: 9%; opacity: .9; pointer-events: none; position: absolute; right: 9%; top: 0; }
+    .hudi-trade-button::after { background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: inherit; content: ""; filter: blur(1.43px); height: 18%; left: 9%; opacity: .9; pointer-events: none; position: absolute; right: 9%; top: -.5px; }
+    .hudi-trade-button .pill-top-contour { height: 75.4%; left: -.5px; mix-blend-mode: screen; overflow: visible; pointer-events: none; position: absolute; top: -.5px; width: calc(100% - 7.5px); z-index: 1; }
+    .hudi-trade-button .pill-top-contour path { fill: url(#hudi-pill-top-gradient); }
     .hudi-trade-button .pill-bottom-highlight { background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%); border-radius: inherit; filter: blur(1.43px); height: 66.2%; left: 1%; pointer-events: none; position: absolute; right: 1%; top: 34%; }
-    .hudi-trade-button .pill-label { color: var(--pill-label); position: relative; text-shadow: 0 .7px 0 var(--pill-label-shadow); top: 4.8%; z-index: 2; }
+    .hudi-trade-button .pill-label { color: var(--pill-label); position: relative; text-shadow: none; top: 4.8%; z-index: 2; }
+    .hudi-trade-button.long .pill-label { background: linear-gradient(180deg, #6D8A89 0%, #334646 100%); background-clip: text; color: transparent; text-shadow: none; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hudi-trade-button.short .pill-label { color: #FFFFFF; text-shadow: none; -webkit-text-fill-color: #FFFFFF; }
     .hudi-trade-button .pill-shine { background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 34%, rgba(255,255,255,.72) 48%, rgba(255,255,255,0) 64%, transparent 100%); height: 150%; left: -80%; pointer-events: none; position: absolute; top: -25%; transform: skewX(-18deg); width: 52%; z-index: 3; }
     .hudi-trade-button.long { --pill-bg: #01fd90; --pill-inner-shadow: rgba(0,95,60,.34); }
-    .hudi-trade-button.short { --pill-bg: #ff0fc4; --pill-inner-shadow: rgba(118,0,82,.34); --pill-label: #ffffff; --pill-label-shadow: rgba(55,0,42,.35); }
-    .hudi-trade-button.confirm { --pill-bg: #e9eef5; --pill-inner-shadow: rgba(62,88,116,.28); --pill-label: #71809e; --pill-label-shadow: rgba(255,255,255,.9); border-radius: 28px; font-size: 23px; height: 56px; min-width: 241px; }
-    .hudi-trade-button.confirm .pill-label { top: -1px; }
+    .hudi-trade-button.short { --pill-bg: #ff0fc4; --pill-inner-shadow: rgba(118,0,82,.34); --pill-label: #ffffff; }
+    .hudi-trade-button.confirm { --pill-bg: #e9eef5; --pill-inner-shadow: rgba(62,88,116,.28); --pill-label: #71809e; border-radius: 28px; font-size: 23px; height: 56px; min-width: 241px; }
+    .hudi-trade-button.confirm .pill-label { background: linear-gradient(180deg, #aeb8c6 0%, #71809e 100%); background-clip: text; color: transparent; text-shadow: none; top: -1px; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hudi-trade-button:hover { filter: brightness(1.015) saturate(1.03); transform: translateY(-1px) scale(1.01); box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow); }
     .hudi-trade-button:hover .pill-shine { animation: hudi-pill-shine 760ms ease-out; }
     .hudi-trade-button:active, .hudi-trade-button.is-pressed { filter: brightness(.93) saturate(.96); transform: translateY(1px) scale(.99); box-shadow: inset 0 1px 14px var(--pill-inner-shadow); }
     @keyframes hudi-pill-shine { from { left: -80%; } to { left: 130%; } }
 
+    .trade-button-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+    .button-maker-demo { display: grid; grid-template-columns: minmax(170px, max-content) minmax(0, 1fr); gap: 18px; align-items: start; width: 100%; padding-top: 6px; border-top: 1px solid rgba(0,0,0,.05); }
+    .button-preview-stage { display: grid; justify-items: start; gap: 10px; }
+    .button-maker-controls { display: grid; gap: 12px; min-width: 0; }
+    .button-presets { display: flex; flex-wrap: wrap; gap: 8px; }
+    .button-preset { width: 54px; height: 28px; border: 3px solid var(--outline-blue); border-radius: 999px; background: var(--preset-base); box-shadow: inset 0 -2px 14px var(--preset-shadow); cursor: pointer; }
+    .button-preset[aria-pressed="true"] { border-color: var(--select-blue); }
+    .button-color-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .button-color { display: grid; gap: 5px; color: var(--muted); font-family: var(--ocr); font-size: 9px; }
+    .button-color input { width: 100%; height: 28px; padding: 2px; border: 2px solid var(--outline-blue); border-radius: 999px; background: #fff; cursor: pointer; }
+    .button-text { display: grid; gap: 5px; color: var(--muted); font-family: var(--ocr); font-size: 9px; }
+    .button-text input { width: 100%; min-width: 0; height: 30px; padding: 2px 10px 0; border: 2px solid var(--outline-blue); border-radius: 999px; background: #fff; color: var(--dark-grey); font: inherit; font-size: 11px; }
+    .button-range { display: grid; grid-template-columns: 48px 1fr 48px; gap: 8px; align-items: center; color: var(--muted); font-family: var(--ocr); font-size: 9px; }
+    .button-range input { width: 100%; accent-color: var(--select-blue); }
+    .button-range output { color: var(--dark-grey); text-align: right; }
+    .hudi-trade-button.is-auto-gradient .pill-label { background: linear-gradient(180deg, #6D8A89 0%, #334646 100%); background-clip: text; color: transparent; text-shadow: none; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hudi-trade-button.is-auto-white .pill-label { background: none; color: #fff; text-shadow: none; -webkit-text-fill-color: #fff; }
+
     .hudi-side-toggle { --toggle-left: 50%; --toggle-bg: var(--pink); --toggle-label: #fff; --toggle-shadow: rgba(30,0,62,.4); position: relative; width: 326px; max-width: 100%; height: 50px; border: 4px solid var(--outline-blue); border-radius: 26px; background: transparent; overflow: hidden; isolation: isolate; }
-    .hudi-side-toggle__bed { content: ""; position: absolute; inset: 0; border-radius: inherit; background: #eef2ff; box-shadow: inset 0 -3px 32px rgba(0,62,59,.34), inset 0 4px 13px rgba(0,0,0,.28), inset 0 4px 50px rgba(0,0,0,.16); overflow: hidden; pointer-events: none; z-index: 0; }
-    .hudi-side-toggle__bed::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 69.4%; border-radius: 22px; background: linear-gradient(.24deg, rgba(255,255,255,.18) 20.46%, rgba(255,255,255,.9) 99.78%); opacity: .72; transition: opacity 140ms ease; }
-    .hudi-side-toggle__bed::after { content: ""; position: absolute; left: 1%; right: 1%; top: 34%; height: 66%; border-radius: inherit; background: linear-gradient(360deg, rgba(255,255,255,.12) -14.15%, rgba(255,255,255,.52) 5.5%, rgba(255,255,255,0) 38%); filter: blur(1.4px); }
+    .hudi-side-toggle__bed { content: ""; position: absolute; inset: 0; border-radius: inherit; background: #eef2ff; box-shadow: inset 0 4px 13px rgba(0,0,0,.4), inset 0 4px 50px rgba(0,0,0,.25); overflow: hidden; pointer-events: none; z-index: 0; }
+    .hudi-side-toggle__bed::before { content: ""; position: absolute; left: 0; right: 0; top: -.5px; height: 69.4%; border-radius: 22px; background: linear-gradient(.24deg, rgba(255,255,255,.18) 20.46%, rgba(255,255,255,.9) 99.78%); opacity: .72; transition: opacity 140ms ease; }
+    .hudi-side-toggle__bed::after { content: ""; position: absolute; left: 1%; right: 1%; top: 34%; height: 66%; border-radius: inherit; background: linear-gradient(360deg, rgba(255,255,255,.58) -14.15%, rgba(255,255,255,.98) 5.5%, rgba(255,255,255,.42) 38%); filter: blur(1.4px); opacity: .94; }
     .hudi-side-toggle::after { content: ""; position: absolute; top: 1px; bottom: 1px; left: 0; right: 0; border-radius: 22px; background: radial-gradient(85% 90% at 50% 0%, rgba(255,255,255,.72) 0%, rgba(255,255,255,.28) 52%, rgba(255,255,255,0) 100%), linear-gradient(180deg, rgba(255,255,255,.28), rgba(113,128,158,.08)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.24); opacity: 0; pointer-events: none; transition: opacity 140ms ease; z-index: 1; }
     .hudi-side-toggle:hover::after { opacity: .58; }
     .hudi-side-toggle:hover .hudi-side-toggle__bed::before { opacity: .88; }
-    .hudi-side-toggle button { position: absolute; top: 0; z-index: 4; width: 50%; height: 100%; border: 0; background: transparent; color: rgba(82,92,111,.28); cursor: pointer; font-family: var(--ocr); font-size: 19px; letter-spacing: -.6px; }
+    .hudi-side-toggle button { position: absolute; top: -.5px; z-index: 4; width: 50%; height: 100%; border: 0; background: transparent; color: transparent; cursor: pointer; font-family: var(--ocr); font-size: 19px; letter-spacing: -.6px; }
+    .hudi-side-toggle button::before { content: attr(data-side); position: absolute; inset: 0; display: grid; place-items: center; color: #8F9AAB; opacity: .5; text-shadow: none; transition: opacity 140ms ease; -webkit-text-fill-color: #8F9AAB; }
     .hudi-side-toggle button[data-side="long"] { left: 0; }
     .hudi-side-toggle button[data-side="short"] { right: 0; }
-    .hudi-side-toggle button[aria-pressed="true"] { color: transparent; }
-    .hudi-side-toggle button:not([aria-pressed="true"]):hover { color: rgba(82,92,111,.42); }
-    .hudi-side-toggle__pill { position: absolute; top: 0; left: var(--toggle-left); z-index: 2; display: grid; place-items: center; width: 50%; height: 100%; border-radius: 25px; background: var(--toggle-bg); box-shadow: inset 0 -3px 32px var(--toggle-shadow); filter: drop-shadow(0 4px 4px rgba(0,0,0,.25)); overflow: hidden; transition: left 180ms ease, background-color 180ms ease, box-shadow 180ms ease; }
-    .hudi-side-toggle__pill::before { content: ""; position: absolute; left: -.33%; top: 0; width: 95%; height: 69.4%; background: linear-gradient(.24deg, rgba(255,255,255,.23) 20.46%, rgba(255,255,255,.91) 99.78%); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2035 347' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M178 0H1888C1966 0 2035 48 2035 126C2035 224 1953 277 1814 277H190C103 277 57 306 0 347C4 278 6 205 18 148C34 65 92 16 178 0Z'/%3E%3C/svg%3E"); mask-repeat: no-repeat; mask-size: 100% 100%; opacity: .88; pointer-events: none; -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2035 347' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M178 0H1888C1966 0 2035 48 2035 126C2035 224 1953 277 1814 277H190C103 277 57 306 0 347C4 278 6 205 18 148C34 65 92 16 178 0Z'/%3E%3C/svg%3E"); -webkit-mask-repeat: no-repeat; -webkit-mask-size: 100% 100%; }
-    .hudi-side-toggle__pill::after { content: ""; position: absolute; left: 9%; right: 9%; top: 0; height: 18%; border-radius: inherit; background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); filter: blur(1.43px); opacity: .9; pointer-events: none; }
+    .hudi-side-toggle button[aria-pressed="true"]::before { opacity: 0; }
+    .hudi-side-toggle button:not([aria-pressed="true"]):hover::before { opacity: .5; }
+    .hudi-side-toggle button:focus-visible { outline: 0; }
+    .hudi-side-toggle__pill { position: absolute; top: -.5px; left: var(--toggle-left); z-index: 2; display: grid; place-items: center; width: 50%; height: 100%; border-radius: 25px; background: var(--toggle-bg); box-shadow: inset 0 -3px 32px var(--toggle-shadow); filter: drop-shadow(0 4px 4px rgba(0,0,0,.25)); overflow: hidden; transition: left 180ms ease, background-color 180ms ease, box-shadow 180ms ease; }
+    .hudi-side-toggle__top-contour { height: 75.4%; left: -.5px; mix-blend-mode: screen; overflow: visible; pointer-events: none; position: absolute; top: -.5px; width: calc(100% - 7.5px); z-index: 1; }
+    .hudi-side-toggle__top-contour path { fill: url(#hudi-pill-top-gradient); }
+    .hudi-side-toggle__pill::after { content: ""; position: absolute; left: 9%; right: 9%; top: -.5px; height: 18%; border-radius: inherit; background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); filter: blur(1.43px); opacity: .9; pointer-events: none; }
     .hudi-side-toggle__bottom { position: absolute; left: 1%; right: 1%; top: 34%; height: 66.2%; border-radius: inherit; background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%); filter: blur(1.43px); pointer-events: none; }
     .hudi-side-toggle__label { position: relative; z-index: 1; color: var(--toggle-label); font-family: var(--ocr); font-size: 19px; letter-spacing: -.6px; text-shadow: 0 .7px 0 rgba(55,0,42,.35); }
     .hudi-side-toggle.is-long { --toggle-left: 0%; --toggle-bg: var(--gain); --toggle-label: #007b92; --toggle-shadow: rgba(30,62,0,.4); }
-    .hudi-side-toggle.is-long .hudi-side-toggle__label { text-shadow: 0 .7px 0 rgba(255,255,255,.72); }
+    .hudi-side-toggle.is-long .hudi-side-toggle__label { background: linear-gradient(180deg, #6D8A89 0%, #334646 100%); background-clip: text; color: transparent; text-shadow: none; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hudi-side-toggle.is-short { --toggle-left: 50%; --toggle-bg: var(--pink); --toggle-label: #fff; --toggle-shadow: rgba(30,0,62,.4); }
+    .hudi-side-toggle.is-short .hudi-side-toggle__label { color: #FFFFFF; text-shadow: none; -webkit-text-fill-color: #FFFFFF; }
 
     .hudi-small-button {
       min-width: 64px;
@@ -250,14 +274,32 @@
     @keyframes hudi-leverage-roll-up { from { opacity: .35; transform: translateY(100%); } to { opacity: 1; transform: translateY(0); } }
     @keyframes hudi-leverage-roll-down { from { opacity: .35; transform: translateY(-100%); } to { opacity: 1; transform: translateY(0); } }
     .hudi-slider input[type="range"] { appearance: none; position: absolute; inset: 0; z-index: 3; width: 100%; height: 34px; background: transparent; cursor: pointer; opacity: 0; }
-    .hudi-slider-visual { position: absolute; left: 0; right: 0; top: 50%; height: 14px; border: 4px solid var(--outline-blue-2); border-radius: 13px; background: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%) 0 0 / var(--slider-percent) 100% no-repeat, #eef7ff; transform: translateY(-50%); transition: background-size 220ms cubic-bezier(.2,.8,.2,1); pointer-events: none; }
-    .hudi-slider.short .hudi-slider-visual { background: linear-gradient(90deg, #ffe4fe 0%, #fd01ba 100%) 0 0 / var(--slider-percent) 100% no-repeat, #eef7ff; }
+    .hudi-slider-visual { position: absolute; left: 0; right: 0; top: 50%; height: 14px; border: 4px solid var(--outline-blue-2); border-radius: 13px; background: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%) 0 0 / var(--slider-percent) 100% no-repeat, #fff; transform: translateY(-50%); transition: background-size 220ms cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+    .hudi-slider.short .hudi-slider-visual { background: linear-gradient(90deg, #ffe4fe 0%, #fd01ba 100%) 0 0 / var(--slider-percent) 100% no-repeat, #fff; }
     .hudi-slider-puck { position: absolute; left: var(--slider-percent); top: 50%; width: 26px; height: 26px; box-sizing: content-box; border: 4px solid var(--outline-blue-2); border-radius: 50%; background: radial-gradient(36.34% 18.06% at 50% 1%, #fff 0%, rgba(255,255,255,.14) 100%), radial-gradient(64% 46% at 50% 20%, rgba(255,255,255,.96) 0 50%, rgba(255,255,255,.58) 62%, transparent 63%), linear-gradient(180deg, #f5faff 0%, #d9e4ec 42%, #b8c8d4 100%); box-shadow: inset 0 -3px 16px rgba(67,88,109,.28); transform: translate(-50%, -50%); transition: left 220ms cubic-bezier(.2,.8,.2,1); pointer-events: none; }
     .hudi-slider-markers { display: grid; grid-template-columns: repeat(6, 1fr); margin-top: 10px; color: #a1a8b5; font-family: var(--ocr); font-size: 11px; line-height: 1; }
     .hudi-slider-markers span { text-align: center; }
     .hudi-slider input::-webkit-slider-runnable-track { height: 34px; background: transparent; }
     .hudi-slider input::-webkit-slider-thumb { appearance: none; width: 34px; height: 34px; }
     .hudi-slider input::-moz-range-thumb { width: 34px; height: 34px; border: 0; background: transparent; }
+    .leverage-panel { --lev-fill: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%); width: min(760px, 100%); margin: 0 auto; padding: 34px 32px 28px; display: grid; gap: 22px; }
+    .leverage-panel.is-short { --lev-fill: linear-gradient(90deg, #ffe4fe 0%, #fd01ba 100%); }
+    .leverage-panel__top { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; }
+    .leverage-panel__title { color: var(--dark-grey); font-family: var(--ocr); font-size: 22px; letter-spacing: .12em; text-transform: uppercase; }
+    .leverage-panel__actions { display: inline-flex; align-items: center; gap: 12px; }
+    .leverage-theme { display: inline-flex; gap: 6px; }
+    .leverage-theme button { min-width: 54px; height: 28px; padding: 2px 10px 0; border: 2px solid var(--outline-blue); border-radius: 999px; background: #fff; color: var(--dark-grey); cursor: pointer; font-family: var(--ocr); font-size: 10px; }
+    .leverage-theme button[aria-pressed="true"] { border-color: var(--select-blue); }
+    .leverage-panel .hudi-slider { width: 100%; }
+    .leverage-panel .hudi-slider-row { grid-template-columns: minmax(0, 1fr) 96px; gap: 26px; align-items: start; }
+    .leverage-panel .hudi-slider-control { height: 60px; }
+    .leverage-panel .hudi-slider input[type="range"] { height: 60px; }
+    .leverage-panel .hudi-slider-visual { height: 24px; border-width: 7px; border-radius: 999px; background: var(--lev-fill) 0 0 / var(--slider-percent) 100% no-repeat, #fff; }
+    .leverage-panel .hudi-slider.short .hudi-slider-visual { background: var(--lev-fill) 0 0 / var(--slider-percent) 100% no-repeat, #fff; }
+    .leverage-panel .hudi-slider-puck { width: 52px; height: 52px; border-width: 7px; box-shadow: inset 0 -6px 22px rgba(67,88,109,.25); }
+    .leverage-panel .hudi-slider-markers { margin-top: -4px; color: #a6a6a6; font-size: 20px; }
+    .leverage-panel .hudi-slider-markers span[aria-current="true"] { color: var(--dark-grey); }
+    .leverage-panel .hudi-slider output { display: inline-grid; place-items: center; width: 86px; height: 72px; min-width: 86px; border: 7px solid var(--outline-blue); border-radius: 999px; background: #fff; color: #28b979; font-size: 26px; line-height: 1; text-align: center; }
 
     .hudi-pill {
       min-height: 30px;
@@ -278,7 +320,7 @@
 
     .time-selector { --active-index: 2; --selected-width: 52px; --slot-step: 56px; --slot-start: -4px; --active-left: calc(var(--slot-start) + (var(--active-index) * var(--slot-step))); box-sizing: border-box; position: relative; display: inline-block; width: 276px; height: 35px; padding: 0; border: 4px solid var(--outline-blue); border-radius: 18px; background: #fff; overflow: visible; }
     .time-selector::before { content: ""; box-sizing: border-box; position: absolute; top: -4px; bottom: -4px; left: var(--active-left); width: var(--selected-width); border: 4px solid var(--select-blue); border-radius: 22px; background: #fff; transition: left 180ms ease; z-index: 2; }
-    .time-selector button { position: absolute; top: 0; z-index: 3; display: grid; place-items: center; width: var(--selected-width); height: 27px; padding: 3px 0 0; border: 0; border-radius: 14px; background: transparent; color: var(--light-grey); font-family: var(--ocr); font-size: 13px; line-height: 1; cursor: pointer; }
+    .time-selector button { position: absolute; top: -.5px; z-index: 3; display: grid; place-items: center; width: var(--selected-width); height: 27px; padding: 3px 0 0; border: 0; border-radius: 14px; background: transparent; color: var(--light-grey); font-family: var(--ocr); font-size: 13px; line-height: 1; cursor: pointer; }
     .time-selector button:nth-child(1) { left: calc(var(--slot-start) + (var(--slot-step) * 0)); }
     .time-selector button:nth-child(2) { left: calc(var(--slot-start) + (var(--slot-step) * 1)); }
     .time-selector button:nth-child(3) { left: calc(var(--slot-start) + (var(--slot-step) * 2)); }
@@ -286,6 +328,34 @@
     .time-selector button:nth-child(5) { left: calc(var(--slot-start) + (var(--slot-step) * 4)); }
     .time-selector button span { display: inline-block; }
     .time-selector button[aria-pressed="true"] { color: var(--dark-grey); }
+
+    .market-limit-wrap { display: grid; gap: 8px; }
+    .market-limit-theme { display: flex; gap: 8px; }
+    .market-limit-theme button { min-width: 58px; height: 26px; padding: 2px 10px 0; border: 2px solid var(--outline-blue); border-radius: 999px; background: #fff; color: var(--dark-grey); cursor: pointer; font-family: var(--ocr); font-size: 10px; }
+    .market-limit-theme button[aria-pressed="true"] { border-color: var(--select-blue); }
+    .market-limit-selector { --selected-index: 0; --ml-top: #6D8A89; --ml-bottom: #334646; --ml-cross-fill: #B3FFFC; --spin-0: 0deg; --spin-1: 0deg; --spin-2: 0deg; --spin-3: 0deg; position: relative; display: grid; grid-template-columns: 150px 150px; gap: 74px; align-items: center; width: max-content; max-width: 100%; min-height: 104px; padding: 22px 26px; }
+    .market-limit-selector.is-short { --ml-top: #8A6D84; --ml-bottom: #46333F; --ml-cross-fill: #EDB3FF; }
+    .market-limit-selector button { position: relative; z-index: 2; display: grid; place-items: center; height: 48px; padding: 4px 0 0; border: 0; background: transparent; cursor: pointer; font-family: var(--ocr); font-size: 30px; line-height: 1; letter-spacing: .02em; background-image: linear-gradient(180deg, var(--ml-top) 0%, var(--ml-bottom) 100%); background-clip: text; color: transparent; opacity: .6; text-shadow: none; transition: opacity 160ms ease; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .market-limit-selector button[aria-pressed="true"] { opacity: 1; }
+    .market-limit-crosses { position: absolute; left: calc(14px + (var(--selected-index) * 224px)); top: 14px; z-index: 1; width: 188px; height: 78px; pointer-events: none; transition: left 300ms cubic-bezier(.2,.85,.2,1); }
+    .market-limit-cross { position: absolute; width: 20px; height: 20px; transition: rotate 260ms ease; }
+    .market-limit-cross path { fill: var(--ml-cross-fill); stroke: #000; stroke-width: 1.40052px; }
+    .market-limit-cross:nth-child(1) { left: -2px; top: 4px; rotate: var(--spin-0); animation: market-limit-float-a 2.4s ease-in-out infinite alternate; }
+    .market-limit-cross:nth-child(2) { left: 171px; top: 2px; rotate: var(--spin-1); animation: market-limit-float-b 2.7s ease-in-out infinite alternate; }
+    .market-limit-cross:nth-child(3) { left: 2px; top: 55px; rotate: var(--spin-2); animation: market-limit-float-c 2.9s ease-in-out infinite alternate; }
+    .market-limit-cross:nth-child(4) { left: 176px; top: 50px; rotate: var(--spin-3); animation: market-limit-float-d 2.3s ease-in-out infinite alternate; }
+    .market-limit-selector.is-moving .market-limit-cross:nth-child(1) { animation: market-limit-slot-a 300ms cubic-bezier(.2,.85,.2,1); }
+    .market-limit-selector.is-moving .market-limit-cross:nth-child(2) { animation: market-limit-slot-b 320ms cubic-bezier(.2,.85,.2,1); }
+    .market-limit-selector.is-moving .market-limit-cross:nth-child(3) { animation: market-limit-slot-c 310ms cubic-bezier(.2,.85,.2,1); }
+    .market-limit-selector.is-moving .market-limit-cross:nth-child(4) { animation: market-limit-slot-d 330ms cubic-bezier(.2,.85,.2,1); }
+    @keyframes market-limit-slot-a { 0% { translate: -1px 1px; } 48% { translate: 1px -3px; } 100% { translate: 0 0; } }
+    @keyframes market-limit-slot-b { 0% { translate: 2px -1px; } 48% { translate: -2px -2px; } 100% { translate: 0 0; } }
+    @keyframes market-limit-slot-c { 0% { translate: -2px -1px; } 48% { translate: 2px 2px; } 100% { translate: 0 0; } }
+    @keyframes market-limit-slot-d { 0% { translate: 1px 2px; } 48% { translate: -2px -2px; } 100% { translate: 0 0; } }
+    @keyframes market-limit-float-a { from { translate: -1px 1px; } to { translate: 3px -2px; } }
+    @keyframes market-limit-float-b { from { translate: 2px -1px; } to { translate: -2px 3px; } }
+    @keyframes market-limit-float-c { from { translate: -3px -1px; } to { translate: 2px 2px; } }
+    @keyframes market-limit-float-d { from { translate: 1px 3px; } to { translate: -3px -1px; } }
 
     .hudi-status { display: inline-flex; align-items: center; gap: 7px; min-height: 25px; padding: 2px 12px 0 9px; border: 4px solid var(--gain); border-radius: 54px; background: var(--gain-soft); color: var(--gain-text); font-family: var(--ocr); font-size: 11px; letter-spacing: .02em; }
     .hudi-status::before { content: ""; position: relative; top: -1px; width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: currentColor; }
@@ -385,6 +455,43 @@
     .orb-color { display: grid; gap: 5px; color: var(--muted); font-family: var(--ocr); font-size: 9px; }
     .orb-color input { width: 100%; height: 28px; padding: 2px; border: 2px solid var(--outline-blue); border-radius: 999px; background: #fff; cursor: pointer; }
 
+    .hudi-logo-orb { --orb-base: #24d0ff; --orb-sheen: #00ffbf; --orb-shadow: rgba(0,50,157,.4); --logo-inner: #93c0ff; position: relative; display: grid; place-items: center; width: 120px; aspect-ratio: 1; border-radius: 50%; background-color: var(--orb-base); background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%); box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow), inset 0 0 9px color-mix(in srgb, var(--logo-inner) 62%, transparent); overflow: hidden; }
+    .hudi-logo-orb::before { background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%); border-radius: 50%; content: ""; height: 46%; left: 18.6%; position: absolute; top: 3.8%; width: 64%; z-index: 1; }
+    .hudi-logo-orb::after { background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: 50%; content: ""; height: 18.06%; left: 32.05%; position: absolute; top: 1.1%; width: 36.34%; z-index: 1; }
+    .hudi-logo-mark { position: relative; z-index: 2; width: 62.4px; height: auto; filter: drop-shadow(0 1px 2px rgba(31,104,178,.14)); }
+    .hudi-logo-demo { display: grid; grid-template-columns: minmax(140px, max-content) minmax(0, 1fr); gap: 28px; align-items: center; width: 100%; }
+    .hudi-logo-controls { display: flex; flex-wrap: wrap; gap: 30px; align-items: end; }
+
+    .hudi-nav-demo { width: 100%; display: grid; gap: 34px; padding: 18px 0 28px; }
+    .hudi-top-bar-sample, .hudi-nav-bar { height: 57px; border: 0; background: linear-gradient(180deg, #fcfcfc 0%, #b7ccda 100%); box-shadow: 0 10px 10px rgba(209,228,249,.95); }
+    .hudi-top-bar-sample { width: min(840px, calc(100% - 60px)); margin: 0 auto; }
+    .hudi-nav-menu { --orb-size: 132px; position: relative; width: min(860px, 100%); min-height: 270px; margin: 0 auto; }
+    .hudi-nav-menu .hudi-nav-bar { position: absolute; left: 74px; right: 22px; top: 64px; z-index: 0; }
+    .hudi-nav-menu .hudi-logo-orb { position: absolute; left: 118px; top: 24px; z-index: 3; width: var(--orb-size); }
+    .hudi-nav-selected { position: absolute; left: 296px; top: 78px; z-index: 2; display: grid; place-items: center; width: max-content; min-width: 0; max-width: 190px; min-height: 36px; padding: 4px 24px 1px; border: 0; border-radius: 999px; background: #eef2ff; color: #71809e; font-family: var(--sans); font-size: 18px; line-height: .95; text-align: center; box-shadow: inset 0 4px 13px rgba(0,0,0,.28), inset 0 4px 50px rgba(0,0,0,.16); overflow: hidden; white-space: normal; }
+    .hudi-nav-selected::before { content: ""; position: absolute; left: 0; right: 0; top: -.5px; height: 69%; border-radius: inherit; background: linear-gradient(.24deg, rgba(255,255,255,.16) 20.46%, rgba(255,255,255,.88) 99.78%); opacity: .74; }
+    .hudi-nav-selected::after { content: ""; position: absolute; left: 1%; right: 1%; top: 34%; height: 66%; border-radius: inherit; background: linear-gradient(360deg, rgba(255,255,255,.42) -14.15%, rgba(255,255,255,.86) 5.5%, rgba(255,255,255,.26) 38%); filter: blur(1.4px); }
+    .hudi-nav-selected span { position: relative; z-index: 1; }
+    .hudi-nav-pill { --pill-bg: #28c4f5; --pill-inner-shadow: rgba(0,98,158,.34); position: absolute; z-index: 4; display: inline-flex; align-items: center; justify-content: center; width: max-content; min-width: 0; height: 30px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--pill-bg); box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow); color: #fff; cursor: pointer; font-family: var(--sans); font-size: 16px; line-height: 1; overflow: hidden; text-transform: lowercase; transition: left 360ms cubic-bezier(.2,.8,.2,1), top 360ms cubic-bezier(.2,.8,.2,1), transform 160ms ease, filter 160ms ease; }
+    .hudi-nav-pill .pill-label { position: relative; z-index: 2; text-shadow: none; top: -1px; }
+    .hudi-nav-pill .pill-top-contour { height: 75.4%; left: -.5px; mix-blend-mode: screen; overflow: visible; pointer-events: none; position: absolute; top: -.5px; width: calc(100% - 7.5px); z-index: 1; }
+    .hudi-nav-pill .pill-top-contour path { fill: url(#hudi-pill-top-gradient); }
+    .hudi-nav-pill .pill-bottom-highlight { background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%); border-radius: inherit; filter: blur(1.43px); height: 66.2%; left: 1%; pointer-events: none; position: absolute; right: 1%; top: 34%; }
+    .hudi-nav-pill::after { background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: inherit; content: ""; filter: blur(1.43px); height: 18%; left: 9%; opacity: .9; pointer-events: none; position: absolute; right: 9%; top: -.5px; }
+    .hudi-nav-pill:hover { filter: brightness(1.04) saturate(1.04); transform: translateY(-1px); }
+    .hudi-nav-pill.is-teleporting { animation: none !important; transition: none !important; }
+    .hudi-nav-pill[data-slot="0"] { left: 274px; top: 148px; animation: hudi-nav-float-a 4.2s ease-in-out infinite alternate; }
+    .hudi-nav-pill[data-slot="1"] { left: 172px; top: 188px; animation: hudi-nav-float-b 3.8s ease-in-out infinite alternate; }
+    .hudi-nav-menu.is-switching .hudi-nav-selected { animation: hudi-nav-selected-slot 420ms cubic-bezier(.2,.85,.2,1); }
+    .hudi-nav-menu.is-switching .hudi-nav-pill { animation-duration: 560ms; }
+    .hudi-nav-menu.is-switching .hudi-nav-pill[data-slot="0"] { animation-name: hudi-nav-orbit-a; }
+    .hudi-nav-menu.is-switching .hudi-nav-pill[data-slot="1"] { animation-name: hudi-nav-orbit-b; }
+    @keyframes hudi-nav-selected-slot { from { translate: -22px 54px; scale: .86; opacity: .72; } to { translate: 0 0; scale: 1; opacity: 1; } }
+    @keyframes hudi-nav-orbit-a { 0% { translate: -76px 48px; } 55% { translate: -26px -18px; } 100% { translate: -2px 1px; } }
+    @keyframes hudi-nav-orbit-b { 0% { translate: 98px -38px; } 55% { translate: 34px 18px; } 100% { translate: 2px -1px; } }
+    @keyframes hudi-nav-float-a { from { translate: -2px 1px; } to { translate: 3px -2px; } }
+    @keyframes hudi-nav-float-b { from { translate: 2px -1px; } to { translate: -2px 3px; } }
+
     .chart-demo { --mx: 50%; --my: 50%; --spacing: 34px; position: relative; width: 100%; min-width: 0; height: 520px; border: 6px solid var(--outline-blue); border-radius: 36px; background: #fff; cursor: crosshair; overflow: hidden; }
     .chart-toolbar { display: none; }
     .chart-readout { display: inline-flex; gap: 14px; align-items: center; min-height: 28px; padding: 0 10px; border: 4px solid var(--outline-blue); border-radius: 999px; background: rgba(255,255,255,.82); color: var(--dark-grey); font-family: var(--ocr); font-size: 11px; }
@@ -398,13 +505,13 @@
     .chart-scroll { width: 100%; max-width: 100%; height: 100%; overflow: hidden; cursor: crosshair; overscroll-behavior: contain; }
     .chart-scroll.is-dragging { cursor: grabbing; }
     .chart-track { position: relative; width: max(100%, calc((var(--count) * var(--spacing)) + 128px)); height: 100%; background: #fff; }
-    .price-axis { position: absolute; top: 0; right: 0; z-index: 6; width: 84px; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0), #fff 34%); color: rgba(9,9,9,.38); font-family: var(--ocr); font-size: 18px; pointer-events: none; }
+    .price-axis { position: absolute; top: -.5px; right: 0; z-index: 6; width: 84px; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0), #fff 34%); color: rgba(9,9,9,.38); font-family: var(--ocr); font-size: 18px; pointer-events: none; }
     .price-axis span { position: absolute; right: 22px; transform: translateY(-50%); }
     .time-axis { position: absolute; left: 0; right: 84px; bottom: 18px; height: 24px; color: rgba(9,9,9,.38); font-family: var(--ocr); font-size: 18px; pointer-events: none; }
     .time-axis span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
     .candle { --body-w: clamp(14px, calc(var(--spacing) - 12px), 26px); position: absolute; left: calc(64px + (var(--i) * var(--spacing))); top: var(--high-y); width: var(--spacing); height: calc(var(--low-y) - var(--high-y)); border: 0; background: transparent; cursor: pointer; padding: 0; transform: translateX(-50%); }
     .candle-wick { position: absolute; left: 50%; width: 1px; background: rgba(0,0,0,.45); transform: translateX(-50%); pointer-events: none; }
-    .candle-wick.top { top: 0; height: calc(var(--body-y) - var(--high-y)); }
+    .candle-wick.top { top: -.5px; height: calc(var(--body-y) - var(--high-y)); }
     .candle-wick.bottom { top: calc(var(--body-y) - var(--high-y) + var(--body-h)); height: calc(var(--low-y) - var(--body-y) - var(--body-h)); }
     .candle-body { position: absolute; left: 50%; top: calc(var(--body-y) - var(--high-y)); width: var(--body-w); height: max(var(--body-h), 3px); border: 1px solid #000; background: var(--c); transform: translateX(-50%); pointer-events: none; }
     .candle[aria-pressed="true"] .candle-body { outline: 4px solid var(--select-blue); outline-offset: 3px; z-index: 4; }
@@ -416,11 +523,11 @@
     .cursor-v, .cursor-h, .cursor-crosshair { position: absolute; pointer-events: none; opacity: 0; z-index: 5; }
     .chart-demo.is-tracking .selected-price { opacity: 0; }
     .chart-demo.is-tracking .cursor-v, .chart-demo.is-tracking .cursor-h, .chart-demo.is-tracking .cursor-crosshair, .chart-demo.is-tracking .cursor-price, .chart-demo.is-tracking .cursor-time { opacity: 1; }
-    .cursor-v { left: var(--mx); top: 0; bottom: 12px; width: 6px; transform: translateX(-50%); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='38' viewBox='0 0 6 38'%3E%3Crect x='.5' y='.5' width='5' height='27' rx='2.5' fill='%23FF92E2' stroke='%23000'/%3E%3C/svg%3E") top center / 6px 38px repeat-y; }
+    .cursor-v { left: var(--mx); top: -.5px; bottom: 12px; width: 6px; transform: translateX(-50%); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='38' viewBox='0 0 6 38'%3E%3Crect x='.5' y='.5' width='5' height='27' rx='2.5' fill='%23FF92E2' stroke='%23000'/%3E%3C/svg%3E") top center / 6px 38px repeat-y; }
     .cursor-h { left: 0; right: 84px; top: var(--my); height: 6px; transform: translateY(-50%); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='6' viewBox='0 0 38 6'%3E%3Crect x='.5' y='.5' width='27' height='5' rx='2.5' fill='%23FF92E2' stroke='%23000'/%3E%3C/svg%3E") center left / 38px 6px repeat-x; }
     .cursor-crosshair { left: var(--mx); top: var(--my); width: 23px; height: 23px; transform: translate(-50%, -50%); z-index: 6; }
     .cursor-crosshair::before, .cursor-crosshair::after { content: ""; position: absolute; background: var(--yellow); border: 0.3px solid var(--dark-grey); border-radius: 2px; box-sizing: border-box; }
-    .cursor-crosshair::before { left: 50%; top: 0; transform: translateX(-50%); width: 2px; height: 23px; }
+    .cursor-crosshair::before { left: 50%; top: -.5px; transform: translateX(-50%); width: 2px; height: 23px; }
     .cursor-crosshair::after { left: 0; top: 50%; transform: translateY(-50%); width: 23px; height: 2px; }
 
     details.reference { border-top: 1px solid rgba(0,0,0,.05); background: #f8fbff; }
@@ -439,7 +546,11 @@
       .card-head { flex-direction: column; }
       .copy-css { align-self: flex-start; }
       .time-selector { width: 276px; max-width: 100%; }
+      .button-maker-demo { grid-template-columns: 1fr; }
       .orb-maker-demo { grid-template-columns: 1fr; }
+      .hudi-logo-demo { grid-template-columns: 1fr; }
+      .hudi-nav-menu { transform: scale(.82); transform-origin: left top; width: 122%; min-height: 230px; }
+      .hudi-top-bar-sample { width: 100%; }
       h1 { font-size: 34px; }
     }
   </style>
@@ -455,6 +566,7 @@
         <a href="#actions">actions</a>
         <a href="#selectors">selectors</a>
         <a href="#market">market</a>
+        <a href="#navigation">nav</a>
         <a href="#panels">panels</a>
         <a href="#chart">chart</a>
       </nav>
@@ -499,12 +611,32 @@
     <section class="section" id="actions">
       <div class="section-title"><h2>Actions</h2><span>buttons / sliders / pressed feedback</span></div>
       <div class="grid">
-        <article class="card span-6">
-          <div class="card-head"><div><h3>Trade buttons</h3><p>Clickable long, short, and confirm buttons with hover and pressed states.</p></div><button class="copy-css" data-copy="Trade buttons">Copy CSS</button></div>
-          <div class="demo">
-            <button class="hudi-trade-button confirm" type="button"><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">confirm</span></button>
-            <button class="hudi-trade-button long" type="button"><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">long</span></button>
-            <button class="hudi-trade-button short" type="button"><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">short</span></button>
+        <article class="card span-12">
+          <div class="card-head"><div><h3>Trade buttons</h3><p>Clickable long, short, and confirm buttons with hover and pressed states.</p></div><button class="copy-css" data-copy="Trade buttons">Copy current CSS</button></div>
+          <div class="demo column">
+            <div class="trade-button-row">
+              <button class="hudi-trade-button confirm" type="button"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">confirm</span></button>
+              <button class="hudi-trade-button long" type="button"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">long</span></button>
+              <button class="hudi-trade-button short" type="button"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">short</span></button>
+            </div>
+            <div class="button-maker-demo">
+              <div class="button-preview-stage">
+                <button class="hudi-trade-button long" id="button-preview" type="button" style="--pill-bg:#01fd90;--pill-inner-shadow:rgba(0,95,60,.34);width:149px;min-width:149px;"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">long</span></button>
+              </div>
+              <div class="button-maker-controls" data-button-maker>
+                <div class="button-presets" role="group" aria-label="Button presets">
+                  <button class="button-preset" type="button" aria-pressed="true" aria-label="long button" data-type="long" data-label="long" data-base="#01fd90" data-shadow="rgba(0,95,60,.34)" data-width="149" style="--preset-base:#01fd90;--preset-shadow:rgba(0,95,60,.34)"></button>
+                  <button class="button-preset" type="button" aria-label="short button" data-type="short" data-label="short" data-base="#ff0fc4" data-shadow="rgba(118,0,82,.34)" data-width="149" style="--preset-base:#ff0fc4;--preset-shadow:rgba(118,0,82,.34)"></button>
+                  <button class="button-preset" type="button" aria-label="confirm button" data-type="confirm" data-label="confirm" data-base="#e9eef5" data-shadow="rgba(62,88,116,.28)" data-width="241" style="--preset-base:#e9eef5;--preset-shadow:rgba(62,88,116,.28)"></button>
+                </div>
+                <div class="button-color-row">
+                  <label class="button-color">base<input data-button-field="base" type="color" value="#01fd90"></label>
+                  <label class="button-color">shadow<input data-button-field="shadow" type="color" value="#005f3c"></label>
+                </div>
+                <label class="button-text">text<input data-button-field="label" type="text" value="long" maxlength="12" autocomplete="off"></label>
+                <label class="button-range"><span>width</span><input data-button-field="width" type="range" min="120" max="280" step="1" value="149"><output data-button-width-output>149px</output></label>
+              </div>
+            </div>
           </div>
           <details class="reference"><summary>reference PNGs</summary><div class="refs"><img src="Important%20Buttons/Confirm%20Button%20Preview.png" alt=""><img src="Important%20Buttons/Long%20Preview.png" alt=""><img src="Important%20Buttons/Short%20Preview.png" alt=""></div></details>
         </article>
@@ -516,17 +648,27 @@
               <span class="hudi-side-toggle__bed" aria-hidden="true"></span>
               <button type="button" data-side="long" aria-pressed="false">long</button>
               <button type="button" data-side="short" aria-pressed="true">short</button>
-              <span class="hudi-side-toggle__pill" aria-hidden="true"><span class="hudi-side-toggle__bottom"></span><span class="hudi-side-toggle__label">short</span></span>
+              <span class="hudi-side-toggle__pill" aria-hidden="true"><svg class="pill-top-contour hudi-side-toggle__top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="hudi-side-toggle__bottom"></span><span class="hudi-side-toggle__label">short</span></span>
             </div>
           </div>
           <details class="reference"><summary>reference PNGs</summary><div class="refs"><img src="Sections/Long%20%2B%20Short%20Toggle/Toggle-Preview.png" alt=""><img src="Sections/Long%20%2B%20Short%20Toggle/pill-bed-preview.png" alt=""><img src="Sections/Long%20%2B%20Short%20Toggle/toggle-stroke-preview.png" alt=""></div></details>
         </article>
 
-        <article class="card span-6">
-          <div class="card-head"><div><h3>Leverage sliders</h3><p>Native range controls styled to match the long and short leverage bars.</p></div><button class="copy-css" data-copy="Leverage slider">Copy CSS</button></div>
-          <div class="demo column">
-            <label class="hudi-slider"><span class="hudi-slider-row"><span><span class="hudi-slider-control" style="--slider-percent: 40%"><span class="hudi-slider-visual" aria-hidden="true"></span><span class="hudi-slider-puck" aria-hidden="true"></span><input type="range" min="0" max="5" step="1" value="2" data-leverage-values="1,2,5,10,15,20"></span><span class="hudi-slider-markers" aria-hidden="true"><span>1x</span><span>2x</span><span>5x</span><span>10x</span><span>15x</span><span>20x</span></span></span><output data-last-index="2" aria-live="polite"><span>5x</span></output></span></label>
-            <label class="hudi-slider short"><span class="hudi-slider-row"><span><span class="hudi-slider-control" style="--slider-percent: 20%"><span class="hudi-slider-visual" aria-hidden="true"></span><span class="hudi-slider-puck" aria-hidden="true"></span><input type="range" min="0" max="5" step="1" value="1" data-leverage-values="1,2,5,10,15,20"></span><span class="hudi-slider-markers" aria-hidden="true"><span>1x</span><span>2x</span><span>5x</span><span>10x</span><span>15x</span><span>20x</span></span></span><output data-last-index="1" aria-live="polite"><span>2x</span></output></span></label>
+        <article class="card span-12">
+          <div class="card-head"><div><h3>Leverage slider</h3><p>Large leverage control with long and short fill variants.</p></div><button class="copy-css" data-copy="Leverage slider">Copy CSS</button></div>
+          <div class="demo">
+            <div class="leverage-panel is-short" data-leverage-panel>
+              <div class="leverage-panel__top">
+                <span class="leverage-panel__title">LEVERAGE</span>
+                <span class="leverage-panel__actions">
+                  <span class="leverage-theme" role="group" aria-label="Leverage side">
+                    <button type="button" data-leverage-theme="long" aria-pressed="false">long</button>
+                    <button type="button" data-leverage-theme="short" aria-pressed="true">short</button>
+                  </span>
+                </span>
+              </div>
+              <label class="hudi-slider short"><span class="hudi-slider-row"><span><span class="hudi-slider-control" style="--slider-percent: 40%"><span class="hudi-slider-visual" aria-hidden="true"></span><span class="hudi-slider-puck" aria-hidden="true"></span><input type="range" min="0" max="5" step="1" value="2" data-leverage-values="1,2,5,10,15,20"></span><span class="hudi-slider-markers" aria-hidden="true"><span>x1</span><span>x2</span><span aria-current="true">x5</span><span>x10</span><span>x15</span><span>x20</span></span></span><output data-last-index="2" aria-live="polite"><span>5x</span></output></span></label>
+            </div>
           </div>
           <details class="reference"><summary>reference PNGs</summary><div class="refs"><img src="Slider/Long%20Leverage%20Preview.png" alt=""><img src="Slider/Short%20leverage%20preview.png" alt=""></div></details>
         </article>
@@ -541,6 +683,27 @@
           <div class="demo">
             <div class="time-selector" role="group" aria-label="Time interval">
               <button type="button"><span>1H</span></button><button type="button"><span>4H</span></button><button type="button" aria-pressed="true"><span>1D</span></button><button type="button"><span>1W</span></button><button type="button"><span>1M</span></button>
+            </div>
+          </div>
+        </article>
+        <article class="card span-8">
+          <div class="card-head"><div><h3>Market / limit selector</h3><p>Two-state order type selector with moving plus markers.</p></div><button class="copy-css" data-copy="Market limit selector">Copy CSS</button></div>
+          <div class="demo">
+            <div class="market-limit-wrap">
+              <div class="market-limit-theme" role="group" aria-label="Selector side">
+                <button type="button" data-market-limit-theme="long" aria-pressed="true">long</button>
+                <button type="button" data-market-limit-theme="short" aria-pressed="false">short</button>
+              </div>
+              <div class="market-limit-selector" role="group" aria-label="Market limit selector" data-market-limit-selector>
+                <span class="market-limit-crosses" aria-hidden="true">
+                  <svg class="market-limit-cross" width="99" height="99" viewBox="0 0 99 99" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44.7986 4.46568C44.7989 2.38634 46.4847 0.700196 48.5641 0.700196H49.9037C51.9831 0.700198 53.6689 2.38635 53.6692 4.46568V39.1871C53.6692 42.5327 56.3817 45.2452 59.7273 45.2452L94.0019 45.2459C96.0815 45.2459 97.7674 46.9318 97.7674 49.0113V49.9035C97.7674 51.9831 96.0815 53.669 94.0019 53.669L59.7273 53.6697C56.3817 53.6697 53.6692 56.3821 53.6692 59.7277V94.0031C53.6689 96.0824 51.9831 97.7686 49.9037 97.7686H48.5641C46.4847 97.7686 44.7989 96.0824 44.7986 94.0031V59.7277C44.7986 56.3821 42.0862 53.6697 38.7406 53.6697L4.46591 53.669C2.38634 53.669 0.700428 51.9831 0.700429 49.9035V49.0113C0.700429 46.9318 2.38634 45.2459 4.46591 45.2459L38.7406 45.2452C42.0862 45.2452 44.7986 42.5327 44.7986 39.1871V4.46568Z"/></svg>
+                  <svg class="market-limit-cross" width="99" height="99" viewBox="0 0 99 99" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44.7986 4.46568C44.7989 2.38634 46.4847 0.700196 48.5641 0.700196H49.9037C51.9831 0.700198 53.6689 2.38635 53.6692 4.46568V39.1871C53.6692 42.5327 56.3817 45.2452 59.7273 45.2452L94.0019 45.2459C96.0815 45.2459 97.7674 46.9318 97.7674 49.0113V49.9035C97.7674 51.9831 96.0815 53.669 94.0019 53.669L59.7273 53.6697C56.3817 53.6697 53.6692 56.3821 53.6692 59.7277V94.0031C53.6689 96.0824 51.9831 97.7686 49.9037 97.7686H48.5641C46.4847 97.7686 44.7989 96.0824 44.7986 94.0031V59.7277C44.7986 56.3821 42.0862 53.6697 38.7406 53.6697L4.46591 53.669C2.38634 53.669 0.700428 51.9831 0.700429 49.9035V49.0113C0.700429 46.9318 2.38634 45.2459 4.46591 45.2459L38.7406 45.2452C42.0862 45.2452 44.7986 42.5327 44.7986 39.1871V4.46568Z"/></svg>
+                  <svg class="market-limit-cross" width="99" height="99" viewBox="0 0 99 99" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44.7986 4.46568C44.7989 2.38634 46.4847 0.700196 48.5641 0.700196H49.9037C51.9831 0.700198 53.6689 2.38635 53.6692 4.46568V39.1871C53.6692 42.5327 56.3817 45.2452 59.7273 45.2452L94.0019 45.2459C96.0815 45.2459 97.7674 46.9318 97.7674 49.0113V49.9035C97.7674 51.9831 96.0815 53.669 94.0019 53.669L59.7273 53.6697C56.3817 53.6697 53.6692 56.3821 53.6692 59.7277V94.0031C53.6689 96.0824 51.9831 97.7686 49.9037 97.7686H48.5641C46.4847 97.7686 44.7989 96.0824 44.7986 94.0031V59.7277C44.7986 56.3821 42.0862 53.6697 38.7406 53.6697L4.46591 53.669C2.38634 53.669 0.700428 51.9831 0.700429 49.9035V49.0113C0.700429 46.9318 2.38634 45.2459 4.46591 45.2459L38.7406 45.2452C42.0862 45.2452 44.7986 42.5327 44.7986 39.1871V4.46568Z"/></svg>
+                  <svg class="market-limit-cross" width="99" height="99" viewBox="0 0 99 99" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44.7986 4.46568C44.7989 2.38634 46.4847 0.700196 48.5641 0.700196H49.9037C51.9831 0.700198 53.6689 2.38635 53.6692 4.46568V39.1871C53.6692 42.5327 56.3817 45.2452 59.7273 45.2452L94.0019 45.2459C96.0815 45.2459 97.7674 46.9318 97.7674 49.0113V49.9035C97.7674 51.9831 96.0815 53.669 94.0019 53.669L59.7273 53.6697C56.3817 53.6697 53.6692 56.3821 53.6692 59.7277V94.0031C53.6689 96.0824 51.9831 97.7686 49.9037 97.7686H48.5641C46.4847 97.7686 44.7989 96.0824 44.7986 94.0031V59.7277C44.7986 56.3821 42.0862 53.6697 38.7406 53.6697L4.46591 53.669C2.38634 53.669 0.700428 51.9831 0.700429 49.9035V49.0113C0.700429 46.9318 2.38634 45.2459 4.46591 45.2459L38.7406 45.2452C42.0862 45.2452 44.7986 42.5327 44.7986 39.1871V4.46568Z"/></svg>
+                </span>
+                <button type="button" data-order-type="market" aria-pressed="true">market</button>
+                <button type="button" data-order-type="limit" aria-pressed="false">limit</button>
+              </div>
             </div>
           </div>
         </article>
@@ -608,6 +771,47 @@
                 <label class="orb-color">sheen<input data-orb-field="sheen" type="color" value="#00ffbf"></label>
                 <label class="orb-color">shadow<input data-orb-field="shadow" type="color" value="#00329d"></label>
               </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="navigation">
+      <div class="section-title"><h2>Navigation</h2><span>hudi orb / radial nav</span></div>
+      <div class="grid">
+        <article class="card span-5">
+          <div class="card-head"><div><h3>Hudi orb</h3><p>Logo orb generator using the stock orb material.</p></div><button class="copy-css" data-copy="Hudi orb">Copy CSS</button></div>
+          <div class="demo hudi-logo-demo">
+            <div class="orb-preview-stage">
+              <div class="hudi-logo-orb" id="hudi-logo-preview" style="--orb-base:#24d0ff;--orb-sheen:#00bfff;--orb-shadow:rgba(0,50,157,.4);--logo-inner:#93c0ff;">
+                <svg class="hudi-logo-mark" width="47" height="49" viewBox="0 0 47 49" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <g filter="url(#hudi-logo-filter-preview)"><path d="M27.1405 48.0754C24.2967 48.0778 22.6508 45.9399 22.641 43.2398L22.5569 26.5795C22.5466 24.0301 20.9258 22.4611 18.4584 22.3485C15.1435 22.1982 21.5146 22.2441 18.1987 22.3269C15.5118 22.3984 13.9658 24.3797 13.9074 27.0385C13.7827 32.6096 13.9316 38.1338 13.6907 43.7113C13.578 46.2465 11.6705 48.0207 9.27112 48.0043L4.45862 47.9715C1.7311 47.9469 -0.0108297 45.9046 0.000347114 43.0949L0.160873 4.38224C0.170878 1.86718 2.2011 0.175674 4.437 0.0543588C6.11221 -0.0349212 7.62286 -0.00149948 9.25643 0.0666769C11.7717 0.165773 13.7002 1.72225 13.8331 4.40236C13.9218 6.16397 13.8599 9.76153 14.1877 11.5721C14.5423 13.5061 16.0413 14.7387 18.1468 14.7608L34.9218 14.9852C37.2186 15.0149 38.8885 16.2551 39.6939 18.2868C41.183 22.0346 46.0871 21.3893 46.0696 25.7752L45.9972 43.9769C45.9876 46.396 43.9299 48.1148 41.7286 48.1197L27.1405 48.0823L27.1405 48.0754Z" fill="url(#hudi-logo-gradient-preview)"/></g>
+                  <defs><filter id="hudi-logo-filter-preview" x="0" y="0" width="46.0693" height="48.1191" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset/><feGaussianBlur stdDeviation="1.1"/><feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix type="matrix" values="0 0 0 0 0.574688 0 0 0 0 0.751902 0 0 0 0 1 0 0 0 1 0"/><feBlend mode="normal" in2="shape" result="effect1_innerShadow_121_362"/></filter><radialGradient id="hudi-logo-gradient-preview" cx="0" cy="0" r="1" gradientTransform="matrix(-0.000709991 82.9873 -82.8097 0.000702805 22.9657 -7.59041)" gradientUnits="userSpaceOnUse"><stop stop-color="white"/><stop offset="0.379952" stop-color="white"/><stop offset="0.681343" stop-color="#F2FBFF"/></radialGradient></defs>
+                </svg>
+              </div>
+            </div>
+            <div class="hudi-logo-controls" data-hudi-orb-maker>
+              <label class="orb-color">base<input data-hudi-orb-field="base" type="color" value="#24d0ff"></label>
+              <label class="orb-color">sheen<input data-hudi-orb-field="sheen" type="color" value="#00bfff"></label>
+              <label class="orb-color">shadow<input data-hudi-orb-field="shadow" type="color" value="#00329d"></label>
+            </div>
+          </div>
+        </article>
+        <article class="card span-7">
+          <div class="card-head"><div><h3>Hudi nav bar</h3><p>Radial top navigation with the selected item seated into the bar.</p></div><button class="copy-css" data-copy="Hudi nav bar">Copy CSS</button></div>
+          <div class="demo hudi-nav-demo">
+            <div class="hudi-nav-menu" data-hudi-nav data-selected="markets">
+              <div class="hudi-nav-bar"></div>
+              <div class="hudi-logo-orb" style="--orb-base:#24d0ff;--orb-sheen:#00bfff;--orb-shadow:rgba(0,50,157,.4);--logo-inner:#93c0ff;">
+                <svg class="hudi-logo-mark" width="47" height="49" viewBox="0 0 47 49" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <g filter="url(#hudi-logo-filter-nav)"><path d="M27.1405 48.0754C24.2967 48.0778 22.6508 45.9399 22.641 43.2398L22.5569 26.5795C22.5466 24.0301 20.9258 22.4611 18.4584 22.3485C15.1435 22.1982 21.5146 22.2441 18.1987 22.3269C15.5118 22.3984 13.9658 24.3797 13.9074 27.0385C13.7827 32.6096 13.9316 38.1338 13.6907 43.7113C13.578 46.2465 11.6705 48.0207 9.27112 48.0043L4.45862 47.9715C1.7311 47.9469 -0.0108297 45.9046 0.000347114 43.0949L0.160873 4.38224C0.170878 1.86718 2.2011 0.175674 4.437 0.0543588C6.11221 -0.0349212 7.62286 -0.00149948 9.25643 0.0666769C11.7717 0.165773 13.7002 1.72225 13.8331 4.40236C13.9218 6.16397 13.8599 9.76153 14.1877 11.5721C14.5423 13.5061 16.0413 14.7387 18.1468 14.7608L34.9218 14.9852C37.2186 15.0149 38.8885 16.2551 39.6939 18.2868C41.183 22.0346 46.0871 21.3893 46.0696 25.7752L45.9972 43.9769C45.9876 46.396 43.9299 48.1148 41.7286 48.1197L27.1405 48.0823L27.1405 48.0754Z" fill="url(#hudi-logo-gradient-nav)"/></g>
+                  <defs><filter id="hudi-logo-filter-nav" x="0" y="0" width="46.0693" height="48.1191" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset/><feGaussianBlur stdDeviation="1.1"/><feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix type="matrix" values="0 0 0 0 0.574688 0 0 0 0 0.751902 0 0 0 0 1 0 0 0 1 0"/><feBlend mode="normal" in2="shape" result="effect1_innerShadow_121_362"/></filter><radialGradient id="hudi-logo-gradient-nav" cx="0" cy="0" r="1" gradientTransform="matrix(-0.000709991 82.9873 -82.8097 0.000702805 22.9657 -7.59041)" gradientUnits="userSpaceOnUse"><stop stop-color="white"/><stop offset="0.379952" stop-color="white"/><stop offset="0.681343" stop-color="#F2FBFF"/></radialGradient></defs>
+                </svg>
+              </div>
+              <div class="hudi-nav-selected"><span>markets</span></div>
+              <button class="hudi-nav-pill" type="button" data-nav-option="vault" data-slot="0"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-label">vault</span></button>
+              <button class="hudi-nav-pill" type="button" data-nav-option="leaderboard" data-slot="1"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-label">leaderboard</span></button>
             </div>
           </div>
         </article>
@@ -730,11 +934,15 @@
     </section>
   </main>
 
-  <script id="css-snippets" type="application/json">{"Color and font index":"@font-face { font-family: \"OCRA Fixed\"; src: url(\"assets/fonts/OCRAStdFIXED-Regular.otf\") format(\"opentype\"); font-weight: 400; font-display: swap; }\n@font-face { font-family: \"Syne Hudi\"; src: url(\"assets/fonts/Syne-Regular.ttf\") format(\"truetype\"); font-weight: 400; font-display: swap; }\n@font-face { font-family: \"Syne Hudi\"; src: url(\"assets/fonts/Syne-Bold.ttf\") format(\"truetype\"); font-weight: 700; font-display: swap; }\n@font-face { font-family: \"Syne Mono Hudi\"; src: url(\"assets/fonts/SyneMono-Regular.ttf\") format(\"truetype\"); font-weight: 400; font-display: swap; }\n\n:root {\n  --ink: #171717;\n  --dark-grey: #71809e;\n  --light-grey: #a9a9a9;\n  --outline-blue: #e6f4ff;\n  --outline-blue-2: #e2f2ff;\n  --select-blue: #8bccff;\n  --gain: #01fd90;\n  --gain-soft: #96ffd2;\n  --pink: #fd01ba;\n  --pink-soft: #ffe7f6;\n  --loss: #ff92e2;\n  --yellow: #f2ff00;\n  --ocr: \"OCRA Fixed\", ui-monospace, monospace;\n  --mono: \"Syne Mono Hudi\", \"Syne Mono\", ui-monospace, monospace;\n  --sans: \"Syne Hudi\", Syne, sans-serif;\n}","Trade buttons":".hudi-trade-button {\n  --pill-bg: #01fd90;\n  --pill-inner-shadow: rgba(0, 95, 60, 0.34);\n  --pill-label: #007b92;\n  --pill-label-shadow: rgba(255,255,255,.72);\n  align-items: center;\n  background: var(--pill-bg);\n  border: 4px solid #e2f2ff;\n  border-radius: 23px;\n  box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow);\n  color: var(--pill-label);\n  cursor: pointer;\n  display: inline-flex;\n  font-family: \"OCRA Fixed\", \"SF Mono\", Menlo, Monaco, Consolas, monospace;\n  font-size: 17px;\n  height: 46px;\n  justify-content: center;\n  letter-spacing: -0.55px;\n  line-height: 1;\n  min-width: 149px;\n  overflow: hidden;\n  padding: 0 28px;\n  position: relative;\n  text-transform: lowercase;\n  transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;\n  will-change: transform;\n  white-space: nowrap;\n}\n.hudi-trade-button::before {\n  background: linear-gradient(0.24deg, rgba(255,255,255,.23) 20.46%, rgba(255,255,255,.91) 99.78%);\n  content: \"\";\n  height: 69.4%;\n  left: -0.33%;\n  mask-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2035 347' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M178 0H1888C1966 0 2035 48 2035 126C2035 224 1953 277 1814 277H190C103 277 57 306 0 347C4 278 6 205 18 148C34 65 92 16 178 0Z'/%3E%3C/svg%3E\");\n  mask-repeat: no-repeat;\n  mask-size: 100% 100%;\n  pointer-events: none;\n  position: absolute;\n  top: 0;\n  width: 95%;\n  -webkit-mask-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2035 347' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M178 0H1888C1966 0 2035 48 2035 126C2035 224 1953 277 1814 277H190C103 277 57 306 0 347C4 278 6 205 18 148C34 65 92 16 178 0Z'/%3E%3C/svg%3E\");\n  -webkit-mask-repeat: no-repeat;\n  -webkit-mask-size: 100% 100%;\n}\n.hudi-trade-button::after {\n  background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%);\n  border-radius: inherit;\n  content: \"\";\n  filter: blur(1.43px);\n  height: 18%;\n  left: 9%;\n  opacity: .9;\n  pointer-events: none;\n  position: absolute;\n  right: 9%;\n  top: 0;\n}\n.hudi-trade-button .pill-bottom-highlight {\n  background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%);\n  border-radius: inherit;\n  filter: blur(1.43px);\n  height: 66.2%;\n  left: 1%;\n  pointer-events: none;\n  position: absolute;\n  right: 1%;\n  top: 34%;\n}\n.hudi-trade-button .pill-label {\n  position: relative;\n  text-shadow: 0 .7px 0 var(--pill-label-shadow);\n  top: 4.8%;\n  z-index: 2;\n}\n.hudi-trade-button .pill-shine {\n  background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 34%, rgba(255,255,255,.72) 48%, rgba(255,255,255,0) 64%, transparent 100%);\n  height: 150%;\n  left: -80%;\n  pointer-events: none;\n  position: absolute;\n  top: -25%;\n  transform: skewX(-18deg);\n  width: 52%;\n  z-index: 3;\n}\n.hudi-trade-button.long { --pill-bg: #01fd90; --pill-inner-shadow: rgba(0,95,60,.34); }\n.hudi-trade-button.short { --pill-bg: #ff0fc4; --pill-inner-shadow: rgba(118,0,82,.34); --pill-label: #ffffff; --pill-label-shadow: rgba(55,0,42,.35); }\n.hudi-trade-button.confirm { --pill-bg: #e9eef5; --pill-inner-shadow: rgba(62,88,116,.28); --pill-label: #71809e; --pill-label-shadow: rgba(255,255,255,.9); border-radius: 28px; font-size: 23px; height: 56px; min-width: 241px; }\n.hudi-trade-button.confirm .pill-label { top: -1px; }\n.hudi-trade-button:hover {\n  filter: brightness(1.015) saturate(1.03);\n  transform: translateY(-1px) scale(1.01);\n  box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow);\n}\n.hudi-trade-button:hover .pill-shine { animation: hudi-pill-shine 760ms ease-out; }\n.hudi-trade-button:active,\n.hudi-trade-button.is-pressed { filter: brightness(.93) saturate(.96); transform: translateY(1px) scale(.99); box-shadow: inset 0 1px 14px var(--pill-inner-shadow); }\n@keyframes hudi-pill-shine { from { left: -80%; } to { left: 130%; } }","Long short toggle":".hudi-side-toggle {\n  --toggle-left: 50%;\n  --toggle-bg: #fd01ba;\n  --toggle-label: #fff;\n  --toggle-shadow: rgba(30, 0, 62, .4);\n  position: relative;\n  width: 326px;\n  height: 50px;\n  border: 4px solid #e6f4ff;\n  border-radius: 26px;\n  background: transparent;\n  overflow: hidden;\n  isolation: isolate;\n}\n.hudi-side-toggle__bed {\n  content: \"\";\n  position: absolute;\n  inset: 0;\n  border-radius: inherit;\n  background: #eef2ff;\n  box-shadow:\n    inset 0 -3px 32px rgba(0,62,59,.34),\n    inset 0 4px 13px rgba(0,0,0,.28),\n    inset 0 4px 50px rgba(0,0,0,.16);\n  overflow: hidden;\n  pointer-events: none;\n  z-index: 0;\n}\n.hudi-side-toggle__bed::before {\n  content: \"\";\n  position: absolute;\n  left: 0;\n  right: 0;\n  top: 0;\n  height: 69.4%;\n  border-radius: 22px;\n  background: linear-gradient(.24deg, rgba(255,255,255,.18) 20.46%, rgba(255,255,255,.9) 99.78%);\n  opacity: .72;\n  transition: opacity 140ms ease;\n}\n.hudi-side-toggle__bed::after {\n  content: \"\";\n  position: absolute;\n  left: 1%;\n  right: 1%;\n  top: 34%;\n  height: 66%;\n  border-radius: inherit;\n  background: linear-gradient(360deg, rgba(255,255,255,.12) -14.15%, rgba(255,255,255,.52) 5.5%, rgba(255,255,255,0) 38%);\n  filter: blur(1.4px);\n}\n.hudi-side-toggle::after {\n  content: \"\";\n  position: absolute;\n  top: 1px;\n  bottom: 1px;\n  left: 0;\n  right: 0;\n  border-radius: 22px;\n  background:\n    radial-gradient(85% 90% at 50% 0%, rgba(255,255,255,.72) 0%, rgba(255,255,255,.28) 52%, rgba(255,255,255,0) 100%),\n    linear-gradient(180deg, rgba(255,255,255,.28), rgba(113,128,158,.08));\n  box-shadow: inset 0 0 0 1px rgba(255,255,255,.24);\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity 140ms ease;\n  z-index: 1;\n}\n.hudi-side-toggle:hover::after { opacity: .58; }\n.hudi-side-toggle:hover .hudi-side-toggle__bed::before { opacity: .88; }\n.hudi-side-toggle button {\n  position: absolute;\n  top: 0;\n  z-index: 4;\n  width: 50%;\n  height: 100%;\n  border: 0;\n  background: transparent;\n  color: rgba(82,92,111,.28);\n  cursor: pointer;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 19px;\n  letter-spacing: -.6px;\n}\n.hudi-side-toggle button[data-side=\"long\"] { left: 0; }\n.hudi-side-toggle button[data-side=\"short\"] { right: 0; }\n.hudi-side-toggle button[aria-pressed=\"true\"] { color: transparent; }\n.hudi-side-toggle button:not([aria-pressed=\"true\"]):hover { color: rgba(82,92,111,.42); }\n.hudi-side-toggle__pill {\n  position: absolute;\n  top: 0;\n  left: var(--toggle-left);\n  z-index: 2;\n  display: grid;\n  place-items: center;\n  width: 50%;\n  height: 100%;\n  border-radius: 25px;\n  background: var(--toggle-bg);\n  box-shadow: inset 0 -3px 32px var(--toggle-shadow);\n  filter: drop-shadow(0 4px 4px rgba(0,0,0,.25));\n  overflow: hidden;\n  transition: left 180ms ease, background-color 180ms ease, box-shadow 180ms ease;\n}\n.hudi-side-toggle__pill::before {\n  content: \"\";\n  position: absolute;\n  left: -.33%;\n  top: 0;\n  width: 95%;\n  height: 69.4%;\n  background: linear-gradient(.24deg, rgba(255,255,255,.23) 20.46%, rgba(255,255,255,.91) 99.78%);\n  mask-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2035 347' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M178 0H1888C1966 0 2035 48 2035 126C2035 224 1953 277 1814 277H190C103 277 57 306 0 347C4 278 6 205 18 148C34 65 92 16 178 0Z'/%3E%3C/svg%3E\");\n  mask-repeat: no-repeat;\n  mask-size: 100% 100%;\n  opacity: .88;\n  pointer-events: none;\n  -webkit-mask-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2035 347' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M178 0H1888C1966 0 2035 48 2035 126C2035 224 1953 277 1814 277H190C103 277 57 306 0 347C4 278 6 205 18 148C34 65 92 16 178 0Z'/%3E%3C/svg%3E\");\n  -webkit-mask-repeat: no-repeat;\n  -webkit-mask-size: 100% 100%;\n}\n.hudi-side-toggle__pill::after {\n  content: \"\";\n  position: absolute;\n  left: 9%;\n  right: 9%;\n  top: 0;\n  height: 18%;\n  border-radius: inherit;\n  background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%);\n  filter: blur(1.43px);\n  opacity: .9;\n  pointer-events: none;\n}\n.hudi-side-toggle__bottom {\n  position: absolute;\n  left: 1%;\n  right: 1%;\n  top: 34%;\n  height: 66.2%;\n  border-radius: inherit;\n  background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%);\n  filter: blur(1.43px);\n  pointer-events: none;\n}\n.hudi-side-toggle__label {\n  position: relative;\n  z-index: 1;\n  color: var(--toggle-label);\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 19px;\n  letter-spacing: -.6px;\n  text-shadow: 0 .7px 0 rgba(55,0,42,.35);\n}\n.hudi-side-toggle.is-long {\n  --toggle-left: 0%;\n  --toggle-bg: #01fd90;\n  --toggle-label: #007b92;\n  --toggle-shadow: rgba(30,62,0,.4);\n}\n.hudi-side-toggle.is-long .hudi-side-toggle__label { text-shadow: 0 .7px 0 rgba(255,255,255,.72); }\n.hudi-side-toggle.is-short {\n  --toggle-left: 50%;\n  --toggle-bg: #fd01ba;\n  --toggle-label: #fff;\n  --toggle-shadow: rgba(30,0,62,.4);\n}","Leverage slider":".hudi-slider {\n  --track: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%);\n  width: min(315px, 100%);\n}\n.hudi-slider-row {\n  display: grid;\n  grid-template-columns: 1fr 58px;\n  gap: 13px;\n  align-items: center;\n  width: 100%;\n}\n.hudi-slider-control {\n  --slider-percent: 40%;\n  position: relative;\n  display: block;\n  height: 34px;\n}\n.hudi-slider input[type=\"range\"] {\n  appearance: none;\n  position: absolute;\n  inset: 0;\n  z-index: 3;\n  width: 100%;\n  height: 34px;\n  background: transparent;\n  cursor: pointer;\n  opacity: 0;\n}\n.hudi-slider-visual {\n  position: absolute;\n  left: 0;\n  right: 0;\n  top: 50%;\n  height: 14px;\n  border: 4px solid #e2f2ff;\n  border-radius: 13px;\n  background:\n    linear-gradient(90deg, #e8ffde 0%, #01dc79 100%) 0 0 / var(--slider-percent) 100% no-repeat,\n    #eef7ff;\n  transform: translateY(-50%);\n  pointer-events: none;\n}\n.hudi-slider.short .hudi-slider-visual {\n  background:\n    linear-gradient(90deg, #ffe4fe 0%, #fd01ba 100%) 0 0 / var(--slider-percent) 100% no-repeat,\n    #eef7ff;\n}\n.hudi-slider-puck {\n  position: absolute;\n  left: var(--slider-percent);\n  top: 50%;\n  width: 26px;\n  height: 26px;\n  box-sizing: content-box;\n  border: 4px solid #e2f2ff;\n  border-radius: 50%;\n  background:\n    radial-gradient(36.34% 18.06% at 50% 1%, #fff 0%, rgba(255,255,255,.14) 100%),\n    radial-gradient(64% 46% at 50% 20%, rgba(255,255,255,.96) 0 50%, rgba(255,255,255,.58) 62%, transparent 63%),\n    linear-gradient(180deg, #f5faff 0%, #d9e4ec 42%, #b8c8d4 100%);\n  box-shadow: inset 0 -3px 16px rgba(67, 88, 109, .28);\n  transform: translate(-50%, -50%);\n  transition: left 220ms cubic-bezier(.2,.8,.2,1);\n  pointer-events: none;\n}\n.hudi-slider-visual {\n  transition: background-size 220ms cubic-bezier(.2,.8,.2,1);\n}\n.hudi-slider output {\n  display: inline-grid;\n  height: 16px;\n  min-width: 36px;\n  overflow: hidden;\n  color: #71809e;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 12px;\n  line-height: 16px;\n  text-align: right;\n}\n.hudi-slider output span {\n  display: block;\n  will-change: transform, opacity;\n}\n.hudi-slider output.is-up span { animation: hudi-leverage-roll-up 180ms ease-out; }\n.hudi-slider output.is-down span { animation: hudi-leverage-roll-down 180ms ease-out; }\n@keyframes hudi-leverage-roll-up {\n  from { opacity: .35; transform: translateY(100%); }\n  to { opacity: 1; transform: translateY(0); }\n}\n@keyframes hudi-leverage-roll-down {\n  from { opacity: .35; transform: translateY(-100%); }\n  to { opacity: 1; transform: translateY(0); }\n}\n.hudi-slider-markers {\n  display: grid;\n  grid-template-columns: repeat(6, 1fr);\n  margin-top: 10px;\n  color: #a1a8b5;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  line-height: 1;\n}\n.hudi-slider-markers span { text-align: center; }\n.hudi-slider input::-webkit-slider-runnable-track {\n  height: 34px;\n  background: transparent;\n}\n.hudi-slider input::-webkit-slider-thumb {\n  appearance: none;\n  width: 34px;\n  height: 34px;\n}\n.hudi-slider input::-moz-range-thumb {\n  width: 34px;\n  height: 34px;\n  border: 0;\n  background: transparent;\n}\n.hudi-slider.short { --track: linear-gradient(270deg, #fd01ba 0%, #ffe4fe 100%); }","Pills and selectors":".hudi-pill {\n  min-height: 30px;\n  border: 4px solid #e6f4ff;\n  border-radius: 999px;\n  background: #fff;\n  color: #a9a9a9;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 12px;\n  padding-top: 2px;\n  cursor: pointer;\n  transition: border-color .14s ease, color .14s ease, transform .14s ease;\n}\n.hudi-pill:hover { border-color: #bddfff; color: #71809e; }\n.hudi-pill[aria-pressed=\"true\"],\n.hudi-pill.is-selected { border-color: #8bccff; color: #71809e; }\n.hudi-pill-icon {\n  position: relative;\n  top: -2px;\n  display: inline-block;\n  margin-right: 5px;\n}\n.hudi-pill:active { transform: scale(.97); }\n\n.time-selector {\n  --active-index: 2;\n  --selected-width: 52px;\n  --slot-step: 56px;\n  --slot-start: -4px;\n  --active-left: calc(var(--slot-start) + (var(--active-index) * var(--slot-step)));\n  box-sizing: border-box;\n  position: relative;\n  display: inline-block;\n  width: 276px;\n  height: 35px;\n  border: 4px solid #e2f2ff;\n  border-radius: 18px;\n  background: #fff;\n  overflow: visible;\n}\n.time-selector::before {\n  content: \"\";\n  box-sizing: border-box;\n  position: absolute;\n  top: -4px;\n  bottom: -4px;\n  left: var(--active-left);\n  width: var(--selected-width);\n  border: 4px solid #8bccff;\n  border-radius: 22px;\n  background: #fff;\n  transition: left 180ms ease;\n  z-index: 2;\n}\n.time-selector button {\n  position: absolute;\n  top: 0;\n  z-index: 3;\n  display: grid;\n  place-items: center;\n  width: var(--selected-width);\n  height: 27px;\n  padding: 3px 0 0;\n  border: 0;\n  background: transparent;\n  color: #a9a9a9;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 13px;\n  line-height: 1;\n  cursor: pointer;\n}\n.time-selector button:nth-child(1) { left: calc(var(--slot-start) + (var(--slot-step) * 0)); }\n.time-selector button:nth-child(2) { left: calc(var(--slot-start) + (var(--slot-step) * 1)); }\n.time-selector button:nth-child(3) { left: calc(var(--slot-start) + (var(--slot-step) * 2)); }\n.time-selector button:nth-child(4) { left: calc(var(--slot-start) + (var(--slot-step) * 3)); }\n.time-selector button:nth-child(5) { left: calc(var(--slot-start) + (var(--slot-step) * 4)); }\n.time-selector button[aria-pressed=\"true\"] { color: #71809e; }","Status chips":".hudi-status {\n  display: inline-flex;\n  align-items: center;\n  gap: 7px;\n  min-height: 25px;\n  padding: 0 12px 0 9px;\n  border: 4px solid #01fd90;\n  border-radius: 54px;\n  background: #96ffd2;\n  color: #127e4b;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: .02em;\n  padding-top: 2px;\n}\n.hudi-status::before {\n  content: \"\";\n  position: relative;\n  top: -1px;\n  width: 8px;\n  height: 8px;\n  flex: 0 0 8px;\n  border-radius: 50%;\n  background: currentColor;\n}\n.hudi-status.closed {\n  border-color: #ff92e2;\n  background: #ffe7f6;\n  color: #e630a0;\n}","Gain chips":".gain-chip {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-height: 20px;\n  padding: 0 8px;\n  border-radius: 53px;\n  background: #96ffd2;\n  color: #127e4b;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: .01em;\n  padding-top: 2px;\n}\n.gain-chip.loss {\n  background: #ffe7f6;\n  color: #e630a0;\n  letter-spacing: -.01em;\n}","Chart labels":".chart-label {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 48px;\n  height: 13px;\n  background: #01fd90;\n  color: #000;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: -.01em;\n  padding-top: 2px;\n}\n.chart-label.small-gain { background: #96ffd2; }\n.chart-label.big-loss { background: #fd01ba; color: #fff; }\n.chart-label.small-loss { background: #ff92e2; color: #fff; }","Trading chart":".chart-demo {\n  --mx: 50%;\n  --my: 50%;\n  --spacing: 22px;\n  position: relative;\n  width: 100%;\n  height: 420px;\n  border: 4px solid #e6f4ff;\n  border-radius: 18px;\n  background: #fff;\n  overflow: hidden;\n}\n.chart-scroll {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  cursor: crosshair;\n  overscroll-behavior: contain;\n}\n.chart-scroll.is-dragging { cursor: grabbing; }\n.chart-track {\n  position: relative;\n  width: max(100%, calc((var(--count) * var(--spacing)) + 128px));\n  height: 100%;\n  background:\n    linear-gradient(rgba(207,228,251,.45) 1px, transparent 1px),\n    linear-gradient(90deg, rgba(207,228,251,.45) 1px, transparent 1px),\n    #fff;\n  background-size: 28px 28px;\n}\n.candle {\n  --body-w: clamp(8px, calc(var(--spacing) - 10px), 18px);\n  position: absolute;\n  left: calc(64px + (var(--i) * var(--spacing)));\n  top: var(--high-y);\n  width: var(--spacing);\n  height: calc(var(--low-y) - var(--high-y));\n  border: 0;\n  background: transparent;\n  cursor: pointer;\n  padding: 0;\n  transform: translateX(-50%);\n}\n.candle-wick {\n  position: absolute;\n  left: 50%;\n  width: 1px;\n  background: #000;\n  transform: translateX(-50%);\n}\n.candle-wick.top { top: 0; height: calc(var(--body-y) - var(--high-y)); }\n.candle-wick.bottom { top: calc(var(--body-y) - var(--high-y) + var(--body-h)); height: calc(var(--low-y) - var(--body-y) - var(--body-h)); }\n.candle-body {\n  position: absolute;\n  left: 50%;\n  top: calc(var(--body-y) - var(--high-y));\n  width: var(--body-w);\n  height: max(var(--body-h), 3px);\n  border: 1px solid #000;\n  background: var(--c);\n  transform: translateX(-50%);\n}\n.candle[aria-pressed=\"true\"] .candle-body { outline: 4px solid #1687ff; outline-offset: 3px; }\n.cursor-v,\n.cursor-h,\n.cursor-crosshair {\n  position: absolute;\n  pointer-events: none;\n  opacity: 0;\n  z-index: 5;\n}\n.chart-demo.is-tracking .cursor-v,\n.chart-demo.is-tracking .cursor-h,\n.chart-demo.is-tracking .cursor-crosshair { opacity: 1; }\n.cursor-v { left: var(--mx); top: 44px; bottom: 34px; width: 6px; transform: translateX(-50%); background: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='38' viewBox='0 0 6 38'%3E%3Crect x='.5' y='.5' width='5' height='27' rx='2.5' fill='%23FF92E2' stroke='%23000'/%3E%3C/svg%3E\") top center / 6px 38px repeat-y; }\n.cursor-h { left: 0; right: 52px; top: var(--my); height: 6px; transform: translateY(-50%); background: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='6' viewBox='0 0 38 6'%3E%3Crect x='.5' y='.5' width='27' height='5' rx='2.5' fill='%23FF92E2' stroke='%23000'/%3E%3C/svg%3E\") center left / 38px 6px repeat-x; }\n.cursor-crosshair {\n  left: var(--mx);\n  top: var(--my);\n  width: 23px;\n  height: 23px;\n  transform: translate(-50%, -50%);\n  z-index: 6;\n}\n.cursor-crosshair::before,\n.cursor-crosshair::after { content: \"\"; position: absolute; background: #f2ff00; border: 0.3px solid #71809e; border-radius: 2px; box-sizing: border-box; }\n.cursor-crosshair::before { left: 50%; top: 0; transform: translateX(-50%); width: 2px; height: 23px; }\n.cursor-crosshair::after { left: 0; top: 50%; transform: translateY(-50%); width: 23px; height: 2px; }","Dashboard panel":".hudi-panel {\n  border: 4px solid #e6f4ff;\n  border-radius: 18px;\n  background: #fff;\n  box-shadow: 3px 7px 10px rgba(0,63,131,.13);\n}\n","Orb":".hudi-stock-orb {\n  --orb-base: #24d0ff;\n  --orb-sheen: #00ffbf;\n  --orb-shadow: #00329d;\n  --orb-text-deep: #000925;\n  --orb-text-light: #95afff;\n  --orb-text-glow: #0558da;\n  position: relative;\n  display: grid;\n  place-items: center;\n  width: 100px;\n  aspect-ratio: 1;\n  border-radius: 50%;\n  background-color: var(--orb-base);\n  background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%);\n  box-shadow: inset 0 -6.1625px 64.3984px color-mix(in srgb, var(--orb-shadow) 40%, transparent);\n  overflow: hidden;\n}\n.hudi-stock-orb::before {\n  background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%);\n  border-radius: 50%;\n  content: \"\";\n  height: 46%;\n  left: 18.6%;\n  position: absolute;\n  top: 3.8%;\n  width: 64%;\n  z-index: 1;\n}\n.hudi-stock-orb::after {\n  background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%);\n  border-radius: 50%;\n  content: \"\";\n  height: 18.06%;\n  left: 32.05%;\n  position: absolute;\n  top: 1.1%;\n  width: 36.34%;\n  z-index: 1;\n}\n.hudi-stock-orb__ticker,\n.hudi-stock-orb__number {\n  background: radial-gradient(180% 173% at 50% -16%, var(--orb-text-light) 0%, var(--orb-text-deep) 48%, var(--orb-text-deep) 100%);\n  background-clip: text;\n  -webkit-background-clip: text;\n  color: transparent;\n  filter: drop-shadow(0 0 1.52px var(--orb-text-glow));\n  position: absolute;\n  -webkit-text-fill-color: transparent;\n  z-index: 2;\n}\n.hudi-stock-orb__ticker {\n  font-family: \"Syne Hudi\", Syne, sans-serif;\n  font-size: 18px;\n  font-weight: 700;\n  line-height: 1;\n  text-align: center;\n  top: 43.6%;\n  width: 99.64%;\n}\n.hudi-stock-orb__number {\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 8px;\n  letter-spacing: .06em;\n  opacity: .75;\n  top: 9px;\n}"}</script>
+  <script id="css-snippets" type="application/json">{"Color and font index":"@font-face { font-family: \"OCRA Fixed\"; src: url(\"assets/fonts/OCRAStdFIXED-Regular.otf\") format(\"opentype\"); font-weight: 400; font-display: swap; }\n@font-face { font-family: \"Syne Hudi\"; src: url(\"assets/fonts/Syne-Regular.ttf\") format(\"truetype\"); font-weight: 400; font-display: swap; }\n@font-face { font-family: \"Syne Hudi\"; src: url(\"assets/fonts/Syne-Bold.ttf\") format(\"truetype\"); font-weight: 700; font-display: swap; }\n@font-face { font-family: \"Syne Mono Hudi\"; src: url(\"assets/fonts/SyneMono-Regular.ttf\") format(\"truetype\"); font-weight: 400; font-display: swap; }\n\n:root {\n  --ink: #171717;\n  --dark-grey: #71809e;\n  --light-grey: #a9a9a9;\n  --outline-blue: #e6f4ff;\n  --outline-blue-2: #e2f2ff;\n  --select-blue: #8bccff;\n  --gain: #01fd90;\n  --gain-soft: #96ffd2;\n  --pink: #fd01ba;\n  --pink-soft: #ffe7f6;\n  --loss: #ff92e2;\n  --yellow: #f2ff00;\n  --ocr: \"OCRA Fixed\", ui-monospace, monospace;\n  --mono: \"Syne Mono Hudi\", \"Syne Mono\", ui-monospace, monospace;\n  --sans: \"Syne Hudi\", Syne, sans-serif;\n}","Trade buttons":".hudi-trade-button {\n  --pill-bg: #01fd90;\n  --pill-inner-shadow: rgba(0,95,60,.34);\n  --pill-label: #007b92;\n  align-items: center;\n  background: var(--pill-bg);\n  height: 46px;\n  min-width: 149px;\n  padding: 0 28px;\n  border: 4px solid #e2f2ff;\n  border-radius: 23px;\n  box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow);\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 17px;\n  letter-spacing: -0.55px;\n  color: var(--pill-label);\n  cursor: pointer;\n  display: inline-flex;\n  justify-content: center;\n  line-height: 1;\n  overflow: hidden;\n  position: relative;\n  text-transform: lowercase;\n  transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;\n  will-change: transform;\n}\n.hudi-trade-button::after { background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: inherit; content: \"\"; filter: blur(1.43px); height: 18%; left: 9%; opacity: .9; pointer-events: none; position: absolute; right: 9%; top: -.5px; }\n.hudi-trade-button .pill-top-contour { height: 75.4%; left: -.5px; mix-blend-mode: screen; overflow: visible; pointer-events: none; position: absolute; top: -.5px; width: calc(100% - 7.5px); z-index: 1; }\n.hudi-trade-button .pill-top-contour path { fill: url(#hudi-pill-top-gradient); }\n.hudi-trade-button .pill-bottom-highlight { background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%); border-radius: inherit; filter: blur(1.43px); height: 66.2%; left: 1%; pointer-events: none; position: absolute; right: 1%; top: 34%; }\n.hudi-trade-button .pill-label { color: var(--pill-label); position: relative; text-shadow: none; top: 4.8%; z-index: 2; }\n.hudi-trade-button.long .pill-label { background: linear-gradient(180deg, #6D8A89 0%, #334646 100%); background-clip: text; color: transparent; text-shadow: none; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }\n.hudi-trade-button.short .pill-label { color: #FFFFFF; text-shadow: none; -webkit-text-fill-color: #FFFFFF; }\n.hudi-trade-button .pill-shine { background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 34%, rgba(255,255,255,.72) 48%, rgba(255,255,255,0) 64%, transparent 100%); height: 150%; left: -80%; pointer-events: none; position: absolute; top: -25%; transform: skewX(-18deg); width: 52%; z-index: 3; }\n.hudi-trade-button.long { --pill-bg: #01fd90; --pill-inner-shadow: rgba(0,95,60,.34); }\n.hudi-trade-button.short { --pill-bg: #ff0fc4; --pill-inner-shadow: rgba(118,0,82,.34); --pill-label: #ffffff; }\n.hudi-trade-button.confirm { --pill-bg: #e9eef5; --pill-inner-shadow: rgba(62,88,116,.28); --pill-label: #71809e; border-radius: 28px; font-size: 23px; height: 56px; min-width: 241px; }\n.hudi-trade-button.confirm .pill-label { background: linear-gradient(180deg, #aeb8c6 0%, #71809e 100%); background-clip: text; color: transparent; text-shadow: none; top: -1px; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }\n.hudi-trade-button:hover { filter: brightness(1.015) saturate(1.03); transform: translateY(-1px) scale(1.01); box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow); }\n.hudi-trade-button:hover .pill-shine { animation: hudi-pill-shine 760ms ease-out; }\n.hudi-trade-button:active, .hudi-trade-button.is-pressed { filter: brightness(.93) saturate(.96); transform: translateY(1px) scale(.99); box-shadow: inset 0 1px 14px var(--pill-inner-shadow); }\n@keyframes hudi-pill-shine { from { left: -80%; } to { left: 130%; } }","Long short toggle":".hudi-side-toggle { --toggle-left: 50%; --toggle-bg: #fd01ba; --toggle-label: #fff; --toggle-shadow: rgba(30,0,62,.4); position: relative; width: 326px; max-width: 100%; height: 50px; border: 4px solid #e6f4ff; border-radius: 26px; background: transparent; overflow: hidden; isolation: isolate; }\n.hudi-side-toggle__bed { content: \"\"; position: absolute; inset: 0; border-radius: inherit; background: #eef2ff; box-shadow: inset 0 4px 13px rgba(0,0,0,.4), inset 0 4px 50px rgba(0,0,0,.25); overflow: hidden; pointer-events: none; z-index: 0; }\n.hudi-side-toggle__bed::before { content: \"\"; position: absolute; left: 0; right: 0; top: -.5px; height: 69.4%; border-radius: 22px; background: linear-gradient(.24deg, rgba(255,255,255,.18) 20.46%, rgba(255,255,255,.9) 99.78%); opacity: .72; transition: opacity 140ms ease; }\n.hudi-side-toggle__bed::after { content: \"\"; position: absolute; left: 1%; right: 1%; top: 34%; height: 66%; border-radius: inherit; background: linear-gradient(360deg, rgba(255,255,255,.58) -14.15%, rgba(255,255,255,.98) 5.5%, rgba(255,255,255,.42) 38%); filter: blur(1.4px); opacity: .94; }\n.hudi-side-toggle::after { content: \"\"; position: absolute; top: 1px; bottom: 1px; left: 0; right: 0; border-radius: 22px; background: radial-gradient(85% 90% at 50% 0%, rgba(255,255,255,.72) 0%, rgba(255,255,255,.28) 52%, rgba(255,255,255,0) 100%), linear-gradient(180deg, rgba(255,255,255,.28), rgba(113,128,158,.08)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.24); opacity: 0; pointer-events: none; transition: opacity 140ms ease; z-index: 1; }\n.hudi-side-toggle:hover::after { opacity: .58; }\n.hudi-side-toggle:hover .hudi-side-toggle__bed::before { opacity: .88; }\n.hudi-side-toggle button { position: absolute; top: -.5px; z-index: 4; width: 50%; height: 100%; border: 0; background: transparent; color: transparent; cursor: pointer; font-family: \"OCRA Fixed\", ui-monospace, monospace; font-size: 19px; letter-spacing: -.6px; }\n.hudi-side-toggle button::before { content: attr(data-side); position: absolute; inset: 0; display: grid; place-items: center; color: #8F9AAB; opacity: .5; text-shadow: none; transition: opacity 140ms ease; -webkit-text-fill-color: #8F9AAB; }\n.hudi-side-toggle button[data-side=\"long\"] { left: 0; }\n.hudi-side-toggle button[data-side=\"short\"] { right: 0; }\n.hudi-side-toggle button[aria-pressed=\"true\"]::before { opacity: 0; }\n.hudi-side-toggle button:not([aria-pressed=\"true\"]):hover::before { opacity: .5; }\n.hudi-side-toggle button:focus-visible { outline: 0; }\n.hudi-side-toggle__pill { position: absolute; top: -.5px; left: var(--toggle-left); z-index: 2; display: grid; place-items: center; width: 50%; height: 100%; border-radius: 25px; background: var(--toggle-bg); box-shadow: inset 0 -3px 32px var(--toggle-shadow); filter: drop-shadow(0 4px 4px rgba(0,0,0,.25)); overflow: hidden; transition: left 180ms ease, background-color 180ms ease, box-shadow 180ms ease; }\n.hudi-side-toggle__top-contour { height: 75.4%; left: -.5px; mix-blend-mode: screen; overflow: visible; pointer-events: none; position: absolute; top: -.5px; width: calc(100% - 7.5px); z-index: 1; }\n.hudi-side-toggle__top-contour path { fill: url(#hudi-pill-top-gradient); }\n.hudi-side-toggle__pill::after { content: \"\"; position: absolute; left: 9%; right: 9%; top: -.5px; height: 18%; border-radius: inherit; background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); filter: blur(1.43px); opacity: .9; pointer-events: none; }\n.hudi-side-toggle__bottom { position: absolute; left: 1%; right: 1%; top: 34%; height: 66.2%; border-radius: inherit; background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%); filter: blur(1.43px); pointer-events: none; }\n.hudi-side-toggle__label { position: relative; z-index: 1; color: var(--toggle-label); font-family: \"OCRA Fixed\", ui-monospace, monospace; font-size: 19px; letter-spacing: -.6px; text-shadow: 0 .7px 0 rgba(55,0,42,.35); }\n.hudi-side-toggle.is-long { --toggle-left: 0%; --toggle-bg: #01fd90; --toggle-label: #007b92; --toggle-shadow: rgba(30,62,0,.4); }\n.hudi-side-toggle.is-long .hudi-side-toggle__label { background: linear-gradient(180deg, #6D8A89 0%, #334646 100%); background-clip: text; color: transparent; text-shadow: none; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }\n.hudi-side-toggle.is-short { --toggle-left: 50%; --toggle-bg: #fd01ba; --toggle-label: #fff; --toggle-shadow: rgba(30,0,62,.4); }\n.hudi-side-toggle.is-short .hudi-side-toggle__label { color: #FFFFFF; text-shadow: none; -webkit-text-fill-color: #FFFFFF; }","Leverage slider":".hudi-slider {\n  --track: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%);\n  width: min(315px, 100%);\n}\n.hudi-slider-row {\n  display: grid;\n  grid-template-columns: 1fr 58px;\n  gap: 13px;\n  align-items: center;\n  width: 100%;\n}\n.hudi-slider-control {\n  --slider-percent: 40%;\n  position: relative;\n  display: block;\n  height: 34px;\n}\n.hudi-slider input[type=\"range\"] {\n  appearance: none;\n  position: absolute;\n  inset: 0;\n  z-index: 3;\n  width: 100%;\n  height: 34px;\n  background: transparent;\n  cursor: pointer;\n  opacity: 0;\n}\n.hudi-slider-visual {\n  position: absolute;\n  left: 0;\n  right: 0;\n  top: 50%;\n  height: 14px;\n  border: 4px solid #e2f2ff;\n  border-radius: 13px;\n  background:\n    linear-gradient(90deg, #e8ffde 0%, #01dc79 100%) 0 0 / var(--slider-percent) 100% no-repeat,\n    #eef7ff;\n  transform: translateY(-50%);\n  pointer-events: none;\n}\n.hudi-slider.short .hudi-slider-visual {\n  background:\n    linear-gradient(90deg, #ffe4fe 0%, #fd01ba 100%) 0 0 / var(--slider-percent) 100% no-repeat,\n    #eef7ff;\n}\n.hudi-slider-puck {\n  position: absolute;\n  left: var(--slider-percent);\n  top: 50%;\n  width: 26px;\n  height: 26px;\n  box-sizing: content-box;\n  border: 4px solid #e2f2ff;\n  border-radius: 50%;\n  background:\n    radial-gradient(36.34% 18.06% at 50% 1%, #fff 0%, rgba(255,255,255,.14) 100%),\n    radial-gradient(64% 46% at 50% 20%, rgba(255,255,255,.96) 0 50%, rgba(255,255,255,.58) 62%, transparent 63%),\n    linear-gradient(180deg, #f5faff 0%, #d9e4ec 42%, #b8c8d4 100%);\n  box-shadow: inset 0 -3px 16px rgba(67, 88, 109, .28);\n  transform: translate(-50%, -50%);\n  transition: left 220ms cubic-bezier(.2,.8,.2,1);\n  pointer-events: none;\n}\n.hudi-slider-visual {\n  transition: background-size 220ms cubic-bezier(.2,.8,.2,1);\n}\n.hudi-slider output {\n  display: inline-grid;\n  height: 16px;\n  min-width: 36px;\n  overflow: hidden;\n  color: #71809e;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 12px;\n  line-height: 16px;\n  text-align: right;\n}\n.hudi-slider output span {\n  display: block;\n  will-change: transform, opacity;\n}\n.hudi-slider output.is-up span { animation: hudi-leverage-roll-up 180ms ease-out; }\n.hudi-slider output.is-down span { animation: hudi-leverage-roll-down 180ms ease-out; }\n@keyframes hudi-leverage-roll-up {\n  from { opacity: .35; transform: translateY(100%); }\n  to { opacity: 1; transform: translateY(0); }\n}\n@keyframes hudi-leverage-roll-down {\n  from { opacity: .35; transform: translateY(-100%); }\n  to { opacity: 1; transform: translateY(0); }\n}\n.hudi-slider-markers {\n  display: grid;\n  grid-template-columns: repeat(6, 1fr);\n  margin-top: 10px;\n  color: #a1a8b5;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  line-height: 1;\n}\n.hudi-slider-markers span { text-align: center; }\n.hudi-slider input::-webkit-slider-runnable-track {\n  height: 34px;\n  background: transparent;\n}\n.hudi-slider input::-webkit-slider-thumb {\n  appearance: none;\n  width: 34px;\n  height: 34px;\n}\n.hudi-slider input::-moz-range-thumb {\n  width: 34px;\n  height: 34px;\n  border: 0;\n  background: transparent;\n}\n.hudi-slider.short { --track: linear-gradient(270deg, #fd01ba 0%, #ffe4fe 100%); }","Pills and selectors":".hudi-pill {\n  min-height: 30px;\n  border: 4px solid #e6f4ff;\n  border-radius: 999px;\n  background: #fff;\n  color: #a9a9a9;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 12px;\n  padding-top: 2px;\n  cursor: pointer;\n  transition: border-color .14s ease, color .14s ease, transform .14s ease;\n}\n.hudi-pill:hover { border-color: #bddfff; color: #71809e; }\n.hudi-pill[aria-pressed=\"true\"],\n.hudi-pill.is-selected { border-color: #8bccff; color: #71809e; }\n.hudi-pill-icon {\n  position: relative;\n  top: -2px;\n  display: inline-block;\n  margin-right: 5px;\n}\n.hudi-pill:active { transform: scale(.97); }\n\n.time-selector {\n  --active-index: 2;\n  --selected-width: 52px;\n  --slot-step: 56px;\n  --slot-start: -4px;\n  --active-left: calc(var(--slot-start) + (var(--active-index) * var(--slot-step)));\n  box-sizing: border-box;\n  position: relative;\n  display: inline-block;\n  width: 276px;\n  height: 35px;\n  border: 4px solid #e2f2ff;\n  border-radius: 18px;\n  background: #fff;\n  overflow: visible;\n}\n.time-selector::before {\n  content: \"\";\n  box-sizing: border-box;\n  position: absolute;\n  top: -4px;\n  bottom: -4px;\n  left: var(--active-left);\n  width: var(--selected-width);\n  border: 4px solid #8bccff;\n  border-radius: 22px;\n  background: #fff;\n  transition: left 180ms ease;\n  z-index: 2;\n}\n.time-selector button {\n  position: absolute;\n  top: -.5px;\n  z-index: 3;\n  display: grid;\n  place-items: center;\n  width: var(--selected-width);\n  height: 27px;\n  padding: 3px 0 0;\n  border: 0;\n  background: transparent;\n  color: #a9a9a9;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 13px;\n  line-height: 1;\n  cursor: pointer;\n}\n.time-selector button:nth-child(1) { left: calc(var(--slot-start) + (var(--slot-step) * 0)); }\n.time-selector button:nth-child(2) { left: calc(var(--slot-start) + (var(--slot-step) * 1)); }\n.time-selector button:nth-child(3) { left: calc(var(--slot-start) + (var(--slot-step) * 2)); }\n.time-selector button:nth-child(4) { left: calc(var(--slot-start) + (var(--slot-step) * 3)); }\n.time-selector button:nth-child(5) { left: calc(var(--slot-start) + (var(--slot-step) * 4)); }\n.time-selector button[aria-pressed=\"true\"] { color: #71809e; }","Status chips":".hudi-status {\n  display: inline-flex;\n  align-items: center;\n  gap: 7px;\n  min-height: 25px;\n  padding: 0 12px 0 9px;\n  border: 4px solid #01fd90;\n  border-radius: 54px;\n  background: #96ffd2;\n  color: #127e4b;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: .02em;\n  padding-top: 2px;\n}\n.hudi-status::before {\n  content: \"\";\n  position: relative;\n  top: -1px;\n  width: 8px;\n  height: 8px;\n  flex: 0 0 8px;\n  border-radius: 50%;\n  background: currentColor;\n}\n.hudi-status.closed {\n  border-color: #ff92e2;\n  background: #ffe7f6;\n  color: #e630a0;\n}","Gain chips":".gain-chip {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-height: 20px;\n  padding: 0 8px;\n  border-radius: 53px;\n  background: #96ffd2;\n  color: #127e4b;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: .01em;\n  padding-top: 2px;\n}\n.gain-chip.loss {\n  background: #ffe7f6;\n  color: #e630a0;\n  letter-spacing: -.01em;\n}","Chart labels":".chart-label {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 48px;\n  height: 13px;\n  background: #01fd90;\n  color: #000;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: -.01em;\n  padding-top: 2px;\n}\n.chart-label.small-gain { background: #96ffd2; }\n.chart-label.big-loss { background: #fd01ba; color: #fff; }\n.chart-label.small-loss { background: #ff92e2; color: #fff; }","Trading chart":".chart-demo {\n  --mx: 50%;\n  --my: 50%;\n  --spacing: 22px;\n  position: relative;\n  width: 100%;\n  height: 420px;\n  border: 4px solid #e6f4ff;\n  border-radius: 18px;\n  background: #fff;\n  overflow: hidden;\n}\n.chart-scroll {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  cursor: crosshair;\n  overscroll-behavior: contain;\n}\n.chart-scroll.is-dragging { cursor: grabbing; }\n.chart-track {\n  position: relative;\n  width: max(100%, calc((var(--count) * var(--spacing)) + 128px));\n  height: 100%;\n  background:\n    linear-gradient(rgba(207,228,251,.45) 1px, transparent 1px),\n    linear-gradient(90deg, rgba(207,228,251,.45) 1px, transparent 1px),\n    #fff;\n  background-size: 28px 28px;\n}\n.candle {\n  --body-w: clamp(8px, calc(var(--spacing) - 10px), 18px);\n  position: absolute;\n  left: calc(64px + (var(--i) * var(--spacing)));\n  top: var(--high-y);\n  width: var(--spacing);\n  height: calc(var(--low-y) - var(--high-y));\n  border: 0;\n  background: transparent;\n  cursor: pointer;\n  padding: 0;\n  transform: translateX(-50%);\n}\n.candle-wick {\n  position: absolute;\n  left: 50%;\n  width: 1px;\n  background: #000;\n  transform: translateX(-50%);\n}\n.candle-wick.top { top: -.5px; height: calc(var(--body-y) - var(--high-y)); }\n.candle-wick.bottom { top: calc(var(--body-y) - var(--high-y) + var(--body-h)); height: calc(var(--low-y) - var(--body-y) - var(--body-h)); }\n.candle-body {\n  position: absolute;\n  left: 50%;\n  top: calc(var(--body-y) - var(--high-y));\n  width: var(--body-w);\n  height: max(var(--body-h), 3px);\n  border: 1px solid #000;\n  background: var(--c);\n  transform: translateX(-50%);\n}\n.candle[aria-pressed=\"true\"] .candle-body { outline: 4px solid #1687ff; outline-offset: 3px; }\n.cursor-v,\n.cursor-h,\n.cursor-crosshair {\n  position: absolute;\n  pointer-events: none;\n  opacity: 0;\n  z-index: 5;\n}\n.chart-demo.is-tracking .cursor-v,\n.chart-demo.is-tracking .cursor-h,\n.chart-demo.is-tracking .cursor-crosshair { opacity: 1; }\n.cursor-v { left: var(--mx); top: 44px; bottom: 34px; width: 6px; transform: translateX(-50%); background: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='38' viewBox='0 0 6 38'%3E%3Crect x='.5' y='.5' width='5' height='27' rx='2.5' fill='%23FF92E2' stroke='%23000'/%3E%3C/svg%3E\") top center / 6px 38px repeat-y; }\n.cursor-h { left: 0; right: 52px; top: var(--my); height: 6px; transform: translateY(-50%); background: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='6' viewBox='0 0 38 6'%3E%3Crect x='.5' y='.5' width='27' height='5' rx='2.5' fill='%23FF92E2' stroke='%23000'/%3E%3C/svg%3E\") center left / 38px 6px repeat-x; }\n.cursor-crosshair {\n  left: var(--mx);\n  top: var(--my);\n  width: 23px;\n  height: 23px;\n  transform: translate(-50%, -50%);\n  z-index: 6;\n}\n.cursor-crosshair::before,\n.cursor-crosshair::after { content: \"\"; position: absolute; background: #f2ff00; border: 0.3px solid #71809e; border-radius: 2px; box-sizing: border-box; }\n.cursor-crosshair::before { left: 50%; top: -.5px; transform: translateX(-50%); width: 2px; height: 23px; }\n.cursor-crosshair::after { left: 0; top: 50%; transform: translateY(-50%); width: 23px; height: 2px; }","Dashboard panel":".hudi-panel {\n  border: 4px solid #e6f4ff;\n  border-radius: 18px;\n  background: #fff;\n  box-shadow: 3px 7px 10px rgba(0,63,131,.13);\n}\n","Orb":".hudi-stock-orb {\n  --orb-base: #24d0ff;\n  --orb-sheen: #00ffbf;\n  --orb-shadow: #00329d;\n  --orb-text-deep: #000925;\n  --orb-text-light: #95afff;\n  --orb-text-glow: #0558da;\n  position: relative;\n  display: grid;\n  place-items: center;\n  width: 100px;\n  aspect-ratio: 1;\n  border-radius: 50%;\n  background-color: var(--orb-base);\n  background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%);\n  box-shadow: inset 0 -6.1625px 64.3984px color-mix(in srgb, var(--orb-shadow) 40%, transparent);\n  overflow: hidden;\n}\n.hudi-stock-orb::before {\n  background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%);\n  border-radius: 50%;\n  content: \"\";\n  height: 46%;\n  left: 18.6%;\n  position: absolute;\n  top: 3.8%;\n  width: 64%;\n  z-index: 1;\n}\n.hudi-stock-orb::after {\n  background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%);\n  border-radius: 50%;\n  content: \"\";\n  height: 18.06%;\n  left: 32.05%;\n  position: absolute;\n  top: 1.1%;\n  width: 36.34%;\n  z-index: 1;\n}\n.hudi-stock-orb__ticker,\n.hudi-stock-orb__number {\n  background: radial-gradient(180% 173% at 50% -16%, var(--orb-text-light) 0%, var(--orb-text-deep) 48%, var(--orb-text-deep) 100%);\n  background-clip: text;\n  -webkit-background-clip: text;\n  color: transparent;\n  filter: drop-shadow(0 0 1.52px var(--orb-text-glow));\n  position: absolute;\n  -webkit-text-fill-color: transparent;\n  z-index: 2;\n}\n.hudi-stock-orb__ticker {\n  font-family: \"Syne Hudi\", Syne, sans-serif;\n  font-size: 18px;\n  font-weight: 700;\n  line-height: 1;\n  text-align: center;\n  top: 43.6%;\n  width: 99.64%;\n}\n.hudi-stock-orb__number {\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 8px;\n  letter-spacing: .06em;\n  opacity: .75;\n  top: 9px;\n}"}</script>
   <script>
     const snippets = JSON.parse(document.getElementById("css-snippets").textContent);
     const orbPreview = document.getElementById("orb-preview");
     const orbControls = document.querySelector("[data-orb-maker]");
+    const buttonPreview = document.getElementById("button-preview");
+    const buttonControls = document.querySelector("[data-button-maker]");
+    const hudiLogoPreview = document.getElementById("hudi-logo-preview");
+    const hudiLogoControls = document.querySelector("[data-hudi-orb-maker]");
 
     function hexToRgba(hex, alpha = .4) {
       const clean = hex.replace("#", "");
@@ -752,6 +960,160 @@
         sheen: orbControls?.querySelector('[data-orb-field="sheen"]')?.value || "#00ffbf",
         shadowHex: orbControls?.querySelector('[data-orb-field="shadow"]')?.value || "#00329d",
       };
+    }
+
+    function getHudiLogoOrbState() {
+      return {
+        base: hudiLogoControls?.querySelector('[data-hudi-orb-field="base"]')?.value || "#24d0ff",
+        sheen: hudiLogoControls?.querySelector('[data-hudi-orb-field="sheen"]')?.value || "#00bfff",
+        shadowHex: hudiLogoControls?.querySelector('[data-hudi-orb-field="shadow"]')?.value || "#00329d",
+      };
+    }
+
+    function getButtonState() {
+      const activePreset = buttonControls?.querySelector(".button-preset[aria-pressed='true']");
+      return {
+        type: activePreset?.dataset.type || "long",
+        label: buttonControls?.querySelector('[data-button-field="label"]')?.value.trim().slice(0, 12) || activePreset?.dataset.label || "long",
+        base: buttonControls?.querySelector('[data-button-field="base"]')?.value || "#01fd90",
+        shadowHex: buttonControls?.querySelector('[data-button-field="shadow"]')?.value || "#005f3c",
+        width: Number(buttonControls?.querySelector('[data-button-field="width"]')?.value || activePreset?.dataset.width || 149),
+      };
+    }
+
+    function hexToRgb(hex) {
+      const clean = hex.replace("#", "");
+      return {
+        r: parseInt(clean.slice(0, 2), 16),
+        g: parseInt(clean.slice(2, 4), 16),
+        b: parseInt(clean.slice(4, 6), 16),
+      };
+    }
+
+    function relativeLuminance({ r, g, b }) {
+      const channel = (value) => {
+        const next = value / 255;
+        return next <= .03928 ? next / 12.92 : Math.pow((next + .055) / 1.055, 2.4);
+      };
+      return .2126 * channel(r) + .7152 * channel(g) + .0722 * channel(b);
+    }
+
+    function contrastRatio(hexA, hexB) {
+      const a = relativeLuminance(hexToRgb(hexA));
+      const b = relativeLuminance(hexToRgb(hexB));
+      const lighter = Math.max(a, b);
+      const darker = Math.min(a, b);
+      return (lighter + .05) / (darker + .05);
+    }
+
+    function shouldUseWhiteButtonLabel(base) {
+      return contrastRatio(base, "#506868") < 3;
+    }
+
+    function buttonLabelMode(state) {
+      if (state.type === "confirm") return "confirm";
+      return shouldUseWhiteButtonLabel(state.base) ? "white" : "gradient";
+    }
+
+    function buttonLabelCss(mode) {
+      if (mode === "white") {
+        return `background: none;
+  color: #FFFFFF;
+  text-shadow: none;
+  -webkit-text-fill-color: #FFFFFF;`;
+      }
+      if (mode === "gradient") {
+        return `background: linear-gradient(180deg, #6D8A89 0%, #334646 100%);
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;`;
+      }
+      return `background: linear-gradient(180deg, #aeb8c6 0%, #71809e 100%);
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;`;
+    }
+
+    function buildButtonCss(state) {
+      const shadow = hexToRgba(state.shadowHex, state.type === "confirm" ? .28 : .34);
+      const labelMode = buttonLabelMode(state);
+      const confirmShape = state.type === "confirm" ? `
+  border-radius: 28px;
+  font-size: 23px;
+  height: 56px;` : "";
+      const labelTop = state.type === "confirm" ? "-1px" : "4.8%";
+      return `/* Current orb-pill button: ${state.label} */
+.hudi-trade-button {
+  --pill-bg: ${state.base};
+  --pill-inner-shadow: ${shadow};
+  align-items: center;
+  background: var(--pill-bg);
+  box-sizing: border-box;
+  height: 46px;
+  width: ${state.width}px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 23px;
+  box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow);
+  font-family: "OCRA Fixed", ui-monospace, monospace;
+  font-size: 17px;
+  letter-spacing: -0.55px;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  line-height: 1;
+  overflow: hidden;
+  position: relative;
+  text-transform: lowercase;${confirmShape}
+}
+.hudi-trade-button::after {
+  background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%);
+  border-radius: inherit;
+  content: "";
+  filter: blur(1.43px);
+  height: 18%;
+  left: 9%;
+  opacity: .9;
+  pointer-events: none;
+  position: absolute;
+  right: 9%;
+  top: -.5px;
+}
+.hudi-trade-button .pill-top-contour {
+  height: 75.4%;
+  left: -.5px;
+  mix-blend-mode: screen;
+  overflow: visible;
+  pointer-events: none;
+  position: absolute;
+  top: -.5px;
+  width: calc(100% - 7.5px);
+  z-index: 1;
+}
+.hudi-trade-button .pill-top-contour path {
+  fill: url(#hudi-pill-top-gradient);
+}
+.hudi-trade-button .pill-bottom-highlight {
+  background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%);
+  border-radius: inherit;
+  filter: blur(1.43px);
+  height: 66.2%;
+  left: 1%;
+  pointer-events: none;
+  position: absolute;
+  right: 1%;
+  top: 34%;
+}
+.hudi-trade-button .pill-label {
+  position: relative;
+  top: ${labelTop};
+  z-index: 2;
+  ${buttonLabelCss(labelMode)}
+}`;
     }
 
     function buildOrbCss(state) {
@@ -826,6 +1188,436 @@
 }`;
     }
 
+    function buildHudiLogoOrbCss(state) {
+      const shadow = hexToRgba(state.shadowHex, .4);
+      return `/* Hudi logo orb */
+.hudi-logo-orb {
+  --orb-base: ${state.base};
+  --orb-sheen: ${state.sheen};
+  --orb-shadow: ${shadow};
+  --logo-inner: #93c0ff;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 120px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: var(--orb-base);
+  background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%);
+  box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow), inset 0 0 9px color-mix(in srgb, var(--logo-inner) 62%, transparent);
+  overflow: hidden;
+}
+.hudi-logo-orb::before {
+  content: "";
+  position: absolute;
+  left: 18.6%;
+  top: 3.8%;
+  width: 64%;
+  height: 46%;
+  border-radius: 50%;
+  background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%);
+  z-index: 1;
+}
+.hudi-logo-orb::after {
+  content: "";
+  position: absolute;
+  left: 32.05%;
+  top: 1.1%;
+  width: 36.34%;
+  height: 18.06%;
+  border-radius: 50%;
+  background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%);
+  z-index: 1;
+}
+.hudi-logo-mark {
+  position: relative;
+  z-index: 2;
+  width: 62.4px;
+  height: auto;
+  filter: drop-shadow(0 1px 2px rgba(31,104,178,.14));
+}`;
+    }
+
+    function buildHudiNavCss() {
+      return `/* Hudi radial nav */
+.hudi-nav-menu {
+  --orb-size: 132px;
+  position: relative;
+  width: min(860px, 100%);
+  min-height: 270px;
+}
+.hudi-top-bar-sample,
+.hudi-nav-bar {
+  height: 57px;
+  background: linear-gradient(180deg, #fcfcfc 0%, #b7ccda 100%);
+  box-shadow: 0 10px 10px rgba(209,228,249,.95);
+}
+.hudi-nav-menu .hudi-nav-bar {
+  position: absolute;
+  left: 74px;
+  right: 22px;
+  top: 64px;
+}
+.hudi-nav-menu .hudi-logo-orb {
+  position: absolute;
+  left: 118px;
+  top: 24px;
+  z-index: 3;
+  width: var(--orb-size);
+}
+.hudi-nav-selected {
+  position: absolute;
+  left: 296px;
+  top: 78px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: max-content;
+  min-width: 0;
+  max-width: 190px;
+  min-height: 36px;
+  padding: 4px 24px 1px;
+  border: 0;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #71809e;
+  font-family: "Syne Hudi", Syne, sans-serif;
+  font-size: 18px;
+  line-height: .95;
+  text-align: center;
+  box-shadow: inset 0 4px 13px rgba(0,0,0,.28), inset 0 4px 50px rgba(0,0,0,.16);
+  overflow: hidden;
+  white-space: normal;
+}
+.hudi-nav-pill {
+  --pill-bg: #28c4f5;
+  --pill-inner-shadow: rgba(0,98,158,.34);
+  position: absolute;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  min-width: 0;
+  height: 30px;
+  padding: 0 18px;
+  border: 4px solid #e2f2ff;
+  border-radius: 999px;
+  background: var(--pill-bg);
+  box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow);
+  color: #fff;
+  font-family: "Syne Hudi", Syne, sans-serif;
+  font-size: 16px;
+  overflow: hidden;
+  line-height: 1;
+  text-transform: lowercase;
+  transition: left 360ms cubic-bezier(.2,.8,.2,1), top 360ms cubic-bezier(.2,.8,.2,1), transform 160ms ease, filter 160ms ease;
+}
+.hudi-nav-pill .pill-label {
+  position: relative;
+  z-index: 2;
+  top: -1px;
+  text-shadow: none;
+}
+.hudi-nav-pill.is-teleporting {
+  animation: none !important;
+  transition: none !important;
+}
+.hudi-nav-pill[data-slot="0"] {
+  left: 274px;
+  top: 148px;
+  animation: hudi-nav-float-a 4.2s ease-in-out infinite alternate;
+}
+.hudi-nav-pill[data-slot="1"] {
+  left: 172px;
+  top: 188px;
+  animation: hudi-nav-float-b 3.8s ease-in-out infinite alternate;
+}
+.hudi-nav-menu.is-switching .hudi-nav-selected {
+  animation: hudi-nav-selected-slot 420ms cubic-bezier(.2,.85,.2,1);
+}
+.hudi-nav-menu.is-switching .hudi-nav-pill {
+  animation-duration: 560ms;
+}
+.hudi-nav-menu.is-switching .hudi-nav-pill[data-slot="0"] {
+  animation-name: hudi-nav-orbit-a;
+}
+.hudi-nav-menu.is-switching .hudi-nav-pill[data-slot="1"] {
+  animation-name: hudi-nav-orbit-b;
+}
+@keyframes hudi-nav-selected-slot {
+  from { translate: -22px 54px; scale: .86; opacity: .72; }
+  to { translate: 0 0; scale: 1; opacity: 1; }
+}
+@keyframes hudi-nav-orbit-a {
+  0% { translate: -76px 48px; }
+  55% { translate: -26px -18px; }
+  100% { translate: -2px 1px; }
+}
+@keyframes hudi-nav-orbit-b {
+  0% { translate: 98px -38px; }
+  55% { translate: 34px 18px; }
+  100% { translate: 2px -1px; }
+}
+@keyframes hudi-nav-float-a {
+  from { translate: -2px 1px; }
+  to { translate: 3px -2px; }
+}
+@keyframes hudi-nav-float-b {
+  from { translate: 2px -1px; }
+  to { translate: -2px 3px; }
+}`;
+    }
+
+    function buildMarketLimitCss() {
+      return `/* Market / limit selector */
+.market-limit-selector {
+  --selected-index: 0;
+  --ml-top: #6D8A89;
+  --ml-bottom: #334646;
+  --ml-cross-fill: #B3FFFC;
+  --spin-0: 0deg;
+  --spin-1: 0deg;
+  --spin-2: 0deg;
+  --spin-3: 0deg;
+  position: relative;
+  display: grid;
+  grid-template-columns: 150px 150px;
+  gap: 74px;
+  align-items: center;
+  width: max-content;
+  min-height: 104px;
+  padding: 22px 26px;
+}
+.market-limit-selector.is-short {
+  --ml-top: #8A6D84;
+  --ml-bottom: #46333F;
+  --ml-cross-fill: #EDB3FF;
+}
+.market-limit-selector button {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  height: 48px;
+  border: 0;
+  background: linear-gradient(180deg, var(--ml-top) 0%, var(--ml-bottom) 100%);
+  background-clip: text;
+  color: transparent;
+  cursor: pointer;
+  font-family: "OCRA Fixed", ui-monospace, monospace;
+  font-size: 30px;
+  letter-spacing: .02em;
+  opacity: .6;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.market-limit-selector button[aria-pressed="true"] {
+  opacity: 1;
+}
+.market-limit-crosses {
+  position: absolute;
+  left: calc(14px + (var(--selected-index) * 224px));
+  top: 14px;
+  z-index: 1;
+  width: 188px;
+  height: 78px;
+  pointer-events: none;
+  transition: left 300ms cubic-bezier(.2,.85,.2,1);
+}
+.market-limit-cross {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  transition: rotate 260ms ease;
+}
+.market-limit-cross path {
+  fill: var(--ml-cross-fill);
+  stroke: #000;
+  stroke-width: 1.40052px;
+}
+.market-limit-cross:nth-child(1) {
+  left: -2px;
+  top: 4px;
+  rotate: var(--spin-0);
+  animation: market-limit-float-a 2.4s ease-in-out infinite alternate;
+}
+.market-limit-cross:nth-child(2) {
+  left: 171px;
+  top: 2px;
+  rotate: var(--spin-1);
+  animation: market-limit-float-b 2.7s ease-in-out infinite alternate;
+}
+.market-limit-cross:nth-child(3) {
+  left: 2px;
+  top: 55px;
+  rotate: var(--spin-2);
+  animation: market-limit-float-c 2.9s ease-in-out infinite alternate;
+}
+.market-limit-cross:nth-child(4) {
+  left: 176px;
+  top: 50px;
+  rotate: var(--spin-3);
+  animation: market-limit-float-d 2.3s ease-in-out infinite alternate;
+}
+.market-limit-selector.is-moving .market-limit-cross:nth-child(1) { animation: market-limit-slot-a 300ms cubic-bezier(.2,.85,.2,1); }
+.market-limit-selector.is-moving .market-limit-cross:nth-child(2) { animation: market-limit-slot-b 320ms cubic-bezier(.2,.85,.2,1); }
+.market-limit-selector.is-moving .market-limit-cross:nth-child(3) { animation: market-limit-slot-c 310ms cubic-bezier(.2,.85,.2,1); }
+.market-limit-selector.is-moving .market-limit-cross:nth-child(4) { animation: market-limit-slot-d 330ms cubic-bezier(.2,.85,.2,1); }
+@keyframes market-limit-slot-a { 0% { translate: -1px 1px; } 48% { translate: 1px -3px; } 100% { translate: 0 0; } }
+@keyframes market-limit-slot-b { 0% { translate: 2px -1px; } 48% { translate: -2px -2px; } 100% { translate: 0 0; } }
+@keyframes market-limit-slot-c { 0% { translate: -2px -1px; } 48% { translate: 2px 2px; } 100% { translate: 0 0; } }
+@keyframes market-limit-slot-d { 0% { translate: 1px 2px; } 48% { translate: -2px -2px; } 100% { translate: 0 0; } }
+@keyframes market-limit-float-a {
+  from { translate: -1px 1px; }
+  to { translate: 3px -2px; }
+}
+@keyframes market-limit-float-b {
+  from { translate: 2px -1px; }
+  to { translate: -2px 3px; }
+}
+@keyframes market-limit-float-c {
+  from { translate: -3px -1px; }
+  to { translate: 2px 2px; }
+}
+@keyframes market-limit-float-d {
+  from { translate: 1px 3px; }
+  to { translate: -3px -1px; }
+}`;
+    }
+
+    function buildLeverageCss() {
+      return `/* Leverage slider */
+.hudi-slider {
+  width: 100%;
+}
+.hudi-slider-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 96px;
+  gap: 26px;
+  align-items: start;
+  width: 100%;
+}
+.hudi-slider-control {
+  --slider-percent: 40%;
+  position: relative;
+  display: block;
+  height: 60px;
+}
+.hudi-slider input[type="range"] {
+  appearance: none;
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 60px;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0;
+}
+.leverage-panel {
+  --lev-fill: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%);
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 34px 32px 28px;
+  display: grid;
+  gap: 22px;
+}
+.leverage-panel.is-short {
+  --lev-fill: linear-gradient(90deg, #ffe4fe 0%, #fd01ba 100%);
+}
+.leverage-panel .hudi-slider input[type="range"] {
+  height: 60px;
+}
+.hudi-slider-visual {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 24px;
+  border: 7px solid #e2f2ff;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%) 0 0 / var(--slider-percent) 100% no-repeat, #fff;
+  transform: translateY(-50%);
+  transition: background-size 220ms cubic-bezier(.2,.8,.2,1);
+  pointer-events: none;
+}
+.hudi-slider.short .hudi-slider-visual {
+  background: linear-gradient(90deg, #ffe4fe 0%, #fd01ba 100%) 0 0 / var(--slider-percent) 100% no-repeat, #fff;
+}
+.hudi-slider-puck {
+  position: absolute;
+  left: var(--slider-percent);
+  top: 50%;
+  width: 52px;
+  height: 52px;
+  box-sizing: content-box;
+  border: 7px solid #e2f2ff;
+  border-radius: 50%;
+  background:
+    radial-gradient(36.34% 18.06% at 50% 1%, #fff 0%, rgba(255,255,255,.14) 100%),
+    radial-gradient(64% 46% at 50% 20%, rgba(255,255,255,.96) 0 50%, rgba(255,255,255,.58) 62%, transparent 63%),
+    linear-gradient(180deg, #f5faff 0%, #d9e4ec 42%, #b8c8d4 100%);
+  box-shadow: inset 0 -6px 22px rgba(67,88,109,.25);
+  transform: translate(-50%, -50%);
+  transition: left 220ms cubic-bezier(.2,.8,.2,1);
+  pointer-events: none;
+}
+.hudi-slider-markers {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  margin-top: -4px;
+  color: #a6a6a6;
+  font-family: "OCRA Fixed", ui-monospace, monospace;
+  font-size: 20px;
+  line-height: 1;
+}
+.hudi-slider-markers span {
+  text-align: center;
+}
+.hudi-slider-markers span[aria-current="true"] {
+  color: #71809e;
+}
+.hudi-slider output {
+  display: inline-grid;
+  place-items: center;
+  width: 86px;
+  height: 72px;
+  min-width: 86px;
+  border: 7px solid #e2f2ff;
+  border-radius: 999px;
+  background: #fff;
+  color: #28b979;
+  font-family: "OCRA Fixed", ui-monospace, monospace;
+  font-size: 26px;
+  line-height: 1;
+  text-align: center;
+  overflow: hidden;
+}`;
+    }
+
+    function formatPathNumber(value) {
+      return Number(value.toFixed(3)).toString();
+    }
+
+    function buildPillTopContourPath(width) {
+      const delta = width - 151;
+      const dragX = (value) => formatPathNumber(value + delta);
+      return `M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H${dragX(139.508)}C${dragX(145.4)} 0 ${dragX(150.393)} 4.02449 ${dragX(150.393)} 9.5C${dragX(150.393)} 15.5 ${dragX(145.4)} 19.8286 ${dragX(139.508)} 19.8286C${dragX(139.508)} 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z`;
+    }
+
+    function updatePillTopContour(svg) {
+      if (!svg) return;
+      const renderedWidth = svg.getBoundingClientRect().width;
+      const width = renderedWidth > 0 ? Math.max(80, renderedWidth) : 151;
+      svg.setAttribute("viewBox", "0 0 " + formatPathNumber(width) + " 35");
+      svg.querySelector("path")?.setAttribute("d", buildPillTopContourPath(width));
+    }
+
+    function updatePillTopContours(root = document) {
+      root.querySelectorAll(".pill-top-contour").forEach(updatePillTopContour);
+    }
+
     function updateOrbPreview() {
       if (!orbPreview || !orbControls) return;
       const state = getOrbState();
@@ -839,6 +1631,101 @@
     }
     updateOrbPreview();
 
+    function updateHudiLogoPreview() {
+      if (!hudiLogoPreview || !hudiLogoControls) return;
+      const state = getHudiLogoOrbState();
+      const shadow = hexToRgba(state.shadowHex, .4);
+      hudiLogoPreview.style.setProperty("--orb-base", state.base);
+      hudiLogoPreview.style.setProperty("--orb-sheen", state.sheen);
+      hudiLogoPreview.style.setProperty("--orb-shadow", shadow);
+      snippets["Hudi orb"] = buildHudiLogoOrbCss(state);
+    }
+    updateHudiLogoPreview();
+    snippets["Hudi nav bar"] = buildHudiNavCss();
+    snippets["Market limit selector"] = buildMarketLimitCss();
+    snippets["Leverage slider"] = buildLeverageCss();
+
+    function updateButtonPreview() {
+      if (!buttonPreview || !buttonControls) return;
+      const state = getButtonState();
+      const shadow = hexToRgba(state.shadowHex, state.type === "confirm" ? .28 : .34);
+      const labelMode = buttonLabelMode(state);
+      const labelClass = labelMode === "white" ? " is-auto-white" : labelMode === "gradient" ? " is-auto-gradient" : "";
+      buttonPreview.className = "hudi-trade-button " + state.type + labelClass;
+      buttonPreview.style.setProperty("--pill-bg", state.base);
+      buttonPreview.style.setProperty("--pill-inner-shadow", shadow);
+      buttonPreview.style.width = state.width + "px";
+      buttonPreview.style.minWidth = state.width + "px";
+      buttonPreview.querySelector(".pill-label").textContent = state.label;
+      buttonControls.querySelector("[data-button-width-output]").textContent = state.width + "px";
+      snippets["Trade buttons"] = buildButtonCss(state);
+      updatePillTopContour(buttonPreview.querySelector(".pill-top-contour"));
+    }
+    updateButtonPreview();
+    updatePillTopContours();
+
+    function updateHudiNav(menu, selected = menu?.dataset.selected || "markets", animate = false, sourceButton = null) {
+      if (!menu) return;
+      if (animate) {
+        menu.classList.add("is-switching");
+        clearTimeout(menu._hudiNavTimer);
+        menu._hudiNavTimer = setTimeout(() => menu.classList.remove("is-switching"), 620);
+      }
+      const pages = ["markets", "vault", "leaderboard"];
+      const previousSelected = menu.dataset.selected || "markets";
+      const selectedIndex = Math.max(0, pages.indexOf(selected));
+      const ordered = [pages[(selectedIndex + 1) % pages.length], pages[(selectedIndex + 2) % pages.length]];
+      const buttons = [...menu.querySelectorAll(".hudi-nav-pill")];
+      menu.dataset.selected = pages[selectedIndex];
+      menu.querySelector(".hudi-nav-selected span")?.replaceChildren(pages[selectedIndex]);
+      const usedButtons = new Set();
+      if (animate && sourceButton && ordered.includes(previousSelected)) {
+        sourceButton.classList.add("is-teleporting");
+        sourceButton.dataset.navOption = previousSelected;
+        sourceButton.dataset.slot = String(ordered.indexOf(previousSelected));
+        sourceButton.querySelector(".pill-label")?.replaceChildren(previousSelected);
+        sourceButton.setAttribute("aria-label", previousSelected);
+        usedButtons.add(sourceButton);
+        requestAnimationFrame(() => requestAnimationFrame(() => sourceButton.classList.remove("is-teleporting")));
+      }
+      ordered.forEach((page, index) => {
+        const button = buttons.find((item) => !usedButtons.has(item) && item.dataset.navOption === page) || buttons.find((item) => !usedButtons.has(item));
+        if (!button) return;
+        usedButtons.add(button);
+        button.dataset.navOption = page;
+        button.dataset.slot = String(index);
+        button.querySelector(".pill-label")?.replaceChildren(page);
+        button.setAttribute("aria-label", page);
+      });
+      updatePillTopContours(menu);
+    }
+    document.querySelectorAll("[data-hudi-nav]").forEach((menu) => updateHudiNav(menu));
+
+    function updateMarketLimitSelector(selector, selected = "market", animate = false) {
+      if (!selector) return;
+      const buttons = [...selector.querySelectorAll("[data-order-type]")];
+      const index = Math.max(0, buttons.findIndex((button) => button.dataset.orderType === selected));
+      selector.style.setProperty("--selected-index", index);
+      buttons.forEach((button, buttonIndex) => button.setAttribute("aria-pressed", String(buttonIndex === index)));
+      if (animate) {
+        selector.querySelectorAll(".market-limit-cross").forEach((cross, crossIndex) => {
+          const previous = Number(cross.dataset.spin || 0);
+          const amount = 24 + Math.round(Math.random() * 24);
+          const direction = Math.random() > .5 ? 1 : -1;
+          const next = previous + (amount * direction);
+          cross.dataset.spin = String(next);
+          selector.style.setProperty("--spin-" + crossIndex, next + "deg");
+        });
+        selector.classList.add("is-moving");
+        clearTimeout(selector._marketLimitTimer);
+        selector._marketLimitTimer = setTimeout(() => selector.classList.remove("is-moving"), 360);
+      }
+    }
+    document.querySelectorAll("[data-market-limit-selector]").forEach((selector) => {
+      const selected = selector.querySelector('[data-order-type][aria-pressed="true"]')?.dataset.orderType || "market";
+      updateMarketLimitSelector(selector, selected);
+    });
+
     function updateTimeSelector(selector) {
       const activeButton = selector?.querySelector('button[aria-pressed="true"]');
       if (!selector || !activeButton) return;
@@ -849,7 +1736,10 @@
 
     document.querySelectorAll(".time-selector").forEach(updateTimeSelector);
     document.fonts?.ready.then(() => document.querySelectorAll(".time-selector").forEach(updateTimeSelector));
-    window.addEventListener("resize", () => document.querySelectorAll(".time-selector").forEach(updateTimeSelector));
+    window.addEventListener("resize", () => {
+      document.querySelectorAll(".time-selector").forEach(updateTimeSelector);
+      updatePillTopContours();
+    });
 
     function updateLeverageSlider(input) {
       const values = (input.dataset.leverageValues || "").split(",").filter(Boolean);
@@ -858,6 +1748,11 @@
       const max = Number(input.max || values.length - 1 || 1);
       const percent = max === min ? 0 : ((index - min) / (max - min)) * 100;
       input.closest(".hudi-slider-control")?.style.setProperty("--slider-percent", percent + "%");
+      const slider = input.closest(".hudi-slider");
+      slider?.querySelectorAll(".hudi-slider-markers span").forEach((marker, markerIndex) => {
+        if (markerIndex === index) marker.setAttribute("aria-current", "true");
+        else marker.removeAttribute("aria-current");
+      });
     }
 
     document.querySelectorAll('.hudi-slider input[type="range"]').forEach(updateLeverageSlider);
@@ -919,6 +1814,33 @@
         toggle.querySelector(".hudi-side-toggle__label")?.replaceChildren(side);
       }
 
+      const navButton = event.target.closest(".hudi-nav-pill[data-nav-option]");
+      if (navButton) {
+        updateHudiNav(navButton.closest("[data-hudi-nav]"), navButton.dataset.navOption, true, navButton);
+      }
+
+      const marketLimitButton = event.target.closest("[data-market-limit-selector] [data-order-type]");
+      if (marketLimitButton) {
+        updateMarketLimitSelector(marketLimitButton.closest("[data-market-limit-selector]"), marketLimitButton.dataset.orderType, true);
+      }
+
+      const marketLimitTheme = event.target.closest("[data-market-limit-theme]");
+      if (marketLimitTheme) {
+        const wrap = marketLimitTheme.closest(".market-limit-wrap");
+        const selector = wrap?.querySelector("[data-market-limit-selector]");
+        wrap?.querySelectorAll("[data-market-limit-theme]").forEach((button) => button.setAttribute("aria-pressed", String(button === marketLimitTheme)));
+        selector?.classList.toggle("is-short", marketLimitTheme.dataset.marketLimitTheme === "short");
+      }
+
+      const leverageTheme = event.target.closest("[data-leverage-theme]");
+      if (leverageTheme) {
+        const panel = leverageTheme.closest("[data-leverage-panel]");
+        const isShort = leverageTheme.dataset.leverageTheme === "short";
+        panel?.querySelectorAll("[data-leverage-theme]").forEach((button) => button.setAttribute("aria-pressed", String(button === leverageTheme)));
+        panel?.classList.toggle("is-short", isShort);
+        panel?.querySelector(".hudi-slider")?.classList.toggle("short", isShort);
+      }
+
       const segmented = event.target.closest(".time-selector button, .chat-tabs button");
       if (segmented) {
         segmented.parentElement.querySelectorAll("button").forEach((button) => button.setAttribute("aria-pressed", String(button === segmented)));
@@ -947,6 +1869,20 @@
         }
         updateOrbPreview();
       }
+
+      const buttonPreset = event.target.closest(".button-preset");
+      if (buttonPreset && buttonControls) {
+        buttonControls.querySelectorAll(".button-preset").forEach((button) => button.setAttribute("aria-pressed", String(button === buttonPreset)));
+        buttonControls.querySelector('[data-button-field="base"]').value = buttonPreset.dataset.base;
+        buttonControls.querySelector('[data-button-field="label"]').value = buttonPreset.dataset.label;
+        const shadowMatch = buttonPreset.dataset.shadow.match(/rgba\((\d+),(\d+),(\d+),/);
+        if (shadowMatch) {
+          const toHex = (value) => Number(value).toString(16).padStart(2, "0");
+          buttonControls.querySelector('[data-button-field="shadow"]').value = "#" + toHex(shadowMatch[1]) + toHex(shadowMatch[2]) + toHex(shadowMatch[3]);
+        }
+        buttonControls.querySelector('[data-button-field="width"]').value = buttonPreset.dataset.width;
+        updateButtonPreview();
+      }
     });
 
     document.addEventListener("input", (event) => {
@@ -965,6 +1901,12 @@
       }
       if (event.target.matches('[data-orb-field]')) {
         updateOrbPreview();
+      }
+      if (event.target.matches('[data-hudi-orb-field]')) {
+        updateHudiLogoPreview();
+      }
+      if (event.target.matches('[data-button-field]')) {
+        updateButtonPreview();
       }
     });
 
