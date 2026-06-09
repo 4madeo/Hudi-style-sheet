@@ -337,21 +337,13 @@
     .market-limit-selector.is-short { --ml-top: #8A6D84; --ml-bottom: #46333F; --ml-cross-fill: #EDB3FF; }
     .market-limit-selector button { position: relative; z-index: 2; display: grid; place-items: center; height: 48px; padding: 4px 0 0; border: 0; background: transparent; cursor: pointer; font-family: var(--ocr); font-size: 30px; line-height: 1; letter-spacing: .02em; background-image: linear-gradient(180deg, var(--ml-top) 0%, var(--ml-bottom) 100%); background-clip: text; color: transparent; opacity: .6; text-shadow: none; transition: opacity 160ms ease; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .market-limit-selector button[aria-pressed="true"] { opacity: 1; }
-    .market-limit-crosses { position: absolute; left: calc(14px + (var(--selected-index) * 224px)); top: 14px; z-index: 1; width: 188px; height: 78px; pointer-events: none; transition: left 300ms cubic-bezier(.2,.85,.2,1); }
+    .market-limit-crosses { position: absolute; left: calc(14px + (var(--selected-index) * 224px)); top: 14px; z-index: 1; width: 188px; height: 78px; pointer-events: none; transition: left 280ms cubic-bezier(.2,.8,.2,1); }
     .market-limit-cross { position: absolute; width: 20px; height: 20px; transition: rotate 260ms ease; }
     .market-limit-cross path { fill: var(--ml-cross-fill); stroke: #000; stroke-width: 1.40052px; }
-    .market-limit-cross:nth-child(1) { left: -2px; top: 4px; rotate: var(--spin-0); animation: market-limit-float-a 2.4s ease-in-out infinite alternate; }
-    .market-limit-cross:nth-child(2) { left: 171px; top: 2px; rotate: var(--spin-1); animation: market-limit-float-b 2.7s ease-in-out infinite alternate; }
-    .market-limit-cross:nth-child(3) { left: 2px; top: 55px; rotate: var(--spin-2); animation: market-limit-float-c 2.9s ease-in-out infinite alternate; }
-    .market-limit-cross:nth-child(4) { left: 176px; top: 50px; rotate: var(--spin-3); animation: market-limit-float-d 2.3s ease-in-out infinite alternate; }
-    .market-limit-selector.is-moving .market-limit-cross:nth-child(1) { animation: market-limit-slot-a 300ms cubic-bezier(.2,.85,.2,1); }
-    .market-limit-selector.is-moving .market-limit-cross:nth-child(2) { animation: market-limit-slot-b 320ms cubic-bezier(.2,.85,.2,1); }
-    .market-limit-selector.is-moving .market-limit-cross:nth-child(3) { animation: market-limit-slot-c 310ms cubic-bezier(.2,.85,.2,1); }
-    .market-limit-selector.is-moving .market-limit-cross:nth-child(4) { animation: market-limit-slot-d 330ms cubic-bezier(.2,.85,.2,1); }
-    @keyframes market-limit-slot-a { 0% { translate: -1px 1px; } 48% { translate: 1px -3px; } 100% { translate: 0 0; } }
-    @keyframes market-limit-slot-b { 0% { translate: 2px -1px; } 48% { translate: -2px -2px; } 100% { translate: 0 0; } }
-    @keyframes market-limit-slot-c { 0% { translate: -2px -1px; } 48% { translate: 2px 2px; } 100% { translate: 0 0; } }
-    @keyframes market-limit-slot-d { 0% { translate: 1px 2px; } 48% { translate: -2px -2px; } 100% { translate: 0 0; } }
+    .market-limit-cross:nth-child(1) { left: -2px; top: 4px; rotate: var(--spin-0); animation: market-limit-float-a 3.8s ease-in-out infinite alternate; }
+    .market-limit-cross:nth-child(2) { left: 171px; top: 2px; rotate: var(--spin-1); animation: market-limit-float-b 4.2s ease-in-out infinite alternate; }
+    .market-limit-cross:nth-child(3) { left: 2px; top: 55px; rotate: var(--spin-2); animation: market-limit-float-c 4.5s ease-in-out infinite alternate; }
+    .market-limit-cross:nth-child(4) { left: 176px; top: 50px; rotate: var(--spin-3); animation: market-limit-float-d 4s ease-in-out infinite alternate; }
     @keyframes market-limit-float-a { from { translate: -1px 1px; } to { translate: 3px -2px; } }
     @keyframes market-limit-float-b { from { translate: 2px -1px; } to { translate: -2px 3px; } }
     @keyframes market-limit-float-c { from { translate: -3px -1px; } to { translate: 2px 2px; } }
@@ -486,7 +478,7 @@
     .hudi-nav-menu.is-switching .hudi-nav-pill { animation-duration: 560ms; }
     .hudi-nav-menu.is-switching .hudi-nav-pill[data-slot="0"] { animation-name: hudi-nav-orbit-a; }
     .hudi-nav-menu.is-switching .hudi-nav-pill[data-slot="1"] { animation-name: hudi-nav-orbit-b; }
-    @keyframes hudi-nav-selected-slot { from { translate: -22px 54px; scale: .86; opacity: .72; } to { translate: 0 0; scale: 1; opacity: 1; } }
+    @keyframes hudi-nav-selected-slot { from { translate: var(--selected-from-x, -22px) var(--selected-from-y, 54px); scale: .86; opacity: .72; } to { translate: 0 0; scale: 1; opacity: 1; } }
     @keyframes hudi-nav-orbit-a { 0% { translate: -76px 48px; } 55% { translate: -26px -18px; } 100% { translate: -2px 1px; } }
     @keyframes hudi-nav-orbit-b { 0% { translate: 98px -38px; } 55% { translate: 34px 18px; } 100% { translate: 2px -1px; } }
     @keyframes hudi-nav-float-a { from { translate: -2px 1px; } to { translate: 3px -2px; } }
@@ -1346,7 +1338,7 @@
   animation-name: hudi-nav-orbit-b;
 }
 @keyframes hudi-nav-selected-slot {
-  from { translate: -22px 54px; scale: .86; opacity: .72; }
+  from { translate: var(--selected-from-x, -22px) var(--selected-from-y, 54px); scale: .86; opacity: .72; }
   to { translate: 0 0; scale: 1; opacity: 1; }
 }
 @keyframes hudi-nav-orbit-a {
@@ -1423,7 +1415,7 @@
   width: 188px;
   height: 78px;
   pointer-events: none;
-  transition: left 300ms cubic-bezier(.2,.85,.2,1);
+  transition: left 280ms cubic-bezier(.2,.8,.2,1);
 }
 .market-limit-cross {
   position: absolute;
@@ -1440,34 +1432,26 @@
   left: -2px;
   top: 4px;
   rotate: var(--spin-0);
-  animation: market-limit-float-a 2.4s ease-in-out infinite alternate;
+  animation: market-limit-float-a 3.8s ease-in-out infinite alternate;
 }
 .market-limit-cross:nth-child(2) {
   left: 171px;
   top: 2px;
   rotate: var(--spin-1);
-  animation: market-limit-float-b 2.7s ease-in-out infinite alternate;
+  animation: market-limit-float-b 4.2s ease-in-out infinite alternate;
 }
 .market-limit-cross:nth-child(3) {
   left: 2px;
   top: 55px;
   rotate: var(--spin-2);
-  animation: market-limit-float-c 2.9s ease-in-out infinite alternate;
+  animation: market-limit-float-c 4.5s ease-in-out infinite alternate;
 }
 .market-limit-cross:nth-child(4) {
   left: 176px;
   top: 50px;
   rotate: var(--spin-3);
-  animation: market-limit-float-d 2.3s ease-in-out infinite alternate;
+  animation: market-limit-float-d 4s ease-in-out infinite alternate;
 }
-.market-limit-selector.is-moving .market-limit-cross:nth-child(1) { animation: market-limit-slot-a 300ms cubic-bezier(.2,.85,.2,1); }
-.market-limit-selector.is-moving .market-limit-cross:nth-child(2) { animation: market-limit-slot-b 320ms cubic-bezier(.2,.85,.2,1); }
-.market-limit-selector.is-moving .market-limit-cross:nth-child(3) { animation: market-limit-slot-c 310ms cubic-bezier(.2,.85,.2,1); }
-.market-limit-selector.is-moving .market-limit-cross:nth-child(4) { animation: market-limit-slot-d 330ms cubic-bezier(.2,.85,.2,1); }
-@keyframes market-limit-slot-a { 0% { translate: -1px 1px; } 48% { translate: 1px -3px; } 100% { translate: 0 0; } }
-@keyframes market-limit-slot-b { 0% { translate: 2px -1px; } 48% { translate: -2px -2px; } 100% { translate: 0 0; } }
-@keyframes market-limit-slot-c { 0% { translate: -2px -1px; } 48% { translate: 2px 2px; } 100% { translate: 0 0; } }
-@keyframes market-limit-slot-d { 0% { translate: 1px 2px; } 48% { translate: -2px -2px; } 100% { translate: 0 0; } }
 @keyframes market-limit-float-a {
   from { translate: -1px 1px; }
   to { translate: 3px -2px; }
@@ -1676,9 +1660,18 @@
       const selectedIndex = Math.max(0, pages.indexOf(selected));
       const ordered = [pages[(selectedIndex + 1) % pages.length], pages[(selectedIndex + 2) % pages.length]];
       const buttons = [...menu.querySelectorAll(".hudi-nav-pill")];
+      if (animate && sourceButton) {
+        const sourceRect = sourceButton.getBoundingClientRect();
+        const selectedRect = menu.querySelector(".hudi-nav-selected")?.getBoundingClientRect();
+        if (selectedRect) {
+          menu.style.setProperty("--selected-from-x", (sourceRect.left - selectedRect.left) + "px");
+          menu.style.setProperty("--selected-from-y", (sourceRect.top - selectedRect.top) + "px");
+        }
+      }
       menu.dataset.selected = pages[selectedIndex];
       menu.querySelector(".hudi-nav-selected span")?.replaceChildren(pages[selectedIndex]);
       const usedButtons = new Set();
+      const assignedPages = new Set();
       if (animate && sourceButton && ordered.includes(previousSelected)) {
         sourceButton.classList.add("is-teleporting");
         sourceButton.dataset.navOption = previousSelected;
@@ -1686,12 +1679,15 @@
         sourceButton.querySelector(".pill-label")?.replaceChildren(previousSelected);
         sourceButton.setAttribute("aria-label", previousSelected);
         usedButtons.add(sourceButton);
+        assignedPages.add(previousSelected);
         requestAnimationFrame(() => requestAnimationFrame(() => sourceButton.classList.remove("is-teleporting")));
       }
       ordered.forEach((page, index) => {
+        if (assignedPages.has(page)) return;
         const button = buttons.find((item) => !usedButtons.has(item) && item.dataset.navOption === page) || buttons.find((item) => !usedButtons.has(item));
         if (!button) return;
         usedButtons.add(button);
+        assignedPages.add(page);
         button.dataset.navOption = page;
         button.dataset.slot = String(index);
         button.querySelector(".pill-label")?.replaceChildren(page);
@@ -1710,15 +1706,12 @@
       if (animate) {
         selector.querySelectorAll(".market-limit-cross").forEach((cross, crossIndex) => {
           const previous = Number(cross.dataset.spin || 0);
-          const amount = 24 + Math.round(Math.random() * 24);
+          const amount = Math.random() > .5 ? 180 : 90;
           const direction = Math.random() > .5 ? 1 : -1;
           const next = previous + (amount * direction);
           cross.dataset.spin = String(next);
           selector.style.setProperty("--spin-" + crossIndex, next + "deg");
         });
-        selector.classList.add("is-moving");
-        clearTimeout(selector._marketLimitTimer);
-        selector._marketLimitTimer = setTimeout(() => selector.classList.remove("is-moving"), 360);
       }
     }
     document.querySelectorAll("[data-market-limit-selector]").forEach((selector) => {
