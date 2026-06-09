@@ -464,13 +464,9 @@
     .hudi-nav-selected::before { content: ""; position: absolute; left: 0; right: 0; top: -.5px; height: 69%; border-radius: inherit; background: linear-gradient(.24deg, rgba(255,255,255,.16) 20.46%, rgba(255,255,255,.88) 99.78%); opacity: .74; }
     .hudi-nav-selected::after { content: ""; position: absolute; left: 1%; right: 1%; top: 34%; height: 66%; border-radius: inherit; background: linear-gradient(360deg, rgba(255,255,255,.42) -14.15%, rgba(255,255,255,.86) 5.5%, rgba(255,255,255,.26) 38%); filter: blur(1.4px); }
     .hudi-nav-selected span { position: relative; z-index: 1; }
-    .hudi-nav-pill { --pill-bg: #28c4f5; --pill-inner-shadow: rgba(0,98,158,.34); position: absolute; z-index: 4; display: inline-flex; align-items: center; justify-content: center; width: max-content; min-width: 0; height: 30px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--pill-bg); box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow); color: #fff; cursor: pointer; font-family: var(--sans); font-size: 16px; line-height: 1; overflow: hidden; text-transform: lowercase; transition: left 360ms cubic-bezier(.2,.8,.2,1), top 360ms cubic-bezier(.2,.8,.2,1), transform 160ms ease, filter 160ms ease; }
-    .hudi-nav-pill .pill-label { position: relative; z-index: 2; text-shadow: none; top: -1px; }
-    .hudi-nav-pill .pill-top-contour { height: 75.4%; left: -.5px; mix-blend-mode: screen; overflow: visible; pointer-events: none; position: absolute; top: -.5px; width: calc(100% - 7.5px); z-index: 1; }
-    .hudi-nav-pill .pill-top-contour path { fill: url(#hudi-pill-top-gradient); }
-    .hudi-nav-pill .pill-bottom-highlight { background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%); border-radius: inherit; filter: blur(1.43px); height: 66.2%; left: 1%; pointer-events: none; position: absolute; right: 1%; top: 34%; }
-    .hudi-nav-pill::after { background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: inherit; content: ""; filter: blur(1.43px); height: 18%; left: 9%; opacity: .9; pointer-events: none; position: absolute; right: 9%; top: -.5px; }
-    .hudi-nav-pill:hover { filter: brightness(1.04) saturate(1.04); transform: translateY(-1px); }
+    .hudi-nav-pill.hudi-trade-button { --pill-bg: #28c4f5; --pill-inner-shadow: rgba(0,98,158,.34); --pill-label: #fff; position: absolute; z-index: 4; width: max-content; min-width: 0; height: 30px; padding: 0 18px; border: 0; border-radius: 15px; color: #fff; font-family: var(--sans); font-size: 16px; letter-spacing: 0; transition: left 360ms cubic-bezier(.2,.8,.2,1), top 360ms cubic-bezier(.2,.8,.2,1), transform 160ms ease, filter 160ms ease, box-shadow 160ms ease; }
+    .hudi-nav-pill.hudi-trade-button .pill-label { background: none; color: #fff; text-shadow: none; top: -1px; -webkit-text-fill-color: #fff; }
+    .hudi-nav-pill.hudi-trade-button:hover { filter: brightness(1.04) saturate(1.04); transform: translateY(-1px); }
     .hudi-nav-pill.is-teleporting { animation: none !important; transition: none !important; }
     .hudi-nav-pill[data-slot="0"] { left: 274px; top: 148px; }
     .hudi-nav-pill[data-slot="1"] { left: 172px; top: 188px; }
@@ -796,8 +792,8 @@
                 </svg>
               </div>
               <div class="hudi-nav-selected"><span>markets</span></div>
-              <button class="hudi-nav-pill" type="button" data-nav-option="vault" data-slot="0"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-label">vault</span></button>
-              <button class="hudi-nav-pill" type="button" data-nav-option="leaderboard" data-slot="1"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-label">leaderboard</span></button>
+              <button class="hudi-trade-button hudi-nav-pill is-auto-white" type="button" data-nav-option="vault" data-slot="0"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">vault</span></button>
+              <button class="hudi-trade-button hudi-nav-pill is-auto-white" type="button" data-nav-option="leaderboard" data-slot="1"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">leaderboard</span></button>
             </div>
           </div>
         </article>
@@ -1275,35 +1271,31 @@
   overflow: hidden;
   white-space: normal;
 }
-.hudi-nav-pill {
+.hudi-nav-pill.hudi-trade-button {
   --pill-bg: #28c4f5;
   --pill-inner-shadow: rgba(0,98,158,.34);
+  --pill-label: #fff;
   position: absolute;
   z-index: 4;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: max-content;
   min-width: 0;
   height: 30px;
   padding: 0 18px;
-  border: 4px solid #e2f2ff;
-  border-radius: 999px;
-  background: var(--pill-bg);
-  box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow);
+  border: 0;
+  border-radius: 15px;
   color: #fff;
   font-family: "Syne Hudi", Syne, sans-serif;
   font-size: 16px;
-  overflow: hidden;
+  letter-spacing: 0;
   line-height: 1;
-  text-transform: lowercase;
-  transition: left 360ms cubic-bezier(.2,.8,.2,1), top 360ms cubic-bezier(.2,.8,.2,1), transform 160ms ease, filter 160ms ease;
+  transition: left 360ms cubic-bezier(.2,.8,.2,1), top 360ms cubic-bezier(.2,.8,.2,1), transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
 }
-.hudi-nav-pill .pill-label {
-  position: relative;
-  z-index: 2;
+.hudi-nav-pill.hudi-trade-button .pill-label {
+  background: none;
+  color: #fff;
   top: -1px;
   text-shadow: none;
+  -webkit-text-fill-color: #fff;
 }
 .hudi-nav-pill.is-teleporting {
   animation: none !important;
