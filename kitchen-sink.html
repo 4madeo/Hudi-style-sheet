@@ -634,6 +634,39 @@
     .hudi-linear-nav-button[aria-pressed="true"] .pill-label { color: #71809e; filter: url(#hudi-chamber-label-inner); z-index: 2; -webkit-text-fill-color: #71809e; }
     .hudi-linear-nav-button.is-compressing { animation: hudi-linear-nav-compress 220ms cubic-bezier(.2,.8,.2,1); }
     @keyframes hudi-linear-nav-compress { 0% { transform: scale(1); } 62% { transform: scale(.88); } 100% { transform: scale(.94); } }
+    @supports (-webkit-touch-callout: none) {
+      .hudi-trade-button .pill-label,
+      .hudi-side-toggle__label,
+      .hudi-percent-pill__label,
+      .hudi-nav-pill.hudi-trade-button .pill-label,
+      .hudi-linear-nav-button.hudi-trade-button .pill-label {
+        filter: none !important;
+        -webkit-filter: none !important;
+        backface-visibility: hidden;
+        -webkit-font-smoothing: antialiased;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, .18), 0 -1px 0 rgba(255, 255, 255, .18);
+      }
+
+      .hudi-trade-button.long .pill-label,
+      .hudi-trade-button.is-auto-gradient .pill-label,
+      .hudi-side-toggle.is-long .hudi-side-toggle__label,
+      .hudi-side-toggle.is-auto-gradient .hudi-side-toggle__label,
+      .hudi-side-toggle.is-custom.is-auto-gradient .hudi-side-toggle__label,
+      .hudi-percent-pill.is-auto-gradient .hudi-percent-pill__label {
+        text-shadow: 0 1px 1px rgba(0, 51, 11, .16), 0 -1px 0 rgba(255, 255, 255, .16);
+      }
+
+      .hudi-trade-button.short .pill-label,
+      .hudi-trade-button.is-auto-white .pill-label,
+      .hudi-nav-pill.hudi-trade-button .pill-label,
+      .hudi-linear-nav-button.hudi-trade-button .pill-label,
+      .hudi-side-toggle.is-short .hudi-side-toggle__label,
+      .hudi-side-toggle.is-auto-white .hudi-side-toggle__label,
+      .hudi-side-toggle.is-custom.is-auto-white .hudi-side-toggle__label,
+      .hudi-percent-pill.is-auto-white .hudi-percent-pill__label {
+        text-shadow: 0 1px 1px rgba(0, 0, 0, .22), 0 -1px 0 rgba(255, 255, 255, .18);
+      }
+    }
 
     .chart-demo { --mx: 50%; --my: 50%; --spacing: 34px; position: relative; width: 100%; min-width: 0; height: 520px; border: 6px solid var(--outline-blue); border-radius: 36px; background: #fff; cursor: crosshair; overflow: hidden; }
     .chart-toolbar { display: none; }
