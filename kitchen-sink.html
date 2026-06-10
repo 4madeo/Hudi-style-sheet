@@ -635,7 +635,18 @@
     .hudi-linear-nav-button.is-compressing { animation: hudi-linear-nav-compress 220ms cubic-bezier(.2,.8,.2,1); }
     @keyframes hudi-linear-nav-compress { 0% { transform: scale(1); } 62% { transform: scale(.88); } 100% { transform: scale(.94); } }
     @supports (-webkit-touch-callout: none) {
+      .hudi-trade-button,
+      .hudi-side-toggle,
+      .hudi-side-toggle__bed,
+      .hudi-side-toggle__pill,
+      .hudi-pill-chamber,
+      .hudi-percent-pill {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-mask-image: -webkit-radial-gradient(white, black);
+      }
+
       .hudi-trade-button .pill-label,
+      .hudi-side-toggle button::before,
       .hudi-side-toggle__label,
       .hudi-percent-pill__label,
       .hudi-nav-pill.hudi-trade-button .pill-label,
@@ -665,6 +676,47 @@
       .hudi-side-toggle.is-custom.is-auto-white .hudi-side-toggle__label,
       .hudi-percent-pill.is-auto-white .hudi-percent-pill__label {
         text-shadow: 0 1px 1px rgba(0, 0, 0, .22), 0 -1px 0 rgba(255, 255, 255, .18);
+      }
+
+      .hudi-trade-button::after,
+      .hudi-trade-button .pill-bottom-highlight,
+      .hudi-side-toggle__pill::after,
+      .hudi-side-toggle__bottom,
+      .hudi-percent-pill::after,
+      .hudi-percent-pill .pill-bottom-highlight,
+      .hudi-linear-nav-button[aria-pressed="true"]::after {
+        filter: none !important;
+        -webkit-filter: none !important;
+      }
+
+      .hudi-chamber-bottom-shade g {
+        filter: none !important;
+      }
+
+      .hudi-side-toggle__pill {
+        filter: none !important;
+        -webkit-filter: none !important;
+        box-shadow: inset 0 -3px 32px var(--toggle-shadow), 0 3px 7px rgba(0, 0, 0, .16);
+      }
+
+      .hudi-trade-button:hover {
+        filter: none;
+        -webkit-filter: none;
+      }
+
+      .hudi-trade-button:active,
+      .hudi-trade-button.is-pressed {
+        filter: none;
+        -webkit-filter: none;
+        box-shadow: inset 0 1px 18px rgba(255, 255, 255, .4), inset 0 -2.83px 29.61px var(--pill-inner-shadow);
+      }
+
+      .hudi-side-toggle.is-pressed::after {
+        opacity: .72;
+      }
+
+      .hudi-side-toggle.is-pressed .hudi-side-toggle__pill {
+        box-shadow: inset 0 1px 18px rgba(255, 255, 255, .38), inset 0 -3px 32px var(--toggle-shadow), 0 2px 7px rgba(0, 0, 0, .12);
       }
     }
 
@@ -1699,6 +1751,24 @@ h1, .section-title h2, .card h3 {
     const percentStacked = document.querySelector("[data-percent-stacked]");
     const indicatorControls = document.querySelector("[data-indicator-controls]");
     const percentIndicator = document.querySelector("[data-percent-indicator]");
+    document.addEventListener("touchstart", () => {}, { passive: true });
+    document.addEventListener("pointerdown", (event) => {
+      if (!(event.target instanceof Element)) return;
+      const target = event.target.closest(".hudi-trade-button, .hudi-side-toggle button");
+      if (!target) return;
+
+      const visualTarget = target.closest(".hudi-side-toggle") || target;
+      const clearPressed = () => {
+        window.clearTimeout(visualTarget._hudiPressTimer);
+        visualTarget._hudiPressTimer = window.setTimeout(() => visualTarget.classList.remove("is-pressed"), 120);
+      };
+
+      visualTarget.classList.add("is-pressed");
+      window.clearTimeout(visualTarget._hudiPressTimer);
+      visualTarget._hudiPressTimer = window.setTimeout(() => visualTarget.classList.remove("is-pressed"), 260);
+      window.addEventListener("pointerup", clearPressed, { once: true });
+      window.addEventListener("pointercancel", clearPressed, { once: true });
+    }, { passive: true });
     snippets["PNL graph viewer"] = `.pnl-viewer { --pnl-stroke: #01fd90; --pnl-accent: #96ffd2; display: grid; gap: 18px; width: 100%; }
 .pnl-viewer.is-negative { --pnl-stroke: #fd01ba; --pnl-accent: #ff92e2; }
 .pnl-viewer-toolbar { display: inline-flex; gap: 8px; }
