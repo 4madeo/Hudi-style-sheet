@@ -529,6 +529,13 @@
     .pfp-generator-face { display: grid; place-items: center; min-height: 260px; }
     .pfp-generator-face .leaderboard-pfp { width: 300px; height: 250px; }
     .pfp-generator-face .leaderboard-pfp svg { width: 300px; height: 250px; }
+    .pfp-generator-face.is-full { min-height: 340px; }
+    .pfp-generator-face.is-full .hudi-full-pfp { width: 250px; height: 340px; }
+    .pfp-generator-face.is-full .hudi-full-pfp svg { width: 250px; height: 340px; display: block; overflow: visible; }
+    .hudi-full-pfp .body { fill: var(--pfp-head, #e6ff00); stroke: var(--pfp-stroke, #75a91b); stroke-linejoin: round; stroke-width: 8; }
+    .hudi-full-pfp .eye-base { fill: var(--pfp-eye, #f8fff2); }
+    .hudi-full-pfp .pupil { fill: var(--pfp-pupil, #1f7b0d); }
+    .pfp-generator-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
     .pfp-generate-button.hudi-trade-button { --pill-bg: #f6ffff; --pill-inner-shadow: rgba(0,62,59,.28); --pill-label: #4f6966; min-width: 250px; width: 250px; height: 76px; border-width: 7px; border-radius: 999px; font-size: 34px; font-weight: 400; }
     .pfp-generate-button.hudi-trade-button .pill-label { color: var(--pill-label); -webkit-text-fill-color: var(--pill-label); }
     .chat-row strong { display: block; font-family: var(--mono); font-size: 12px; font-weight: 400; }
@@ -1473,7 +1480,10 @@
             <div class="pfp-generator" data-pfp-generator>
               <span class="pfp-generator-title">MY HUDI</span>
               <div class="pfp-generator-face" data-pfp-preview></div>
-              <button class="hudi-trade-button pfp-generate-button" type="button" data-pfp-generate><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pfp-generate-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">generate</span></button>
+              <div class="pfp-generator-controls">
+                <button class="hudi-trade-button pfp-generate-button" type="button" data-pfp-generate><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pfp-generate-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">generate</span></button>
+                <button class="hudi-trade-button pfp-generate-button" type="button" data-pfp-mode><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pfp-mode-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">full body</span></button>
+              </div>
             </div>
           </div>
         </article>
@@ -1835,6 +1845,13 @@ h1, .section-title h2, .card h3 {
 .pfp-generator-face { display: grid; place-items: center; min-height: 260px; }
 .pfp-generator-face .leaderboard-pfp { width: 300px; height: 250px; }
 .pfp-generator-face .leaderboard-pfp svg { width: 300px; height: 250px; }
+.pfp-generator-face.is-full { min-height: 340px; }
+.pfp-generator-face.is-full .hudi-full-pfp { width: 250px; height: 340px; }
+.pfp-generator-face.is-full .hudi-full-pfp svg { width: 250px; height: 340px; display: block; overflow: visible; }
+.hudi-full-pfp .body { fill: var(--pfp-head, #e6ff00); stroke: var(--pfp-stroke, #75a91b); stroke-linejoin: round; stroke-width: 8; }
+.hudi-full-pfp .eye-base { fill: var(--pfp-eye, #f8fff2); }
+.hudi-full-pfp .pupil { fill: var(--pfp-pupil, #1f7b0d); }
+.pfp-generator-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
 .pfp-generate-button.hudi-trade-button { --pill-bg: #f6ffff; --pill-inner-shadow: rgba(0,62,59,.28); --pill-label: #4f6966; min-width: 250px; width: 250px; height: 76px; border-width: 7px; border-radius: 999px; font-size: 34px; font-weight: 400; }
 .pfp-generate-button.hudi-trade-button .pill-label { color: var(--pill-label); -webkit-text-fill-color: var(--pill-label); }`;
     snippets["DOT matrix leaderboard"] = `.dot-matrix-board {
@@ -2035,16 +2052,54 @@ h1, .section-title h2, .card h3 {
       renderDotMatrixInto(display, value == null ? "KAI_XX" : value, 12, 18);
     }
 
+    const pfpBackground = "#ffffff";
+    const pfpHeadFills = ["#e6ff00", "#ff0075", "#ff6100", "#41ff00", "#16aeea", "#ffffff", "#f7f4ee", "#fff6a8", "#d9f6ff", "#0a0a0c", "#6e00ff", "#ff453a", "#ffd400", "#64d2ff", "#b6ff00", "#ff8ad8"];
+    const pfpStrokes = ["#75a91b", "#8e0047", "#9c2500", "#138500", "#045f86", "#161616", "#ff0075", "#3f7516", "#0a84ff", "#f5f5f7", "#dfff00", "#001a34", "#6f5a00", "#005d7c", "#374000", "#7a2a61"];
+    const pfpEyeBases = ["#ffffff", "#f8fff2", "#fff8ec", "#f8fff3", "#ff0075", "#fff6a8", "#64d2ff", "#dfff00", "#f5f5f7", "#0a0a0c", "#ffe6f5", "#001a34"];
+    const pfpPupils = ["#001a34", "#1f7b0d", "#ffffff", "#111111", "#0a0a0c", "#ff0075", "#3f7516", "#6e00ff", "#ff6100", "#64d2ff"];
     const pfpPalettes = [
-      { head: "#e8ff1b", stroke: "#84b426", eye: "#44b126", pupil: "#171717" },
-      { head: "#f097de", stroke: "#d4429d", eye: "#ffffff", pupil: "#d4429d" },
-      { head: "#74f99b", stroke: "#3a7c50", eye: "#f6ffff", pupil: "#3a7c50" },
-      { head: "#99cafa", stroke: "#4b8fcb", eye: "#f6ffff", pupil: "#4b8fcb" },
-      { head: "#e833b5", stroke: "#9b1e78", eye: "#fbe8f5", pupil: "#9b1e78" },
-      { head: "#affcd5", stroke: "#5bb67c", eye: "#ffffff", pupil: "#5bb67c" },
-      { head: "#fbe8f5", stroke: "#f097de", eye: "#ffffff", pupil: "#d4429d" },
-      { head: "#171717", stroke: "#74809b", eye: "#f2ff00", pupil: "#171717" }
+      { id: "initial", background: pfpBackground, head: "#e6ff00", stroke: "#75a91b", eye: "#f8fff2", pupil: "#1f7b0d" },
+      { background: pfpBackground, head: "#ff0075", stroke: "#8e0047", eye: "#ffffff", pupil: "#001a34" },
+      { background: pfpBackground, head: "#ff6100", stroke: "#9c2500", eye: "#fff8ec", pupil: "#ffffff" },
+      { background: pfpBackground, head: "#41ff00", stroke: "#138500", eye: "#f8fff3", pupil: "#111111" },
+      { background: pfpBackground, head: "#16aeea", stroke: "#045f86", eye: "#ff0075", pupil: "#ffffff" },
+      { background: pfpBackground, head: "#ffffff", stroke: "#161616", eye: "#fff6a8", pupil: "#ff0075" },
+      { background: pfpBackground, head: "#f7f4ee", stroke: "#ff0075", eye: "#64d2ff", pupil: "#001a34" },
+      { background: pfpBackground, head: "#fff6a8", stroke: "#3f7516", eye: "#dfff00", pupil: "#6e00ff" },
+      { background: pfpBackground, head: "#d9f6ff", stroke: "#0a84ff", eye: "#f5f5f7", pupil: "#0a0a0c" },
+      { background: pfpBackground, head: "#0a0a0c", stroke: "#f5f5f7", eye: "#dfff00", pupil: "#ff6100" }
     ];
+
+    function pickPfpColor(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function samePfpColor(a, b) {
+      return String(a || "").toLowerCase() === String(b || "").toLowerCase();
+    }
+
+    function getPfpPaletteId(palette) {
+      return [palette.head, palette.stroke, palette.eye, palette.pupil].join("-").replaceAll("#", "");
+    }
+
+    function validatePfpPalette(palette) {
+      return !samePfpColor(palette.head, palette.stroke) && !samePfpColor(palette.eye, palette.pupil);
+    }
+
+    function generatePfpPalette(previousId) {
+      for (let attempt = 0; attempt < 50; attempt += 1) {
+        const palette = {
+          background: pfpBackground,
+          head: pickPfpColor(pfpHeadFills),
+          stroke: pickPfpColor(pfpStrokes),
+          eye: pickPfpColor(pfpEyeBases),
+          pupil: pickPfpColor(pfpPupils)
+        };
+        const id = getPfpPaletteId(palette);
+        if (id !== previousId && validatePfpPalette(palette)) return { id, ...palette };
+      }
+      return { id: globalThis.crypto?.randomUUID?.() || String(Date.now()), background: pfpBackground, head: pickPfpColor(pfpHeadFills), stroke: "#001a34", eye: "#ffffff", pupil: "#0a0a0c" };
+    }
 
     const leaderboardEntries = [
       { username: "KAI_XX", value: 271.9, pnl: 271.9, roi: 271.0, volume: 271.9, pfp: pfpPalettes[0], flip: false },
@@ -2097,6 +2152,16 @@ h1, .section-title h2, .card h3 {
       };
     }
 
+    const hudiFullBodyPaths = {
+          "viewBox": "0 0 631 872",
+          "body": "M277.752 18.7725C286.823 30.8082 297.406 43.2952 307.175 55.4766L309.117 57.9092L309.118 57.9111C328.459 82.2707 347.638 106.76 366.652 131.375C373.632 140.362 382.541 151.302 389.891 161.218L423.335 81.7666L423.342 81.751L423.348 81.7363L433.709 57.6709L433.712 57.6641C435.914 52.5735 439.115 44.8077 442.138 39.6904L445.378 34.2051L448.91 39.5059C455.381 49.2148 461.437 57.6711 467.438 68.3271C485.542 100.472 500.44 135.918 514.207 170.038L516.946 176.843L516.949 176.851L516.952 176.857L529.737 209.058L529.743 209.07C531.724 214.109 533.805 219.789 535.898 224.758C549.215 222.446 562.607 220.009 575.934 217.641H575.935C582.011 216.561 591.4 214.77 596.924 213.155L603.135 211.34L601.982 217.707C596.862 246.008 591.93 272.407 585.718 300.738L585.717 300.745C583.498 310.782 581.219 320.806 578.879 330.816C577.231 337.931 574.619 348.528 574.213 355.375C578.707 361.914 583.591 366.114 589.194 369.112C595.181 372.315 602.158 374.242 610.812 376.007H610.812C613.018 376.447 615.255 376.755 617.5 376.927L623.646 377.398L620.712 382.819C610.224 402.198 600.926 414.634 583.086 428.019H583.085C579.233 430.908 571.233 436.853 566.787 440.54C572.286 454.516 582.272 472.912 589.007 486.252L590.832 489.868L587.193 491.648L522.614 523.239L522.597 523.247L522.58 523.255C520.185 524.398 517.767 525.454 515.429 526.481C513.069 527.519 510.776 528.535 508.514 529.645L508.512 529.646C497.781 534.905 488.277 541.293 477.396 547.307L477.395 547.306C463.192 555.159 445.469 562.23 428.715 565.852C429.093 566.238 429.468 566.63 429.837 567.027C432.557 569.953 435.295 573.403 437.947 576.83C443.257 583.692 448.078 590.218 452.456 593.987L452.879 594.344L453.389 594.764L453.735 595.326C454.394 596.391 455.987 598.304 458.095 600.851C460.007 603.16 462.236 605.874 463.774 608.214C466.903 612.278 468.646 615.323 470.124 618.309C471.648 621.387 472.625 623.802 474.636 627.448C484.845 645.522 496.226 666.097 492.739 689.371L492.562 690.482C491.214 698.427 489.744 706.886 480.92 712.826L480.919 712.825C472.669 718.387 461.437 724.096 450.36 719.333C450.353 719.359 450.345 719.386 450.339 719.412L450.338 719.411C449.631 722.28 449.395 727.241 449.29 732.938C449.191 738.358 449.211 744.36 448.854 748.529C448.245 755.687 445.717 771.129 442.456 786.104C440.821 793.616 438.983 801.094 437.083 807.427C435.226 813.618 433.184 819.156 431.023 822.467L431.024 822.468C427.257 828.24 420.89 832.798 414.462 834.795C405.395 837.611 394.315 836.123 386.067 831.995L385.278 831.588C373.144 825.12 369.055 812.19 365.977 801.715C365.278 799.338 364.609 796.712 364.24 794.046L364.171 793.513C364.032 792.38 364.042 791.121 364.049 790.134C364.056 789.039 364.065 788.115 363.999 787.254C363.994 787.191 363.988 787.13 363.982 787.07C363.893 787.366 363.802 787.683 363.714 788.021C363.463 788.979 363.246 789.985 363.021 791.023C362.806 792.011 362.572 793.094 362.312 794.017V794.019C360.325 801.058 357.855 807.946 355.675 814.64C354.164 821.515 352.875 829.196 350.614 836.407C346.959 848.068 337.746 861.362 325.125 866.1L325.124 866.099C321.891 867.313 317.825 867.579 314.209 867.528C310.486 867.476 306.763 867.074 303.971 866.679L303.758 866.648L303.55 866.596C295.111 864.46 291.581 858.592 287.275 854.044L286.877 853.622L286.613 853.104C285.775 851.453 285.094 849.282 284.542 847.508C283.93 845.541 283.434 843.918 282.914 842.742C274.489 823.686 272.826 803.958 271.48 784.271L271.446 783.609C271.366 781.73 271.264 777.601 270.785 773.486C270.58 771.72 270.325 770.191 270.035 769.041C265.659 770.436 261.648 771.672 257.56 772.019C252.481 772.449 247.461 771.53 241.127 768.722C229.919 763.752 221.772 751.938 219.662 740.31L219.645 740.214L219.632 740.117C218.198 729.225 218.531 716.759 220.507 705.902L220.511 705.884L220.514 705.865C221.041 703.115 221.949 700.318 222.84 697.741C223.765 695.066 224.645 692.694 225.318 690.397C229.44 676.328 234.615 662.328 240.805 648.995L240.956 648.671L241.161 648.379C243.797 644.631 246.041 640.14 248.482 635.619C249.254 633.807 249.951 632.683 250.74 631.631C251.558 630.54 251.985 630.11 252.85 628.808L252.861 628.79L262.725 614.107C264.342 611.675 265.85 609.166 267.445 606.549C269.024 603.959 270.676 601.284 272.496 598.698L272.854 598.19L273.187 597.937C273.221 597.9 273.279 597.841 273.357 597.753C273.573 597.512 273.864 597.172 274.22 596.744C274.928 595.893 275.816 594.788 276.727 593.642C278.576 591.313 280.351 589.022 280.945 588.269L281.293 587.828L281.749 587.5C282.103 587.245 283.283 586.144 285.097 584.235C286.801 582.442 288.829 580.191 290.775 577.902C292.458 575.923 294.042 573.957 295.294 572.264C294.337 572.246 293.253 572.256 292.052 572.292C287.252 572.436 281.059 572.994 274.662 573.71C268.286 574.424 261.795 575.284 256.428 576.02C251.126 576.746 246.791 577.368 244.901 577.576C239.384 578.187 233.783 579.128 227.809 579.979C221.925 580.818 215.824 581.545 209.732 581.63L205.668 581.687L205.677 577.622C205.696 568.954 205.613 559.886 205.74 551.055C171.054 547.511 135.739 547.667 100.503 545.455L94.5723 545.083L97.1494 539.729C100.597 532.566 104.763 525.38 108.924 518.738V518.737C114.32 510.125 119.113 501.134 123.859 491.978C127.965 484.058 132.055 475.978 136.425 468.047C126.338 462.709 114.747 456.832 103.774 450.267C91.4504 442.893 79.4938 434.42 70.7061 424.347L67.5176 420.691L71.7129 418.257C78.3953 414.38 84.5135 411.107 91.0205 407.214C94.4821 405.143 100.188 401.556 105.048 398.881C91.1632 383.91 75.2058 368.587 60.7686 353.919C46.4913 339.414 30.0583 321.846 15.3359 308.633L9.00586 302.951L17.4189 301.699C48.1401 297.129 78.5993 291.97 109.354 287.092C115.264 286.154 120.374 285.668 125.57 284.573C124.833 280.842 124.464 277.012 123.993 273.889L123.991 273.875L123.988 273.86L119.761 244.35V244.349L104.396 141.377L100.233 113.887L100.23 113.872L100.229 113.858C99.9773 112.116 99.7695 109.831 99.5596 107.836C99.3359 105.71 99.1094 103.894 98.8291 102.688L96.3672 92.0957L105.105 98.5684C110.292 102.41 115.512 105.644 121.23 108.887C129.573 113.617 137.639 118.861 145.554 124.131L153.422 129.391L153.438 129.4L153.453 129.411C181.716 148.693 209.551 168.595 236.938 189.102C239.014 176.394 242.983 160.555 245.327 149.699C251.037 121.95 256.558 94.1609 261.892 66.3359L261.895 66.3232L267.181 39.2266L267.185 39.209C268.343 33.4127 270.065 25.9687 270.577 20.7861L271.585 10.5889L277.752 18.7725Z",
+          "eyeTransform": "translate(527 392) scale(-0.49 0.49)",
+          "rightEye": "M566.548 33.7691C570.622 32.4353 574.294 31.2625 577.741 30.227C592.256 25.8663 602.789 23.9391 622.671 22.6641C633.638 37.7806 643.469 60.6087 647.529 78.9411C655.91 116.696 648.973 156.239 628.236 188.896C597.163 237.178 546.482 253.151 491.519 256.766C468.589 258.284 437.014 261.301 416.867 248.307C412.286 210.881 414.283 190.881 426.331 157.195C426.75 156.022 427.176 154.859 427.608 153.708C452.477 87.4349 498.385 56.083 566.548 33.7691Z",
+          "rightPupil": "M566.548 33.7691C570.622 32.4353 574.294 31.2625 577.741 30.227C598.731 52.9702 610.311 87.8575 606.358 125.499C599.861 187.384 553.843 233.279 503.576 228.009C466.764 224.149 437.881 193.92 427.608 153.708C452.477 87.4349 498.385 56.083 566.548 33.7691Z",
+          "leftEye": "M17.1495 1.46885C31.8549 -2.13442 50.2667 1.23887 68.8078 7.80851C85.832 13.8407 102.965 22.5676 117.438 31.0628C157.594 54.6328 187.079 98.8919 204.908 137.54C218.132 166.204 224.944 191.782 224.944 203.545C224.944 218.227 214.525 239.67 214.525 239.67C214.525 239.67 193.465 262.238 172.577 259.819C121.376 253.899 79.2244 216.009 49.6669 178.991C16.2466 137.138 -6.02124 85.6365 1.44532 31.0628C2.88756 20.2161 7.56996 8.34057 17.1495 1.46885Z",
+          "leftPupil": "M68.8078 7.80851C85.832 13.8407 102.965 22.5676 117.438 31.0628C157.594 54.6328 187.079 98.8919 204.908 137.54C205.566 173.109 193.737 201.292 171.471 209.398C137.359 221.817 91.6698 182.414 69.4203 121.388C53.1645 76.8024 53.9184 33.0102 68.8078 7.80851Z"
+    };
+
     function createLeaderboardPfp(palette, index = 0, flipped = false) {
       const colors = normalizePfpPalette(palette, index);
       const wrap = document.createElement("span");
@@ -2106,6 +2171,18 @@ h1, .section-title h2, .card h3 {
       wrap.style.setProperty("--pfp-eye", colors.eye);
       wrap.style.setProperty("--pfp-pupil", colors.pupil);
       wrap.innerHTML = `<svg aria-hidden="true" viewBox="-8 -8 207 192"><path class="head" d="M59.437 16.8641L59.6136 16.8833C60.1503 17.2084 74.1963 48.7976 75.6525 52.0669C76.405 50.7974 77.8333 48.9575 78.7469 47.7156L84.7027 39.6816C92.1044 29.6271 99.6254 19.6582 107.264 9.77699C107.284 11.0117 107.851 13.2087 108.138 14.503L109.624 21.3027C111.294 29.0319 113.005 36.7519 114.757 44.463C115.722 48.6355 117.303 54.5316 117.991 58.5907C128.049 50.7305 138.065 43.0497 148.659 35.9003C150.523 34.6426 154.292 32.6597 155.741 31.182C155.346 35.3428 154.687 39.7766 154.169 43.951L151.24 67.3845L149.928 77.9131C149.759 79.292 149.508 82.1954 149.18 83.4158C150.759 83.7792 153.371 84.0282 155.099 84.2533L163.789 85.4468C169.376 86.1838 175.196 87.2531 180.814 87.6237C179.634 88.895 178.173 90.172 176.942 91.4739L162.377 106.971C160.137 109.346 157.241 112.228 155.182 114.68C158.16 116.196 163.211 119.378 165.927 120.459C163.223 123.694 160.433 125.482 156.963 127.78C154.431 129.549 149.904 131.961 147.1 133.422C150.033 138.34 152.523 143.647 155.715 148.466C156.859 150.194 158.141 152.302 159.088 154.127C152.733 154.516 146.381 154.96 140.034 155.462C128.144 156.398 116.809 157.8 105.077 159.929C95.1306 161.734 86.0722 164.276 75.8861 163.023C71.1161 162.435 68.2366 162.301 63.4355 160.87C60.6148 160.053 57.8756 158.987 55.2511 157.684C52.0013 156.048 48.9557 154.054 45.6096 152.508C44.1765 151.753 42.5021 151.293 41.0688 150.57C35.2304 147.626 29.1449 145.139 23.2513 142.328C25.1141 138.666 28.1307 132.347 29.5388 128.571C25.8871 125.75 21.6945 123.242 18.5859 119.719C16.8197 117.717 15.103 114.931 13.6849 112.66C15.2693 112.411 16.8338 112.048 18.3659 111.575C21.9343 110.459 24.8732 108.869 26.6616 105.507C26.6091 103.314 25.6714 100.01 25.1188 97.8506C24.4584 95.2758 23.8146 92.6971 23.1876 90.1142C21.2759 82.3357 19.5408 74.5155 17.9835 66.6593C23.3343 67.9093 30.5835 68.7235 36.15 69.7167C39.1237 61.6655 41.9967 53.6805 45.1813 45.7059C49.1804 35.691 53.1983 25.7988 59.437 16.8641Z"/><path class="eye-base" d="M116.824 118.248C117.376 118.053 117.873 117.882 118.34 117.73C120.304 117.09 121.733 116.794 124.438 116.558C125.979 118.585 127.391 121.668 128.002 124.155C129.262 129.278 128.44 134.692 125.717 139.21C121.634 145.892 114.777 148.229 107.298 148.894C104.178 149.173 99.8849 149.683 97.0987 147.974C96.3571 142.885 96.5666 140.151 98.1028 135.52C98.1563 135.358 98.2107 135.199 98.2659 135.04C101.447 125.924 107.605 121.505 116.824 118.248Z"/><path class="eye-base" d="M41.858 115.567C43.8504 115.03 46.3697 115.432 48.9166 116.27C51.2558 117.039 53.6184 118.176 55.6176 119.289C61.1639 122.378 65.3208 128.322 67.8717 133.537C69.7633 137.404 70.7718 140.871 70.8086 142.475C70.8546 144.477 69.5019 147.434 69.5019 147.434C69.5019 147.434 66.7027 150.577 63.8486 150.313C56.8526 149.666 50.9896 144.631 46.8457 139.675C42.1601 134.072 38.9642 127.118 39.8106 119.652C39.9732 116.535 40.7265 115.835 41.858 115.567Z"/><path class="pupil" d="M108.85 144.934C115.717 145.496 121.844 139.093 122.536 130.633C122.956 125.489 121.27 120.769 118.34 117.733C117.873 117.885 117.376 118.057 116.824 118.251C107.605 121.508 101.447 125.927 98.2658 135.043C99.7926 140.493 103.823 144.523 108.85 144.934Z"/><path class="pupil" d="M48.9162 116.266C51.2554 117.036 53.618 118.172 55.6172 119.286C61.1635 122.375 65.3204 128.318 67.8712 133.533C68.0715 138.38 66.5479 142.259 63.5396 143.434C58.93 145.235 52.5801 140.004 49.3568 131.752C47.0023 125.724 46.9673 119.75 48.9162 116.266Z"/></svg>`;
+      return wrap;
+    }
+
+    function createHudiFullBodyPfp(palette, index = 0) {
+      const colors = normalizePfpPalette(palette, index);
+      const wrap = document.createElement("span");
+      wrap.className = "hudi-full-pfp";
+      wrap.style.setProperty("--pfp-head", colors.head);
+      wrap.style.setProperty("--pfp-stroke", colors.stroke);
+      wrap.style.setProperty("--pfp-eye", colors.eye);
+      wrap.style.setProperty("--pfp-pupil", colors.pupil);
+      wrap.innerHTML = `<svg aria-hidden="true" viewBox="${hudiFullBodyPaths.viewBox}"><path class="body" d="${hudiFullBodyPaths.body}"/><g transform="${hudiFullBodyPaths.eyeTransform}"><path class="eye-base" d="${hudiFullBodyPaths.leftEye}"/><path class="eye-base" d="${hudiFullBodyPaths.rightEye}"/><path class="pupil" fill-rule="evenodd" clip-rule="evenodd" d="${hudiFullBodyPaths.leftPupil}"/><path class="pupil" fill-rule="evenodd" clip-rule="evenodd" d="${hudiFullBodyPaths.rightPupil}"/></g></svg>`;
       return wrap;
     }
 
@@ -2130,8 +2207,12 @@ h1, .section-title h2, .card h3 {
       const preview = generator.querySelector("[data-pfp-preview]");
       const index = Number(generator.dataset.pfpIndex || 0);
       const palette = pfpPalettes[index % pfpPalettes.length];
-      preview.replaceChildren(createLeaderboardPfp(palette, index, false));
+      const mode = generator.dataset.pfpMode === "full" ? "full" : "head";
+      preview.classList.toggle("is-full", mode === "full");
+      preview.replaceChildren(mode === "full" ? createHudiFullBodyPfp(palette, index) : createLeaderboardPfp(palette, index, false));
+      generator.querySelector("[data-pfp-mode] .pill-label")?.replaceChildren(mode === "full" ? "head only" : "full body");
       generator.dataset.pfpIndex = String(index);
+      generator.dataset.pfpPaletteId = palette.id || getPfpPaletteId(palette);
     }
 
     function renderLeaderboard(board = document.querySelector("[data-leaderboard]")) {
@@ -3687,10 +3768,19 @@ h1, .section-title h2, .card h3 {
       const pfpGenerate = event.target.closest("[data-pfp-generate]");
       if (pfpGenerate) {
         const generator = pfpGenerate.closest("[data-pfp-generator]");
-        const current = Number(generator.dataset.pfpIndex || 0);
-        generator.dataset.pfpIndex = String(current + 1 + Math.floor(Math.random() * (pfpPalettes.length - 1)));
+        const palette = generatePfpPalette(generator.dataset.pfpPaletteId);
+        pfpPalettes.push(palette);
+        generator.dataset.pfpIndex = String(pfpPalettes.length - 1);
+        generator.dataset.pfpPaletteId = palette.id;
         renderPfpGenerator(generator);
         applyChatPfpPalettes(document, Number(generator.dataset.pfpIndex || 0));
+      }
+
+      const pfpMode = event.target.closest("[data-pfp-mode]");
+      if (pfpMode) {
+        const generator = pfpMode.closest("[data-pfp-generator]");
+        generator.dataset.pfpMode = generator.dataset.pfpMode === "full" ? "head" : "full";
+        renderPfpGenerator(generator);
       }
 
       const sideButton = event.target.closest(".hudi-side-toggle button[data-side]");
