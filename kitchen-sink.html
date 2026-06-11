@@ -13,6 +13,7 @@
 
     :root {
       --paper: #fafcff;
+      --modal-fill: #fafcff;
       --ink: #171717;
       --muted: #717683;
       --dark-grey: #74809b;
@@ -23,6 +24,7 @@
       --outline-grey: #e7e9ed;
       --text-green: #5bb67c;
       --text-dark-green: #3a7c50;
+      --text-medium: #e6a630;
       --text-pink: #d4429d;
       --text-light-pink: #f097de;
       --off-pink: #fbe8f5;
@@ -68,6 +70,62 @@
 
     button, input, textarea { font: inherit; }
     button { -webkit-tap-highlight-color: transparent; }
+
+    @media (pointer: fine) {
+      html.has-hudi-cursor,
+      html.has-hudi-cursor * { cursor: none !important; }
+
+      .hudi-cursor {
+        --cursor-press-x: 0px;
+        --cursor-press-y: 0px;
+        --cursor-rotation: 0deg;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 2147483647;
+        width: 39px;
+        height: 55.5px;
+        opacity: 0;
+        pointer-events: none;
+        transform: translate3d(-120px, -120px, 0);
+        transition: opacity 120ms ease;
+        will-change: transform, opacity;
+      }
+
+      .hudi-cursor.is-visible { opacity: 1; }
+      .hudi-cursor.is-hovering { --cursor-rotation: -25deg; }
+      .hudi-cursor.is-active {
+        --cursor-press-x: 1px;
+        --cursor-press-y: 3px;
+      }
+
+      .hudi-cursor__shape {
+        position: absolute;
+        left: 0;
+        top: 0;
+        display: none;
+        filter: drop-shadow(0 7px 8px rgba(0,0,0,.25));
+        transform: translate(var(--cursor-press-x), var(--cursor-press-y)) rotate(var(--cursor-rotation));
+        transform-origin: 28% 88%;
+        transition: transform 120ms ease;
+        width: 39px;
+        height: 55.5px;
+      }
+
+      .hudi-cursor__shape.is-grab {
+        height: 38.5px;
+        transform-origin: 50% 50%;
+      }
+
+      .hudi-cursor:not(.is-grab) .hudi-cursor__shape.is-pointer,
+      .hudi-cursor.is-grab .hudi-cursor__shape.is-grab { display: block; }
+
+      .hudi-cursor__shape svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    }
 
     .shell { width: min(1500px, calc(100vw - 36px)); margin: 0 auto; padding: 24px 0 64px; }
 
@@ -265,6 +323,470 @@
     .hudi-trade-button.is-white-tint-pink .pill-label { filter: url(#hudi-pill-label-inner-pink); }
     .hudi-trade-button.is-white-tint-green .pill-label { filter: url(#hudi-pill-label-inner-green); }
     .hudi-trade-button.is-white-tint-blue .pill-label { filter: url(#hudi-pill-label-inner-blue); }
+    .exit-button-demo { display: flex; align-items: center; gap: 12px; padding-top: 4px; }
+    .hudi-exit-orb.hudi-icon-orb { --orb-base: #eef2f6; --orb-sheen: #ffffff; --orb-shadow: rgba(82,92,111,.26); --exit-x-top: #8f9ab0; --exit-x-bottom: #525c6f; width: 76px; padding: 0; border: 0; outline: 0; cursor: pointer; transition: filter 140ms ease, transform 140ms ease; -webkit-tap-highlight-color: transparent; }
+    .hudi-exit-orb.hudi-icon-orb svg { width: 37px; filter: drop-shadow(0 1px 1px rgba(82,92,111,.08)); transition: filter 140ms ease; }
+    .hudi-exit-orb .exit-x-top { stop-color: var(--exit-x-top); }
+    .hudi-exit-orb .exit-x-bottom { stop-color: var(--exit-x-bottom); }
+    .hudi-exit-orb:hover { filter: brightness(1.015) saturate(1.02); }
+    .hudi-exit-orb:active,
+    .hudi-exit-orb.is-pressed { --exit-x-top: #ffffff; --exit-x-bottom: #99cafa; filter: brightness(1.05) saturate(1.08); transform: scale(.97); }
+    .hudi-exit-orb:active svg,
+    .hudi-exit-orb.is-pressed svg { filter: drop-shadow(0 0 8px rgba(153,202,250,.72)); }
+
+    .deposit-modal-demo { display: grid; gap: 14px; justify-items: start; }
+    .deposit-modal-demo .hudi-trade-button { --pill-bg: #dbfd01; --pill-inner-shadow: rgba(83,112,0,.34); min-width: 164px; }
+    .hudi-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(250,252,255,.54);
+      backdrop-filter: blur(6px);
+    }
+    .hudi-modal-backdrop[hidden] { display: none; }
+    .hudi-deposit-modal {
+      position: relative;
+      width: min(640px, calc(100vw - 32px));
+      max-height: min(760px, calc(100vh - 34px));
+      overflow: auto;
+      padding: 22px 26px 24px;
+      border: 4px solid var(--outline-blue);
+      border-radius: 14px;
+      background: var(--modal-fill);
+      box-shadow: 0 18px 38px rgba(82, 108, 140, .18);
+      color: var(--dark-grey);
+      font-family: var(--ocr);
+    }
+    .deposit-modal-close.hudi-exit-orb.hudi-icon-orb {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      z-index: 3;
+      width: 24px;
+      min-width: 24px;
+      height: 24px;
+      border: 0;
+    }
+    .deposit-modal-close.hudi-exit-orb.hudi-icon-orb svg { width: 12px; }
+    .deposit-stage { display: none; }
+    .deposit-stage.is-active { display: grid; gap: 16px; }
+    .deposit-stage-title {
+      margin: 0;
+      color: var(--dark-grey);
+      font-family: var(--sans);
+      font-size: 25px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: var(--type-title-tracking);
+      text-align: center;
+    }
+    .deposit-fund-layout {
+      display: grid;
+      grid-template-columns: 210px minmax(0, 1fr);
+      gap: 18px;
+      align-items: center;
+      min-height: 310px;
+    }
+    .deposit-hudi-art {
+      position: relative;
+      width: 210px;
+      height: 276px;
+      display: grid;
+      place-items: center;
+      isolation: isolate;
+      background: transparent;
+    }
+    .deposit-hudi-art img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .deposit-hudi-art::before { display: none; }
+    .deposit-hudi-mini-orb.hudi-stock-orb {
+      position: absolute;
+      z-index: 2;
+      animation: deposit-orb-float 3.2s ease-in-out infinite alternate;
+    }
+    .deposit-hudi-mini-orb.is-smsng { --orb-size: 43.2px; --orb-ticker-base-size: 18px; left: 10px; top: 82px; }
+    .deposit-hudi-mini-orb.is-krx { --orb-size: 21.6px; --orb-ticker-base-size: 18px; right: 10px; top: 62px; animation-delay: -.9s; }
+    .deposit-hudi-mini-orb.is-tncnt { --orb-size: 21.6px; --orb-ticker-base-size: 18px; left: 48px; top: 120px; animation-delay: -1.5s; }
+    .deposit-hudi-head {
+      position: absolute;
+      top: 64px;
+      width: 152px;
+      height: 128px;
+      background: linear-gradient(180deg, #fff 0%, #f8fbff 70%, #eef5ff 100%);
+      clip-path: polygon(8% 57%, 0 36%, 25% 45%, 43% 0, 57% 45%, 78% 10%, 75% 52%, 100% 55%, 82% 72%, 94% 82%, 75% 89%, 82% 100%, 48% 96%, 32% 100%, 15% 92%, 3% 78%, 14% 70%);
+      filter: drop-shadow(0 3px 5px rgba(139,204,255,.22));
+    }
+    .deposit-hudi-eye {
+      position: absolute;
+      top: 136px;
+      width: 26px;
+      height: 48px;
+      border: 2px solid #9fb8ff;
+      border-radius: 70% 30% 55% 45%;
+      background: radial-gradient(circle at 50% 42%, #253b5e 0 52%, transparent 53%);
+      transform: rotate(-18deg);
+    }
+    .deposit-hudi-eye.is-right { right: 48px; transform: scaleX(-1) rotate(-18deg); }
+    .deposit-hudi-eye.is-left { left: 52px; }
+    .deposit-hudi-body {
+      position: absolute;
+      top: 180px;
+      width: 84px;
+      height: 86px;
+      border-radius: 48% 52% 54% 46%;
+      background: linear-gradient(180deg, #fff 0%, #eef5ff 100%);
+      box-shadow: inset 0 -10px 24px rgba(153,202,250,.25);
+    }
+    .deposit-hudi-orb {
+      position: absolute;
+      width: 18px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 22%, #fff 0 18%, var(--orb) 55%, color-mix(in srgb, var(--orb) 78%, #245) 100%);
+      box-shadow: inset 0 -2px 8px rgba(0,0,0,.12);
+      animation: deposit-orb-float 3.2s ease-in-out infinite alternate;
+    }
+    .deposit-hudi-orb:nth-child(1) { --orb: #01fdf9; left: 10px; top: 78px; }
+    .deposit-hudi-orb:nth-child(2) { --orb: #fd01ba; left: 54px; top: 104px; animation-delay: -.9s; }
+    .deposit-hudi-orb:nth-child(3) { --orb: #dbfd01; right: 18px; top: 48px; animation-delay: -1.5s; }
+    @keyframes deposit-orb-float { from { transform: translate3d(0, -2px, 0); } to { transform: translate3d(4px, 4px, 0); } }
+    .deposit-option-list,
+    .deposit-choice-list,
+    .deposit-info-stack { display: grid; gap: 12px; }
+    .deposit-option,
+    .deposit-choice,
+    .deposit-info-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      width: 100%;
+      min-height: 72px;
+      padding: 12px 14px;
+      border: 4px solid var(--outline-blue);
+      border-radius: 14px;
+      background: #fff;
+      color: var(--dark-grey);
+      text-align: left;
+    }
+    .deposit-choice { grid-template-columns: auto minmax(0, 1fr) auto auto; }
+    .deposit-info-card { grid-template-columns: auto minmax(0, 1fr); }
+    .deposit-option:not(:disabled),
+    .deposit-choice { cursor: pointer; }
+    .deposit-option:disabled { cursor: default; opacity: .48; }
+    .deposit-option strong { display: block; font-family: var(--sans); font-size: 13px; font-weight: 500; letter-spacing: var(--type-title-tracking); }
+    .deposit-choice strong { display: block; font-family: var(--ocr); font-size: 10px; font-weight: 400; letter-spacing: .08em; }
+    .deposit-option > span:not(.deposit-icon-orb):not(.deposit-option-arrow),
+    .deposit-option > span:not(.deposit-icon-orb):not(.deposit-option-arrow) > span,
+    .deposit-choice > span:not(.deposit-icon-orb):not(.deposit-choice-radio):not(.deposit-choice-badge),
+    .deposit-info-card > span:not(.deposit-icon-orb):not(.deposit-info-symbol) { display: block; margin-top: 2px; font-size: 9px; line-height: 1.35; letter-spacing: .08em; }
+    .deposit-option-arrow { color: #8bccff; font-size: 20px; }
+    .deposit-coming-soon {
+      display: inline-flex;
+      align-items: center;
+      height: 18px;
+      padding: 1px 8px 0;
+      border-radius: 999px;
+      background: var(--outline-blue);
+      color: #8bccff;
+      font-family: var(--ocr);
+      font-size: 8px;
+      line-height: 15px;
+      letter-spacing: .08em;
+    }
+    .deposit-icon-orb {
+      width: 36px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: radial-gradient(circle at 42% 20%, #fff 0 20%, var(--orb-base, #8bccff) 52%, var(--orb-shadow, #2baee9) 100%);
+      box-shadow: inset 0 -2px 9px rgba(0,0,0,.13);
+      color: #fff;
+      font-family: var(--ocr);
+      font-size: 9px;
+    }
+    .deposit-icon-orb.hudi-icon-orb {
+      --icon-optical-y: calc(var(--orb-size, 36px) * -.028);
+      display: grid !important;
+      place-items: center;
+      position: relative;
+      margin-top: 0 !important;
+    }
+    .deposit-option .deposit-icon-orb.hudi-icon-orb,
+    .deposit-choice .deposit-icon-orb.hudi-icon-orb,
+    .deposit-info-card .deposit-icon-orb.hudi-icon-orb {
+      --orb-size: 36px;
+      width: var(--orb-size);
+      --icon-width: 54%;
+      flex: 0 0 auto;
+    }
+    .deposit-option .deposit-icon-orb.hudi-icon-orb::before,
+    .deposit-choice .deposit-icon-orb.hudi-icon-orb::before,
+    .deposit-info-card .deposit-icon-orb.hudi-icon-orb::before { height: 46%; left: 18.6%; top: 3.8%; width: 64%; }
+    .deposit-option .deposit-icon-orb.hudi-icon-orb::after,
+    .deposit-choice .deposit-icon-orb.hudi-icon-orb::after,
+    .deposit-info-card .deposit-icon-orb.hudi-icon-orb::after { height: 18.06%; left: 32.05%; top: 1.1%; width: 36.34%; }
+    .deposit-icon-orb.hudi-icon-orb > span {
+      position: relative;
+      z-index: 2;
+      color: #fff;
+      font-family: var(--ocr);
+      font-size: 7px;
+      line-height: 1;
+    }
+    .deposit-icon-orb.hudi-icon-orb.is-usdc { --orb-base: #6bc8ef; --orb-sheen: #bdf6ff; --orb-shadow: rgba(28,126,178,.34); }
+    .deposit-icon-orb.hudi-icon-orb.is-usdt { --orb-base: #d03bb9; --orb-sheen: #ff9ae6; --orb-shadow: rgba(96,0,102,.32); }
+    .deposit-icon-orb.hudi-icon-orb.is-info { --orb-base: #8bccff; --orb-sheen: #d8f6ff; --orb-shadow: rgba(49,130,190,.3); --icon-width: 48%; }
+    .deposit-icon-orb.hudi-icon-orb.is-success { --orb-base: #5bb67c; --orb-sheen: #affcd5; --orb-shadow: rgba(38,120,74,.3); --icon-width: 48%; }
+    .deposit-icon-orb.hudi-icon-orb svg {
+      position: absolute;
+      left: 50%;
+      top: calc(50% + var(--icon-optical-y));
+      width: var(--icon-width, 54%);
+      height: var(--icon-height, 54%);
+      max-width: none;
+      max-height: none;
+      overflow: visible;
+      transform: translate(-50%, -50%);
+    }
+    .deposit-icon-orb.hudi-icon-orb.is-sui { --icon-height: 62%; --icon-width: 46%; }
+    .deposit-icon-orb.hudi-icon-orb.is-solana { --icon-height: 43%; --icon-width: 58%; }
+    .deposit-icon-orb.hudi-icon-orb.is-ethereum { --icon-height: 62%; --icon-width: 38%; }
+    .deposit-icon-orb.hudi-icon-orb.is-base { --icon-height: 53%; --icon-width: 53%; }
+    .hudi-icon-orb.is-sui svg,
+    .hudi-icon-orb.is-solana svg,
+    .hudi-icon-orb.is-ethereum svg,
+    .hudi-icon-orb.is-base svg { transform: none; }
+    .deposit-icon-orb.hudi-icon-orb.is-sui svg,
+    .deposit-icon-orb.hudi-icon-orb.is-solana svg,
+    .deposit-icon-orb.hudi-icon-orb.is-ethereum svg,
+    .deposit-icon-orb.hudi-icon-orb.is-base svg { transform: translate(-50%, -50%); }
+    .deposit-info-card .deposit-icon-orb.hudi-icon-orb.is-info {
+      width: 36px;
+      --icon-optical-y: 0px;
+      background: transparent;
+      background-image: none;
+      box-shadow: none;
+      transform: translateY(3px);
+      --icon-width: 75%;
+    }
+    .deposit-info-card .deposit-icon-orb.hudi-icon-orb.is-info::before,
+    .deposit-info-card .deposit-icon-orb.hudi-icon-orb.is-info::after { display: none; }
+    .deposit-info-card .deposit-icon-orb.hudi-icon-orb.is-info svg {
+      position: static;
+      width: 23px;
+      height: auto;
+      max-height: none;
+      transform: translateY(3px);
+    }
+    .deposit-info-symbol {
+      display: grid !important;
+      place-items: center;
+      color: #8bccff;
+      width: 27px;
+      min-width: 27px;
+      aspect-ratio: 1;
+      margin-top: 0 !important;
+    }
+    .deposit-info-symbol svg { display: block; width: 100%; height: 100%; }
+    .deposit-info-symbol.is-blue-info { color: #8bccff; }
+    .deposit-info-symbol.is-success-info { color: var(--text-green); }
+    .deposit-info-symbol.is-success-info path { fill: currentColor; }
+    .deposit-choice[aria-pressed="true"] { border-color: #d7efff; box-shadow: inset 0 0 0 1px rgba(139,204,255,.28); }
+    .deposit-choice-badge {
+      height: 18px;
+      padding: 3px 8px 0;
+      border-radius: 999px;
+      background: var(--small-gain);
+      color: var(--text-green);
+      font-family: var(--ocr);
+      font-size: 8px;
+      line-height: 15px;
+      letter-spacing: .08em;
+    }
+    .deposit-choice .deposit-time { display: inline; margin: 0; font: inherit; letter-spacing: inherit; }
+    .deposit-time.is-fast { color: var(--text-green); }
+    .deposit-time.is-medium { color: var(--text-medium); }
+    .deposit-time.is-slow { color: var(--text-pink); }
+    .deposit-choice-radio {
+      width: 18px;
+      aspect-ratio: 1;
+      border: 3px solid #4fc5ee;
+      border-radius: 50%;
+      background: #fff;
+    }
+    .deposit-choice[aria-pressed="true"] .deposit-choice-radio { background: radial-gradient(circle, #4fc5ee 0 35%, #fff 38%); }
+    .deposit-progress {
+      display: grid;
+      grid-template-columns: auto 1fr auto 1fr auto;
+      gap: 7px;
+      align-items: center;
+      margin: 0 auto 2px;
+      width: min(430px, 100%);
+    }
+    .deposit-step {
+      position: relative;
+      display: grid;
+      justify-items: center;
+      gap: 3px;
+      min-width: 52px;
+      color: var(--dark-grey);
+      font-family: var(--ocr);
+      font-size: 8px;
+      font-weight: 400;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .deposit-step::before { display: none; }
+    .deposit-step-orb.hudi-icon-orb {
+      --orb-base: #eaf4ff;
+      --orb-sheen: #fff;
+      --orb-shadow: rgba(82,92,111,.18);
+      --orb-size: 34px;
+      width: var(--orb-size);
+      min-width: var(--orb-size);
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 4px solid var(--outline-blue);
+      box-sizing: border-box;
+      color: var(--dark-grey);
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+    .deposit-step-orb.hudi-icon-orb > span {
+      position: relative;
+      z-index: 2;
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 600;
+      transform: none;
+    }
+    .deposit-step.is-active .deposit-step-orb,
+    .deposit-step.is-done .deposit-step-orb {
+      --orb-base: #fd01ba;
+      --orb-sheen: #ff9ae6;
+      --orb-shadow: rgba(118,0,82,.3);
+      color: #fff;
+    }
+    .deposit-step-label { margin: 0; font-family: var(--ocr); font-size: 8px; line-height: 1; letter-spacing: .1em; }
+    .deposit-step-line {
+      position: relative;
+      height: 12px;
+      border: 4px solid var(--outline-blue);
+      box-sizing: border-box;
+      border-radius: 999px;
+      background: #eef7ff;
+      overflow: hidden;
+    }
+    .deposit-step-line::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #fd01ba 0%, #ff68db 55%, #8bccff 100%);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 560ms ease;
+    }
+    .deposit-stage[data-deposit-stage-panel="deposit"] .deposit-step-line.is-one::before { transform: scaleX(1); transition: none; }
+    .deposit-stage.is-progress-ready[data-deposit-stage-panel="coin"] .deposit-step-line.is-one::before,
+    .deposit-stage.is-progress-ready[data-deposit-stage-panel="deposit"] .deposit-step-line.is-two::before { transform: scaleX(1); }
+    .deposit-section-label {
+      margin: 0 0 -4px;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-weight: 500;
+      font-size: 22px;
+      letter-spacing: var(--type-title-tracking);
+    }
+    .deposit-modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 2px;
+    }
+    .deposit-action {
+      height: 44px;
+      border: 4px solid var(--outline-blue);
+      border-radius: 999px;
+      background: #fff;
+      color: #8bccff;
+      cursor: pointer;
+      font-family: var(--ocr);
+      font-size: 10px;
+      letter-spacing: .08em;
+    }
+    .deposit-action.is-primary {
+      border-color: #8bccff;
+      background: #8bccff;
+      color: #fff;
+    }
+    .deposit-action:active { filter: brightness(1.07); transform: translateY(1px); }
+    .deposit-details-card { grid-template-columns: auto 1fr; align-items: start; }
+    .deposit-qr {
+      width: 158px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 4px solid var(--outline-blue);
+      border-radius: 12px;
+      background: #fff;
+    }
+    .deposit-qr svg { width: 132px; height: 132px; }
+    .deposit-address { display: grid; gap: 8px; min-width: 0; }
+    .deposit-address code {
+      display: block;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      color: #4d5b73;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .04em;
+    }
+    .deposit-copy {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: 28px;
+      padding: 0 9px;
+      border: 2px solid var(--outline-blue);
+      border-radius: 999px;
+      background: #fff;
+      color: #8bccff;
+      font-size: 9px;
+      cursor: pointer;
+    }
+    .deposit-copy svg { width: 12px; }
+    .deposit-success {
+      grid-template-columns: auto 1fr;
+      min-height: 42px;
+      border-width: 2px;
+      border-color: var(--text-green);
+      color: var(--text-green);
+      font-size: 11px;
+      letter-spacing: .08em;
+    }
+    @media (max-width: 720px) {
+      .hudi-modal-backdrop { align-items: start; padding: 12px; }
+      .hudi-deposit-modal { padding: 22px 14px 16px; }
+      .deposit-fund-layout { grid-template-columns: 1fr; justify-items: center; }
+      .deposit-hudi-art { height: 210px; transform: scale(.78); margin: -22px 0; }
+      .deposit-details-card { grid-template-columns: 1fr; }
+      .deposit-qr { width: 140px; justify-self: center; }
+    }
 
     .percent-fill-demo { display: grid; gap: 22px; width: 100%; }
     .percent-fill-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
@@ -323,11 +845,11 @@
     .achievement-bar-wrap { position: relative; width: min(390px, 100%); }
     .achievement-bar { --percent-bg: linear-gradient(90deg, #b6ff00 0%, #b6ff00 30.8%, #fff 35.8%, #fff 100%); --percent-shadow: rgba(115,168,0,.28); width: 100%; height: 52px; border-width: 5px; }
     .achievement-bar .hudi-percent-pill__label { font-size: 22px; }
-    .achievement-end { position: absolute; top: 50%; z-index: 5; color: rgba(116,128,155,.48); font-family: var(--ocr); font-size: 6px; font-style: normal; letter-spacing: .08em; transform: translateY(-50%) rotate(90deg); }
+    .achievement-end { position: absolute; top: 50%; z-index: 5; color: rgba(116,128,155,.48); font-family: var(--ocr); font-size: 7.8px; font-style: normal; letter-spacing: .08em; transform: translateY(-50%) rotate(90deg); }
     .achievement-end.is-start { left: 12px; }
-    .achievement-end-curve { position: absolute; right: 2px; top: 50%; z-index: 5; width: 26px; height: 44px; overflow: visible; transform: translateY(-50%) rotate(90deg); }
+    .achievement-end-curve { position: absolute; right: 0; top: 50%; z-index: 5; width: 34px; height: 44px; overflow: visible; transform: translateY(-50%) rotate(90deg); }
     .achievement-end-curve path { fill: none; }
-    .achievement-end-curve text { fill: rgba(116,128,155,.48); font-family: var(--ocr); font-size: 6px; font-style: normal; letter-spacing: .08em; }
+    .achievement-end-curve text { fill: rgba(116,128,155,.48); font-family: var(--ocr); font-size: 7.8px; font-style: normal; letter-spacing: .08em; }
 
     .chamber-maker-demo { display: grid; grid-template-columns: minmax(180px, max-content) minmax(0, 1fr); gap: 20px; align-items: center; }
     .chamber-maker-controls { display: grid; gap: 10px; min-width: min(260px, 100%); }
@@ -526,18 +1048,22 @@
     .pfp-avatar .pupil { fill: var(--pfp-pupil, #171717); }
     .pfp-generator { display: grid; justify-items: center; gap: 36px; width: min(620px, 100%); margin: 0 auto; padding: 34px 18px; }
     .pfp-generator-title { color: var(--dark-grey); font-family: var(--ocr); font-size: 17px; letter-spacing: .12em; text-transform: uppercase; }
-    .pfp-generator-face { display: grid; place-items: center; min-height: 260px; }
+    .pfp-generator-face { display: grid; place-items: center; width: min(360px, 100%); height: 340px; min-height: 340px; }
     .pfp-generator-face .leaderboard-pfp { width: 300px; height: 250px; }
     .pfp-generator-face .leaderboard-pfp svg { width: 300px; height: 250px; }
     .pfp-generator-face.is-full { min-height: 340px; }
     .pfp-generator-face.is-full .hudi-full-pfp { width: 250px; height: 340px; }
     .pfp-generator-face.is-full .hudi-full-pfp svg { width: 250px; height: 340px; display: block; overflow: visible; }
-    .hudi-full-pfp .body { fill: var(--pfp-head, #e6ff00); stroke: var(--pfp-stroke, #75a91b); stroke-linejoin: round; stroke-width: 8; }
+    .hudi-full-pfp .body { fill: var(--pfp-head, #e6ff00); stroke: var(--pfp-stroke, #75a91b); stroke-linejoin: round; stroke-width: 16; }
     .hudi-full-pfp .eye-base { fill: var(--pfp-eye, #f8fff2); }
     .hudi-full-pfp .pupil { fill: var(--pfp-pupil, #1f7b0d); }
     .pfp-generator-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
     .pfp-generate-button.hudi-trade-button { --pill-bg: #f6ffff; --pill-inner-shadow: rgba(0,62,59,.28); --pill-label: #4f6966; min-width: 250px; width: 250px; height: 76px; border-width: 7px; border-radius: 999px; font-size: 34px; font-weight: 400; }
     .pfp-generate-button.hudi-trade-button .pill-label { color: var(--pill-label); -webkit-text-fill-color: var(--pill-label); }
+    .pfp-mode-button { display: grid; place-items: center; width: 76px; height: 76px; padding: 0; border: 7px solid var(--outline-blue); border-radius: 50%; background: radial-gradient(circle at 50% 24%, #fff 0 24%, #f6ffff 45%, #d7e7ea 100%); box-shadow: inset 0 4px 10px rgba(255,255,255,.95), inset 0 -8px 18px rgba(0,62,59,.22); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: filter .12s ease; }
+    .pfp-mode-button:active { filter: brightness(1.08); }
+    .pfp-mode-button svg { display: block; width: 43px; height: 43px; overflow: visible; }
+    .pfp-mode-button.is-full svg { width: 34px; height: 47px; }
     .chat-row strong { display: block; font-family: var(--mono); font-size: 12px; font-weight: 400; }
     .chat-row div span { display: block; margin-top: 2px; color: var(--muted); font-family: var(--mono); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .chat-time { color: rgba(9,9,9,.35); font-family: var(--ocr); font-size: 9px; }
@@ -549,18 +1075,19 @@
       .panel-sample > .copy-css { position: static; margin: 10px 0 0; }
     }
 
-    .hudi-stock-orb { --orb-base: #24d0ff; --orb-sheen: #00ffbf; --orb-shadow: rgba(0,50,157,.4); --orb-size: 100px; --orb-shadow-y: -6.1625px; --orb-shadow-blur: 64.3984px; --orb-text-deep: #000925; --orb-text-light: #95afff; --orb-text-glow: #0558da; --orb-ticker-light: color-mix(in srgb, var(--orb-base) 14%, #101722); --orb-ticker-dark: color-mix(in srgb, var(--orb-base) 8%, #03070e); position: relative; display: grid; place-items: center; width: var(--orb-size); aspect-ratio: 1; border-radius: 50%; background-color: var(--orb-base); background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%); box-shadow: inset 0 var(--orb-shadow-y) var(--orb-shadow-blur) var(--orb-shadow); overflow: hidden; }
-    .hudi-stock-orb.pink { --orb-base: #fd01ba; --orb-sheen: #ff6ff2; --orb-shadow: rgba(62,0,45,.4); --orb-text-glow: #d705a8; }
-    .hudi-stock-orb.yellow { --orb-base: #ffd400; --orb-sheen: #ffff99; --orb-shadow: rgba(107,84,0,.4); --orb-text-glow: #d69b00; }
-    .hudi-stock-orb.green { --orb-base: #47e6b8; --orb-sheen: #b8ffe7; --orb-shadow: rgba(0,122,90,.4); --orb-text-glow: #04b78c; }
-    .hudi-stock-orb::before { background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%); border-radius: 50%; content: ""; height: 46%; left: 18.6%; position: absolute; top: 3.8%; width: 64%; z-index: 1; }
-    .hudi-stock-orb::after { background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: 50%; content: ""; height: 18.06%; left: 32.05%; position: absolute; top: 1.1%; width: 36.34%; z-index: 1; }
+    .hudi-blank-orb, .hudi-stock-orb, .hudi-icon-orb { --orb-base: #24d0ff; --orb-sheen: #00ffbf; --orb-shadow: rgba(0,50,157,.4); --orb-size: 100px; --orb-shadow-y: -6.1625px; --orb-shadow-blur: 64.3984px; position: relative; display: grid; place-items: center; width: var(--orb-size); aspect-ratio: 1; border-radius: 50%; background-color: var(--orb-base); background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%); box-shadow: inset 0 var(--orb-shadow-y) var(--orb-shadow-blur) var(--orb-shadow), inset 0 0 calc(var(--orb-size) * .09) color-mix(in srgb, var(--orb-sheen) 58%, transparent); overflow: hidden; }
+    .hudi-stock-orb { --orb-text-deep: #000925; --orb-text-light: #95afff; --orb-text-glow: #0558da; --orb-ticker-light: color-mix(in srgb, var(--orb-base) 14%, #101722); --orb-ticker-dark: color-mix(in srgb, var(--orb-base) 8%, #03070e); --orb-ticker-inner: color-mix(in srgb, var(--orb-base) 39%, #fff 61%); }
+    .hudi-blank-orb.pink, .hudi-stock-orb.pink { --orb-base: #fd01ba; --orb-sheen: #ff6ff2; --orb-shadow: rgba(62,0,45,.4); --orb-text-glow: #d705a8; }
+    .hudi-blank-orb.yellow, .hudi-stock-orb.yellow { --orb-base: #ffd400; --orb-sheen: #ffff99; --orb-shadow: rgba(107,84,0,.4); --orb-text-glow: #d69b00; }
+    .hudi-blank-orb.green, .hudi-stock-orb.green { --orb-base: #47e6b8; --orb-sheen: #b8ffe7; --orb-shadow: rgba(0,122,90,.4); --orb-text-glow: #04b78c; }
+    .hudi-blank-orb::before, .hudi-stock-orb::before, .hudi-icon-orb::before { background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%); border-radius: 50%; content: ""; height: 46%; left: 18.6%; position: absolute; top: 3.8%; width: 64%; z-index: 1; }
+    .hudi-blank-orb::after, .hudi-stock-orb::after, .hudi-icon-orb::after { background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: 50%; content: ""; height: 18.06%; left: 32.05%; position: absolute; top: 1.1%; width: 36.34%; z-index: 1; }
     .hudi-svg-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
-    .hudi-stock-orb__ticker { position: absolute; left: 0; top: 39.5%; width: 100%; height: 34%; overflow: visible; filter: url(#hudi-orb-ticker-warp); transform: scaleX(.92); transform-origin: 50% 50%; z-index: 2; }
-    .hudi-stock-orb__ticker path { fill: none; }
+    .hudi-stock-orb__ticker { position: absolute; left: 0; top: 36%; width: 100%; height: 34%; overflow: visible; transform-origin: 50% 50%; z-index: 2; }
+    .hudi-stock-orb__ticker path { display: none; fill: none; }
     .hudi-orb-ticker-light-stop { stop-color: var(--orb-ticker-light); }
     .hudi-orb-ticker-dark-stop { stop-color: var(--orb-ticker-dark); }
-    .hudi-stock-orb__ticker text { color: var(--orb-sheen); filter: url(#hudi-orb-dark-text-inner); font-family: var(--sans); font-size: 18px; font-weight: 700; letter-spacing: -.01em; text-shadow: none; }
+    .hudi-stock-orb__ticker text { color: var(--orb-ticker-inner); filter: url(#hudi-orb-dark-text-inner); font-family: var(--sans); font-size: calc(var(--orb-ticker-base-size, 18px) * var(--orb-ticker-scale, 1)); font-weight: 700; letter-spacing: -.01em; text-shadow: none; dominant-baseline: middle; }
     .hudi-stock-orb__number { position: absolute; left: 22%; top: 1px; width: 56%; height: 28%; overflow: visible; opacity: .75; z-index: 2; }
     .hudi-stock-orb__number text { fill: url(#hudi-orb-text-gradient); font-family: var(--ocr); font-size: 10.4px; letter-spacing: .06em; text-shadow: none; }
     .hudi-stock-orb.is-auto-white .hudi-stock-orb__ticker text { fill: #fff; filter: url(#hudi-orb-text-inner); }
@@ -573,10 +1100,12 @@
     .orb-size-sample.is-medium .hudi-stock-orb { --orb-size: 120px; }
     .orb-size-sample.is-small .hudi-stock-orb { --orb-size: 43.2px; }
     .orb-size-sample.is-tiny .hudi-stock-orb { --orb-size: 21.6px; }
-    .orb-preview-stage .hudi-stock-orb__ticker text { font-size: 21px; }
+    .orb-preview-stage .hudi-stock-orb { --orb-ticker-base-size: 21px; }
     .orb-preview-stage .hudi-stock-orb__number { top: 2px; }
     .orb-preview-stage .hudi-stock-orb__number text { font-size: 11.7px; }
     .orb-maker-controls { display: grid; gap: 12px; min-width: 0; }
+    .blank-orb-demo { display: grid; gap: 18px; justify-items: center; }
+    .blank-orb-demo .hudi-blank-orb { --orb-size: 132px; }
     .orb-presets { display: flex; flex-wrap: wrap; gap: 8px; }
     .orb-preset { width: 30px; height: 30px; border: 3px solid var(--outline-blue); border-radius: 50%; background: linear-gradient(180deg, var(--preset-sheen), var(--preset-base)); box-shadow: inset 0 -3px 14px var(--preset-shadow); cursor: pointer; }
     .orb-preset[aria-pressed="true"] { border-color: var(--select-blue); }
@@ -599,10 +1128,8 @@
     .icon-orb-demo { width: 100%; padding: 24px 0 12px; }
     .icon-orb-grid { display: grid; grid-template-columns: repeat(4, minmax(120px, 1fr)); gap: 28px; align-items: end; width: 100%; }
     .icon-orb-item { display: grid; gap: 18px; justify-items: center; color: var(--dark-grey); font-family: var(--ocr); font-size: 20px; letter-spacing: .1em; text-transform: uppercase; }
-    .hudi-icon-orb { --orb-base: #24d0ff; --orb-sheen: #00ffbf; --orb-shadow: rgba(0,50,157,.4); position: relative; display: grid; place-items: center; width: 132px; aspect-ratio: 1; border-radius: 50%; background-color: var(--orb-base); background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%); box-shadow: inset 0 -6.78px 70.8px var(--orb-shadow), inset 0 0 11px color-mix(in srgb, var(--orb-sheen) 58%, transparent); overflow: hidden; }
-    .hudi-icon-orb::before { background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%); border-radius: 50%; content: ""; height: 46%; left: 18.6%; position: absolute; top: 3.8%; width: 64%; z-index: 1; }
-    .hudi-icon-orb::after { background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: 50%; content: ""; height: 18.06%; left: 32.05%; position: absolute; top: 1.1%; width: 36.34%; z-index: 1; }
-    .hudi-icon-orb svg { position: relative; z-index: 2; display: block; width: var(--icon-width, 56%); height: auto; filter: none; }
+    .hudi-icon-orb { --orb-size: 132px; }
+    .hudi-icon-orb svg { position: relative; z-index: 2; display: block; width: var(--icon-width, 56%); max-width: var(--icon-width, 56%); max-height: var(--icon-height, 58%); height: auto; filter: none; transform: none; }
     .hudi-icon-orb.is-sui { --orb-base: #64c8ed; --orb-sheen: #bdf6ff; --orb-shadow: rgba(28,126,178,.34); --icon-width: 47%; }
     .hudi-icon-orb.is-solana { --orb-base: #d03bb9; --orb-sheen: #ff9ae6; --orb-shadow: rgba(96,0,102,.32); --icon-width: 53%; }
     .hudi-icon-orb.is-ethereum { --orb-base: #ff4a22; --orb-sheen: #ffe2a6; --orb-shadow: rgba(153,34,0,.34); --icon-width: 41%; }
@@ -614,12 +1141,12 @@
     .hudi-nav-menu { --orb-size: 132px; position: relative; width: min(860px, 100%); min-height: 270px; margin: 0 auto; }
     .hudi-nav-menu .hudi-nav-bar { position: absolute; left: 74px; right: 22px; top: 64px; z-index: 0; }
     .hudi-nav-menu .hudi-logo-orb { position: absolute; left: 118px; top: 24px; z-index: 3; width: var(--orb-size); }
-    .hudi-nav-selected { position: absolute; left: 296px; top: 78px; z-index: 2; display: grid; place-items: center; width: max-content; min-width: 0; max-width: 190px; min-height: 36px; padding: 4px 24px 1px; border: 0; border-radius: 999px; background: #eef2ff; color: #71809e; font-family: var(--sans); font-size: 18px; font-weight: 500; line-height: .95; text-align: center; box-shadow: inset 0 4px 13px rgba(0,0,0,.28), inset 0 4px 50px rgba(0,0,0,.16); overflow: hidden; white-space: normal; }
+    .hudi-nav-selected { position: absolute; left: 296px; top: 78px; z-index: 2; display: grid; place-items: center; width: max-content; min-width: 0; max-width: 190px; min-height: 36px; padding: 4px 24px 1px; border: 0; border-radius: 999px; background: #eef2ff; color: #71809e; font-family: var(--sans); font-size: 14.4px; font-weight: 500; line-height: .95; text-align: center; box-shadow: inset 0 4px 13px rgba(0,0,0,.28), inset 0 4px 50px rgba(0,0,0,.16); overflow: hidden; white-space: normal; }
     .hudi-nav-selected::before { content: ""; position: absolute; left: 0; right: 0; top: -.5px; height: 69%; border-radius: inherit; background: linear-gradient(.24deg, rgba(255,255,255,.16) 20.46%, rgba(255,255,255,.88) 99.78%); opacity: .74; }
     .hudi-nav-selected::after { content: ""; position: absolute; left: 1%; right: 1%; top: 34%; height: 66%; border-radius: inherit; background: linear-gradient(360deg, rgba(255,255,255,.42) -14.15%, rgba(255,255,255,.86) 5.5%, rgba(255,255,255,.26) 38%); filter: blur(1.4px); }
     .hudi-nav-selected span { position: relative; z-index: 1; }
-    .hudi-nav-pill.hudi-trade-button { --pill-bg: #28c4f5; --pill-inner-shadow: rgba(0,98,158,.34); --pill-label: #fff; position: absolute; z-index: 4; width: max-content; min-width: 0; height: 30px; padding: 0 18px; border: 0; border-radius: 15px; color: #fff; font-family: var(--sans); font-size: 16px; font-weight: 500; letter-spacing: 0; transition: left 360ms cubic-bezier(.2,.8,.2,1), top 360ms cubic-bezier(.2,.8,.2,1), transform 160ms ease, filter 160ms ease, box-shadow 160ms ease; }
-    .hudi-nav-pill.hudi-trade-button .pill-label { background: none; color: #fff; filter: url(#hudi-pill-label-inner-blue); text-shadow: none; top: -1px; -webkit-text-fill-color: #fff; }
+    .hudi-nav-pill.hudi-trade-button { --pill-bg: #28c4f5; --pill-inner-shadow: rgba(0,98,158,.34); --pill-label: #fff; position: absolute; z-index: 4; width: max-content; min-width: 0; height: 30px; padding: 0 18px; border: 0; border-radius: 15px; color: #fff; font-family: var(--sans); font-size: 12.8px; font-weight: 500; letter-spacing: 0; line-height: 1; transition: left 360ms cubic-bezier(.2,.8,.2,1), top 360ms cubic-bezier(.2,.8,.2,1), transform 160ms ease, filter 160ms ease, box-shadow 160ms ease; }
+    .hudi-nav-pill.hudi-trade-button .pill-label { background: none; color: #fff; filter: url(#hudi-pill-label-inner-blue); text-shadow: none; top: 0; -webkit-text-fill-color: #fff; }
     .hudi-nav-pill.hudi-trade-button:hover { filter: brightness(1.04) saturate(1.04); }
     .hudi-nav-pill.is-teleporting { animation: none !important; transition: none !important; }
     .hudi-nav-pill[data-slot="0"] { left: 274px; top: 148px; }
@@ -630,8 +1157,8 @@
     .hudi-linear-nav-menu .hudi-nav-bar { position: absolute; left: 56px; right: 22px; top: 78px; z-index: 0; }
     .hudi-linear-nav-menu .hudi-logo-orb { position: absolute; left: 24px; top: 20px; z-index: 3; width: var(--orb-size); }
     .hudi-linear-nav-items { position: absolute; left: 255px; right: 34px; top: 91px; z-index: 4; display: flex; align-items: center; gap: 34px; }
-    .hudi-linear-nav-button.hudi-trade-button { --pill-bg: #28c4f5; --pill-inner-shadow: rgba(0,98,158,.34); --pill-label: #fff; width: max-content; min-width: 0; height: 42px; padding: 0 34px; border: 4px solid var(--outline-blue-2); border-radius: 23px; color: #fff; font-family: var(--sans); font-size: 25px; font-weight: 500; letter-spacing: 0; transition: transform 180ms ease, filter 160ms ease, box-shadow 180ms ease, background-color 180ms ease; }
-    .hudi-linear-nav-button.hudi-trade-button .pill-label { background: none; color: #fff; filter: url(#hudi-pill-label-inner-blue); text-shadow: none; top: -1px; -webkit-text-fill-color: #fff; }
+    .hudi-linear-nav-button.hudi-trade-button { --pill-bg: #28c4f5; --pill-inner-shadow: rgba(0,98,158,.34); --pill-label: #fff; width: max-content; min-width: 0; height: 42px; padding: 0 34px; border: 4px solid var(--outline-blue-2); border-radius: 23px; color: #fff; font-family: var(--sans); font-size: 20px; font-weight: 500; letter-spacing: 0; line-height: 1; transition: transform 180ms ease, filter 160ms ease, box-shadow 180ms ease, background-color 180ms ease; }
+    .hudi-linear-nav-button.hudi-trade-button .pill-label { background: none; color: #fff; filter: url(#hudi-pill-label-inner-blue); text-shadow: none; top: 0; -webkit-text-fill-color: #fff; }
     .hudi-linear-nav-button[aria-pressed="true"] { background: #eef2ff; border: 0; color: #71809e; box-shadow: inset 0 4px 13px rgba(0,0,0,.28), inset 0 4px 50px rgba(0,0,0,.16); transform: scale(.94); }
     .hudi-linear-nav-button[aria-pressed="true"]::before { content: ""; position: absolute; left: 0; right: 0; top: -.5px; height: 69%; border-radius: inherit; background: linear-gradient(.24deg, rgba(255,255,255,.16) 20.46%, rgba(255,255,255,.88) 99.78%); opacity: .74; pointer-events: none; z-index: 1; }
     .hudi-linear-nav-button[aria-pressed="true"]::after { background: linear-gradient(360deg, rgba(255,255,255,.42) -14.15%, rgba(255,255,255,.86) 5.5%, rgba(255,255,255,.26) 38%); border-radius: inherit; bottom: 0; content: ""; filter: blur(1.4px); height: 66%; left: 1%; opacity: 1; pointer-events: none; position: absolute; right: 1%; top: auto; z-index: 1; }
@@ -732,7 +1259,7 @@
     .chart-readout { display: inline-flex; gap: 14px; align-items: center; min-height: 28px; padding: 0 10px; border: 4px solid var(--outline-blue); border-radius: 999px; background: rgba(255,255,255,.82); color: var(--dark-grey); font-family: var(--ocr); font-size: 11px; }
     .chart-orbs { position: absolute; left: 24px; top: 24px; z-index: 4; pointer-events: none; }
     .chart-orbs .hudi-stock-orb { --orb-size: 94px; z-index: 2; }
-    .chart-orbs .hudi-stock-orb__ticker text { font-size: 21px; }
+    .chart-orbs .hudi-stock-orb { --orb-ticker-base-size: 21px; }
     .chart-orbs .hudi-stock-orb__number { top: 1.5px; }
     .chart-orbs .hudi-stock-orb__number text { font-size: 11.7px; }
     .chart-orbs .mini-orb { --orb-size: 45px; position: absolute; left: 82px; top: 10px; z-index: 1; opacity: .96; }
@@ -974,7 +1501,7 @@
       </div>
       <nav class="nav" aria-label="Component sections">
         <a href="#foundation">index</a>
-        <a href="#actions">actions</a>
+        <a href="#buttons">buttons</a>
         <a href="#selectors">selectors</a>
         <a href="#market">market</a>
         <a href="#navigation">nav</a>
@@ -998,6 +1525,7 @@
               <div class="token-swatch" style="--token:#e9f4fe"><div><strong>outline blue</strong><span>#e9f4fe</span></div></div>
               <div class="token-swatch" style="--token:#99cafa"><div><strong>outline blue select</strong><span>#99cafa</span></div></div>
               <div class="token-swatch" style="--token:#e7e9ed"><div><strong>outline grey</strong><span>#e7e9ed</span></div></div>
+              <div class="token-swatch" style="--token:#fafcff"><div><strong>modal fill</strong><span>#fafcff</span></div></div>
               <div class="token-swatch" style="--token:#5bb67c"><div><strong>text green</strong><span>#5bb67c</span></div></div>
               <div class="token-swatch" style="--token:#3a7c50"><div><strong>text dark green</strong><span>#3a7c50</span></div></div>
               <div class="token-swatch" style="--token:#d4429d"><div><strong>text pink</strong><span>#d4429d</span></div></div>
@@ -1047,16 +1575,29 @@
       </div>
     </section>
 
-    <section class="section" id="actions">
-      <div class="section-title"><h2>Actions</h2><span>buttons / sliders / pressed feedback</span></div>
+    <section class="section" id="buttons">
+      <div class="section-title"><h2>Buttons</h2><span>orb-pills / icon exits / pressed feedback</span></div>
       <div class="grid">
         <article class="card span-6">
-          <div class="card-head"><div><h3>Trade buttons</h3><p>Clickable long, short, and confirm buttons with hover and pressed states.</p></div><button class="copy-css" data-copy="Trade buttons">Copy current CSS</button></div>
+          <div class="card-head"><div><h3>Buttons</h3><p>Clickable orb-pill buttons and icon orb controls with hover and pressed states.</p></div><button class="copy-css" data-copy="Buttons">Copy current CSS</button></div>
           <div class="demo column">
             <div class="trade-button-row">
               <button class="hudi-trade-button confirm" type="button"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">confirm</span></button>
               <button class="hudi-trade-button long" type="button"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">long</span></button>
               <button class="hudi-trade-button short" type="button"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">short</span></button>
+            </div>
+            <div class="exit-button-demo">
+              <button class="hudi-icon-orb hudi-exit-orb" type="button" aria-label="Close modal">
+                <svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <g filter="url(#hudi-exit-x-filter)">
+                    <path d="M8.47502 1.85825L18.4001 11.7833L28.4603 1.72315C30.6208 -0.43735 32.7814 -0.70745 35.2121 1.72315C37.6427 4.15385 37.3726 6.31445 35.2121 8.47495L25.1519 18.5352L35.077 28.4603C36.8325 30.2158 37.5077 32.7815 35.077 35.2121C32.6464 37.6428 30.0807 36.9676 28.3252 35.2121L18.4001 25.2869L8.47502 35.2121C6.31442 37.3727 4.15382 37.6428 1.72322 35.2121C-0.707475 32.7815 -0.437375 30.6209 1.72322 28.4603L11.6483 18.5352L1.72322 8.61005C-0.0322753 6.85455 -0.707475 4.28885 1.72322 1.85825C4.15382 -0.572449 6.71952 0.102751 8.47502 1.85825Z" fill="url(#hudi-exit-x-gradient)"/>
+                  </g>
+                  <defs>
+                    <filter id="hudi-exit-x-filter" x="0" y="0" width="36.9355" height="40.9355" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset dy="4"/><feGaussianBlur stdDeviation="2"/><feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/><feBlend mode="normal" in2="shape" result="effect1_innerShadow_254_426"/></filter>
+                    <linearGradient id="hudi-exit-x-gradient" x1="19.3806" y1="-1.92055" x2="19.3806" y2="36.9929" gradientUnits="userSpaceOnUse"><stop class="exit-x-top" offset="0.024434"/><stop class="exit-x-bottom" offset="1"/></linearGradient>
+                  </defs>
+                </svg>
+              </button>
             </div>
             <div class="button-maker-demo">
               <div class="button-preview-stage">
@@ -1079,6 +1620,127 @@
           </div>
           <details class="reference"><summary>reference PNGs</summary><div class="refs"><img src="Important%20Buttons/Confirm%20Button%20Preview.png" alt=""><img src="Important%20Buttons/Long%20Preview.png" alt=""><img src="Important%20Buttons/Short%20Preview.png" alt=""></div></details>
         </article>
+
+        <article class="card span-6">
+          <div class="card-head"><div><h3>Deposit modal</h3><p>Mock modal opener for the four-step deposit flow.</p></div><button class="copy-css" data-copy="Deposit modal">Copy CSS</button></div>
+          <div class="demo deposit-modal-demo">
+            <button class="hudi-trade-button long" type="button" data-deposit-open>
+              <svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-deposit-open-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z" fill="url(#hudi-deposit-open-gradient)"/></svg>
+              <span class="pill-bottom-highlight" aria-hidden="true"></span>
+              <span class="pill-shine" aria-hidden="true"></span>
+              <span class="pill-label">deposit</span>
+            </button>
+            <p>Opens a staged deposit modal with network, coin, and QR states.</p>
+          </div>
+        </article>
+
+        <div class="hudi-modal-backdrop" data-deposit-modal hidden>
+          <div class="hudi-deposit-modal" role="dialog" aria-modal="true" aria-labelledby="deposit-modal-title" data-deposit-stage="fund">
+            <button class="hudi-icon-orb hudi-exit-orb deposit-modal-close" type="button" data-deposit-close aria-label="Close deposit modal">
+              <svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <g filter="url(#hudi-deposit-exit-x-filter)">
+                  <path d="M8.47502 1.85825L18.4001 11.7833L28.4603 1.72315C30.6208 -0.43735 32.7814 -0.70745 35.2121 1.72315C37.6427 4.15385 37.3726 6.31445 35.2121 8.47495L25.1519 18.5352L35.077 28.4603C36.8325 30.2158 37.5077 32.7815 35.077 35.2121C32.6464 37.6428 30.0807 36.9676 28.3252 35.2121L18.4001 25.2869L8.47502 35.2121C6.31442 37.3727 4.15382 37.6428 1.72322 35.2121C-0.707475 32.7815 -0.437375 30.6209 1.72322 28.4603L11.6483 18.5352L1.72322 8.61005C-0.0322753 6.85455 -0.707475 4.28885 1.72322 1.85825C4.15382 -0.572449 6.71952 0.102751 8.47502 1.85825Z" fill="url(#hudi-deposit-exit-x-gradient)"/>
+                </g>
+                <defs>
+                  <filter id="hudi-deposit-exit-x-filter" x="0" y="0" width="36.9355" height="40.9355" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset dy="4"/><feGaussianBlur stdDeviation="2"/><feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/><feBlend mode="normal" in2="shape" result="effect1_innerShadow_254_426"/></filter>
+                  <linearGradient id="hudi-deposit-exit-x-gradient" x1="19.3806" y1="-1.92055" x2="19.3806" y2="36.9929" gradientUnits="userSpaceOnUse"><stop class="exit-x-top" offset="0.024434"/><stop class="exit-x-bottom" offset="1"/></linearGradient>
+                </defs>
+              </svg>
+            </button>
+
+            <section class="deposit-stage is-active" data-deposit-stage-panel="fund">
+              <div class="deposit-fund-layout">
+                <div class="deposit-hudi-art" aria-hidden="true">
+                  <img src="assets/deposit-modal-hudi.png" alt="">
+                  <span class="deposit-hudi-mini-orb hudi-stock-orb is-smsng" data-orb-base="#dbfd01" style="--orb-base:#dbfd01;--orb-sheen:#f6ff91;--orb-shadow:rgba(115,168,0,.32);">
+                    <svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="deposit-smsng-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#deposit-smsng-number-curve" startOffset="50%">1234</textPath></text></svg>
+                    <svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="SMSNG"><defs><linearGradient id="deposit-smsng-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#deposit-smsng-ticker-fill)">SMSNG</text></svg>
+                  </span>
+                  <span class="deposit-hudi-mini-orb hudi-stock-orb is-krx" data-orb-base="#01fdf9" style="--orb-base:#01fdf9;--orb-sheen:#a2e3ff;--orb-shadow:rgba(0,128,180,.3);">
+                    <svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="deposit-krx-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#deposit-krx-number-curve" startOffset="50%">0891</textPath></text></svg>
+                    <svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="KRX"><defs><linearGradient id="deposit-krx-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#deposit-krx-ticker-fill)">KRX</text></svg>
+                  </span>
+                  <span class="deposit-hudi-mini-orb hudi-stock-orb is-tncnt" data-orb-base="#fd01ba" style="--orb-base:#fd01ba;--orb-sheen:#ff9ae6;--orb-shadow:rgba(118,0,82,.32);">
+                    <svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="deposit-tncnt-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#deposit-tncnt-number-curve" startOffset="50%">7742</textPath></text></svg>
+                    <svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="TNCNT"><defs><linearGradient id="deposit-tncnt-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#deposit-tncnt-ticker-fill)">TNCNT</text></svg>
+                  </span>
+                </div>
+                <div class="deposit-option-list">
+                  <h3 class="deposit-stage-title" id="deposit-modal-title">Fund Your Account</h3>
+                  <button class="deposit-option" type="button" data-deposit-goto="network">
+                    <span class="deposit-icon-orb hudi-icon-orb"><svg width="42" height="49" viewBox="0 0 42 49" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M37.1508 7.52109C34.3219 2.67187 30.45 0 26.25 0H15C10.8 0 6.92813 2.67187 4.09922 7.52109C1.45547 12.0516 0 18.0469 0 24.375C0 30.7031 1.45547 36.6984 4.09922 41.2289C6.92813 46.0781 10.8 48.75 15 48.75H26.25C30.45 48.75 34.3219 46.0781 37.1508 41.2289C39.7945 36.6984 41.25 30.7031 41.25 24.375C41.25 18.0469 39.7945 12.0516 37.1508 7.52109ZM37.4508 22.5H29.9508C29.8043 18.6524 29.0382 14.8536 27.682 11.25H34.8516C36.2859 14.3859 37.2328 18.2812 37.4508 22.5ZM32.6227 7.5H25.8891C25.1059 6.14137 24.1616 4.88226 23.0766 3.75H26.25C28.5938 3.75 30.7969 5.15625 32.6227 7.5ZM3.75 24.375C3.75 13.1953 8.90625 3.75 15 3.75C21.0938 3.75 26.25 13.1953 26.25 24.375C26.25 35.5547 21.0938 45 15 45C8.90625 45 3.75 35.5547 3.75 24.375ZM26.25 45H23.0836C24.1686 43.8677 25.1129 42.6086 25.8961 41.25H32.6297C30.7969 43.5938 28.5938 45 26.25 45ZM34.8516 37.5H27.6844C29.0406 33.8964 29.8066 30.0976 29.9531 26.25H37.4531C37.2328 30.4688 36.2859 34.3641 34.8516 37.5Z" fill="#FAFCFF"/></svg></span>
+                    <span><strong>Deposit Crypto</strong><span>send to your hudi account</span></span>
+                    <span class="deposit-option-arrow"><svg width="13" height="15" viewBox="0 0 13 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12.75 7.36133L-6.93316e-07 14.7225L-4.97778e-08 0.000111499L12.75 7.36133Z" fill="#4CCAEC"/></svg></span>
+                  </button>
+                  <button class="deposit-option" type="button" data-deposit-goto="network">
+                    <span class="deposit-icon-orb hudi-icon-orb"><svg width="47" height="42" viewBox="0 0 47 42" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M43.125 7.5H5.625C5.12772 7.5 4.65081 7.30246 4.29918 6.95082C3.94754 6.59919 3.75 6.12228 3.75 5.625C3.75 5.12772 3.94754 4.65081 4.29918 4.29918C4.65081 3.94754 5.12772 3.75 5.625 3.75H37.5C37.9973 3.75 38.4742 3.55246 38.8258 3.20082C39.1775 2.84919 39.375 2.37228 39.375 1.875C39.375 1.37772 39.1775 0.900806 38.8258 0.549175C38.4742 0.197544 37.9973 0 37.5 0H5.625C4.13316 0 2.70242 0.592632 1.64752 1.64752C0.592632 2.70242 0 4.13316 0 5.625V35.625C0 37.1168 0.592632 38.5476 1.64752 39.6025C2.70242 40.6574 4.13316 41.25 5.625 41.25H43.125C44.1196 41.25 45.0734 40.8549 45.7766 40.1516C46.4799 39.4484 46.875 38.4946 46.875 37.5V11.25C46.875 10.2554 46.4799 9.30161 45.7766 8.59835C45.0734 7.89509 44.1196 7.5 43.125 7.5ZM43.125 37.5H5.625C5.12772 37.5 4.65081 37.3025 4.29918 36.9508C3.94754 36.5992 3.75 36.1223 3.75 35.625V10.9289C4.35205 11.1423 4.98624 11.2509 5.625 11.25H43.125V37.5ZM31.875 23.4375C31.875 22.8812 32.04 22.3375 32.349 21.875C32.658 21.4124 33.0973 21.052 33.6112 20.8391C34.1251 20.6262 34.6906 20.5705 35.2362 20.679C35.7818 20.7876 36.2829 21.0554 36.6762 21.4488C37.0696 21.8421 37.3374 22.3432 37.446 22.8888C37.5545 23.4344 37.4988 23.9999 37.2859 24.5138C37.073 25.0277 36.7126 25.467 36.25 25.776C35.7875 26.085 35.2438 26.25 34.6875 26.25C33.9416 26.25 33.2262 25.9537 32.6988 25.4262C32.1713 24.8988 31.875 24.1834 31.875 23.4375Z" fill="white"/></svg></span>
+                    <span><strong>Connect Wallet</strong><span>use your wallet to deposit</span></span>
+                    <span class="deposit-option-arrow"><svg width="13" height="15" viewBox="0 0 13 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12.75 7.36133L-6.93316e-07 14.7225L-4.97778e-08 0.000111499L12.75 7.36133Z" fill="#4CCAEC"/></svg></span>
+                  </button>
+                  <button class="deposit-option" type="button" disabled>
+                    <span class="deposit-icon-orb hudi-icon-orb"><svg width="63" height="50" viewBox="0 0 63 50" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4.16677 20.8326H10.4169V37.4997H6.25016C5.69761 37.4997 5.1677 37.7192 4.77698 38.1099C4.38627 38.5006 4.16677 39.0305 4.16677 39.5831C4.16677 40.1356 4.38627 40.6655 4.77698 41.0562C5.1677 41.447 5.69761 41.6665 6.25016 41.6665H56.2515C56.804 41.6665 57.3339 41.447 57.7246 41.0562C58.1153 40.6655 58.3348 40.1356 58.3348 39.5831C58.3348 39.0305 58.1153 38.5006 57.7246 38.1099C57.3339 37.7192 56.804 37.4997 56.2515 37.4997H52.0847V20.8326H58.3348C58.7881 20.8321 59.2289 20.6838 59.5903 20.4102C59.9517 20.1366 60.214 19.7525 60.3374 19.3164C60.4608 18.8802 60.4386 18.4156 60.2741 17.9932C60.1097 17.5708 59.8119 17.2136 59.426 16.9757L32.342 0.308608C32.0138 0.106827 31.6361 0 31.2508 0C30.8655 0 30.4878 0.106827 30.1596 0.308608L3.0756 16.9757C2.68972 17.2136 2.39196 17.5708 2.22748 17.9932C2.063 18.4156 2.04077 18.8802 2.16418 19.3164C2.28758 19.7525 2.54988 20.1366 2.91128 20.4102C3.27268 20.6838 3.71347 20.8321 4.16677 20.8326ZM14.5837 20.8326H22.9173V37.4997H14.5837V20.8326ZM35.4176 20.8326V37.4997H27.084V20.8326H35.4176ZM47.9179 37.4997H39.5844V20.8326H47.9179V37.4997ZM31.2508 4.52747L50.9753 16.6658H11.5263L31.2508 4.52747ZM62.5016 47.9166C62.5016 48.4692 62.2821 48.9991 61.8914 49.3898C61.5007 49.7805 60.9708 50 60.4182 50H2.08339C1.53084 50 1.00092 49.7805 0.61021 49.3898C0.219499 48.9991 0 48.4692 0 47.9166C0 47.3641 0.219499 46.8341 0.61021 46.4434C1.00092 46.0527 1.53084 45.8332 2.08339 45.8332H60.4182C60.9708 45.8332 61.5007 46.0527 61.8914 46.4434C62.2821 46.8341 62.5016 47.3641 62.5016 47.9166Z" fill="white"/></svg></span>
+                    <span><strong>Buy Crypto</strong><span>purchase with card or bank</span></span>
+                    <span class="deposit-coming-soon">coming soon</span>
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <section class="deposit-stage" data-deposit-stage-panel="network">
+              <h3 class="deposit-stage-title">Deposit Crypto</h3>
+              <div class="deposit-progress" aria-label="Deposit steps">
+                <span class="deposit-step" data-progress-step="network"><span class="hudi-icon-orb deposit-step-orb"><span>1</span></span><span class="deposit-step-label">network</span></span><span class="deposit-step-line is-one"></span><span class="deposit-step" data-progress-step="coin"><span class="hudi-icon-orb deposit-step-orb"><span>2</span></span><span class="deposit-step-label">coin</span></span><span class="deposit-step-line is-two"></span><span class="deposit-step" data-progress-step="deposit"><span class="hudi-icon-orb deposit-step-orb"><span>3</span></span><span class="deposit-step-label">deposit</span></span>
+              </div>
+              <p class="deposit-section-label">Select Network</p>
+              <div class="deposit-choice-list">
+                <button class="deposit-choice" type="button" data-deposit-choice="network" aria-pressed="true"><span class="deposit-icon-orb hudi-icon-orb is-sui"><svg viewBox="0 0 56 75" aria-hidden="true"><use href="#hudi-token-sui-icon"></use></svg></span><span><strong>SUI <span class="deposit-time is-fast">~2s</span></strong></span><span class="deposit-choice-badge">FASTEST</span><span class="deposit-choice-radio"></span></button>
+                <button class="deposit-choice" type="button" data-deposit-choice="network" aria-pressed="false"><span class="deposit-icon-orb hudi-icon-orb is-solana"><svg viewBox="0 0 66 55" aria-hidden="true"><use href="#hudi-token-solana-icon"></use></svg></span><span><strong>SOLANA <span class="deposit-time is-fast">~5s</span></strong></span><span></span><span class="deposit-choice-radio"></span></button>
+                <button class="deposit-choice" type="button" data-deposit-choice="network" aria-pressed="false"><span class="deposit-icon-orb hudi-icon-orb is-ethereum"><svg viewBox="0 0 48 80" aria-hidden="true"><use href="#hudi-token-ethereum-icon"></use></svg></span><span><strong>ETHEREUM <span class="deposit-time is-slow">~60s</span></strong></span><span></span><span class="deposit-choice-radio"></span></button>
+                <button class="deposit-choice" type="button" data-deposit-choice="network" aria-pressed="false"><span class="deposit-icon-orb hudi-icon-orb is-base"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#hudi-token-base-icon"></use></svg></span><span><strong>BASE <span class="deposit-time is-medium">~30s</span></strong></span><span></span><span class="deposit-choice-radio"></span></button>
+              </div>
+              <div class="deposit-info-card">
+                <span class="deposit-info-symbol is-blue-info"><svg viewBox="0 0 42 42" aria-hidden="true"><use href="#hudi-info-icon"></use></svg></span>
+                <span>ENSURE YOU SELECT THE CORRECT NETWORK. SENDING ASSETS ON THE WRONG NETWORK MAY RESULT IN PERMANENT LOSS OF FUNDS.</span>
+              </div>
+              <div class="deposit-modal-actions"><button class="deposit-action" type="button" data-deposit-back>&lt; BACK</button><button class="deposit-action is-primary" type="button" data-deposit-next>NEXT</button></div>
+            </section>
+
+            <section class="deposit-stage" data-deposit-stage-panel="coin">
+              <h3 class="deposit-stage-title">Select Coin</h3>
+              <div class="deposit-progress" aria-label="Deposit steps">
+                <span class="deposit-step" data-progress-step="network"><span class="hudi-icon-orb deposit-step-orb"><span>1</span></span><span class="deposit-step-label">network</span></span><span class="deposit-step-line is-one"></span><span class="deposit-step" data-progress-step="coin"><span class="hudi-icon-orb deposit-step-orb"><span>2</span></span><span class="deposit-step-label">coin</span></span><span class="deposit-step-line is-two"></span><span class="deposit-step" data-progress-step="deposit"><span class="hudi-icon-orb deposit-step-orb"><span>3</span></span><span class="deposit-step-label">deposit</span></span>
+              </div>
+              <div class="deposit-info-card"><span class="deposit-info-symbol is-blue-info"><svg viewBox="0 0 42 42" aria-hidden="true"><use href="#hudi-info-icon"></use></svg></span><span>USDC AND USDT DEPOSITS GO TO YOUR USD TRADING BALANCE.</span></div>
+              <p class="deposit-section-label">Stablecoins</p>
+              <div class="deposit-choice-list">
+                <button class="deposit-choice" type="button" data-deposit-choice="coin" aria-pressed="true"><span class="deposit-icon-orb hudi-icon-orb is-usdc"><span>USDC</span></span><span><strong>USDC</strong></span><span class="deposit-choice-badge">RECOMMENDED</span><span class="deposit-choice-radio"></span></button>
+                <button class="deposit-choice" type="button" data-deposit-choice="coin" aria-pressed="false"><span class="deposit-icon-orb hudi-icon-orb is-usdt"><span>USDT</span></span><span><strong>USDT</strong></span><span></span><span class="deposit-choice-radio"></span></button>
+              </div>
+              <p class="deposit-section-label">Native</p>
+              <button class="deposit-choice" type="button" data-deposit-choice="coin" aria-pressed="false"><span class="deposit-icon-orb hudi-icon-orb is-sui"><svg viewBox="0 0 56 75" aria-hidden="true"><use href="#hudi-token-sui-icon"></use></svg></span><span><strong>SUI</strong></span><span></span><span class="deposit-choice-radio"></span></button>
+              <div class="deposit-info-card"><span class="deposit-info-symbol is-blue-info"><svg viewBox="0 0 42 42" aria-hidden="true"><use href="#hudi-info-icon"></use></svg></span><span>WHILE YOU CAN DEPOSIT ANY COIN ON THE SELECTED NETWORK, SPECIFYING THE COIN MINIMISES ERRORS.</span></div>
+              <div class="deposit-modal-actions"><button class="deposit-action" type="button" data-deposit-back>&lt; BACK</button><button class="deposit-action is-primary" type="button" data-deposit-next>NEXT</button></div>
+            </section>
+
+            <section class="deposit-stage" data-deposit-stage-panel="deposit">
+              <h3 class="deposit-stage-title">Deposit Crypto</h3>
+              <div class="deposit-progress" aria-label="Deposit steps">
+                <span class="deposit-step" data-progress-step="network"><span class="hudi-icon-orb deposit-step-orb"><span>1</span></span><span class="deposit-step-label">network</span></span><span class="deposit-step-line is-one"></span><span class="deposit-step" data-progress-step="coin"><span class="hudi-icon-orb deposit-step-orb"><span>2</span></span><span class="deposit-step-label">coin</span></span><span class="deposit-step-line is-two"></span><span class="deposit-step" data-progress-step="deposit"><span class="hudi-icon-orb deposit-step-orb"><span>3</span></span><span class="deposit-step-label">deposit</span></span>
+              </div>
+              <p class="deposit-section-label">Deposit Details</p>
+              <div class="deposit-info-card deposit-details-card">
+                <span class="deposit-qr" aria-label="Placeholder QR code"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="100" height="100" fill="#fff"/><path fill="#06a9f4" d="M6 6h26v26H6zM68 6h26v26H68zM6 68h26v26H6zM12 12v14h14V12zm62 0v14h14V12zM12 74v14h14V74zM42 8h8v8h-8zm14 0h6v6h-6zM38 22h8v8h-8zm18 0h6v12h-6zM42 42h8v8h-8zm12-4h8v8h-8zm12 4h10v8H66zm16 0h6v16h-6zM34 56h10v8H34zm18 0h8v8h-8zm16 0h6v8h-6zm12 10h14v8H80zM40 74h8v8h-8zm16-6h10v10H56zm14 14h8v12h-8zm-20 8h10v6H50zM82 82h12v12H82z"/></svg></span>
+                <span class="deposit-address"><strong>Sui Deposit Address</strong><code>0x7a3f8c2d1e94bf5abc8d7e2f3a1b9cd550bf7a4b4c0d1e2f3a4b5cbd7ef9a0b</code><button class="deposit-copy" type="button"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2.16676 9.16732C1.52504 9.16732 1 8.64228 1 8.00056V2.16676C1 1.52504 1.52504 1 2.16676 1H8.00056C8.64228 1 9.16732 1.52504 9.16732 2.16676M5.66704 4.50028H11.5008C12.1452 4.50028 12.6676 5.02266 12.6676 5.66704V11.5008C12.6676 12.1452 12.1452 12.6676 11.5008 12.6676H5.66704C5.02266 12.6676 4.50028 12.1452 4.50028 11.5008V5.66704C4.50028 5.02266 5.02266 4.50028 5.66704 4.50028Z" stroke="#8BCCFF" stroke-width="2" stroke-linecap="round"/></svg>Copy</button><span>EST. ARRIVAL IN ~2s</span></span>
+              </div>
+              <div class="deposit-info-card deposit-success"><span class="deposit-info-symbol is-success-info"><svg viewBox="0 0 42 42" aria-hidden="true"><use href="#hudi-info-icon"></use></svg></span><span>DEPOSIT AT LEAST 5 USDC</span></div>
+              <div class="deposit-info-stack">
+                <div class="deposit-info-card"><span class="deposit-info-symbol is-blue-info"><svg viewBox="0 0 42 42" aria-hidden="true"><use href="#hudi-info-icon"></use></svg></span><span>ONLY SUI COINS SHOULD BE SENT TO THIS ADDRESS. DEPOSITS FROM OTHER NETWORKS OR ASSET TYPES WILL BE LOST.</span></div>
+                <div class="deposit-info-card"><span class="deposit-info-symbol is-blue-info"><svg viewBox="0 0 42 42" aria-hidden="true"><use href="#hudi-info-icon"></use></svg></span><span>A NOTIFICATION WILL BE SENT ONCE THE DEPOSIT IS RECEIVED. OPTIONALLY, CLICK DEPOSIT SENT AFTER SENDING.</span></div>
+              </div>
+              <div class="deposit-modal-actions"><button class="deposit-action" type="button" data-deposit-back>&lt; BACK</button><button class="deposit-action is-primary" type="button" data-deposit-close>DEPOSIT SENT</button></div>
+            </section>
+          </div>
+        </div>
 
         <article class="card span-6">
           <div class="card-head"><div><h3>Pill chamber</h3><p>Variable-width recessed chamber using the lower highlight vectors.</p></div><button class="copy-css" data-copy="Pill chamber">Copy CSS</button></div>
@@ -1327,8 +1989,8 @@
                 <span class="achievement-title">RANK</span>
                 <div class="achievement-bar-wrap">
                   <span class="achievement-end is-start">0</span>
-                  <svg class="achievement-end-curve" viewBox="0 0 26 44" aria-label="100K">
-                    <path id="achievement-end-curve" d="M 4 34 A 26 26 0 0 1 22 34"/>
+                  <svg class="achievement-end-curve" viewBox="0 0 34 44" aria-label="100K">
+                    <path id="achievement-end-curve" d="M 4 34 A 34 34 0 0 1 30 34"/>
                     <text text-anchor="middle"><textPath href="#achievement-end-curve" startOffset="50%">100K</textPath></text>
                   </svg>
                   <div class="hudi-percent-pill is-indicator achievement-bar is-auto-gradient">
@@ -1341,15 +2003,29 @@
             </div>
           </div>
         </article>
+        <article class="card span-4">
+          <div class="card-head"><div><h3>Blank orb</h3><p>Source material for ticker and icon orbs.</p></div><button class="copy-css" data-copy="Blank orb">Copy CSS</button></div>
+          <div class="demo blank-orb-demo">
+            <div class="hudi-blank-orb" id="blank-orb-preview" style="--orb-base:#24d0ff;--orb-sheen:#00ffbf;--orb-shadow:rgba(0,50,157,.4);"></div>
+            <div class="orb-maker-controls" data-blank-orb-maker>
+              <label class="orb-color orb-color-master">colour<input data-blank-orb-field="colour" type="color" value="#24d0ff"></label>
+              <div class="orb-color-row">
+                <label class="orb-color">base<input data-blank-orb-field="base" type="color" value="#24d0ff"></label>
+                <label class="orb-color">sheen<input data-blank-orb-field="sheen" type="color" value="#00ffbf"></label>
+                <label class="orb-color">shadow<input data-blank-orb-field="shadow" type="color" value="#00329d"></label>
+              </div>
+            </div>
+          </div>
+        </article>
         <article class="card span-8">
-          <div class="card-head"><div><h3>Orbs</h3></div><button class="copy-css" data-copy="Orb">Copy current CSS</button></div>
+          <div class="card-head"><div><h3>Ticker orbs</h3></div><button class="copy-css" data-copy="Ticker orbs">Copy current CSS</button></div>
           <div class="demo orb-maker-demo">
             <div class="orb-preview-stage">
               <div class="orb-size-samples" aria-label="Orb size previews">
-                <div class="orb-size-sample is-big"><span>big</span><div class="hudi-stock-orb" data-orb-preview style="--orb-base:#24d0ff;--orb-sheen:#00ffbf;--orb-shadow:rgba(0,50,157,.4);--orb-text-glow:#0558da;"><svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="orb-preview-big-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#orb-preview-big-number-curve" startOffset="50%">1234</textPath></text></svg><svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="ABCDE"><defs><linearGradient id="orb-preview-big-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><path id="orb-preview-big-ticker-curve" d="M 6 20 C 30 21.225 70 21.225 94 20"/><text text-anchor="middle" fill="url(#orb-preview-big-ticker-fill)"><textPath href="#orb-preview-big-ticker-curve" startOffset="50%">ABCDE</textPath></text></svg></div></div>
-                <div class="orb-size-sample is-medium"><span>medium</span><div class="hudi-stock-orb" id="orb-preview" data-orb-preview style="--orb-base:#24d0ff;--orb-sheen:#00ffbf;--orb-shadow:rgba(0,50,157,.4);--orb-text-glow:#0558da;"><svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="orb-preview-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#orb-preview-number-curve" startOffset="50%">1234</textPath></text></svg><svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="ABCDE"><defs><linearGradient id="orb-preview-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><path id="orb-preview-ticker-curve" d="M 6 20 C 30 21.225 70 21.225 94 20"/><text text-anchor="middle" fill="url(#orb-preview-ticker-fill)"><textPath href="#orb-preview-ticker-curve" startOffset="50%">ABCDE</textPath></text></svg></div></div>
-                <div class="orb-size-sample is-small"><span>small</span><div class="hudi-stock-orb" data-orb-preview style="--orb-base:#24d0ff;--orb-sheen:#00ffbf;--orb-shadow:rgba(0,50,157,.4);--orb-text-glow:#0558da;"><svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="orb-preview-small-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#orb-preview-small-number-curve" startOffset="50%">1234</textPath></text></svg><svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="ABCDE"><defs><linearGradient id="orb-preview-small-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><path id="orb-preview-small-ticker-curve" d="M 6 20 C 30 21.225 70 21.225 94 20"/><text text-anchor="middle" fill="url(#orb-preview-small-ticker-fill)"><textPath href="#orb-preview-small-ticker-curve" startOffset="50%">ABCDE</textPath></text></svg></div></div>
-                <div class="orb-size-sample is-tiny"><span>tiny</span><div class="hudi-stock-orb" data-orb-preview style="--orb-base:#24d0ff;--orb-sheen:#00ffbf;--orb-shadow:rgba(0,50,157,.4);--orb-text-glow:#0558da;"><svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="orb-preview-tiny-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#orb-preview-tiny-number-curve" startOffset="50%">1234</textPath></text></svg><svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="ABCDE"><defs><linearGradient id="orb-preview-tiny-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><path id="orb-preview-tiny-ticker-curve" d="M 6 20 C 30 21.225 70 21.225 94 20"/><text text-anchor="middle" fill="url(#orb-preview-tiny-ticker-fill)"><textPath href="#orb-preview-tiny-ticker-curve" startOffset="50%">ABCDE</textPath></text></svg></div></div>
+                <div class="orb-size-sample is-big"><span>big</span><div class="hudi-stock-orb" data-orb-preview style="--orb-base:#24d0ff;--orb-sheen:#00ffbf;--orb-shadow:rgba(0,50,157,.4);--orb-text-glow:#0558da;"><svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="orb-preview-big-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#orb-preview-big-number-curve" startOffset="50%">1234</textPath></text></svg><svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="ABCDE"><defs><linearGradient id="orb-preview-big-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#orb-preview-big-ticker-fill)">ABCDE</text></svg></div></div>
+                <div class="orb-size-sample is-medium"><span>medium</span><div class="hudi-stock-orb" id="orb-preview" data-orb-preview style="--orb-base:#24d0ff;--orb-sheen:#00ffbf;--orb-shadow:rgba(0,50,157,.4);--orb-text-glow:#0558da;"><svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="orb-preview-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#orb-preview-number-curve" startOffset="50%">1234</textPath></text></svg><svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="ABCDE"><defs><linearGradient id="orb-preview-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#orb-preview-ticker-fill)">ABCDE</text></svg></div></div>
+                <div class="orb-size-sample is-small"><span>small</span><div class="hudi-stock-orb" data-orb-preview style="--orb-base:#24d0ff;--orb-sheen:#00ffbf;--orb-shadow:rgba(0,50,157,.4);--orb-text-glow:#0558da;"><svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="orb-preview-small-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#orb-preview-small-number-curve" startOffset="50%">1234</textPath></text></svg><svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="ABCDE"><defs><linearGradient id="orb-preview-small-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#orb-preview-small-ticker-fill)">ABCDE</text></svg></div></div>
+                <div class="orb-size-sample is-tiny"><span>tiny</span><div class="hudi-stock-orb" data-orb-preview style="--orb-base:#24d0ff;--orb-sheen:#00ffbf;--orb-shadow:rgba(0,50,157,.4);--orb-text-glow:#0558da;"><svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="orb-preview-tiny-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#orb-preview-tiny-number-curve" startOffset="50%">1234</textPath></text></svg><svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="ABCDE"><defs><linearGradient id="orb-preview-tiny-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#orb-preview-tiny-ticker-fill)">ABCDE</text></svg></div></div>
               </div>
             </div>
             <div class="orb-maker-controls" data-orb-maker>
@@ -1397,7 +2073,7 @@
           </div>
         </article>
         <article class="card span-7">
-          <div class="card-head"><div><h3>Icon orb</h3><p>Brand logo variants using the same orb material as the Hudi orb.</p></div><button class="copy-css" data-copy="Icon orb">Copy CSS</button></div>
+          <div class="card-head"><div><h3>Icon orb</h3><p>Brand logo variants using the blank orb material.</p></div><button class="copy-css" data-copy="Icon orb">Copy CSS</button></div>
           <div class="demo icon-orb-demo">
             <div class="icon-orb-grid">
               <div class="icon-orb-item">
@@ -1482,7 +2158,7 @@
               <div class="pfp-generator-face" data-pfp-preview></div>
               <div class="pfp-generator-controls">
                 <button class="hudi-trade-button pfp-generate-button" type="button" data-pfp-generate><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pfp-generate-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">generate</span></button>
-                <button class="hudi-trade-button pfp-generate-button" type="button" data-pfp-mode><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pfp-mode-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">full body</span></button>
+                <button class="pfp-mode-button" type="button" data-pfp-mode aria-label="Show full body"></button>
               </div>
             </div>
           </div>
@@ -1567,8 +2243,8 @@
                 <div class="chart-readout"><span data-chart-symbol>JYPCV</span><strong data-chart-price>$58.43</strong><span data-chart-time>29 APR</span></div>
               </div>
               <div class="chart-orbs" aria-hidden="true">
-                <div class="hudi-stock-orb" data-orb-base="#fff700"><svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="chart-orb-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#chart-orb-number-curve" startOffset="50%">3325</textPath></text></svg><svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="SMSNG"><defs><linearGradient id="chart-orb-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><path id="chart-orb-ticker-curve" d="M 6 20 C 30 21.225 70 21.225 94 20"/><text text-anchor="middle" fill="url(#chart-orb-ticker-fill)"><textPath href="#chart-orb-ticker-curve" startOffset="50%">SMSNG</textPath></text></svg></div>
-                <div class="hudi-stock-orb mini-orb" data-orb-base="#24d0ff"><svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="mini-chart-orb-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#mini-chart-orb-number-curve" startOffset="50%">084</textPath></text></svg><svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="KRX"><defs><linearGradient id="mini-chart-orb-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><path id="mini-chart-orb-ticker-curve" d="M 6 20 C 30 21.225 70 21.225 94 20"/><text text-anchor="middle" fill="url(#mini-chart-orb-ticker-fill)"><textPath href="#mini-chart-orb-ticker-curve" startOffset="50%">KRX</textPath></text></svg></div>
+                <div class="hudi-stock-orb" data-orb-base="#fff700"><svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="chart-orb-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#chart-orb-number-curve" startOffset="50%">3325</textPath></text></svg><svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="SMSNG"><defs><linearGradient id="chart-orb-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#chart-orb-ticker-fill)">SMSNG</text></svg></div>
+                <div class="hudi-stock-orb mini-orb" data-orb-base="#24d0ff"><svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="mini-chart-orb-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#mini-chart-orb-number-curve" startOffset="50%">084</textPath></text></svg><svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="KRX"><defs><linearGradient id="mini-chart-orb-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#mini-chart-orb-ticker-fill)">KRX</text></svg></div>
               </div>
               <div class="chart-scroll" tabindex="0" aria-label="Scalable trading chart">
                 <div class="chart-track" style="--count:44">
@@ -1635,15 +2311,26 @@
 
   <svg class="hudi-svg-defs" aria-hidden="true" focusable="false">
     <defs>
+      <symbol id="hudi-info-icon" viewBox="0 0 42 42">
+        <path d="M21 0C16.8466 0 12.7865 1.23163 9.33303 3.53914C5.8796 5.84665 3.18798 9.1264 1.59854 12.9636C0.00909897 16.8009 -0.406771 21.0233 0.403518 25.0969C1.21381 29.1705 3.21386 32.9123 6.15077 35.8492C9.08767 38.7861 12.8295 40.7862 16.9031 41.5965C20.9767 42.4068 25.1991 41.9909 29.0364 40.4015C32.8736 38.812 36.1534 36.1204 38.4609 32.667C40.7684 29.2135 42 25.1534 42 21C41.9941 15.4323 39.7797 10.0942 35.8427 6.15725C31.9058 2.22026 26.5677 0.00587963 21 0ZM21 38.7692C17.4856 38.7692 14.0501 37.7271 11.128 35.7746C8.20582 33.8221 5.92829 31.0469 4.58338 27.8C3.23847 24.5531 2.88658 20.9803 3.57221 17.5334C4.25784 14.0865 5.95019 10.9203 8.43526 8.43525C10.9203 5.95018 14.0865 4.25783 17.5334 3.5722C20.9803 2.88657 24.5531 3.23846 27.8 4.58337C31.0469 5.92828 33.8221 8.20581 35.7746 11.1279C37.7271 14.0501 38.7692 17.4856 38.7692 21C38.7639 25.711 36.8901 30.2276 33.5588 33.5588C30.2276 36.8901 25.7111 38.7639 21 38.7692ZM24.2308 30.6923C24.2308 31.1207 24.0606 31.5316 23.7576 31.8346C23.4547 32.1375 23.0438 32.3077 22.6154 32.3077C21.7585 32.3077 20.9368 31.9673 20.3309 31.3614C19.725 30.7555 19.3846 29.9338 19.3846 29.0769V21C18.9562 21 18.5453 20.8298 18.2424 20.5269C17.9394 20.2239 17.7692 19.813 17.7692 19.3846C17.7692 18.9562 17.9394 18.5453 18.2424 18.2424C18.5453 17.9394 18.9562 17.7692 19.3846 17.7692C20.2415 17.7692 21.0632 18.1096 21.6691 18.7155C22.275 19.3214 22.6154 20.1431 22.6154 21V29.0769C23.0438 29.0769 23.4547 29.2471 23.7576 29.55C24.0606 29.853 24.2308 30.2639 24.2308 30.6923ZM17.7692 12.1154C17.7692 11.6361 17.9113 11.1677 18.1776 10.7692C18.4438 10.3707 18.8223 10.0601 19.265 9.87675C19.7078 9.69335 20.195 9.64537 20.665 9.73886C21.1351 9.83236 21.5668 10.0631 21.9057 10.402C22.2446 10.7409 22.4753 11.1726 22.5688 11.6427C22.6623 12.1127 22.6143 12.5999 22.4309 13.0427C22.2475 13.4854 21.937 13.8638 21.5385 14.1301C21.14 14.3963 20.6716 14.5385 20.1923 14.5385C19.5497 14.5385 18.9334 14.2832 18.4789 13.8288C18.0245 13.3743 17.7692 12.758 17.7692 12.1154Z" fill="currentColor"/>
+      </symbol>
+      <symbol id="hudi-token-sui-icon" viewBox="0 0 56 75">
+        <path d="M27.6439 0H28.4327C29.7734 1.37644 31.3605 3.49514 32.5925 5.0641L38.877 13.0852L46.889 23.2084C49.3668 26.3666 51.3109 28.515 53.1098 32.1573C54.9596 35.9777 55.9469 40.1836 55.997 44.4572C56.0035 45.9789 56.0153 47.2562 55.8419 48.7761C55.0835 55.0887 52.3233 60.9621 47.9944 65.4746C44.3275 69.363 39.6769 72.1021 34.5757 73.3779C34.0692 73.5024 31.221 73.9541 31.0011 74.1177H24.9588C24.3202 73.8643 22.9453 73.7 22.2285 73.5393C21.5014 73.3765 20.8875 73.2071 20.1694 72.9929C14.78 71.3737 9.98821 68.1072 6.42088 63.6207C-0.0902124 55.423 -1.73127 44.5206 1.87295 34.6109C3.80459 29.2998 7.34886 25.4205 10.7559 21.1096L20.1935 9.13732L24.3578 3.88387C25.304 2.67998 26.5417 0.936807 27.6439 0ZM43.9486 56.5459C44.1791 57.4604 44.4156 58.1321 44.3471 59.0817C50.022 52.0268 51.0684 41.9401 46.7079 33.9066C45.321 31.3515 43.3923 29.1588 41.6056 26.893L34.3569 17.7177L30.9461 13.3952C30.2437 12.4982 29.4682 11.4335 28.6585 10.6392C28.4182 10.4034 28.1164 10.4137 27.8094 10.4265C26.7582 10.8756 26.1519 12.1425 25.4024 12.9794C21.1976 17.6747 18.6804 24.8054 21.0782 31.025C22.2108 33.9628 24.858 36.785 27.4073 38.5677C33.0166 42.0456 38.5491 45.5469 41.9211 51.5959C42.6187 52.8474 43.6745 55.088 43.9486 56.5459ZM31.0106 66.6731C33.0379 66.2951 35.7813 65.5939 37.5852 64.5069C37.6034 61.5853 37.5428 59.1881 36.3156 56.4658C33.8783 51.0587 29.2594 48.1909 24.5077 45.3123C20.7254 43.021 16.7419 38.9024 14.8729 34.7856C14.2577 33.4289 13.7836 32.0081 13.4586 30.5474C13.3886 30.2185 13.1701 28.7519 13.0963 28.5631C12.108 29.8455 10.9198 31.3015 10.0631 32.6581C7.27059 37.0804 6.19977 42.0948 6.76617 47.3274C7.42867 53.1138 10.2573 58.3999 14.6438 62.0486C19.1606 65.7662 24.9295 67.4492 30.6556 66.7201C30.7741 66.706 30.8925 66.6903 31.0106 66.6731Z" fill="white"/>
+      </symbol>
+      <symbol id="hudi-token-solana-icon" viewBox="0 0 66 55">
+        <path d="M13.4309 0.0595368C15.5228 -0.0540611 18.4804 0.0298387 20.6252 0.0297576H34.11L53.1896 0.0315429C57.2247 0.00647026 61.2599 0.0257007 65.2944 0.0890721C64.4061 0.839873 62.8682 2.4812 61.9741 3.37319L55.307 10.0363C54.7289 10.615 52.4967 12.9757 51.9272 13.1983C50.5687 13.2918 48.591 13.2316 47.1664 13.2306L38.712 13.2298L12.0967 13.2291L4.05285 13.2229C2.9602 13.2173 0.986922 13.1079 0 13.2272C0.656596 12.7445 2.72878 10.5694 3.43317 9.86498L10.8551 2.44331C11.3241 1.97496 12.93 0.268151 13.4309 0.0595368Z" fill="white"/><path d="M0.265625 20.4985C3.91715 20.5568 7.90508 20.4648 11.5937 20.4644L37.5598 20.4631L46.9871 20.4588C48.2736 20.4586 51.0044 20.3875 52.1524 20.5738C52.7128 20.9634 54.9379 23.2591 55.6121 23.9319L63.2741 31.5877C63.5388 31.853 65.1556 33.3977 65.2286 33.6017C64.0728 33.5421 62.3022 33.6286 61.0943 33.6357L53.028 33.6404L26.3798 33.64L18.2684 33.6461C16.8618 33.6499 14.5591 33.7247 13.2353 33.5539C12.9371 33.3278 12.1294 32.4784 11.8301 32.1795L8.94223 29.2987C7.97714 28.3362 0.445515 20.9382 0.265625 20.4985Z" fill="white"/><path d="M13.3663 40.9471C15.2314 40.8111 18.0852 40.9033 20.0483 40.9057L32.2035 40.9071C43.1056 40.9071 54.3984 40.7616 65.2758 40.9591C61.0616 45.0008 57.0285 49.3272 52.8268 53.3919C52.5364 53.6728 52.3378 53.9184 51.9404 54.0506C50.3837 54.1214 48.529 54.0773 46.9548 54.0776L38.0327 54.0774L11.0828 54.0769L4.00114 54.0728C2.70141 54.0676 1.33418 54.0021 0.046875 54.0619C0.725622 53.5543 2.81688 51.3613 3.54488 50.6335L10.3965 43.8049C10.932 43.2645 12.7864 41.2909 13.3663 40.9471Z" fill="white"/>
+      </symbol>
+      <symbol id="hudi-token-ethereum-icon" viewBox="0 0 48 80">
+        <path d="M23.9846 0C24.2402 0.0948479 27.9517 6.61586 28.4504 7.48517L42.3088 31.3508L45.8121 37.3749C46.5775 38.6812 47.351 39.8841 48 41.2585C47.4287 41.728 46.4617 42.23 45.8069 42.636L40.5312 45.8622L24.0296 56C23.5188 55.7388 22.2904 54.9132 21.7473 54.5755L17.5246 51.9933L9.77947 47.2692C6.64158 45.3217 3.18061 43.1125 0 41.3015C0.711019 39.9604 1.58758 38.5549 2.35403 37.2238L7.83705 27.8056L17.7029 10.7648C19.3965 7.90695 21.0665 5.03408 22.7127 2.14652C23.1274 1.41471 23.5897 0.743994 23.9846 0Z" fill="white"/><path d="M0.687549 49.7651C0.732468 49.1259 -0.0581552 48.7821 0.00342112 48.2028C0.16423 47.9944 0.102258 48.0569 0.447559 48C7.78824 51.7786 14.9508 56.0309 22.2538 59.8879C22.7622 60.1565 23.382 60.5359 23.9079 60.7304C25.1666 59.9512 26.7961 59.1259 28.1225 58.3957L36.3288 53.9083L42.3064 50.6508C43.7853 49.8364 45.1466 49.0363 46.6831 48.2983L46.7612 48.2911C47.1432 48.2539 47.3342 48.1934 47.7002 48.085C47.9545 48.3109 47.5473 48.2383 48 48.4448C43.6991 54.2576 39.0774 60.1162 34.666 65.878L28.7233 73.6238C27.1324 75.7194 25.4787 77.9627 23.8194 80C19.1304 74.0186 14.5769 67.8855 9.93899 61.8682L4.11759 54.2583C3.07308 52.9032 1.6333 51.1641 0.687549 49.7651Z" fill="white"/>
+      </symbol>
+      <symbol id="hudi-token-base-icon" viewBox="0 0 64 64">
+        <path d="M29.5231 0H34.3188C34.9481 0.216594 35.9618 0.216359 36.6613 0.3244C38.0714 0.547653 39.4668 0.856176 40.8396 1.24827C49.2988 3.69601 56.3835 9.50656 60.4395 17.3231C61.8869 20.1229 62.912 23.1214 63.4816 26.2212C63.6229 26.9957 63.8384 29.2355 64 29.7743V34.2861L63.984 34.3382C63.8112 34.9236 63.7115 36.4195 63.5995 37.0933C63.3941 38.325 63.1531 39.4482 62.8133 40.6513C60.4928 48.8508 55.0085 55.792 47.5682 59.9461C44.5762 61.6181 41.3383 62.8053 37.9749 63.4651C37.3265 63.5915 34.7406 63.8597 34.4315 64H29.5286C29.0924 63.8155 26.659 63.5851 25.9842 63.4629C24.0462 63.0965 22.1465 62.5515 20.309 61.8347C11.5394 58.4176 4.70931 51.3265 1.62291 42.4349C1.04811 40.766 0.593403 39.05 0.334088 37.3031C0.272752 36.89 0.154815 35.8787 0 35.5651V34.6781H42.3498C42.3664 32.9024 42.3641 31.1266 42.3427 29.3509C41.9679 29.3941 40.9374 29.3603 40.5218 29.3587L36.9082 29.3521L24.295 29.3519L7.95824 29.351L3.18844 29.3567C2.22635 29.3618 0.924528 29.4064 0 29.3184V28.3263C0.180833 28.015 0.393413 26.2305 0.495538 25.721C0.641851 25.0167 0.807307 24.3165 0.991728 23.6213C1.54483 21.5781 2.3022 19.5957 3.25239 17.7043C7.24453 9.70149 14.4056 3.73627 22.998 1.25592C24.3839 0.859269 25.7932 0.549525 27.2177 0.328486C27.826 0.232913 28.9942 0.192693 29.5231 0Z" fill="white"/>
+      </symbol>
       <radialGradient id="hudi-orb-text-gradient" cx="0" cy="0" r="1" gradientTransform="matrix(0 18 -40 0 50 -2)" gradientUnits="userSpaceOnUse">
         <stop stop-color="#95afff"/>
         <stop offset=".48" stop-color="#000925"/>
         <stop offset="1" stop-color="#000925"/>
       </radialGradient>
-      <filter id="hudi-orb-ticker-warp" x="-8%" y="-45%" width="116%" height="190%" color-interpolation-filters="sRGB">
-        <feTurbulence type="fractalNoise" baseFrequency=".018 .052" numOctaves="1" seed="12" result="tickerWarpNoise"/>
-        <feDisplacementMap in="SourceGraphic" in2="tickerWarpNoise" scale=".75" xChannelSelector="R" yChannelSelector="G"/>
-      </filter>
       <filter id="hudi-orb-text-inner" x="-10%" y="-40%" width="120%" height="180%" color-interpolation-filters="sRGB">
         <feFlood flood-opacity="0" result="BackgroundImageFix"/>
         <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
@@ -1708,9 +2395,186 @@
     </defs>
   </svg>
 
-  <script id="css-snippets" type="application/json">{"Color and font index":"@font-face { font-family: \"OCRA Fixed\"; src: url(\"assets/fonts/OCRAStdFIXED-Regular.otf\") format(\"opentype\"); font-weight: 400; font-display: swap; }\n@font-face { font-family: \"Syne Hudi\"; src: url(\"assets/fonts/Syne-Regular.ttf\") format(\"truetype\"); font-weight: 400; font-display: swap; }\n@font-face { font-family: \"Syne Hudi\"; src: url(\"assets/fonts/Syne-SemiBold.ttf\") format(\"truetype\"); font-weight: 500; font-display: swap; }\n@font-face { font-family: \"Syne Hudi\"; src: url(\"assets/fonts/Syne-Bold.ttf\") format(\"truetype\"); font-weight: 700; font-display: swap; }\n@font-face { font-family: \"Syne Mono Hudi\"; src: url(\"assets/fonts/SyneMono-Regular.ttf\") format(\"truetype\"); font-weight: 400; font-display: swap; }\n\n:root {\n  --ink: #171717;\n  --dark-grey: #71809e;\n  --light-grey: #a9a9a9;\n  --outline-blue: #e6f4ff;\n  --outline-blue-2: #e2f2ff;\n  --select-blue: #8bccff;\n  --gain: #01fd90;\n  --gain-soft: #96ffd2;\n  --pink: #fd01ba;\n  --pink-soft: #ffe7f6;\n  --loss: #ff92e2;\n  --yellow: #f2ff00;\n  --ocr: \"OCRA Fixed\", ui-monospace, monospace;\n  --mono: \"Syne Mono Hudi\", \"Syne Mono\", ui-monospace, monospace;\n  --sans: \"Syne Hudi\", Syne, sans-serif;\n  --hudi-pill-font-weight: 500;\n}","Trade buttons":".hudi-trade-button {\n  --pill-bg: #01fd90;\n  --pill-inner-shadow: rgba(0,95,60,.34);\n  --pill-label: #007b92;\n  --pill-label-y: 0px;\n  align-items: center;\n  background: var(--pill-bg);\n  height: 46px;\n  min-width: 149px;\n  padding: 0 28px;\n  border: 4px solid #e2f2ff;\n  border-radius: 23px;\n  box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow);\n  font-family: \"Syne Hudi\", Syne, sans-serif;\n  font-size: 17px;\n  font-weight: var(--hudi-pill-font-weight, 500);\n  letter-spacing: 0;\n  color: var(--pill-label);\n  cursor: pointer;\n  display: inline-flex;\n  justify-content: center;\n  line-height: 1;\n  overflow: hidden;\n  position: relative;\n  text-transform: lowercase;\n  transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;\n  will-change: transform;\n}\n.hudi-trade-button::after { background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: inherit; content: \"\"; filter: blur(1.43px); height: 18%; left: 9%; opacity: .9; pointer-events: none; position: absolute; right: 9%; top: -.5px; }\n.hudi-trade-button .pill-top-contour { height: 75.4%; left: -.5px; mix-blend-mode: screen; overflow: visible; pointer-events: none; position: absolute; top: -.5px; width: calc(100% - 7.5px); z-index: 1; }\n.hudi-trade-button .pill-top-contour path { fill: url(#hudi-pill-top-gradient); }\n.hudi-trade-button .pill-bottom-highlight { background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%); border-radius: inherit; filter: blur(1.43px); height: 66.2%; left: 1%; pointer-events: none; position: absolute; right: 1%; top: 34%; }\n.hudi-trade-button .pill-label { color: var(--pill-label); position: relative; text-shadow: none; top: var(--pill-label-y); z-index: 2; }\n.hudi-trade-button.is-ocr,\n.hudi-trade-button[data-font=\"ocr\"] { --pill-label-y: 4.8%; font-family: \"OCRA Fixed\", ui-monospace, monospace; letter-spacing: -0.55px; }\n.hudi-trade-button.long .pill-label { background: linear-gradient(180deg, #6D8A89 0%, #334646 100%); background-clip: text; color: transparent; text-shadow: none; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }\n.hudi-trade-button.short .pill-label { color: #FFFFFF; text-shadow: none; -webkit-text-fill-color: #FFFFFF; }\n.hudi-trade-button .pill-shine { background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 34%, rgba(255,255,255,.72) 48%, rgba(255,255,255,0) 64%, transparent 100%); height: 150%; left: -80%; pointer-events: none; position: absolute; top: -25%; transform: skewX(-18deg); width: 52%; z-index: 3; }\n.hudi-trade-button.long { --pill-bg: #01fd90; --pill-inner-shadow: rgba(0,95,60,.34); }\n.hudi-trade-button.short { --pill-bg: #ff0fc4; --pill-inner-shadow: rgba(118,0,82,.34); --pill-label: #ffffff; }\n.hudi-trade-button.confirm { --pill-bg: #e9eef5; --pill-inner-shadow: rgba(62,88,116,.28); --pill-label: #71809e; border-radius: 28px; font-size: 23px; height: 56px; min-width: 241px; }\n.hudi-trade-button.confirm .pill-label { background: linear-gradient(180deg, #aeb8c6 0%, #71809e 100%); background-clip: text; color: transparent; text-shadow: none; top: -1px; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }\n.hudi-trade-button:hover { filter: brightness(1.015) saturate(1.03); box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow); }\n.hudi-trade-button:hover .pill-shine { animation: hudi-pill-shine 760ms ease-out; }\n.hudi-trade-button:active, .hudi-trade-button.is-pressed { filter: brightness(1.08) saturate(1.04); transform: translateY(1px) scale(.99); box-shadow: inset 0 -2px 18px rgba(255,255,255,.22), inset 0 -2.83px 29.61px var(--pill-inner-shadow); }\n@keyframes hudi-pill-shine { from { left: -80%; } to { left: 130%; } }","Long short toggle":":root { --hudi-pill-font-weight: 500; }\n.hudi-side-toggle { --toggle-left: 50%; --toggle-bg: #fd01ba; --toggle-label: #fff; --toggle-shadow: rgba(30,0,62,.4); position: relative; width: 326px; max-width: 100%; height: 50px; border: 4px solid #e6f4ff; border-radius: 26px; background: transparent; overflow: hidden; isolation: isolate; }\n.hudi-side-toggle__bed { content: \"\"; position: absolute; inset: 0; border-radius: inherit; background: #eef2ff; box-shadow: inset 0 4px 13px rgba(0,0,0,.4), inset 0 4px 50px rgba(0,0,0,.25); overflow: hidden; pointer-events: none; z-index: 0; }\n.hudi-side-toggle__bed::before { content: \"\"; position: absolute; left: 0; right: 0; top: -.5px; height: 69.4%; border-radius: 22px; background: linear-gradient(.24deg, rgba(255,255,255,.18) 20.46%, rgba(255,255,255,.9) 99.78%); opacity: .72; transition: opacity 140ms ease; }\n.hudi-side-toggle__bed::after { content: \"\"; position: absolute; left: 1%; right: 1%; top: 34%; height: 66%; border-radius: inherit; background: linear-gradient(360deg, rgba(255,255,255,.58) -14.15%, rgba(255,255,255,.98) 5.5%, rgba(255,255,255,.42) 38%); filter: blur(1.4px); opacity: .94; }\n.hudi-side-toggle::after { content: \"\"; position: absolute; top: 1px; bottom: 1px; left: 0; right: 0; border-radius: 22px; background: radial-gradient(85% 90% at 50% 0%, rgba(255,255,255,.72) 0%, rgba(255,255,255,.28) 52%, rgba(255,255,255,0) 100%), linear-gradient(180deg, rgba(255,255,255,.28), rgba(113,128,158,.08)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.24); opacity: 0; pointer-events: none; transition: opacity 140ms ease; z-index: 1; }\n.hudi-side-toggle:hover::after { opacity: .58; }\n.hudi-side-toggle:hover .hudi-side-toggle__bed::before { opacity: .88; }\n.hudi-side-toggle button { position: absolute; top: -.5px; z-index: 4; width: 50%; height: 100%; border: 0; background: transparent; color: transparent; cursor: pointer; font-family: \"Syne Hudi\", Syne, sans-serif; font-size: 19px; font-weight: var(--hudi-pill-font-weight, 500); letter-spacing: 0; }\n.hudi-side-toggle button::before { content: attr(data-label); position: absolute; inset: 0; display: grid; place-items: center; color: #8F9AAB; opacity: .5; text-shadow: none; transition: opacity 140ms ease; -webkit-text-fill-color: #8F9AAB; }\n.hudi-side-toggle button[data-side=\"long\"] { left: 0; }\n.hudi-side-toggle button[data-side=\"short\"] { right: 0; }\n.hudi-side-toggle button[aria-pressed=\"true\"]::before { opacity: 0; }\n.hudi-side-toggle button:not([aria-pressed=\"true\"]):hover::before { opacity: .5; }\n.hudi-side-toggle button:focus-visible { outline: 0; }\n.hudi-side-toggle__pill { position: absolute; top: -.5px; left: var(--toggle-left); z-index: 2; display: grid; place-items: center; width: 50%; height: 100%; border-radius: 25px; background: var(--toggle-bg); box-shadow: inset 0 -3px 32px var(--toggle-shadow); filter: drop-shadow(0 4px 4px rgba(0,0,0,.25)); overflow: hidden; transition: left 180ms ease, background-color 180ms ease, box-shadow 180ms ease; }\n.hudi-side-toggle__top-contour { height: 75.4%; left: -.5px; mix-blend-mode: screen; overflow: visible; pointer-events: none; position: absolute; top: -.5px; width: calc(100% - 7.5px); z-index: 1; }\n.hudi-side-toggle__top-contour path { fill: url(#hudi-pill-top-gradient); }\n.hudi-side-toggle__pill::after { content: \"\"; position: absolute; left: 9%; right: 9%; top: -.5px; height: 18%; border-radius: inherit; background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); filter: blur(1.43px); opacity: .9; pointer-events: none; }\n.hudi-side-toggle__bottom { position: absolute; left: 1%; right: 1%; top: 34%; height: 66.2%; border-radius: inherit; background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%); filter: blur(1.43px); pointer-events: none; }\n.hudi-side-toggle__label { position: relative; z-index: 1; color: var(--toggle-label); font-family: \"Syne Hudi\", Syne, sans-serif; font-size: 19px; font-weight: var(--hudi-pill-font-weight, 500); letter-spacing: 0; text-shadow: none; }\n.hudi-side-toggle.is-long { --toggle-left: 0%; --toggle-bg: #01fd90; --toggle-label: #007b92; --toggle-shadow: rgba(30,62,0,.4); }\n.hudi-side-toggle.is-long .hudi-side-toggle__label { background: linear-gradient(180deg, #6D8A89 0%, #334646 100%); background-clip: text; color: transparent; text-shadow: none; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }\n.hudi-side-toggle.is-short { --toggle-left: 50%; --toggle-bg: #fd01ba; --toggle-label: #fff; --toggle-shadow: rgba(30,0,62,.4); }\n.hudi-side-toggle.is-short .hudi-side-toggle__label { color: #FFFFFF; text-shadow: none; -webkit-text-fill-color: #FFFFFF; }","Leverage slider":".hudi-slider {\n  --track: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%);\n  width: min(315px, 100%);\n}\n.hudi-slider-row {\n  display: grid;\n  grid-template-columns: 1fr 58px;\n  gap: 13px;\n  align-items: center;\n  width: 100%;\n}\n.hudi-slider-control {\n  --slider-percent: 40%;\n  position: relative;\n  display: block;\n  height: 34px;\n}\n.hudi-slider input[type=\"range\"] {\n  appearance: none;\n  position: absolute;\n  inset: 0;\n  z-index: 3;\n  width: 100%;\n  height: 34px;\n  background: transparent;\n  cursor: pointer;\n  opacity: 0;\n}\n.hudi-slider-visual {\n  position: absolute;\n  left: 0;\n  right: 0;\n  top: 50%;\n  height: 14px;\n  border: 4px solid #e2f2ff;\n  border-radius: 13px;\n  background:\n    linear-gradient(90deg, #e8ffde 0%, #01dc79 100%) 0 0 / var(--slider-percent) 100% no-repeat,\n    #eef7ff;\n  transform: translateY(-50%);\n  pointer-events: none;\n}\n.hudi-slider.short .hudi-slider-visual {\n  background:\n    linear-gradient(90deg, #ffe4fe 0%, #fd01ba 100%) 0 0 / var(--slider-percent) 100% no-repeat,\n    #eef7ff;\n}\n.hudi-slider-puck {\n  position: absolute;\n  left: var(--slider-percent);\n  top: 50%;\n  width: 26px;\n  height: 26px;\n  box-sizing: content-box;\n  border: 4px solid #e2f2ff;\n  border-radius: 50%;\n  background:\n    radial-gradient(36.34% 18.06% at 50% 1%, #fff 0%, rgba(255,255,255,.14) 100%),\n    radial-gradient(64% 46% at 50% 20%, rgba(255,255,255,.96) 0 50%, rgba(255,255,255,.58) 62%, transparent 63%),\n    linear-gradient(180deg, #f5faff 0%, #d9e4ec 42%, #b8c8d4 100%);\n  box-shadow: inset 0 -3px 16px rgba(67, 88, 109, .28);\n  transform: translate(-50%, -50%);\n  transition: left 220ms cubic-bezier(.2,.8,.2,1);\n  pointer-events: none;\n}\n.hudi-slider-visual {\n  transition: background-size 220ms cubic-bezier(.2,.8,.2,1);\n}\n.hudi-slider output {\n  display: inline-grid;\n  height: 16px;\n  min-width: 36px;\n  overflow: hidden;\n  color: #71809e;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 12px;\n  line-height: 16px;\n  text-align: right;\n}\n.hudi-slider output span {\n  display: block;\n  will-change: transform, opacity;\n}\n.hudi-slider output.is-up span { animation: hudi-leverage-roll-up 180ms ease-out; }\n.hudi-slider output.is-down span { animation: hudi-leverage-roll-down 180ms ease-out; }\n@keyframes hudi-leverage-roll-up {\n  from { opacity: .35; transform: translateY(100%); }\n  to { opacity: 1; transform: translateY(0); }\n}\n@keyframes hudi-leverage-roll-down {\n  from { opacity: .35; transform: translateY(-100%); }\n  to { opacity: 1; transform: translateY(0); }\n}\n.hudi-slider-markers {\n  display: grid;\n  grid-template-columns: repeat(6, 1fr);\n  margin-top: 10px;\n  color: #a1a8b5;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  line-height: 1;\n}\n.hudi-slider-markers span { text-align: center; }\n.hudi-slider input::-webkit-slider-runnable-track {\n  height: 34px;\n  background: transparent;\n}\n.hudi-slider input::-webkit-slider-thumb {\n  appearance: none;\n  width: 34px;\n  height: 34px;\n}\n.hudi-slider input::-moz-range-thumb {\n  width: 34px;\n  height: 34px;\n  border: 0;\n  background: transparent;\n}\n.hudi-slider.short { --track: linear-gradient(270deg, #fd01ba 0%, #ffe4fe 100%); }","Pills and selectors":".hudi-pill {\n  min-height: 30px;\n  border: 4px solid #e6f4ff;\n  border-radius: 999px;\n  background: #fff;\n  color: #a9a9a9;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 12px;\n  padding-top: 2px;\n  cursor: pointer;\n  transition: border-color .14s ease, color .14s ease, transform .14s ease;\n}\n.hudi-pill:hover { border-color: #bddfff; color: #71809e; }\n.hudi-pill[aria-pressed=\"true\"],\n.hudi-pill.is-selected { border-color: #8bccff; color: #71809e; }\n.hudi-pill-icon {\n  position: relative;\n  top: -2px;\n  display: inline-block;\n  margin-right: 5px;\n}\n.hudi-pill:active { transform: scale(.97); }\n\n.time-selector {\n  --active-index: 2;\n  --selected-width: 52px;\n  --slot-step: 56px;\n  --slot-start: -4px;\n  --active-left: calc(var(--slot-start) + (var(--active-index) * var(--slot-step)));\n  box-sizing: border-box;\n  position: relative;\n  display: inline-block;\n  width: 276px;\n  height: 35px;\n  border: 4px solid #e2f2ff;\n  border-radius: 18px;\n  background: #fff;\n  overflow: visible;\n}\n.time-selector::before {\n  content: \"\";\n  box-sizing: border-box;\n  position: absolute;\n  top: -4px;\n  bottom: -4px;\n  left: var(--active-left);\n  width: var(--selected-width);\n  border: 4px solid #8bccff;\n  border-radius: 22px;\n  background: #fff;\n  transition: left 180ms ease;\n  z-index: 2;\n}\n.time-selector button {\n  position: absolute;\n  top: -.5px;\n  z-index: 3;\n  display: grid;\n  place-items: center;\n  width: var(--selected-width);\n  height: 27px;\n  padding: 3px 0 0;\n  border: 0;\n  background: transparent;\n  color: #a9a9a9;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 13px;\n  line-height: 1;\n  cursor: pointer;\n}\n.time-selector button:nth-child(1) { left: calc(var(--slot-start) + (var(--slot-step) * 0)); }\n.time-selector button:nth-child(2) { left: calc(var(--slot-start) + (var(--slot-step) * 1)); }\n.time-selector button:nth-child(3) { left: calc(var(--slot-start) + (var(--slot-step) * 2)); }\n.time-selector button:nth-child(4) { left: calc(var(--slot-start) + (var(--slot-step) * 3)); }\n.time-selector button:nth-child(5) { left: calc(var(--slot-start) + (var(--slot-step) * 4)); }\n.time-selector button[aria-pressed=\"true\"] { color: #71809e; }","Status chips":".hudi-status {\n  display: inline-flex;\n  align-items: center;\n  gap: 7px;\n  min-height: 25px;\n  padding: 0 12px 0 9px;\n  border: 4px solid #01fd90;\n  border-radius: 54px;\n  background: #96ffd2;\n  color: #127e4b;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: .02em;\n  padding-top: 2px;\n}\n.hudi-status::before {\n  content: \"\";\n  position: relative;\n  top: -1px;\n  width: 8px;\n  height: 8px;\n  flex: 0 0 8px;\n  border-radius: 50%;\n  background: currentColor;\n}\n.hudi-status.closed {\n  border-color: #ff92e2;\n  background: #ffe7f6;\n  color: #e630a0;\n}","Gain chips":".gain-chip {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-height: 20px;\n  padding: 0 8px;\n  border-radius: 53px;\n  background: #96ffd2;\n  color: #127e4b;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: .01em;\n  padding-top: 2px;\n}\n.gain-chip.loss {\n  background: #ffe7f6;\n  color: #e630a0;\n  letter-spacing: -.01em;\n}","Chart labels":".chart-label {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 48px;\n  height: 13px;\n  background: #01fd90;\n  color: #000;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: -.01em;\n  padding-top: 2px;\n}\n.chart-label.small-gain { background: #96ffd2; }\n.chart-label.big-loss { background: #fd01ba; color: #fff; }\n.chart-label.small-loss { background: #ff92e2; color: #fff; }","Trading chart":".chart-demo {\n  --mx: 50%;\n  --my: 50%;\n  --spacing: 22px;\n  position: relative;\n  width: 100%;\n  height: 420px;\n  border: 4px solid #e6f4ff;\n  border-radius: 18px;\n  background: #fff;\n  overflow: hidden;\n}\n.chart-scroll {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  cursor: crosshair;\n  overscroll-behavior: contain;\n}\n.chart-scroll.is-dragging { cursor: grabbing; }\n.chart-track {\n  position: relative;\n  width: max(100%, calc((var(--count) * var(--spacing)) + 128px));\n  height: 100%;\n  background:\n    linear-gradient(rgba(207,228,251,.45) 1px, transparent 1px),\n    linear-gradient(90deg, rgba(207,228,251,.45) 1px, transparent 1px),\n    #fff;\n  background-size: 28px 28px;\n}\n.candle {\n  --body-w: clamp(8px, calc(var(--spacing) - 10px), 18px);\n  position: absolute;\n  left: calc(64px + (var(--i) * var(--spacing)));\n  top: var(--high-y);\n  width: var(--spacing);\n  height: calc(var(--low-y) - var(--high-y));\n  border: 0;\n  background: transparent;\n  cursor: pointer;\n  padding: 0;\n  transform: translateX(-50%);\n}\n.candle-wick {\n  position: absolute;\n  left: 50%;\n  width: 1px;\n  background: #000;\n  transform: translateX(-50%);\n}\n.candle-wick.top { top: -.5px; height: calc(var(--body-y) - var(--high-y)); }\n.candle-wick.bottom { top: calc(var(--body-y) - var(--high-y) + var(--body-h)); height: calc(var(--low-y) - var(--body-y) - var(--body-h)); }\n.candle-body {\n  position: absolute;\n  left: 50%;\n  top: calc(var(--body-y) - var(--high-y));\n  width: var(--body-w);\n  height: max(var(--body-h), 3px);\n  border: 1px solid #000;\n  background: var(--c);\n  transform: translateX(-50%);\n}\n.candle[aria-pressed=\"true\"] .candle-body { outline: 4px solid #1687ff; outline-offset: 3px; }\n.cursor-v,\n.cursor-h,\n.cursor-crosshair {\n  position: absolute;\n  pointer-events: none;\n  opacity: 0;\n  z-index: 5;\n}\n.chart-demo.is-tracking .cursor-v,\n.chart-demo.is-tracking .cursor-h,\n.chart-demo.is-tracking .cursor-crosshair { opacity: 1; }\n.cursor-v { left: var(--mx); top: 44px; bottom: 34px; width: 6px; transform: translateX(-50%); background: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='38' viewBox='0 0 6 38'%3E%3Crect x='.5' y='.5' width='5' height='27' rx='2.5' fill='%23FF92E2' stroke='%23000'/%3E%3C/svg%3E\") top center / 6px 38px repeat-y; }\n.cursor-h { left: 0; right: 52px; top: var(--my); height: 6px; transform: translateY(-50%); background: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='6' viewBox='0 0 38 6'%3E%3Crect x='.5' y='.5' width='27' height='5' rx='2.5' fill='%23FF92E2' stroke='%23000'/%3E%3C/svg%3E\") center left / 38px 6px repeat-x; }\n.cursor-crosshair {\n  left: var(--mx);\n  top: var(--my);\n  width: 23px;\n  height: 23px;\n  transform: translate(-50%, -50%);\n  z-index: 6;\n}\n.cursor-crosshair::before,\n.cursor-crosshair::after { content: \"\"; position: absolute; background: #f2ff00; border: 0.3px solid #71809e; border-radius: 2px; box-sizing: border-box; }\n.cursor-crosshair::before { left: 50%; top: -.5px; transform: translateX(-50%); width: 2px; height: 23px; }\n.cursor-crosshair::after { left: 0; top: 50%; transform: translateY(-50%); width: 23px; height: 2px; }","Dashboard panel":".hudi-panel {\n  border: 4px solid #e6f4ff;\n  border-radius: 18px;\n  background: #fff;\n  box-shadow: 3px 7px 10px rgba(0,63,131,.13);\n}\n","Orb":".hudi-stock-orb {\n  --orb-base: #24d0ff;\n  --orb-sheen: #00ffbf;\n  --orb-shadow: #00329d;\n  --orb-text-deep: #000925;\n  --orb-text-light: #95afff;\n  --orb-text-glow: #0558da;\n  position: relative;\n  display: grid;\n  place-items: center;\n  width: 100px;\n  aspect-ratio: 1;\n  border-radius: 50%;\n  background-color: var(--orb-base);\n  background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%);\n  box-shadow: inset 0 -6.1625px 64.3984px color-mix(in srgb, var(--orb-shadow) 40%, transparent);\n  overflow: hidden;\n}\n.hudi-stock-orb::before {\n  background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%);\n  border-radius: 50%;\n  content: \"\";\n  height: 46%;\n  left: 18.6%;\n  position: absolute;\n  top: 3.8%;\n  width: 64%;\n  z-index: 1;\n}\n.hudi-stock-orb::after {\n  background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%);\n  border-radius: 50%;\n  content: \"\";\n  height: 18.06%;\n  left: 32.05%;\n  position: absolute;\n  top: 1.1%;\n  width: 36.34%;\n  z-index: 1;\n}\n.hudi-stock-orb__ticker,\n.hudi-stock-orb__number {\n  background: radial-gradient(180% 173% at 50% -16%, var(--orb-text-light) 0%, var(--orb-text-deep) 48%, var(--orb-text-deep) 100%);\n  background-clip: text;\n  -webkit-background-clip: text;\n  color: transparent;\n  filter: drop-shadow(0 0 1.52px var(--orb-text-glow));\n  position: absolute;\n  -webkit-text-fill-color: transparent;\n  z-index: 2;\n}\n.hudi-stock-orb__ticker {\n  font-family: \"Syne Hudi\", Syne, sans-serif;\n  font-size: 18px;\n  font-weight: 700;\n  line-height: 1;\n  text-align: center;\n  top: 39.5%;\n  width: 99.64%;\n}\n.hudi-stock-orb__number {\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 8px;\n  letter-spacing: .06em;\n  opacity: .75;\n  top: 9px;\n}"}</script>
+  <script id="css-snippets" type="application/json">{"Color and font index":"@font-face { font-family: \"OCRA Fixed\"; src: url(\"assets/fonts/OCRAStdFIXED-Regular.otf\") format(\"opentype\"); font-weight: 400; font-display: swap; }\n@font-face { font-family: \"Syne Hudi\"; src: url(\"assets/fonts/Syne-Regular.ttf\") format(\"truetype\"); font-weight: 400; font-display: swap; }\n@font-face { font-family: \"Syne Hudi\"; src: url(\"assets/fonts/Syne-SemiBold.ttf\") format(\"truetype\"); font-weight: 500; font-display: swap; }\n@font-face { font-family: \"Syne Hudi\"; src: url(\"assets/fonts/Syne-Bold.ttf\") format(\"truetype\"); font-weight: 700; font-display: swap; }\n@font-face { font-family: \"Syne Mono Hudi\"; src: url(\"assets/fonts/SyneMono-Regular.ttf\") format(\"truetype\"); font-weight: 400; font-display: swap; }\n\n:root {\n  --ink: #171717;\n  --dark-grey: #71809e;\n  --light-grey: #a9a9a9;\n  --outline-blue: #e6f4ff;\n  --outline-blue-2: #e2f2ff;\n  --select-blue: #8bccff;\n  --gain: #01fd90;\n  --gain-soft: #96ffd2;\n  --pink: #fd01ba;\n  --pink-soft: #ffe7f6;\n  --loss: #ff92e2;\n  --yellow: #f2ff00;\n  --ocr: \"OCRA Fixed\", ui-monospace, monospace;\n  --mono: \"Syne Mono Hudi\", \"Syne Mono\", ui-monospace, monospace;\n  --sans: \"Syne Hudi\", Syne, sans-serif;\n  --hudi-pill-font-weight: 500;\n}","Buttons":".hudi-trade-button {\n  --pill-bg: #01fd90;\n  --pill-inner-shadow: rgba(0,95,60,.34);\n  --pill-label: #007b92;\n  --pill-label-y: 0px;\n  align-items: center;\n  background: var(--pill-bg);\n  height: 46px;\n  min-width: 149px;\n  padding: 0 28px;\n  border: 4px solid #e2f2ff;\n  border-radius: 23px;\n  box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow);\n  font-family: \"Syne Hudi\", Syne, sans-serif;\n  font-size: 17px;\n  font-weight: var(--hudi-pill-font-weight, 500);\n  letter-spacing: 0;\n  color: var(--pill-label);\n  cursor: pointer;\n  display: inline-flex;\n  justify-content: center;\n  line-height: 1;\n  overflow: hidden;\n  position: relative;\n  text-transform: lowercase;\n  transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;\n  will-change: transform;\n}\n.hudi-trade-button::after { background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: inherit; content: \"\"; filter: blur(1.43px); height: 18%; left: 9%; opacity: .9; pointer-events: none; position: absolute; right: 9%; top: -.5px; }\n.hudi-trade-button .pill-top-contour { height: 75.4%; left: -.5px; mix-blend-mode: screen; overflow: visible; pointer-events: none; position: absolute; top: -.5px; width: calc(100% - 7.5px); z-index: 1; }\n.hudi-trade-button .pill-top-contour path { fill: url(#hudi-pill-top-gradient); }\n.hudi-trade-button .pill-bottom-highlight { background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%); border-radius: inherit; filter: blur(1.43px); height: 66.2%; left: 1%; pointer-events: none; position: absolute; right: 1%; top: 34%; }\n.hudi-trade-button .pill-label { color: var(--pill-label); position: relative; text-shadow: none; top: var(--pill-label-y); z-index: 2; }\n.hudi-trade-button.is-ocr,\n.hudi-trade-button[data-font=\"ocr\"] { --pill-label-y: 4.8%; font-family: \"OCRA Fixed\", ui-monospace, monospace; letter-spacing: -0.55px; }\n.hudi-trade-button.long .pill-label { background: linear-gradient(180deg, #6D8A89 0%, #334646 100%); background-clip: text; color: transparent; text-shadow: none; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }\n.hudi-trade-button.short .pill-label { color: #FFFFFF; text-shadow: none; -webkit-text-fill-color: #FFFFFF; }\n.hudi-trade-button .pill-shine { background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 34%, rgba(255,255,255,.72) 48%, rgba(255,255,255,0) 64%, transparent 100%); height: 150%; left: -80%; pointer-events: none; position: absolute; top: -25%; transform: skewX(-18deg); width: 52%; z-index: 3; }\n.hudi-trade-button.long { --pill-bg: #01fd90; --pill-inner-shadow: rgba(0,95,60,.34); }\n.hudi-trade-button.short { --pill-bg: #ff0fc4; --pill-inner-shadow: rgba(118,0,82,.34); --pill-label: #ffffff; }\n.hudi-trade-button.confirm { --pill-bg: #e9eef5; --pill-inner-shadow: rgba(62,88,116,.28); --pill-label: #71809e; border-radius: 28px; font-size: 23px; height: 56px; min-width: 241px; }\n.hudi-trade-button.confirm .pill-label { background: linear-gradient(180deg, #aeb8c6 0%, #71809e 100%); background-clip: text; color: transparent; text-shadow: none; top: -1px; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }\n.hudi-trade-button:hover { filter: brightness(1.015) saturate(1.03); box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow); }\n.hudi-trade-button:hover .pill-shine { animation: hudi-pill-shine 760ms ease-out; }\n.hudi-trade-button:active, .hudi-trade-button.is-pressed { filter: brightness(1.08) saturate(1.04); transform: translateY(1px) scale(.99); box-shadow: inset 0 -2px 18px rgba(255,255,255,.22), inset 0 -2.83px 29.61px var(--pill-inner-shadow); }\n@keyframes hudi-pill-shine { from { left: -80%; } to { left: 130%; } }","Long short toggle":":root { --hudi-pill-font-weight: 500; }\n.hudi-side-toggle { --toggle-left: 50%; --toggle-bg: #fd01ba; --toggle-label: #fff; --toggle-shadow: rgba(30,0,62,.4); position: relative; width: 326px; max-width: 100%; height: 50px; border: 4px solid #e6f4ff; border-radius: 26px; background: transparent; overflow: hidden; isolation: isolate; }\n.hudi-side-toggle__bed { content: \"\"; position: absolute; inset: 0; border-radius: inherit; background: #eef2ff; box-shadow: inset 0 4px 13px rgba(0,0,0,.4), inset 0 4px 50px rgba(0,0,0,.25); overflow: hidden; pointer-events: none; z-index: 0; }\n.hudi-side-toggle__bed::before { content: \"\"; position: absolute; left: 0; right: 0; top: -.5px; height: 69.4%; border-radius: 22px; background: linear-gradient(.24deg, rgba(255,255,255,.18) 20.46%, rgba(255,255,255,.9) 99.78%); opacity: .72; transition: opacity 140ms ease; }\n.hudi-side-toggle__bed::after { content: \"\"; position: absolute; left: 1%; right: 1%; top: 34%; height: 66%; border-radius: inherit; background: linear-gradient(360deg, rgba(255,255,255,.58) -14.15%, rgba(255,255,255,.98) 5.5%, rgba(255,255,255,.42) 38%); filter: blur(1.4px); opacity: .94; }\n.hudi-side-toggle::after { content: \"\"; position: absolute; top: 1px; bottom: 1px; left: 0; right: 0; border-radius: 22px; background: radial-gradient(85% 90% at 50% 0%, rgba(255,255,255,.72) 0%, rgba(255,255,255,.28) 52%, rgba(255,255,255,0) 100%), linear-gradient(180deg, rgba(255,255,255,.28), rgba(113,128,158,.08)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.24); opacity: 0; pointer-events: none; transition: opacity 140ms ease; z-index: 1; }\n.hudi-side-toggle:hover::after { opacity: .58; }\n.hudi-side-toggle:hover .hudi-side-toggle__bed::before { opacity: .88; }\n.hudi-side-toggle button { position: absolute; top: -.5px; z-index: 4; width: 50%; height: 100%; border: 0; background: transparent; color: transparent; cursor: pointer; font-family: \"Syne Hudi\", Syne, sans-serif; font-size: 19px; font-weight: var(--hudi-pill-font-weight, 500); letter-spacing: 0; }\n.hudi-side-toggle button::before { content: attr(data-label); position: absolute; inset: 0; display: grid; place-items: center; color: #8F9AAB; opacity: .5; text-shadow: none; transition: opacity 140ms ease; -webkit-text-fill-color: #8F9AAB; }\n.hudi-side-toggle button[data-side=\"long\"] { left: 0; }\n.hudi-side-toggle button[data-side=\"short\"] { right: 0; }\n.hudi-side-toggle button[aria-pressed=\"true\"]::before { opacity: 0; }\n.hudi-side-toggle button:not([aria-pressed=\"true\"]):hover::before { opacity: .5; }\n.hudi-side-toggle button:focus-visible { outline: 0; }\n.hudi-side-toggle__pill { position: absolute; top: -.5px; left: var(--toggle-left); z-index: 2; display: grid; place-items: center; width: 50%; height: 100%; border-radius: 25px; background: var(--toggle-bg); box-shadow: inset 0 -3px 32px var(--toggle-shadow); filter: drop-shadow(0 4px 4px rgba(0,0,0,.25)); overflow: hidden; transition: left 180ms ease, background-color 180ms ease, box-shadow 180ms ease; }\n.hudi-side-toggle__top-contour { height: 75.4%; left: -.5px; mix-blend-mode: screen; overflow: visible; pointer-events: none; position: absolute; top: -.5px; width: calc(100% - 7.5px); z-index: 1; }\n.hudi-side-toggle__top-contour path { fill: url(#hudi-pill-top-gradient); }\n.hudi-side-toggle__pill::after { content: \"\"; position: absolute; left: 9%; right: 9%; top: -.5px; height: 18%; border-radius: inherit; background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); filter: blur(1.43px); opacity: .9; pointer-events: none; }\n.hudi-side-toggle__bottom { position: absolute; left: 1%; right: 1%; top: 34%; height: 66.2%; border-radius: inherit; background: linear-gradient(360deg, rgba(255,255,255,.14) -14.15%, rgba(255,255,255,.46) 5.5%, rgba(255,255,255,0) 42%); filter: blur(1.43px); pointer-events: none; }\n.hudi-side-toggle__label { position: relative; z-index: 1; color: var(--toggle-label); font-family: \"Syne Hudi\", Syne, sans-serif; font-size: 19px; font-weight: var(--hudi-pill-font-weight, 500); letter-spacing: 0; text-shadow: none; }\n.hudi-side-toggle.is-long { --toggle-left: 0%; --toggle-bg: #01fd90; --toggle-label: #007b92; --toggle-shadow: rgba(30,62,0,.4); }\n.hudi-side-toggle.is-long .hudi-side-toggle__label { background: linear-gradient(180deg, #6D8A89 0%, #334646 100%); background-clip: text; color: transparent; text-shadow: none; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }\n.hudi-side-toggle.is-short { --toggle-left: 50%; --toggle-bg: #fd01ba; --toggle-label: #fff; --toggle-shadow: rgba(30,0,62,.4); }\n.hudi-side-toggle.is-short .hudi-side-toggle__label { color: #FFFFFF; text-shadow: none; -webkit-text-fill-color: #FFFFFF; }","Leverage slider":".hudi-slider {\n  --track: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%);\n  width: min(315px, 100%);\n}\n.hudi-slider-row {\n  display: grid;\n  grid-template-columns: 1fr 58px;\n  gap: 13px;\n  align-items: center;\n  width: 100%;\n}\n.hudi-slider-control {\n  --slider-percent: 40%;\n  position: relative;\n  display: block;\n  height: 34px;\n}\n.hudi-slider input[type=\"range\"] {\n  appearance: none;\n  position: absolute;\n  inset: 0;\n  z-index: 3;\n  width: 100%;\n  height: 34px;\n  background: transparent;\n  cursor: pointer;\n  opacity: 0;\n}\n.hudi-slider-visual {\n  position: absolute;\n  left: 0;\n  right: 0;\n  top: 50%;\n  height: 14px;\n  border: 4px solid #e2f2ff;\n  border-radius: 13px;\n  background:\n    linear-gradient(90deg, #e8ffde 0%, #01dc79 100%) 0 0 / var(--slider-percent) 100% no-repeat,\n    #eef7ff;\n  transform: translateY(-50%);\n  pointer-events: none;\n}\n.hudi-slider.short .hudi-slider-visual {\n  background:\n    linear-gradient(90deg, #ffe4fe 0%, #fd01ba 100%) 0 0 / var(--slider-percent) 100% no-repeat,\n    #eef7ff;\n}\n.hudi-slider-puck {\n  position: absolute;\n  left: var(--slider-percent);\n  top: 50%;\n  width: 26px;\n  height: 26px;\n  box-sizing: content-box;\n  border: 4px solid #e2f2ff;\n  border-radius: 50%;\n  background:\n    radial-gradient(36.34% 18.06% at 50% 1%, #fff 0%, rgba(255,255,255,.14) 100%),\n    radial-gradient(64% 46% at 50% 20%, rgba(255,255,255,.96) 0 50%, rgba(255,255,255,.58) 62%, transparent 63%),\n    linear-gradient(180deg, #f5faff 0%, #d9e4ec 42%, #b8c8d4 100%);\n  box-shadow: inset 0 -3px 16px rgba(67, 88, 109, .28);\n  transform: translate(-50%, -50%);\n  transition: left 220ms cubic-bezier(.2,.8,.2,1);\n  pointer-events: none;\n}\n.hudi-slider-visual {\n  transition: background-size 220ms cubic-bezier(.2,.8,.2,1);\n}\n.hudi-slider output {\n  display: inline-grid;\n  height: 16px;\n  min-width: 36px;\n  overflow: hidden;\n  color: #71809e;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 12px;\n  line-height: 16px;\n  text-align: right;\n}\n.hudi-slider output span {\n  display: block;\n  will-change: transform, opacity;\n}\n.hudi-slider output.is-up span { animation: hudi-leverage-roll-up 180ms ease-out; }\n.hudi-slider output.is-down span { animation: hudi-leverage-roll-down 180ms ease-out; }\n@keyframes hudi-leverage-roll-up {\n  from { opacity: .35; transform: translateY(100%); }\n  to { opacity: 1; transform: translateY(0); }\n}\n@keyframes hudi-leverage-roll-down {\n  from { opacity: .35; transform: translateY(-100%); }\n  to { opacity: 1; transform: translateY(0); }\n}\n.hudi-slider-markers {\n  display: grid;\n  grid-template-columns: repeat(6, 1fr);\n  margin-top: 10px;\n  color: #a1a8b5;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  line-height: 1;\n}\n.hudi-slider-markers span { text-align: center; }\n.hudi-slider input::-webkit-slider-runnable-track {\n  height: 34px;\n  background: transparent;\n}\n.hudi-slider input::-webkit-slider-thumb {\n  appearance: none;\n  width: 34px;\n  height: 34px;\n}\n.hudi-slider input::-moz-range-thumb {\n  width: 34px;\n  height: 34px;\n  border: 0;\n  background: transparent;\n}\n.hudi-slider.short { --track: linear-gradient(270deg, #fd01ba 0%, #ffe4fe 100%); }","Pills and selectors":".hudi-pill {\n  min-height: 30px;\n  border: 4px solid #e6f4ff;\n  border-radius: 999px;\n  background: #fff;\n  color: #a9a9a9;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 12px;\n  padding-top: 2px;\n  cursor: pointer;\n  transition: border-color .14s ease, color .14s ease, transform .14s ease;\n}\n.hudi-pill:hover { border-color: #bddfff; color: #71809e; }\n.hudi-pill[aria-pressed=\"true\"],\n.hudi-pill.is-selected { border-color: #8bccff; color: #71809e; }\n.hudi-pill-icon {\n  position: relative;\n  top: -2px;\n  display: inline-block;\n  margin-right: 5px;\n}\n.hudi-pill:active { transform: scale(.97); }\n\n.time-selector {\n  --active-index: 2;\n  --selected-width: 52px;\n  --slot-step: 56px;\n  --slot-start: -4px;\n  --active-left: calc(var(--slot-start) + (var(--active-index) * var(--slot-step)));\n  box-sizing: border-box;\n  position: relative;\n  display: inline-block;\n  width: 276px;\n  height: 35px;\n  border: 4px solid #e2f2ff;\n  border-radius: 18px;\n  background: #fff;\n  overflow: visible;\n}\n.time-selector::before {\n  content: \"\";\n  box-sizing: border-box;\n  position: absolute;\n  top: -4px;\n  bottom: -4px;\n  left: var(--active-left);\n  width: var(--selected-width);\n  border: 4px solid #8bccff;\n  border-radius: 22px;\n  background: #fff;\n  transition: left 180ms ease;\n  z-index: 2;\n}\n.time-selector button {\n  position: absolute;\n  top: -.5px;\n  z-index: 3;\n  display: grid;\n  place-items: center;\n  width: var(--selected-width);\n  height: 27px;\n  padding: 3px 0 0;\n  border: 0;\n  background: transparent;\n  color: #a9a9a9;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 13px;\n  line-height: 1;\n  cursor: pointer;\n}\n.time-selector button:nth-child(1) { left: calc(var(--slot-start) + (var(--slot-step) * 0)); }\n.time-selector button:nth-child(2) { left: calc(var(--slot-start) + (var(--slot-step) * 1)); }\n.time-selector button:nth-child(3) { left: calc(var(--slot-start) + (var(--slot-step) * 2)); }\n.time-selector button:nth-child(4) { left: calc(var(--slot-start) + (var(--slot-step) * 3)); }\n.time-selector button:nth-child(5) { left: calc(var(--slot-start) + (var(--slot-step) * 4)); }\n.time-selector button[aria-pressed=\"true\"] { color: #71809e; }","Status chips":".hudi-status {\n  display: inline-flex;\n  align-items: center;\n  gap: 7px;\n  min-height: 25px;\n  padding: 0 12px 0 9px;\n  border: 4px solid #01fd90;\n  border-radius: 54px;\n  background: #96ffd2;\n  color: #127e4b;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: .02em;\n  padding-top: 2px;\n}\n.hudi-status::before {\n  content: \"\";\n  position: relative;\n  top: -1px;\n  width: 8px;\n  height: 8px;\n  flex: 0 0 8px;\n  border-radius: 50%;\n  background: currentColor;\n}\n.hudi-status.closed {\n  border-color: #ff92e2;\n  background: #ffe7f6;\n  color: #e630a0;\n}","Gain chips":".gain-chip {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-height: 20px;\n  padding: 0 8px;\n  border-radius: 53px;\n  background: #96ffd2;\n  color: #127e4b;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: .01em;\n  padding-top: 2px;\n}\n.gain-chip.loss {\n  background: #ffe7f6;\n  color: #e630a0;\n  letter-spacing: -.01em;\n}","Chart labels":".chart-label {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 48px;\n  height: 13px;\n  background: #01fd90;\n  color: #000;\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 11px;\n  letter-spacing: -.01em;\n  padding-top: 2px;\n}\n.chart-label.small-gain { background: #96ffd2; }\n.chart-label.big-loss { background: #fd01ba; color: #fff; }\n.chart-label.small-loss { background: #ff92e2; color: #fff; }","Trading chart":".chart-demo {\n  --mx: 50%;\n  --my: 50%;\n  --spacing: 22px;\n  position: relative;\n  width: 100%;\n  height: 420px;\n  border: 4px solid #e6f4ff;\n  border-radius: 18px;\n  background: #fff;\n  overflow: hidden;\n}\n.chart-scroll {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  cursor: crosshair;\n  overscroll-behavior: contain;\n}\n.chart-scroll.is-dragging { cursor: grabbing; }\n.chart-track {\n  position: relative;\n  width: max(100%, calc((var(--count) * var(--spacing)) + 128px));\n  height: 100%;\n  background:\n    linear-gradient(rgba(207,228,251,.45) 1px, transparent 1px),\n    linear-gradient(90deg, rgba(207,228,251,.45) 1px, transparent 1px),\n    #fff;\n  background-size: 28px 28px;\n}\n.candle {\n  --body-w: clamp(8px, calc(var(--spacing) - 10px), 18px);\n  position: absolute;\n  left: calc(64px + (var(--i) * var(--spacing)));\n  top: var(--high-y);\n  width: var(--spacing);\n  height: calc(var(--low-y) - var(--high-y));\n  border: 0;\n  background: transparent;\n  cursor: pointer;\n  padding: 0;\n  transform: translateX(-50%);\n}\n.candle-wick {\n  position: absolute;\n  left: 50%;\n  width: 1px;\n  background: #000;\n  transform: translateX(-50%);\n}\n.candle-wick.top { top: -.5px; height: calc(var(--body-y) - var(--high-y)); }\n.candle-wick.bottom { top: calc(var(--body-y) - var(--high-y) + var(--body-h)); height: calc(var(--low-y) - var(--body-y) - var(--body-h)); }\n.candle-body {\n  position: absolute;\n  left: 50%;\n  top: calc(var(--body-y) - var(--high-y));\n  width: var(--body-w);\n  height: max(var(--body-h), 3px);\n  border: 1px solid #000;\n  background: var(--c);\n  transform: translateX(-50%);\n}\n.candle[aria-pressed=\"true\"] .candle-body { outline: 4px solid #1687ff; outline-offset: 3px; }\n.cursor-v,\n.cursor-h,\n.cursor-crosshair {\n  position: absolute;\n  pointer-events: none;\n  opacity: 0;\n  z-index: 5;\n}\n.chart-demo.is-tracking .cursor-v,\n.chart-demo.is-tracking .cursor-h,\n.chart-demo.is-tracking .cursor-crosshair { opacity: 1; }\n.cursor-v { left: var(--mx); top: 44px; bottom: 34px; width: 6px; transform: translateX(-50%); background: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='38' viewBox='0 0 6 38'%3E%3Crect x='.5' y='.5' width='5' height='27' rx='2.5' fill='%23FF92E2' stroke='%23000'/%3E%3C/svg%3E\") top center / 6px 38px repeat-y; }\n.cursor-h { left: 0; right: 52px; top: var(--my); height: 6px; transform: translateY(-50%); background: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='6' viewBox='0 0 38 6'%3E%3Crect x='.5' y='.5' width='27' height='5' rx='2.5' fill='%23FF92E2' stroke='%23000'/%3E%3C/svg%3E\") center left / 38px 6px repeat-x; }\n.cursor-crosshair {\n  left: var(--mx);\n  top: var(--my);\n  width: 23px;\n  height: 23px;\n  transform: translate(-50%, -50%);\n  z-index: 6;\n}\n.cursor-crosshair::before,\n.cursor-crosshair::after { content: \"\"; position: absolute; background: #f2ff00; border: 0.3px solid #71809e; border-radius: 2px; box-sizing: border-box; }\n.cursor-crosshair::before { left: 50%; top: -.5px; transform: translateX(-50%); width: 2px; height: 23px; }\n.cursor-crosshair::after { left: 0; top: 50%; transform: translateY(-50%); width: 23px; height: 2px; }","Dashboard panel":".hudi-panel {\n  border: 4px solid #e6f4ff;\n  border-radius: 18px;\n  background: #fff;\n  box-shadow: 3px 7px 10px rgba(0,63,131,.13);\n}\n","Orb":".hudi-stock-orb {\n  --orb-base: #24d0ff;\n  --orb-sheen: #00ffbf;\n  --orb-shadow: #00329d;\n  --orb-text-deep: #000925;\n  --orb-text-light: #95afff;\n  --orb-text-glow: #0558da;\n  position: relative;\n  display: grid;\n  place-items: center;\n  width: 100px;\n  aspect-ratio: 1;\n  border-radius: 50%;\n  background-color: var(--orb-base);\n  background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%);\n  box-shadow: inset 0 -6.1625px 64.3984px color-mix(in srgb, var(--orb-shadow) 40%, transparent);\n  overflow: hidden;\n}\n.hudi-stock-orb::before {\n  background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%);\n  border-radius: 50%;\n  content: \"\";\n  height: 46%;\n  left: 18.6%;\n  position: absolute;\n  top: 3.8%;\n  width: 64%;\n  z-index: 1;\n}\n.hudi-stock-orb::after {\n  background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%);\n  border-radius: 50%;\n  content: \"\";\n  height: 18.06%;\n  left: 32.05%;\n  position: absolute;\n  top: 1.1%;\n  width: 36.34%;\n  z-index: 1;\n}\n.hudi-stock-orb__ticker,\n.hudi-stock-orb__number {\n  background: radial-gradient(180% 173% at 50% -16%, var(--orb-text-light) 0%, var(--orb-text-deep) 48%, var(--orb-text-deep) 100%);\n  background-clip: text;\n  -webkit-background-clip: text;\n  color: transparent;\n  filter: drop-shadow(0 0 1.52px var(--orb-text-glow));\n  position: absolute;\n  -webkit-text-fill-color: transparent;\n  z-index: 2;\n}\n.hudi-stock-orb__ticker {\n  font-family: \"Syne Hudi\", Syne, sans-serif;\n  font-size: 18px;\n  font-weight: 700;\n  line-height: 1;\n  text-align: center;\n  top: 42%;\n  width: 99.64%;\n}\n.hudi-stock-orb__number {\n  font-family: \"OCRA Fixed\", ui-monospace, monospace;\n  font-size: 8px;\n  letter-spacing: .06em;\n  opacity: .75;\n  top: 9px;\n}"}</script>
   <script>
     const snippets = JSON.parse(document.getElementById("css-snippets").textContent);
+    snippets["Buttons"] = snippets["Buttons"] || snippets["Trade buttons"] || "";
+    delete snippets["Trade buttons"];
+
+    function initHudiCursor() {
+      if (!window.matchMedia || !window.matchMedia("(pointer: fine)").matches || !document.body) return;
+
+      const cursor = document.createElement("div");
+      cursor.className = "hudi-cursor";
+      cursor.setAttribute("aria-hidden", "true");
+      cursor.innerHTML = `<span class="hudi-cursor__shape is-pointer" data-cursor-shape="pointer"><svg width="78" height="111" viewBox="0 0 78 111" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M21.1761 97.8597L21.2489 103.318C21.2791 105.581 23.1325 107.394 25.3953 107.374L59.5782 107.07C61.8553 107.05 63.6819 105.182 63.6515 102.905L63.5792 97.4831C63.4979 91.3893 74.1393 89.1885 74.0537 82.7731C73.9681 76.3577 74.8315 56.1076 73.6214 50.3737C71.6367 40.9685 60.6165 43.8047 60.7065 50.546C60.5341 37.6257 47.0651 38.3673 47.185 47.3551C46.9976 33.3113 32.428 35.7534 32.5405 44.1793L32.1357 13.8441C31.9408 -0.761963 14.2439 -0.767139 14.4395 13.8911L14.9792 54.3391C14.9792 54.3391 2.83385 58.8501 2.89382 63.3445L3.13121 81.1369C3.19736 86.0943 21.1112 93.001 21.1761 97.8597Z" fill="url(#hudi_cursor_paint0)"/>
+<path d="M11.5461 13.9263C11.4893 9.67157 12.737 6.18216 14.9343 3.71875C17.1252 1.26244 20.1127 0.00359287 23.134 7.90483e-06C29.3926 -0.0073922 34.9066 5.18133 35.0216 13.8021L35.3096 35.3867C36.7324 34.7368 38.2907 34.4102 39.8192 34.4486C42.4064 34.5136 45.0305 35.5873 46.9879 37.8597C47.403 38.3417 47.7787 38.8667 48.114 39.4332C49.829 38.2278 51.947 37.6586 54.0936 37.8534C57.2828 38.1428 60.0915 39.9918 61.8122 43.1169C63.0927 42.2618 64.5591 41.7179 66.0218 41.5341C68.1614 41.2651 70.477 41.7123 72.4474 43.1424C74.4344 44.5845 75.828 46.8479 76.4454 49.7735C76.8064 51.4843 76.9818 54.0576 77.0721 56.8562C77.1646 59.7191 77.1724 63.0337 77.1453 66.3381C77.0904 73.0458 76.8972 79.5499 76.9397 82.731C76.9729 85.2223 75.9375 87.2035 74.6753 88.747C73.4648 90.2273 71.8956 91.4801 70.6209 92.5009C69.2362 93.6099 68.1625 94.4737 67.3957 95.3796C66.6803 96.2248 66.4573 96.8511 66.4651 97.4411L66.5375 102.863C66.5892 106.741 63.4783 109.922 59.6001 109.956L25.4172 110.26C21.5635 110.294 18.4069 107.207 18.3554 103.353L18.2842 98.0177C18.258 97.963 18.1969 97.8509 18.0666 97.6766C17.7627 97.2702 17.249 96.7478 16.4845 96.1105C14.9482 94.8301 12.8564 93.4538 10.5634 91.9469C8.35795 90.4977 5.95302 88.9193 4.10617 87.3667C3.17916 86.5873 2.28151 85.7242 1.5935 84.7916C0.92445 83.8846 0.257587 82.6477 0.237887 81.172L0.000491084 63.3796C-0.031563 60.9772 1.51186 59.11 2.7812 57.9252C4.15875 56.6394 5.90236 55.5216 7.50251 54.629C9.12805 53.7223 10.7376 52.9757 11.9294 52.4591C11.9732 52.4401 12.0167 52.4218 12.0595 52.4034L11.5461 13.9263ZM18.0439 67.6988C18.0652 69.2947 16.7887 70.6057 15.1928 70.627C13.5969 70.6483 12.2859 69.3718 12.2646 67.7759L12.1438 58.7232C11.5516 59.0138 10.933 59.3337 10.3181 59.6767C8.88946 60.4737 7.60791 61.3264 6.72508 62.1505C6.10435 62.6867 5.75385 62.9874 5.78051 63.1207L5.7812 63.3915L6.0157 80.9904C6.03917 81.0433 6.10021 81.1646 6.24476 81.3605C6.54933 81.7734 7.0627 82.3013 7.82542 82.9425C9.35804 84.2309 11.4481 85.6123 13.7375 87.1167C15.9392 88.5636 18.3422 90.1347 20.1851 91.6707C21.11 92.4416 22.0071 93.2947 22.6955 94.2154C23.3623 95.1071 24.0422 96.3393 24.062 97.8177L24.1348 103.276C24.1438 103.948 24.6941 104.486 25.3658 104.48L59.5488 104.177C60.2248 104.171 60.7671 103.616 60.7581 102.94L60.6858 97.5182C60.653 95.0613 61.7298 93.1272 62.984 91.6454C64.1869 90.2243 65.7532 88.9943 67.0079 87.9894C68.3727 86.8964 69.4428 86.0152 70.2009 85.0882C70.9073 84.2243 71.1699 83.5245 71.1603 82.8081C71.1172 79.5738 71.3128 72.7454 71.3656 66.2908C71.3924 63.0141 71.3839 59.7898 71.2952 57.0427C71.2045 54.2313 71.034 52.1231 70.79 50.9669C70.415 49.19 69.6869 48.2808 69.0523 47.8202C68.401 47.3474 67.5949 47.1616 66.7426 47.2687C65.3402 47.1815 63.5712 48.9133 63.5924 50.504L63.5703 51.0013C63.5023 52.5285 62.255 53.7376 60.7265 53.758C59.0677 53.7801 57.732 52.4022 57.8057 50.7449L57.813 50.5811L57.8079 50.3323C57.6596 45.1661 55.0889 43.7474 53.5713 43.6097C51.8443 43.453 50.0346 44.5939 50.0709 47.313L50.1223 51.1656C50.1436 52.7615 48.8671 54.0724 47.2712 54.0937C45.6753 54.115 44.3644 52.8386 44.3431 51.2427L44.2917 47.3902C44.2514 44.3696 43.4467 42.6049 42.6086 41.6319C41.785 40.6757 40.7385 40.2533 39.674 40.2266C37.3403 40.168 35.3961 41.8681 35.4264 44.1373L35.5227 51.3603C35.544 52.9562 34.2675 54.2672 32.6716 54.2885C31.0757 54.3098 29.7647 53.0333 29.7434 51.4374L29.2423 13.8792C29.1624 7.89384 25.7306 5.77692 23.1409 5.77998C21.7381 5.78164 20.3259 6.35719 19.2476 7.5661C18.1756 8.76793 17.2844 10.7748 17.3255 13.8492L18.0439 67.6988Z" fill="url(#hudi_cursor_paint1)"/>
+<path d="M43.9574 87.8709C42.494 87.8779 41.6427 86.7835 41.6321 85.3971L41.5548 76.8426C41.5442 75.5335 40.707 74.7312 39.4371 74.6784C37.731 74.608 41.0095 74.6186 39.3034 74.6679C37.921 74.7101 37.1295 75.7306 37.1048 77.0959C37.0521 79.9568 37.14 82.7931 37.0275 85.6575C36.9747 86.9595 35.9968 87.8744 34.762 87.8709L32.2856 87.8638C30.882 87.8568 29.9814 86.8117 29.9814 85.3689L29.9848 65.4905C29.9848 64.1991 31.0261 63.3264 32.1763 63.2595C33.0382 63.2103 33.8156 63.2243 34.6563 63.256C35.9509 63.3018 36.9464 64.097 37.0203 65.4729C37.0695 66.3773 37.045 68.2247 37.2174 69.1537C37.4038 70.146 38.1777 70.7759 39.2612 70.783L47.8937 70.8639C49.0757 70.8744 49.9375 71.5079 50.3561 72.5495C51.13 74.4708 53.6522 74.1295 53.6522 76.3816V85.7278C53.6522 86.97 52.5969 87.8568 51.4642 87.8638L43.9574 87.8744V87.8709Z" fill="#4E4E4E"/>
+<defs>
+<linearGradient id="hudi_cursor_paint0" x1="37.7447" y1="-0.195734" x2="39.218" y2="110.228" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="white"/>
+</linearGradient>
+<linearGradient id="hudi_cursor_paint1" x1="37.7447" y1="-0.195734" x2="39.218" y2="110.228" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ABABAB"/>
+<stop offset="1" stop-color="#4B4B4B"/>
+</linearGradient>
+</defs>
+</svg></span><span class="hudi-cursor__shape is-grab" data-cursor-shape="grab"><svg width="78" height="77" viewBox="0 0 78 77" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M21.1761 64.0372L21.2489 69.4958C21.2791 71.7585 23.1325 73.5712 25.3953 73.5511L59.5782 73.2475C61.8553 73.2272 63.6819 71.3595 63.6515 69.0825L63.5792 63.6606C63.4979 57.5668 74.1393 55.366 74.0537 48.9506C73.9681 42.5353 74.8315 22.2852 73.6214 16.5512C71.6367 7.14597 60.6165 9.98218 60.7065 16.7235C60.5341 3.80323 47.0651 4.54482 47.185 13.5326C46.9976 -0.511173 32.428 1.93092 32.5405 10.3568L32.5886 13.8441C32.3938 -0.761938 14.6969 -0.767115 14.8924 13.8912L14.9792 20.5166C14.9792 20.5166 2.83385 25.0276 2.89382 29.522L3.13121 47.3145C3.19736 52.2718 21.1112 59.1785 21.1761 64.0372Z" fill="url(#hudi_cursor_grab_paint0)"/>
+<path d="M11.999 13.9263C11.9423 9.67159 13.1899 6.18218 15.3872 3.71878C17.5781 1.26247 20.5656 0.00361766 23.5869 3.27004e-05C29.8455 -0.00736741 35.3595 5.18136 35.4746 13.8021L31.5 4.03094C34.5 2.1767 36.5 0.542713 39.8192 0.6261C42.4064 0.691099 45.0305 1.76482 46.9879 4.03726C47.403 4.51919 47.7787 5.04422 48.114 5.61072C49.829 4.40537 51.947 3.83615 54.0936 4.03094C57.2828 4.32035 60.0915 6.16932 61.8122 9.29437C63.0927 8.43936 64.5591 7.89547 66.0218 7.71161C68.1614 7.44267 70.477 7.88986 72.4474 9.3199C74.4344 10.7621 75.828 13.0254 76.4454 15.951C76.8064 17.6618 76.9818 20.2351 77.0721 23.0337C77.1646 25.8966 77.1724 29.2112 77.1453 32.5156C77.0904 39.2233 76.8972 45.7275 76.9397 48.9085C76.9729 51.3998 75.9375 53.381 74.6753 54.9245C73.4648 56.4048 71.8956 57.6577 70.6209 58.6785C69.2362 59.7874 68.1625 60.6512 67.3957 61.5571C66.6803 62.4023 66.4573 63.0286 66.4651 63.6186L66.5375 69.0405C66.5892 72.9184 63.4783 76.0993 59.6001 76.1338L25.4172 76.4375C21.5635 76.4717 18.4069 73.3845 18.3554 69.5309L18.2842 64.1952C18.258 64.1406 18.1969 64.0284 18.0666 63.8541C17.7627 63.4477 17.249 62.9253 16.4845 62.2881C14.9482 61.0076 12.8564 59.6313 10.5634 58.1245C8.35795 56.6752 5.95302 55.0968 4.10617 53.5442C3.17916 52.7649 2.28151 51.9018 1.5935 50.9691C0.92445 50.0621 0.257587 48.8252 0.237887 47.3496L0.000491084 29.5571C-0.031563 27.1547 1.51186 25.2875 2.7812 24.1027C4.15875 22.8169 5.90236 21.6991 7.50251 20.8065C9.12805 19.8998 10.7376 19.1532 11.9294 18.6366C11.9732 18.6176 12.0167 18.5993 12.0595 18.5809L11.999 13.9263ZM18.0439 33.8763C18.0652 35.4722 16.7887 36.7833 15.1928 36.8046C13.5969 36.8259 12.2859 35.5494 12.2646 33.9534L12.1438 24.9007C11.5516 25.1913 10.933 25.5113 10.3181 25.8542C8.88946 26.6512 7.60791 27.5039 6.72508 28.328C6.10435 28.8642 5.75385 29.1649 5.78051 29.2983L5.7812 29.569L6.0157 47.1679C6.03917 47.2208 6.10021 47.3421 6.24476 47.538C6.54933 47.9509 7.0627 48.4788 7.82542 49.12C9.35804 50.4084 11.4481 51.7898 13.7375 53.2942C15.9392 54.7411 18.3422 56.3122 20.1851 57.8482C21.11 58.6191 22.0071 59.4723 22.6955 60.3929C23.3623 61.2846 24.0422 62.5168 24.062 63.9952L24.1348 69.4538C24.1438 70.1256 24.6941 70.6637 25.3658 70.6578L59.5488 70.3542C60.2248 70.3482 60.7671 69.7936 60.7581 69.1176L60.6858 63.6957C60.653 61.2389 61.7298 59.3047 62.984 57.823C64.1869 56.4019 65.7532 55.1718 67.0079 54.1669C68.3727 53.0739 69.4428 52.1927 70.2009 51.2657C70.9073 50.4018 71.1699 49.702 71.1603 48.9856C71.1172 45.7513 71.3128 38.9229 71.3656 32.4683C71.3924 29.1916 71.3839 25.9674 71.2952 23.2202C71.2045 20.4088 71.034 18.3006 70.79 17.1444C70.415 15.3675 69.6869 14.4583 69.0523 13.9977C68.401 13.525 67.5949 13.3391 66.7426 13.4463C65.3402 13.359 63.5712 15.0908 63.5924 16.6815L63.5703 17.1788C63.5023 18.706 62.255 19.9151 60.7265 19.9355C59.0677 19.9576 57.732 18.5797 57.8057 16.9224L57.813 16.7586L57.8079 16.5098C57.6596 11.3436 55.0889 9.92493 53.5713 9.78719C51.8443 9.63047 50.0346 10.7714 50.0709 13.4906L50.1223 17.3431C50.1436 18.939 48.8671 20.25 47.2712 20.2712C45.6753 20.2925 44.3644 19.0161 44.3431 17.4202L44.2917 13.5677C44.2514 10.5472 43.4467 8.78244 42.6086 7.8094C41.785 6.85323 40.7385 6.43082 39.674 6.40408C37.3403 6.34547 35.3961 8.04557 35.4264 10.3148L35.5227 17.5378C35.544 19.1337 34.2675 20.4447 32.6716 20.466C31.0757 20.4873 29.7647 19.2108 29.7434 17.6149L29.6952 13.8792C29.6153 7.89386 26.1835 5.77694 23.5938 5.78001C22.191 5.78167 20.7788 6.35722 19.7005 7.56612C18.6286 8.76795 17.7374 10.7748 17.7784 13.8492L18.0439 33.8763Z" fill="url(#hudi_cursor_grab_paint1)"/>
+<path d="M43.9574 54.0484C42.494 54.0554 41.6427 52.961 41.6321 51.5746L41.5548 43.0201C41.5442 41.711 40.707 40.9087 39.4371 40.8559C37.731 40.7856 41.0095 40.7961 39.3034 40.8454C37.921 40.8876 37.1295 41.9081 37.1048 43.2734C37.0521 46.1343 37.14 48.9706 37.0275 51.835C36.9747 53.137 35.9968 54.0519 34.762 54.0484L32.2856 54.0414C30.882 54.0343 29.9814 52.9892 29.9814 51.5464L29.9848 31.668C29.9848 30.3766 31.0261 29.5039 32.1763 29.437C33.0382 29.3878 33.8156 29.4019 34.6563 29.4335C35.9509 29.4793 36.9464 30.2746 37.0203 31.6505C37.0695 32.5548 37.045 34.4022 37.2174 35.3312C37.4038 36.3235 38.1777 36.9534 39.2612 36.9605L47.8937 37.0414C49.0757 37.052 49.9375 37.6854 50.3561 38.727C51.13 40.6483 53.6522 40.307 53.6522 42.5591V51.9054C53.6522 53.1475 52.5969 54.0343 51.4642 54.0414L43.9574 54.0519V54.0484Z" fill="#4E4E4E"/>
+<defs>
+<linearGradient id="hudi_cursor_grab_paint0" x1="37.7447" y1="-0.135693" x2="38.4528" y2="76.4227" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="white"/>
+</linearGradient>
+<linearGradient id="hudi_cursor_grab_paint1" x1="37.7447" y1="-0.135693" x2="38.4528" y2="76.4227" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ABABAB"/>
+<stop offset="1" stop-color="#4B4B4B"/>
+</linearGradient>
+</defs>
+</svg></span>`;
+
+      document.body.appendChild(cursor);
+      document.documentElement.classList.add("has-hudi-cursor");
+
+      const cursorTargets = {
+        pointer: {
+          selector: '[data-cursor-shape="pointer"]',
+          viewBox: { width: 78, height: 111 },
+          origin: { x: .28, y: .88 },
+          hotspot: { x: 23.134, y: 0 },
+        },
+        grab: {
+          selector: '[data-cursor-shape="grab"]',
+          viewBox: { width: 78, height: 77 },
+          origin: { x: .5, y: .5 },
+          hotspot: { x: 39, y: 38.5 },
+        },
+      };
+      const interactiveSelector = [
+        "a[href]",
+        "button",
+        "input",
+        "textarea",
+        "select",
+        "summary",
+        "label",
+        '[role="button"]',
+        '[role="link"]',
+        '[tabindex]:not([tabindex="-1"])',
+        "[data-copy]",
+        "[data-deposit-open]",
+        "[data-deposit-goto]",
+        "[data-deposit-next]",
+        "[data-deposit-back]",
+        "[data-pfp-generate]",
+        "[data-pfp-mode]",
+      ].join(",");
+
+      function getCursorRotation() {
+        if (cursor.classList.contains("is-grab")) return 0;
+        return cursor.classList.contains("is-hovering") ? -25 : 0;
+      }
+
+      function getCursorHotspot() {
+        const mode = cursor.classList.contains("is-grab") ? "grab" : "pointer";
+        const target = cursorTargets[mode];
+        const shape = cursor.querySelector(target.selector);
+        const styles = shape ? getComputedStyle(shape) : null;
+        const width = parseFloat(styles?.width) || 39;
+        const height = parseFloat(styles?.height) || (mode === "grab" ? 38.5 : 55.5);
+        const scaleX = width / target.viewBox.width;
+        const scaleY = height / target.viewBox.height;
+        const origin = { x: width * target.origin.x, y: height * target.origin.y };
+        const hotspotPoint = { x: target.hotspot.x * scaleX, y: target.hotspot.y * scaleY };
+        const angle = getCursorRotation() * Math.PI / 180;
+        const dx = hotspotPoint.x - origin.x;
+        const dy = hotspotPoint.y - origin.y;
+
+        return {
+          x: origin.x + (Math.cos(angle) * dx) - (Math.sin(angle) * dy),
+          y: origin.y + (Math.sin(angle) * dx) + (Math.cos(angle) * dy),
+        };
+      }
+
+      function isScrollableTarget(target) {
+        for (let node = target; node && node !== document.body && node !== document.documentElement; node = node.parentElement) {
+          const styles = getComputedStyle(node);
+          const canScrollY = /(auto|scroll)/.test(styles.overflowY) && node.scrollHeight > node.clientHeight;
+          const canScrollX = /(auto|scroll)/.test(styles.overflowX) && node.scrollWidth > node.clientWidth;
+          if (canScrollY || canScrollX) return true;
+        }
+        return false;
+      }
+
+      function isGrabTarget(target) {
+        return Boolean(target?.closest?.('input[type="range"], .hudi-slider-control, .chart-scroll, [data-grab-cursor]')) || isScrollableTarget(target);
+      }
+
+      function updateCursorState(target) {
+        const hovering = Boolean(target?.closest?.(interactiveSelector));
+        cursor.classList.toggle("is-hovering", hovering && !cursor.classList.contains("is-grab"));
+        hotspot = getCursorHotspot();
+      }
+
+      let hotspot = getCursorHotspot();
+      let x = -120;
+      let y = -120;
+      let raf = 0;
+      const render = () => {
+        raf = 0;
+        cursor.style.transform = `translate3d(${x - hotspot.x}px, ${y - hotspot.y}px, 0)`;
+      };
+      const schedule = () => {
+        if (!raf) raf = requestAnimationFrame(render);
+      };
+      const show = () => cursor.classList.add("is-visible");
+      const hide = () => {
+        cursor.classList.remove("is-visible", "is-active", "is-grab", "is-hovering");
+        hotspot = getCursorHotspot();
+      };
+      const move = (event) => {
+        x = event.clientX;
+        y = event.clientY;
+        show();
+        updateCursorState(document.elementFromPoint(x, y));
+        schedule();
+      };
+
+      window.addEventListener("pointermove", move, { passive: true });
+      window.addEventListener("pointerdown", (event) => {
+        cursor.classList.add("is-active");
+        cursor.classList.toggle("is-grab", isGrabTarget(event.target));
+        updateCursorState(event.target);
+        schedule();
+      }, { passive: true });
+      window.addEventListener("pointerup", (event) => {
+        cursor.classList.remove("is-active", "is-grab");
+        updateCursorState(document.elementFromPoint(event.clientX, event.clientY));
+        schedule();
+      }, { passive: true });
+      window.addEventListener("pointercancel", () => {
+        cursor.classList.remove("is-active", "is-grab");
+        hotspot = getCursorHotspot();
+        schedule();
+      }, { passive: true });
+      window.addEventListener("resize", () => { hotspot = getCursorHotspot(); schedule(); }, { passive: true });
+      window.addEventListener("pointerleave", hide, { passive: true });
+      document.addEventListener("mouseleave", hide, { passive: true });
+      document.addEventListener("mouseout", (event) => {
+        if (!event.relatedTarget && !event.toElement) hide();
+      }, { passive: true });
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) hide();
+      });
+      window.addEventListener("blur", hide);
+    }
+
+    initHudiCursor();
+
     snippets["Typesetting"] = `:root {
   --type-body: 13px;
   --type-small-title: 17.33px;
@@ -1745,6 +2609,77 @@ h1, .section-title h2, .card h3 {
 .typography-specimen__subtitle { font-size: var(--type-card-title); }
 .type-readout-copy,
 .typography-specimen__readout { font-family: var(--ocr); }`;
+    snippets["Deposit modal"] = `.hudi-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(250,252,255,.54);
+  backdrop-filter: blur(6px);
+}
+.hudi-modal-backdrop[hidden] { display: none; }
+.hudi-deposit-modal {
+  width: min(640px, calc(100vw - 32px));
+  max-height: min(760px, calc(100vh - 34px));
+  overflow: auto;
+  padding: 22px 26px 24px;
+  border: 4px solid #e9f4fe;
+  border-radius: 14px;
+  background: #fafcff;
+  box-shadow: 0 18px 38px rgba(82,108,140,.18);
+  color: #74809b;
+  font-family: "OCRA Fixed", ui-monospace, monospace;
+}
+.deposit-stage { display: none; }
+.deposit-stage.is-active { display: grid; gap: 16px; }
+.deposit-option,
+.deposit-choice,
+.deposit-info-card {
+  display: grid;
+  gap: 12px;
+  align-items: center;
+  min-height: 72px;
+  padding: 12px 14px;
+  border: 4px solid #e9f4fe;
+  border-radius: 14px;
+  background: #fff;
+  color: #74809b;
+}
+.deposit-choice { grid-template-columns: auto minmax(0,1fr) auto auto; }
+.deposit-choice[aria-pressed="true"] { border-color: #d7efff; box-shadow: inset 0 0 0 1px rgba(139,204,255,.28); }
+.deposit-hudi-art {
+  position: relative;
+  width: 210px;
+  height: 276px;
+}
+.deposit-hudi-art img { width: 100%; height: 100%; object-fit: contain; }
+.deposit-section-label {
+  font-family: "Syne Hudi", system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -.05em;
+}
+.deposit-icon-orb.hudi-icon-orb {
+  width: 36px;
+  box-shadow: inset 0 -1.85px 19.3px var(--orb-shadow), inset 0 0 3px color-mix(in srgb, var(--orb-sheen) 58%, transparent);
+}
+.deposit-icon-orb.hudi-icon-orb.is-info {
+  background: transparent;
+  box-shadow: none;
+}
+.deposit-step-line::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #fd01ba 0%, #ff68db 55%, #8bccff 100%);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 560ms ease;
+}`;
+	    const blankOrbPreview = document.getElementById("blank-orb-preview");
+	    const blankOrbControls = document.querySelector("[data-blank-orb-maker]");
 	    const orbPreview = document.getElementById("orb-preview");
 	    const orbPreviews = Array.from(document.querySelectorAll("[data-orb-preview]"));
 	    const orbControls = document.querySelector("[data-orb-maker]");
@@ -1764,7 +2699,7 @@ h1, .section-title h2, .card h3 {
     document.addEventListener("touchstart", () => {}, { passive: true });
     document.addEventListener("pointerdown", (event) => {
       if (!(event.target instanceof Element)) return;
-      const target = event.target.closest(".hudi-trade-button, .hudi-side-toggle button");
+      const target = event.target.closest(".hudi-trade-button, .hudi-side-toggle button, .hudi-exit-orb");
       if (!target) return;
 
       const visualTarget = target.closest(".hudi-side-toggle") || target;
@@ -1805,31 +2740,15 @@ h1, .section-title h2, .card h3 {
 .achievement-title { color: #71809e; font-family: "OCRA Fixed", ui-monospace, monospace; font-size: 13px; letter-spacing: .14em; }
 .achievement-bar-wrap { position: relative; width: min(390px, 100%); }
 .achievement-bar { --percent-bg: linear-gradient(90deg, #b6ff00 0%, #b6ff00 30.8%, #fff 35.8%, #fff 100%); --percent-shadow: rgba(115,168,0,.28); width: 100%; height: 52px; border-width: 5px; }
-.achievement-end { position: absolute; top: 50%; z-index: 5; color: rgba(116,128,155,.48); font-family: "OCRA Fixed", ui-monospace, monospace; font-size: 6px; font-style: normal; letter-spacing: .08em; transform: translateY(-50%) rotate(90deg); }
+.achievement-end { position: absolute; top: 50%; z-index: 5; color: rgba(116,128,155,.48); font-family: "OCRA Fixed", ui-monospace, monospace; font-size: 7.8px; font-style: normal; letter-spacing: .08em; transform: translateY(-50%) rotate(90deg); }
 .achievement-end.is-start { left: 12px; }
-.achievement-end-curve { position: absolute; right: 2px; top: 50%; z-index: 5; width: 26px; height: 44px; overflow: visible; transform: translateY(-50%) rotate(90deg); }
+.achievement-end-curve { position: absolute; right: 0; top: 50%; z-index: 5; width: 34px; height: 44px; overflow: visible; transform: translateY(-50%) rotate(90deg); }
 .achievement-end-curve path { fill: none; }
-.achievement-end-curve text { fill: rgba(116,128,155,.48); font-family: "OCRA Fixed", ui-monospace, monospace; font-size: 6px; font-style: normal; letter-spacing: .08em; }`;
+.achievement-end-curve text { fill: rgba(116,128,155,.48); font-family: "OCRA Fixed", ui-monospace, monospace; font-size: 7.8px; font-style: normal; letter-spacing: .08em; }`;
     snippets["Icon orb"] = `.icon-orb-grid { display: grid; grid-template-columns: repeat(4, minmax(120px, 1fr)); gap: 28px; align-items: end; width: 100%; }
 .icon-orb-item { display: grid; gap: 18px; justify-items: center; color: #71809e; font-family: "OCRA Fixed", ui-monospace, monospace; font-size: 20px; letter-spacing: .1em; text-transform: uppercase; }
-.hudi-icon-orb {
-  --orb-base: #24d0ff;
-  --orb-sheen: #00ffbf;
-  --orb-shadow: rgba(0,50,157,.4);
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 132px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background-color: var(--orb-base);
-  background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%);
-  box-shadow: inset 0 -6.78px 70.8px var(--orb-shadow), inset 0 0 11px color-mix(in srgb, var(--orb-sheen) 58%, transparent);
-  overflow: hidden;
-}
-.hudi-icon-orb::before { content: ""; position: absolute; left: 18.6%; top: 3.8%; z-index: 1; width: 64%; height: 46%; border-radius: 50%; background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%); }
-.hudi-icon-orb::after { content: ""; position: absolute; left: 32.05%; top: 1.1%; z-index: 1; width: 36.34%; height: 18.06%; border-radius: 50%; background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%); }
-.hudi-icon-orb svg { position: relative; z-index: 2; display: block; width: var(--icon-width, 56%); height: auto; filter: none; }
+.hudi-icon-orb { /* inherits blank orb material */ --orb-size: 132px; }
+.hudi-icon-orb svg { position: relative; z-index: 2; display: block; width: var(--icon-width, 56%); max-width: var(--icon-width, 56%); max-height: var(--icon-height, 58%); height: auto; filter: none; transform: none; }
 .hudi-icon-orb.is-sui { --orb-base: #64c8ed; --orb-sheen: #bdf6ff; --orb-shadow: rgba(28,126,178,.34); --icon-width: 47%; }
 .hudi-icon-orb.is-solana { --orb-base: #d03bb9; --orb-sheen: #ff9ae6; --orb-shadow: rgba(96,0,102,.32); --icon-width: 53%; }
 .hudi-icon-orb.is-ethereum { --orb-base: #ff4a22; --orb-sheen: #ffe2a6; --orb-shadow: rgba(153,34,0,.34); --icon-width: 41%; }
@@ -1842,18 +2761,22 @@ h1, .section-title h2, .card h3 {
 .leaderboard-pfp .head { fill: var(--pfp-head, #e8ff1b); stroke: var(--pfp-stroke, #84b426); stroke-linejoin: miter; stroke-miterlimit: 2.6; stroke-width: 5.4; }
 .leaderboard-pfp .eye-base { fill: var(--pfp-eye, #fff); }
 .leaderboard-pfp .pupil { fill: var(--pfp-pupil, #84b426); }
-.pfp-generator-face { display: grid; place-items: center; min-height: 260px; }
+.pfp-generator-face { display: grid; place-items: center; width: min(360px, 100%); height: 340px; min-height: 340px; }
 .pfp-generator-face .leaderboard-pfp { width: 300px; height: 250px; }
 .pfp-generator-face .leaderboard-pfp svg { width: 300px; height: 250px; }
 .pfp-generator-face.is-full { min-height: 340px; }
 .pfp-generator-face.is-full .hudi-full-pfp { width: 250px; height: 340px; }
 .pfp-generator-face.is-full .hudi-full-pfp svg { width: 250px; height: 340px; display: block; overflow: visible; }
-.hudi-full-pfp .body { fill: var(--pfp-head, #e6ff00); stroke: var(--pfp-stroke, #75a91b); stroke-linejoin: round; stroke-width: 8; }
+.hudi-full-pfp .body { fill: var(--pfp-head, #e6ff00); stroke: var(--pfp-stroke, #75a91b); stroke-linejoin: round; stroke-width: 16; }
 .hudi-full-pfp .eye-base { fill: var(--pfp-eye, #f8fff2); }
 .hudi-full-pfp .pupil { fill: var(--pfp-pupil, #1f7b0d); }
 .pfp-generator-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
 .pfp-generate-button.hudi-trade-button { --pill-bg: #f6ffff; --pill-inner-shadow: rgba(0,62,59,.28); --pill-label: #4f6966; min-width: 250px; width: 250px; height: 76px; border-width: 7px; border-radius: 999px; font-size: 34px; font-weight: 400; }
-.pfp-generate-button.hudi-trade-button .pill-label { color: var(--pill-label); -webkit-text-fill-color: var(--pill-label); }`;
+.pfp-generate-button.hudi-trade-button .pill-label { color: var(--pill-label); -webkit-text-fill-color: var(--pill-label); }
+.pfp-mode-button { display: grid; place-items: center; width: 76px; height: 76px; padding: 0; border: 7px solid #e3f4ff; border-radius: 50%; background: radial-gradient(circle at 50% 24%, #fff 0 24%, #f6ffff 45%, #d7e7ea 100%); box-shadow: inset 0 4px 10px rgba(255,255,255,.95), inset 0 -8px 18px rgba(0,62,59,.22); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: filter .12s ease; }
+.pfp-mode-button:active { filter: brightness(1.08); }
+.pfp-mode-button svg { display: block; width: 43px; height: 43px; overflow: visible; }
+.pfp-mode-button.is-full svg { width: 34px; height: 47px; }`;
     snippets["DOT matrix leaderboard"] = `.dot-matrix-board {
   display: grid;
   align-content: center;
@@ -2186,6 +3109,9 @@ h1, .section-title h2, .card h3 {
       return wrap;
     }
 
+    const hudiModeHeadIcon = `<svg aria-hidden="true" width="39" height="36" viewBox="0 0 39 36" fill="none" xmlns="http://www.w3.org/2000/svg"><g filter="url(#hudi-mode-head-inner)"><path d="M11.035 1.37796L11.0756 1.3833C11.1974 1.46095 14.2626 8.80452 14.5804 9.56456C14.7602 9.2764 15.0987 8.86054 15.3155 8.5796L16.7285 6.76232C18.4849 4.48771 20.2684 2.23346 22.0785 0C22.0764 0.284224 22.1954 0.792796 22.2545 1.09218L22.5607 2.66478C22.904 4.45223 23.257 6.23781 23.6193 8.02155C23.8193 8.98683 24.152 10.352 24.2887 11.2897C26.6449 9.53411 28.9904 7.81958 31.4661 6.23039C31.9016 5.9508 32.7795 5.51445 33.1208 5.18205C33.0079 6.13745 32.8328 7.15427 32.6914 8.11214L31.5358 15.9051C31.4897 16.2215 31.4166 16.8883 31.3346 17.1674C31.6961 17.2593 32.2959 17.3305 32.6924 17.3914L34.6857 17.712C35.9675 17.9111 37.3013 18.188 38.592 18.303C38.3138 18.5893 37.9709 18.8754 37.6806 19.1685L34.247 22.6576C33.719 23.1924 33.0374 23.8402 32.5506 24.3935C33.2279 24.7583 34.3734 25.5172 34.9926 25.7803C34.3532 26.5103 33.7018 26.9072 32.8911 27.4176C32.2991 27.8112 31.2447 28.3424 30.5917 28.6638C31.2406 29.8111 31.7854 31.0454 32.4946 32.1713C32.7487 32.575 33.0324 33.0667 33.2409 33.4917C31.7762 33.5476 30.3124 33.6163 28.849 33.6983C26.1078 33.8508 23.4921 34.1133 20.7811 34.5412C18.4827 34.9041 16.3848 35.4411 14.0474 35.0988C12.9528 34.9385 12.2909 34.8924 11.1936 34.5377C10.5489 34.3347 9.92415 34.0748 9.3271 33.7612C8.58791 33.3676 7.8976 32.8926 7.13577 32.519C6.80999 32.3379 6.42711 32.2232 6.10108 32.0492C4.77313 31.3409 3.38589 30.7364 2.04452 30.0584C2.49255 29.2255 3.22016 27.7873 3.56415 26.9257C2.73875 26.2572 1.78721 25.658 1.09049 24.8307C0.694633 24.3607 0.314325 23.7106 0 23.1805C0.36592 23.1315 0.727869 23.0564 1.08293 22.9557C1.91 22.7177 2.59469 22.3673 3.02402 21.603C3.02354 21.0981 2.82524 20.3329 2.70949 19.833C2.57112 19.237 2.43662 18.6402 2.30599 18.0425C1.9072 16.2424 1.54927 14.4337 1.23246 12.6176C2.45717 12.9335 4.12106 13.1592 5.39675 13.4172C6.12362 11.5802 6.827 9.7579 7.60199 7.93962C8.57524 5.65616 9.55215 3.40102 11.035 1.37796Z" fill="#B1B8BD"/></g><defs><filter id="hudi-mode-head-inner" x="0" y="0" width="38.592" height="35.208" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset/><feGaussianBlur stdDeviation="0.4"/><feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/><feBlend mode="normal" in2="shape" result="effect1_innerShadow"/></filter></defs></svg>`;
+    const hudiModeBodyIcon = `<svg aria-hidden="true" width="26" height="36" viewBox="0 0 26 36" fill="none" xmlns="http://www.w3.org/2000/svg"><g filter="url(#hudi-mode-body-inner)"><path d="M11.1356 0L11.174 0.0176993C11.2753 0.173039 11.5158 0.44355 11.641 0.595248L12.4654 1.60876C13.3505 2.70794 14.2282 3.81278 15.0987 4.92322C15.3396 5.22941 16.0082 6.03444 16.1667 6.31361C16.4133 5.73966 18.3962 1.00884 18.5455 0.92653C18.5525 0.928918 18.5597 0.930982 18.5666 0.933693C18.7119 0.990688 18.8899 1.32945 18.9755 1.46194C20.3387 3.57145 21.2727 6.1738 22.2177 8.49874C22.2504 8.57908 22.3167 8.77829 22.3955 8.8197C22.5198 8.88495 24.3512 8.52052 24.642 8.4644C24.7476 8.44399 24.9964 8.36434 25.0854 8.36783C25.1016 8.36846 25.1152 8.38032 25.1299 8.38657C25.1702 8.53444 25.0109 9.22616 24.9812 9.4145C24.7256 11.0339 24.2074 12.6602 23.9612 14.2713C24.2617 14.9818 25.2878 15.2802 26 15.3556C25.2533 16.6594 24.8374 16.9519 23.6072 17.8386C23.7958 18.4044 24.3392 19.3643 24.6106 19.932C24.3619 20.0893 23.7351 20.3603 23.4505 20.4967C22.9055 20.7071 22.3574 21.0746 21.8242 21.2842C20.8517 21.6667 20.0416 22.2877 19.089 22.6883C18.616 22.8873 17.961 23.1127 17.4543 23.1544C17.8593 23.5365 18.0696 23.8214 18.4175 24.2427C18.8345 24.7472 19.2381 25.128 19.5527 25.7196C20.0591 26.6718 20.6508 27.614 20.3969 28.739C20.2082 29.6082 19.4689 29.8012 18.6747 29.6292C18.6031 29.6666 18.5969 29.775 18.5875 29.8477C18.5328 30.2717 18.5547 30.7048 18.5119 31.1299C18.4426 31.8164 18.0858 33.7578 17.693 34.2543C17.5166 34.4772 17.2931 34.5923 17.0088 34.6254C16.6285 34.6697 16.1558 34.6279 15.8481 34.3877C15.5404 34.1473 15.3272 33.6488 15.2527 33.2768C15.2183 33.1053 15.2126 32.9285 15.19 32.755C15.1783 32.6654 15.1651 32.56 15.0881 32.5018C14.9994 32.475 15.0315 32.4732 14.9536 32.4926C14.8054 32.6704 14.3664 34.404 14.2927 34.7147C14.0562 35.4731 13.5302 36.0761 12.6869 35.9922C11.9518 35.919 11.8265 35.5317 11.5983 34.9399C11.2937 34.1495 11.2263 33.3893 11.1564 32.5584C11.1423 32.3924 11.1503 31.8719 11.0496 31.7685C10.8813 31.7108 10.7155 31.8639 10.5174 31.8974C9.73942 32.0293 9.00238 31.3687 8.89327 30.6343C8.85015 30.344 8.84236 29.6648 8.92439 29.3736C9.17023 28.5011 9.4979 27.5874 9.89485 26.7683C10.2727 26.0393 10.8646 25.2719 11.3246 24.5814C11.4485 24.3954 11.6835 24.187 11.8396 24.02C12.0393 23.8062 12.2003 23.6074 12.3725 23.3726C11.4655 23.3158 10.9147 23.4537 10.0336 23.5766C9.4653 23.6515 8.89588 23.7185 8.32558 23.7771C8.33512 23.3464 8.32898 22.9151 8.33878 22.4833C6.78495 22.3277 5.15505 22.3383 3.59634 22.1984C3.82937 21.7032 4.18625 21.2139 4.4499 20.7332C4.76496 20.1587 5.04376 19.5794 5.37429 19.0108C4.89512 18.7792 2.49614 17.5534 2.47697 17.0824C2.53074 17.0386 2.58833 17.0027 2.649 16.9689C3.12133 16.7056 3.57589 16.4118 4.05849 16.1666C3.89418 16.0189 3.72916 15.8317 3.57015 15.6726L2.49557 14.5986L0 12.1186L3.52255 11.5768C3.97841 11.5027 4.42309 11.4638 4.87177 11.3629C4.7844 11.0366 4.711 10.4035 4.66082 10.0501C4.56757 9.37967 4.46746 8.7102 4.36055 8.04179L3.95851 5.36271C3.87982 4.86911 3.69849 3.90505 3.68789 3.44409C4.12489 3.72141 4.57054 3.95767 5.00107 4.23255C6.08248 4.93085 7.14487 5.65726 8.18719 6.41107C8.66597 6.75545 9.18129 7.11671 9.64662 7.47482C9.66105 7.07553 9.80564 6.50356 9.89664 6.10235C9.9926 5.6845 10.0821 5.26525 10.1652 4.84474L11.1356 0Z" fill="#B1B8BD"/></g><defs><filter id="hudi-mode-body-inner" x="0" y="0" width="26" height="36" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset/><feGaussianBlur stdDeviation="0.4"/><feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/><feBlend mode="normal" in2="shape" result="effect1_innerShadow_245_214"/></filter></defs></svg>`;
+
     function applyPfpPaletteToElement(element, palette) {
       if (!element || !palette) return;
       const colors = normalizePfpPalette(palette);
@@ -2208,9 +3134,15 @@ h1, .section-title h2, .card h3 {
       const index = Number(generator.dataset.pfpIndex || 0);
       const palette = pfpPalettes[index % pfpPalettes.length];
       const mode = generator.dataset.pfpMode === "full" ? "full" : "head";
+      const modeButton = generator.querySelector("[data-pfp-mode]");
       preview.classList.toggle("is-full", mode === "full");
       preview.replaceChildren(mode === "full" ? createHudiFullBodyPfp(palette, index) : createLeaderboardPfp(palette, index, false));
-      generator.querySelector("[data-pfp-mode] .pill-label")?.replaceChildren(mode === "full" ? "head only" : "full body");
+      if (modeButton) {
+        modeButton.classList.toggle("is-full", mode === "full");
+        modeButton.setAttribute("aria-pressed", String(mode === "full"));
+        modeButton.setAttribute("aria-label", mode === "full" ? "Show head only" : "Show full body");
+        modeButton.innerHTML = mode === "full" ? hudiModeBodyIcon : hudiModeHeadIcon;
+      }
       generator.dataset.pfpIndex = String(index);
       generator.dataset.pfpPaletteId = palette.id || getPfpPaletteId(palette);
     }
@@ -2256,6 +3188,14 @@ h1, .section-title h2, .card h3 {
       const g = parseInt(clean.slice(2, 4), 16);
       const b = parseInt(clean.slice(4, 6), 16);
       return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+    }
+
+    function getBlankOrbState() {
+      return {
+        base: blankOrbControls?.querySelector('[data-blank-orb-field="base"]')?.value || "#24d0ff",
+        sheen: blankOrbControls?.querySelector('[data-blank-orb-field="sheen"]')?.value || "#00ffbf",
+        shadowHex: blankOrbControls?.querySelector('[data-blank-orb-field="shadow"]')?.value || "#00329d",
+      };
     }
 
     function getOrbState() {
@@ -2330,6 +3270,18 @@ h1, .section-title h2, .card h3 {
     function rgbToHex({ r, g, b }) {
       const toHex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, "0");
       return "#" + toHex(r) + toHex(g) + toHex(b);
+    }
+
+    function mixRgb(a, b, amount) {
+      return {
+        r: a.r + (b.r - a.r) * amount,
+        g: a.g + (b.g - a.g) * amount,
+        b: a.b + (b.b - a.b) * amount,
+      };
+    }
+
+    function tickerInnerFromBase(base) {
+      return rgbToHex(mixRgb(hexToRgb(base), { r: 255, g: 255, b: 255 }, .61));
     }
 
     function rgbToHsl({ r, g, b }) {
@@ -2409,6 +3361,20 @@ h1, .section-title h2, .card h3 {
     function setOrbField(name, value) {
       const field = orbControls?.querySelector(`[data-orb-field="${name}"]`);
       if (field) field.value = value;
+    }
+
+    function setBlankOrbField(name, value) {
+      const field = blankOrbControls?.querySelector(`[data-blank-orb-field="${name}"]`);
+      if (field) field.value = value;
+    }
+
+    function applyBlankOrbColour(base) {
+      const palette = deriveOrbPalette(base);
+      setBlankOrbField("colour", palette.base);
+      setBlankOrbField("base", palette.base);
+      setBlankOrbField("sheen", palette.sheen);
+      setBlankOrbField("shadow", palette.shadowHex);
+      updateBlankOrbPreview();
     }
 
     function applyOrbColour(base) {
@@ -2665,7 +3631,7 @@ h1, .section-title h2, .card h3 {
 .hudi-side-toggle.is-short .hudi-side-toggle__label { color: #FFFFFF; text-shadow: none; -webkit-text-fill-color: #FFFFFF; }`;
 	    }
 
-	    function buildCustomToggleCss(state) {
+function buildCustomToggleCss(state) {
 	      const longMode = shouldUseWhiteButtonLabel(state.longColor) ? "white" : "gradient";
 	      const shortMode = shouldUseWhiteButtonLabel(state.shortColor) ? "white" : "gradient";
 	      const longTint = longMode === "white" ? whiteLabelTint(state.longColor) : "blue";
@@ -2684,6 +3650,84 @@ h1, .section-title h2, .card h3 {
   ${buttonLabelCss(shortMode, shortTint)}
 }`;
 	    }
+
+    function buildExitButtonCss() {
+      return `.hudi-icon-orb {
+  --orb-base: #24d0ff;
+  --orb-sheen: #00ffbf;
+  --orb-shadow: rgba(0,50,157,.4);
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 132px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: var(--orb-base);
+  background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%);
+  box-shadow: inset 0 -6.78px 70.8px var(--orb-shadow), inset 0 0 11px color-mix(in srgb, var(--orb-sheen) 58%, transparent);
+  overflow: hidden;
+}
+.hudi-icon-orb::before {
+  content: "";
+  position: absolute;
+  left: 18.6%;
+  top: 3.8%;
+  z-index: 1;
+  width: 64%;
+  height: 46%;
+  border-radius: 50%;
+  background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%);
+}
+.hudi-icon-orb::after {
+  content: "";
+  position: absolute;
+  left: 32.05%;
+  top: 1.1%;
+  z-index: 1;
+  width: 36.34%;
+  height: 18.06%;
+  border-radius: 50%;
+  background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%);
+}
+.hudi-icon-orb svg {
+  position: relative;
+  z-index: 2;
+  display: block;
+}
+.hudi-exit-orb.hudi-icon-orb {
+  --orb-base: #eef2f6;
+  --orb-sheen: #ffffff;
+  --orb-shadow: rgba(82,92,111,.26);
+  --exit-x-top: #8f9ab0;
+  --exit-x-bottom: #525c6f;
+  width: 76px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  cursor: pointer;
+  transition: filter 140ms ease, transform 140ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.hudi-exit-orb.hudi-icon-orb svg {
+  width: 37px;
+  filter: drop-shadow(0 1px 1px rgba(82,92,111,.08));
+  transition: filter 140ms ease;
+}
+.hudi-exit-orb .exit-x-top { stop-color: var(--exit-x-top); }
+.hudi-exit-orb .exit-x-bottom { stop-color: var(--exit-x-bottom); }
+.hudi-exit-orb:hover { filter: brightness(1.015) saturate(1.02); }
+.hudi-exit-orb:active,
+.hudi-exit-orb.is-pressed {
+  --exit-x-top: #ffffff;
+  --exit-x-bottom: #99cafa;
+  filter: brightness(1.05) saturate(1.08);
+  transform: scale(.97);
+}
+.hudi-exit-orb:active svg,
+.hudi-exit-orb.is-pressed svg {
+  filter: drop-shadow(0 0 8px rgba(153,202,250,.72));
+}`;
+    }
 
     function buildButtonCss(state) {
       const shadow = hexToRgba(state.shadowHex, state.type === "confirm" ? .28 : .34);
@@ -2780,9 +3824,55 @@ h1, .section-title h2, .card h3 {
 }`;
     }
 
+    function buildBlankOrbCss(state) {
+      const shadow = hexToRgba(state.shadowHex, .4);
+      return `/* Blank orb material */
+.hudi-blank-orb {
+  --orb-base: ${state.base};
+  --orb-sheen: ${state.sheen};
+  --orb-shadow: ${shadow};
+  --orb-size: 100px;
+  --orb-shadow-y: -6.1625px;
+  --orb-shadow-blur: 64.3984px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--orb-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: var(--orb-base);
+  background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%);
+  box-shadow: inset 0 var(--orb-shadow-y) var(--orb-shadow-blur) var(--orb-shadow), inset 0 0 calc(var(--orb-size) * .09) color-mix(in srgb, var(--orb-sheen) 58%, transparent);
+  overflow: hidden;
+}
+.hudi-blank-orb::before {
+  content: "";
+  position: absolute;
+  left: 18.6%;
+  top: 3.8%;
+  width: 64%;
+  height: 46%;
+  border-radius: 50%;
+  background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%);
+  z-index: 1;
+}
+.hudi-blank-orb::after {
+  content: "";
+  position: absolute;
+  left: 32.05%;
+  top: 1.1%;
+  width: 36.34%;
+  height: 18.06%;
+  border-radius: 50%;
+  background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%);
+  z-index: 1;
+}`;
+    }
+
     function buildOrbCss(state) {
       const shadow = hexToRgba(state.shadowHex, .4);
-      return `/* Current orb preview: ${state.ticker} ${state.number} */
+      const tickerInner = tickerInnerFromBase(state.base);
+      return `/* Current ticker orb preview: ${state.ticker} ${state.number} */
 .hudi-stock-orb {
   --orb-base: ${state.base};
   --orb-sheen: ${state.sheen};
@@ -2795,6 +3885,7 @@ h1, .section-title h2, .card h3 {
   --orb-text-glow: #0558da;
   --orb-ticker-light: color-mix(in srgb, var(--orb-base) 14%, #101722);
   --orb-ticker-dark: color-mix(in srgb, var(--orb-base) 8%, #03070e);
+  --orb-ticker-inner: ${tickerInner};
   position: relative;
   display: grid;
   place-items: center;
@@ -2831,16 +3922,15 @@ h1, .section-title h2, .card h3 {
 .hudi-stock-orb__ticker {
   position: absolute;
   left: 0;
-  top: 39.5%;
+  top: 36%;
   width: 100%;
   height: 34%;
   overflow: visible;
-  filter: url(#hudi-orb-ticker-warp);
-  transform: scaleX(.92);
   transform-origin: 50% 50%;
   z-index: 2;
 }
 .hudi-stock-orb__ticker path {
+  display: none;
   fill: none;
 }
 .hudi-orb-ticker-light-stop {
@@ -2850,13 +3940,14 @@ h1, .section-title h2, .card h3 {
   stop-color: var(--orb-ticker-dark);
 }
 .hudi-stock-orb__ticker text {
-  color: var(--orb-sheen);
+  color: var(--orb-ticker-inner);
   filter: url(#hudi-orb-dark-text-inner);
   font-family: "Syne Hudi", Syne, sans-serif;
-  font-size: 18px;
+  font-size: calc(var(--orb-ticker-base-size, 18px) * var(--orb-ticker-scale, 1));
   font-weight: 700;
   letter-spacing: -.01em;
   text-shadow: none;
+  dominant-baseline: middle;
 }
 .hudi-stock-orb__number {
   position: absolute;
@@ -2979,7 +4070,7 @@ h1, .section-title h2, .card h3 {
   background: #eef2ff;
   color: #71809e;
   font-family: "Syne Hudi", Syne, sans-serif;
-  font-size: 18px;
+  font-size: 14.4px;
   font-weight: 500;
   line-height: .95;
   text-align: center;
@@ -3001,9 +4092,10 @@ h1, .section-title h2, .card h3 {
   border-radius: 15px;
   color: #fff;
   font-family: "Syne Hudi", Syne, sans-serif;
-  font-size: 16px;
+  font-size: 12.8px;
   font-weight: 500;
   letter-spacing: 0;
+  line-height: 1;
   line-height: 1;
   transition: left 360ms cubic-bezier(.2,.8,.2,1), top 360ms cubic-bezier(.2,.8,.2,1), transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
 }
@@ -3011,7 +4103,7 @@ h1, .section-title h2, .card h3 {
   background: none;
   color: #fff;
   filter: url(#hudi-chamber-label-inner);
-  top: -1px;
+  top: 0;
   text-shadow: none;
   -webkit-text-fill-color: #fff;
 }
@@ -3075,16 +4167,17 @@ h1, .section-title h2, .card h3 {
   border-radius: 23px;
   color: #fff;
   font-family: "Syne Hudi", Syne, sans-serif;
-  font-size: 25px;
+  font-size: 20px;
   font-weight: 500;
   letter-spacing: 0;
+  line-height: 1;
   transition: transform 180ms ease, filter 160ms ease, box-shadow 180ms ease, background-color 180ms ease;
 }
 .hudi-linear-nav-button.hudi-trade-button .pill-label {
   background: none;
   color: #fff;
   filter: url(#hudi-chamber-label-inner);
-  top: -1px;
+  top: 0;
   text-shadow: none;
   -webkit-text-fill-color: #fff;
 }
@@ -3451,19 +4544,54 @@ h1, .section-title h2, .card h3 {
         orb.style.setProperty("--orb-base", palette.base);
         orb.style.setProperty("--orb-sheen", palette.sheen);
         orb.style.setProperty("--orb-shadow", hexToRgba(palette.shadowHex, .4));
+        orb.style.setProperty("--orb-ticker-inner", tickerInnerFromBase(palette.base));
         orb.classList.toggle("is-auto-white", shouldUseWhiteOrbText(palette.base, palette.sheen));
       });
       updateOrbShadowScale(root);
     }
 
     function updateOrbShadowScale(root = document) {
-      root.querySelectorAll(".hudi-stock-orb").forEach((orb) => {
+      const targets = root.matches?.(".hudi-blank-orb, .hudi-stock-orb, .hudi-icon-orb, .hudi-logo-orb") ? [root] : Array.from(root.querySelectorAll(".hudi-blank-orb, .hudi-stock-orb, .hudi-icon-orb, .hudi-logo-orb"));
+      targets.forEach((orb) => {
         if (orb.classList.contains("allocation-legend__orb")) return;
         const width = orb.getBoundingClientRect().width || parseFloat(getComputedStyle(orb).width) || 100;
         const scale = width / 100;
         orb.style.setProperty("--orb-shadow-y", formatPathNumber(-6.1625 * scale) + "px");
         orb.style.setProperty("--orb-shadow-blur", formatPathNumber(64.3984 * scale) + "px");
       });
+    }
+
+    function tickerScaleForText(text = "") {
+      const length = Math.max(1, text.trim().length);
+      return Math.max(.72, Math.min(1.68, 5 / length));
+    }
+
+    function updateOrbTickerLayout(root = document) {
+      root.querySelectorAll(".hudi-stock-orb").forEach((orb) => {
+        const ticker = orb.querySelector(".hudi-stock-orb__ticker");
+        const text = ticker?.querySelector("text");
+        if (!ticker || !text) return;
+        const textPath = text.querySelector("textPath");
+        const label = textPath?.textContent || text.textContent || "";
+        text.replaceChildren(document.createTextNode(label));
+        text.setAttribute("x", "50");
+        text.setAttribute("y", "19");
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("dominant-baseline", "middle");
+        orb.style.setProperty("--orb-ticker-scale", tickerScaleForText(label).toFixed(3));
+        ticker.querySelector("path")?.remove();
+        ticker.setAttribute("aria-label", label);
+      });
+    }
+
+    function updateBlankOrbPreview() {
+      if (!blankOrbPreview || !blankOrbControls) return;
+      const state = getBlankOrbState();
+      blankOrbPreview.style.setProperty("--orb-base", state.base);
+      blankOrbPreview.style.setProperty("--orb-sheen", state.sheen);
+      blankOrbPreview.style.setProperty("--orb-shadow", hexToRgba(state.shadowHex, .4));
+      snippets["Blank orb"] = buildBlankOrbCss(state);
+      updateOrbShadowScale(blankOrbPreview.parentElement || document);
     }
 
     function updateOrbPreview() {
@@ -3475,17 +4603,20 @@ h1, .section-title h2, .card h3 {
         preview.style.setProperty("--orb-base", state.base);
         preview.style.setProperty("--orb-sheen", state.sheen);
         preview.style.setProperty("--orb-shadow", shadow);
+        preview.style.setProperty("--orb-ticker-inner", tickerInnerFromBase(state.base));
         preview.classList.toggle("is-auto-white", shouldUseWhiteOrbText(state.base, state.sheen));
-        const tickerPath = preview.querySelector(".hudi-stock-orb__ticker textPath");
-        if (tickerPath) tickerPath.textContent = state.ticker;
-        preview.querySelector(".hudi-stock-orb__ticker")?.setAttribute("aria-label", state.ticker);
+        const tickerText = preview.querySelector(".hudi-stock-orb__ticker text");
+        if (tickerText) tickerText.textContent = state.ticker;
         const numberPath = preview.querySelector(".hudi-stock-orb__number textPath");
         if (numberPath) numberPath.textContent = state.number;
       });
-      snippets.Orb = buildOrbCss(state);
+      snippets["Ticker orbs"] = buildOrbCss(state);
+      updateOrbTickerLayout();
       updateOrbShadowScale();
     }
+    updateBlankOrbPreview();
     updateOrbPreview();
+    updateOrbTickerLayout();
     applyGeneratedOrbPalette();
 
     function updateHudiLogoPreview() {
@@ -3515,9 +4646,9 @@ h1, .section-title h2, .card h3 {
       buttonPreview.style.setProperty("--pill-inner-shadow", shadow);
       buttonPreview.style.width = state.width + "px";
       buttonPreview.style.minWidth = state.width + "px";
-      buttonPreview.querySelector(".pill-label").textContent = state.label;
-      buttonControls.querySelector("[data-button-width-output]").textContent = state.width + "px";
-      snippets["Trade buttons"] = buildButtonCss(state);
+        buttonPreview.querySelector(".pill-label").textContent = state.label;
+        buttonControls.querySelector("[data-button-width-output]").textContent = state.width + "px";
+      snippets["Buttons"] = buildButtonCss(state) + "\n\n" + buildExitButtonCss();
       updatePillTopContour(buttonPreview.querySelector(".pill-top-contour"));
       queuePillTopContours(buttonPreview);
     }
@@ -3750,6 +4881,58 @@ h1, .section-title h2, .card h3 {
       leverageOutputTimers.set(output, timers);
     }
 
+    const depositStageOrder = ["fund", "network", "coin", "deposit"];
+    const depositProgressSteps = { network: 1, coin: 2, deposit: 3 };
+
+    function setDepositModalStage(stage) {
+      const modal = document.querySelector("[data-deposit-modal] .hudi-deposit-modal");
+      if (!modal) return;
+      const stageName = depositStageOrder.includes(stage) ? stage : "fund";
+      const activeStep = depositProgressSteps[stageName] || 0;
+
+      modal.dataset.depositStage = stageName;
+      modal.querySelectorAll("[data-deposit-stage-panel]").forEach((panel) => {
+        panel.classList.remove("is-progress-ready");
+        panel.classList.toggle("is-active", panel.dataset.depositStagePanel === stageName);
+      });
+      modal.querySelectorAll("[data-progress-step]").forEach((step) => {
+        const stepNumber = depositProgressSteps[step.dataset.progressStep] || 0;
+        step.classList.toggle("is-active", stepNumber === activeStep);
+        step.classList.toggle("is-done", stepNumber > 0 && stepNumber < activeStep);
+      });
+      const activeTitle = modal.querySelector(".deposit-stage.is-active .deposit-stage-title");
+      if (activeTitle) modal.setAttribute("aria-label", activeTitle.textContent.trim());
+      const activePanel = modal.querySelector(`.deposit-stage[data-deposit-stage-panel="${stageName}"]`);
+      if (activePanel) {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => activePanel.classList.add("is-progress-ready"));
+        });
+      }
+    }
+
+    function openDepositModal() {
+      const backdrop = document.querySelector("[data-deposit-modal]");
+      if (!backdrop) return;
+      backdrop.hidden = false;
+      document.body.style.overflow = "hidden";
+      setDepositModalStage("fund");
+    }
+
+    function closeDepositModal() {
+      const backdrop = document.querySelector("[data-deposit-modal]");
+      if (!backdrop) return;
+      backdrop.hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    function stepDepositModal(direction) {
+      const modal = document.querySelector("[data-deposit-modal] .hudi-deposit-modal");
+      if (!modal) return;
+      const currentIndex = depositStageOrder.indexOf(modal.dataset.depositStage || "fund");
+      const nextIndex = Math.max(0, Math.min(depositStageOrder.length - 1, currentIndex + direction));
+      setDepositModalStage(depositStageOrder[nextIndex]);
+    }
+
     document.addEventListener("click", async (event) => {
       const copy = event.target.closest("[data-copy]");
       if (copy) {
@@ -3757,6 +4940,53 @@ h1, .section-title h2, .card h3 {
         const label = copy.textContent;
         copy.textContent = "Copied";
         setTimeout(() => copy.textContent = label, 900);
+      }
+
+      if (event.target.closest("[data-deposit-open]")) {
+        openDepositModal();
+        return;
+      }
+
+      if (event.target.matches("[data-deposit-modal]") || event.target.closest("[data-deposit-close]")) {
+        closeDepositModal();
+        return;
+      }
+
+      const depositGoto = event.target.closest("[data-deposit-goto]");
+      if (depositGoto) {
+        setDepositModalStage(depositGoto.dataset.depositGoto);
+        return;
+      }
+
+      const depositChoice = event.target.closest("[data-deposit-choice]");
+      if (depositChoice) {
+        const group = depositChoice.dataset.depositChoice;
+        depositChoice.closest("[data-deposit-stage-panel]")?.querySelectorAll(`[data-deposit-choice="${group}"]`).forEach((button) => {
+          button.setAttribute("aria-pressed", String(button === depositChoice));
+        });
+        return;
+      }
+
+      if (event.target.closest("[data-deposit-next]")) {
+        stepDepositModal(1);
+        return;
+      }
+
+      if (event.target.closest("[data-deposit-back]")) {
+        stepDepositModal(-1);
+        return;
+      }
+
+      const depositCopy = event.target.closest(".deposit-copy");
+      if (depositCopy) {
+        const address = depositCopy.closest(".deposit-address")?.querySelector("code")?.textContent.trim() || "";
+        if (address) await navigator.clipboard.writeText(address);
+        const original = depositCopy.textContent;
+        depositCopy.lastChild.textContent = "Copied";
+        setTimeout(() => {
+          depositCopy.lastChild.textContent = original.replace(/\s+/g, " ").trim();
+        }, 900);
+        return;
       }
 
       const pressedButton = event.target.closest(".hudi-pill, .stock-pill");
@@ -3774,6 +5004,7 @@ h1, .section-title h2, .card h3 {
         generator.dataset.pfpPaletteId = palette.id;
         renderPfpGenerator(generator);
         applyChatPfpPalettes(document, Number(generator.dataset.pfpIndex || 0));
+        return;
       }
 
       const pfpMode = event.target.closest("[data-pfp-mode]");
@@ -3781,6 +5012,7 @@ h1, .section-title h2, .card h3 {
         const generator = pfpMode.closest("[data-pfp-generator]");
         generator.dataset.pfpMode = generator.dataset.pfpMode === "full" ? "head" : "full";
         renderPfpGenerator(generator);
+        return;
       }
 
       const sideButton = event.target.closest(".hudi-side-toggle button[data-side]");
@@ -3942,6 +5174,16 @@ h1, .section-title h2, .card h3 {
             setOrbField("colour", event.target.value);
           }
           updateOrbPreview();
+        }
+      }
+      if (event.target.matches('[data-blank-orb-field]')) {
+        if (event.target.dataset.blankOrbField === "colour") {
+          applyBlankOrbColour(event.target.value);
+        } else {
+          if (event.target.dataset.blankOrbField === "base") {
+            setBlankOrbField("colour", event.target.value);
+          }
+          updateBlankOrbPreview();
         }
       }
       if (event.target.matches('[data-hudi-orb-field]')) {
