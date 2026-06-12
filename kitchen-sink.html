@@ -46,6 +46,7 @@
       --type-small-title: 17.33px;
       --type-card-title: 23.11px;
       --type-section-title: 30.81px;
+      --type-big-title: 41.08px;
       --type-title-tracking: -.05em;
       --ocr: "OCRA Fixed", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       --mono: "Syne Mono Hudi", "Syne Mono", ui-monospace, monospace;
@@ -83,8 +84,8 @@
         left: 0;
         top: 0;
         z-index: 2147483647;
-        width: 39px;
-        height: 55.5px;
+        width: 23.4px;
+        height: 33.3px;
         opacity: 0;
         pointer-events: none;
         transform: translate3d(-120px, -120px, 0);
@@ -104,16 +105,16 @@
         left: 0;
         top: 0;
         display: none;
-        filter: drop-shadow(0 7px 8px rgba(0,0,0,.25));
+        filter: drop-shadow(0 4.2px 4.8px rgba(0,0,0,.25));
         transform: translate(var(--cursor-press-x), var(--cursor-press-y)) rotate(var(--cursor-rotation));
         transform-origin: 28% 88%;
         transition: transform 120ms ease;
-        width: 39px;
-        height: 55.5px;
+        width: 23.4px;
+        height: 33.3px;
       }
 
       .hudi-cursor__shape.is-grab {
-        height: 38.5px;
+        height: 23.1px;
         transform-origin: 50% 50%;
       }
 
@@ -151,7 +152,8 @@
     h1 { margin: 0; font-family: var(--sans); font-size: clamp(34px, 4.4vw, 64px); line-height: .95; font-weight: 700; letter-spacing: var(--type-title-tracking); color: var(--dark-grey); }
 
     .nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
-    .nav a {
+    .nav a,
+    .sim-open {
       height: 31px;
       display: inline-flex;
       align-items: center;
@@ -164,8 +166,11 @@
       font-size: 10px;
       text-decoration: none;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.96);
+      cursor: pointer;
     }
-    .nav a:hover { border-color: #bedcff; background: linear-gradient(180deg, #fbfdff 0%, #c9dcf6 100%); }
+    .sim-open { appearance: none; }
+    .nav a:hover,
+    .sim-open:hover { border-color: #bedcff; background: linear-gradient(180deg, #fbfdff 0%, #c9dcf6 100%); }
 
     .section { margin-top: 28px; scroll-margin-top: 96px; }
     .section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin: 0 0 12px; }
@@ -202,6 +207,7 @@
     }
 
     .card h3 { margin: 0 0 4px; font-family: var(--sans); font-size: var(--type-card-title); line-height: 1.05; font-weight: 700; letter-spacing: var(--type-title-tracking); color: var(--dark-grey); }
+    .component-tag { display: inline-flex; align-items: center; min-height: 16px; margin-left: 8px; padding: 2px 7px 0; border: 1px solid var(--outline-blue); border-radius: 999px; color: var(--dark-grey); font-family: var(--ocr); font-size: 8px; font-weight: 400; letter-spacing: .08em; vertical-align: middle; }
     .card p { margin: 0; color: var(--muted); font-family: var(--mono); font-size: var(--type-body); line-height: 1.35; }
     .demo { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; padding: 18px 16px; }
     .demo.column { align-items: stretch; flex-direction: column; }
@@ -209,11 +215,14 @@
 
     .token-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; width: 100%; }
     .token-swatch { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: center; min-height: 42px; }
-    .token-swatch::before { content: ""; width: 34px; height: 34px; border: 2px solid var(--outline-blue); border-radius: 6px; background: var(--token); box-shadow: inset 0 -2px 10px rgba(0,0,0,.12); }
+    .token-swatch input { width: 34px; height: 34px; padding: 0; border: 2px solid var(--outline-blue); border-radius: 6px; background: var(--token); box-shadow: none; cursor: pointer; overflow: hidden; }
+    .token-swatch input::-webkit-color-swatch-wrapper { padding: 0; }
+    .token-swatch input::-webkit-color-swatch { border: 0; border-radius: 4px; }
+    .token-swatch input::-moz-color-swatch { border: 0; border-radius: 4px; }
     .token-swatch strong { display: block; color: var(--ink); font-size: 12px; font-weight: 400; }
     .token-swatch span { color: var(--muted); font-family: var(--ocr); font-size: 10px; }
     .font-index { display: grid; gap: 12px; width: 100%; }
-    .font-sample { display: grid; gap: 4px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,.05); }
+    .font-sample { display: grid; gap: 4px; padding: 10px 0; border-bottom: .8px solid rgba(0,0,0,.05); }
     .font-sample:last-child { border-bottom: 0; }
     .font-sample span { color: var(--muted); font-family: var(--ocr); font-size: 10px; }
     .font-sample strong { color: var(--dark-grey); font-size: 22px; font-weight: 400; line-height: 1; }
@@ -221,10 +230,12 @@
     .font-sample.mono strong { font-family: var(--mono); font-size: 18px; }
     .font-sample.bold strong { font-weight: 700; }
     .typography-demo { display: grid; gap: 18px; width: 100%; }
-    .typography-row { display: grid; grid-template-columns: 140px 1fr; gap: 18px; align-items: baseline; padding-bottom: 14px; border-bottom: 1px solid rgba(0,0,0,.05); }
+    .hudi-break-line { width: 100%; height: .8px; background: rgba(0,0,0,.05); }
+    .typography-row { display: grid; grid-template-columns: 140px 1fr; gap: 18px; align-items: baseline; padding-bottom: 14px; border-bottom: .8px solid rgba(0,0,0,.05); }
     .typography-row:last-child { border-bottom: 0; padding-bottom: 0; }
     .typography-row code { color: var(--dark-grey); font-family: var(--ocr); font-size: 10px; }
-    .type-title-xl, .type-title-lg, .type-title-sm { margin: 0; color: var(--dark-grey); font-family: var(--sans); font-weight: 700; letter-spacing: var(--type-title-tracking); line-height: .98; }
+    .type-title-xxl, .type-title-xl, .type-title-lg, .type-title-sm { margin: 0; color: var(--dark-grey); font-family: var(--sans); font-weight: 700; letter-spacing: var(--type-title-tracking); line-height: .98; }
+    .type-title-xxl { font-size: var(--type-big-title); }
     .type-title-xl { font-size: var(--type-section-title); }
     .type-title-lg { font-size: var(--type-card-title); }
     .type-title-sm { font-size: var(--type-small-title); }
@@ -296,15 +307,18 @@
     .hudi-trade-button .pill-shine { background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 34%, rgba(255,255,255,.72) 48%, rgba(255,255,255,0) 64%, transparent 100%); height: 150%; left: -80%; pointer-events: none; position: absolute; top: -25%; transform: skewX(-18deg); width: 52%; z-index: 3; }
     .hudi-trade-button.long { --pill-bg: #01fd90; --pill-inner-shadow: rgba(0,95,60,.34); }
     .hudi-trade-button.short { --pill-bg: #ff0fc4; --pill-inner-shadow: rgba(118,0,82,.34); --pill-label: #ffffff; }
-    .hudi-trade-button.confirm { --pill-bg: #e9eef5; --pill-inner-shadow: rgba(62,88,116,.28); --pill-label: #71809e; border-radius: 28px; font-size: 23px; height: 56px; min-width: 241px; }
+    .hudi-trade-button.confirm { --pill-bg: #e9eef5; --pill-inner-shadow: rgba(62,88,116,.28); --pill-label: #71809e; }
     .hudi-trade-button.confirm .pill-label { background: linear-gradient(180deg, #aeb8c6 0%, #71809e 100%); background-clip: text; color: transparent; text-shadow: none; top: -1px; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .hudi-trade-button:hover { filter: brightness(1.015) saturate(1.03); box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow); }
     .hudi-trade-button:hover .pill-shine { animation: hudi-pill-shine 760ms ease-out; }
     .hudi-trade-button:active, .hudi-trade-button.is-pressed { filter: brightness(1.08) saturate(1.04); transform: translateY(1px) scale(.99); box-shadow: inset 0 -2px 18px rgba(255,255,255,.22), inset 0 -2.83px 29.61px var(--pill-inner-shadow); }
     @keyframes hudi-pill-shine { from { left: -80%; } to { left: 130%; } }
 
-    .trade-button-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
-    .button-maker-demo { display: grid; grid-template-columns: minmax(170px, max-content) minmax(0, 1fr); gap: 18px; align-items: start; width: 100%; padding-top: 6px; border-top: 1px solid rgba(0,0,0,.05); }
+    .demo-subsection-label { color: var(--dark-grey); font-family: var(--ocr); font-size: 12px; letter-spacing: .12em; text-transform: lowercase; }
+    .hudi-search-button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-width: 168px; height: 46px; padding: 0 24px; border: 4px solid var(--outline-blue); border-radius: 999px; background: #fff; color: var(--dark-grey); font-family: var(--ocr); font-size: 15px; letter-spacing: .18em; line-height: 1; text-decoration: none; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,.96); }
+    .hudi-search-button svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.4; }
+    .hudi-search-button:hover { border-color: var(--select-blue); background: linear-gradient(180deg, #fff 0%, #f4fbff 100%); }
+    .button-maker-demo { display: grid; grid-template-columns: minmax(170px, max-content) minmax(0, 1fr); gap: 18px; align-items: start; width: 100%; padding-top: 6px; }
     .button-preview-stage { display: grid; justify-items: start; gap: 10px; }
     .button-maker-controls { display: grid; gap: 12px; min-width: 0; }
     .button-presets { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -907,15 +921,15 @@
     .hudi-slider-control { --slider-percent: 40%; position: relative; display: block; height: 34px; }
     .hudi-slider output { display: inline-grid; height: 16px; min-width: 36px; overflow: hidden; color: var(--dark-grey); font-family: var(--ocr); font-size: 12px; line-height: 16px; text-align: right; }
     .hudi-slider output span { display: block; will-change: transform, opacity; }
-    .hudi-slider output.is-up span, .leverage-panel output.is-up span { animation: hudi-leverage-roll-up 180ms ease-out; }
-    .hudi-slider output.is-down span, .leverage-panel output.is-down span { animation: hudi-leverage-roll-down 180ms ease-out; }
-    @keyframes hudi-leverage-roll-up { from { opacity: .35; transform: translateY(100%); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes hudi-leverage-roll-down { from { opacity: .35; transform: translateY(-100%); } to { opacity: 1; transform: translateY(0); } }
+    .hudi-slider output.is-clicked, .leverage-panel output.is-clicked { animation: hudi-leverage-click 140ms ease-out; }
+    .hudi-slider.is-clicked .hudi-slider-puck { animation: hudi-slider-puck-click 140ms ease-out; }
+    @keyframes hudi-leverage-click { 50% { transform: scale(.96); } }
+    @keyframes hudi-slider-puck-click { 50% { transform: translate(-50%, -50%) scale(.9); } }
     .hudi-slider input[type="range"] { appearance: none; position: absolute; inset: 0; z-index: 3; width: 100%; height: 34px; background: transparent; cursor: pointer; opacity: 0; }
     .hudi-slider-visual { position: absolute; left: 0; right: 0; top: 50%; height: 14px; border: 4px solid var(--outline-blue-2); border-radius: 13px; background: linear-gradient(90deg, #e8ffde 0%, #01dc79 100%) 0 0 / var(--slider-percent) 100% no-repeat, #fff; transform: translateY(-50%); transition: background-size 220ms cubic-bezier(.2,.8,.2,1); pointer-events: none; }
     .hudi-slider.short .hudi-slider-visual { background: linear-gradient(90deg, #ffe4fe 0%, #fd01ba 100%) 0 0 / var(--slider-percent) 100% no-repeat, #fff; }
     .hudi-slider-puck { position: absolute; left: var(--slider-percent); top: 50%; width: 26px; height: 26px; box-sizing: content-box; border: 4px solid var(--outline-blue-2); border-radius: 50%; background: radial-gradient(36.34% 18.06% at 50% 1%, #fff 0%, rgba(255,255,255,.14) 100%), radial-gradient(64% 46% at 50% 20%, rgba(255,255,255,.96) 0 50%, rgba(255,255,255,.58) 62%, transparent 63%), linear-gradient(180deg, #f5faff 0%, #d9e4ec 42%, #b8c8d4 100%); box-shadow: inset 0 -3px 16px rgba(67,88,109,.28); transform: translate(-50%, -50%); transition: left 220ms cubic-bezier(.2,.8,.2,1); pointer-events: none; }
-    .hudi-slider-markers { display: grid; grid-template-columns: repeat(6, 1fr); margin-top: 10px; color: #a1a8b5; font-family: var(--ocr); font-size: 11px; line-height: 1; }
+    .hudi-slider-markers { display: none; }
     .hudi-slider-markers span { text-align: center; }
     .hudi-slider input::-webkit-slider-runnable-track { height: 34px; background: transparent; }
     .hudi-slider input::-webkit-slider-thumb { appearance: none; width: 34px; height: 34px; }
@@ -934,8 +948,6 @@
     .leverage-panel .hudi-slider-visual { height: 14px; border-width: 4px; border-radius: 999px; background: var(--lev-fill) 0 0 / var(--slider-percent) 100% no-repeat, #fff; }
     .leverage-panel .hudi-slider.short .hudi-slider-visual { background: var(--lev-fill) 0 0 / var(--slider-percent) 100% no-repeat, #fff; }
     .leverage-panel .hudi-slider-puck { width: 26px; height: 26px; border-width: 4px; box-shadow: inset 0 -3px 16px rgba(67,88,109,.28); }
-    .leverage-panel .hudi-slider-markers { margin-top: 10px; color: #a6a6a6; font-size: 13px; }
-    .leverage-panel .hudi-slider-markers span[aria-current="true"] { color: var(--dark-grey); }
     .leverage-panel output { display: inline-grid; place-items: center; width: 58px; height: 38px; min-width: 58px; border: 4px solid var(--outline-blue); border-radius: 999px; background: #fff; color: #28b979; font-family: var(--ocr); font-size: 19px; line-height: 1; text-align: center; overflow: hidden; }
 
     .hudi-pill {
@@ -1106,6 +1118,11 @@
     .orb-maker-controls { display: grid; gap: 12px; min-width: 0; }
     .blank-orb-demo { display: grid; gap: 18px; justify-items: center; }
     .blank-orb-demo .hudi-blank-orb { --orb-size: 132px; }
+    .window-orb-demo { display: grid; gap: 18px; justify-items: center; }
+    .window-orb-demo .hudi-window-orb { --orb-size: 148px; --window-image: url("assets/window-orb-shanghai.png"); background-color: #cdd8df; background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 58%), var(--window-image); background-position: center; background-size: cover; }
+    .window-orb-demo .hudi-window-orb::before { mix-blend-mode: screen; opacity: .8; }
+    .window-orb-demo .hudi-window-orb::after { opacity: .8; }
+    .window-orb-demo .orb-color-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .orb-presets { display: flex; flex-wrap: wrap; gap: 8px; }
     .orb-preset { width: 30px; height: 30px; border: 3px solid var(--outline-blue); border-radius: 50%; background: linear-gradient(180deg, var(--preset-sheen), var(--preset-base)); box-shadow: inset 0 -3px 14px var(--preset-shadow); cursor: pointer; }
     .orb-preset[aria-pressed="true"] { border-color: var(--select-blue); }
@@ -1118,11 +1135,16 @@
     .orb-color-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
     .orb-color { display: grid; gap: 5px; color: var(--muted); font-family: var(--ocr); font-size: 9px; }
     .orb-color input { width: 100%; height: 28px; padding: 2px; border: 2px solid var(--outline-blue); border-radius: 999px; background: #fff; cursor: pointer; }
+    .orb-file { display: grid; gap: 5px; color: var(--muted); font-family: var(--ocr); font-size: 9px; }
+    .orb-file input { width: 100%; min-width: 0; color: var(--dark-grey); font: inherit; font-size: 10px; }
 
-    .hudi-logo-orb { --orb-base: #24d0ff; --orb-sheen: #00ffbf; --orb-shadow: rgba(0,50,157,.4); --logo-inner: #93c0ff; position: relative; display: grid; place-items: center; width: 120px; aspect-ratio: 1; border-radius: 50%; background-color: var(--orb-base); background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%); box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow), inset 0 0 9px color-mix(in srgb, var(--logo-inner) 62%, transparent); overflow: hidden; }
+    .hudi-logo-orb { --orb-base: #24d0ff; --orb-sheen: #00ffbf; --orb-shadow: rgba(0,50,157,.4); --logo-inner: #93c0ff; position: relative; display: grid; place-items: center; width: 120px; aspect-ratio: 1; border: 0; padding: 0; border-radius: 50%; background-color: var(--orb-base); background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%); box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow), inset 0 0 9px color-mix(in srgb, var(--logo-inner) 62%, transparent); overflow: hidden; cursor: pointer; transition: filter 160ms ease, transform 160ms ease, box-shadow 160ms ease; -webkit-tap-highlight-color: transparent; }
     .hudi-logo-orb::before { background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%); border-radius: 50%; content: ""; height: 46%; left: 18.6%; position: absolute; top: 3.8%; width: 64%; z-index: 1; }
     .hudi-logo-orb::after { background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%); border-radius: 50%; content: ""; height: 18.06%; left: 32.05%; position: absolute; top: 1.1%; width: 36.34%; z-index: 1; }
-    .hudi-logo-mark { position: relative; z-index: 2; width: 62.4px; height: auto; filter: drop-shadow(0 1px 2px rgba(31,104,178,.14)); }
+    .hudi-logo-mark { position: relative; z-index: 2; width: 52%; height: auto; filter: drop-shadow(0 1px 2px rgba(31,104,178,.14)); }
+    .hudi-logo-orb:hover { filter: brightness(1.02) saturate(1.03); }
+    .hudi-logo-orb.is-lit { filter: brightness(1.08) saturate(1.12); transform: scale(.98); box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow), inset 0 0 16px color-mix(in srgb, var(--logo-inner) 78%, transparent), 0 0 18px color-mix(in srgb, var(--logo-inner) 50%, transparent); }
+    .hudi-logo-orb.is-lit .hudi-logo-mark { filter: drop-shadow(0 0 12px color-mix(in srgb, var(--logo-inner) 90%, transparent)); }
     .hudi-logo-demo { display: grid; grid-template-columns: minmax(140px, max-content) minmax(0, 1fr); gap: 28px; align-items: center; width: 100%; }
     .hudi-logo-controls { display: flex; flex-wrap: wrap; gap: 30px; align-items: end; }
     .icon-orb-demo { width: 100%; padding: 24px 0 12px; }
@@ -1136,16 +1158,33 @@
     .hudi-icon-orb.is-base { --orb-base: #24b7f1; --orb-sheen: #95fff0; --orb-shadow: rgba(0,75,157,.32); --icon-width: 54%; }
 
     .hudi-nav-demo { width: 100%; display: grid; gap: 34px; padding: 18px 0 28px; }
+    .hudi-nav-example { display: grid; gap: 10px; justify-items: center; }
     .hudi-top-bar-sample, .hudi-nav-bar { height: 57px; border: 0; background: linear-gradient(180deg, #fcfcfc 0%, #b7ccda 100%); box-shadow: 0 10px 10px rgba(209,228,249,.95); }
     .hudi-top-bar-sample { width: min(840px, calc(100% - 60px)); margin: 0 auto; }
+    .hudi-app-nav { position: relative; width: 100%; min-height: 210px; overflow: visible; }
+    .hudi-app-nav.is-radial { min-height: 270px; }
+    .hudi-app-nav .hudi-nav-menu,
+    .hudi-app-nav .hudi-linear-nav-menu { width: 100%; margin: 0; }
+    .hudi-app-nav .hudi-nav-menu .hudi-nav-bar,
+    .hudi-app-nav .hudi-linear-nav-menu .hudi-nav-bar { left: 0; right: 0; }
+    .hudi-nav-readouts { position: absolute; right: 16px; top: 78px; z-index: 5; display: flex; align-items: center; gap: clamp(12px, 1.8vw, 24px); height: 57px; font-family: var(--ocr); white-space: nowrap; }
+    .hudi-app-nav.is-radial .hudi-nav-readouts { top: 64px; }
+    .hudi-nav-readout { display: grid; gap: 4px; min-width: 98px; text-align: center; }
+    .hudi-nav-readout span { color: var(--dark-grey); font-size: 10px; letter-spacing: .18em; }
+    .hudi-nav-readout strong { color: var(--dark-grey); font-size: 14px; font-weight: 400; letter-spacing: .08em; }
+    .hudi-nav-readout strong.is-gain { color: var(--text-green); }
+    .hudi-nav-divider { width: .8px; height: 28px; background: rgba(0,0,0,.05); }
+    .hudi-nav-status-pfp.leaderboard-pfp,
+    .hudi-nav-status-pfp.leaderboard-pfp svg { width: 34px; height: 32px; }
+    .hudi-nav-deposit-button.hudi-trade-button { --pill-bg: #dbfd01; --pill-inner-shadow: rgba(83,112,0,.34); width: 110px; min-width: 110px; height: 30px; padding: 0 16px; border-radius: 16px; font-size: 10px; }
     .hudi-nav-menu { --orb-size: 132px; position: relative; width: min(860px, 100%); min-height: 270px; margin: 0 auto; }
     .hudi-nav-menu .hudi-nav-bar { position: absolute; left: 74px; right: 22px; top: 64px; z-index: 0; }
     .hudi-nav-menu .hudi-logo-orb { position: absolute; left: 118px; top: 24px; z-index: 3; width: var(--orb-size); }
-    .hudi-nav-selected { position: absolute; left: 296px; top: 78px; z-index: 2; display: grid; place-items: center; width: max-content; min-width: 0; max-width: 190px; min-height: 36px; padding: 4px 24px 1px; border: 0; border-radius: 999px; background: #eef2ff; color: #71809e; font-family: var(--sans); font-size: 14.4px; font-weight: 500; line-height: .95; text-align: center; box-shadow: inset 0 4px 13px rgba(0,0,0,.28), inset 0 4px 50px rgba(0,0,0,.16); overflow: hidden; white-space: normal; }
+    .hudi-nav-selected { position: absolute; left: 296px; top: 74.5px; z-index: 2; display: grid; place-items: center; width: max-content; min-width: 0; max-width: 190px; min-height: 36px; padding: 4px 24px 1px; border: 0; border-radius: 999px; background: #eef2ff; color: #71809e; font-family: var(--sans); font-size: 14.4px; font-weight: 500; line-height: .95; text-align: center; box-shadow: inset 0 4px 13px rgba(0,0,0,.28), inset 0 4px 50px rgba(0,0,0,.16); overflow: hidden; white-space: normal; }
     .hudi-nav-selected::before { content: ""; position: absolute; left: 0; right: 0; top: -.5px; height: 69%; border-radius: inherit; background: linear-gradient(.24deg, rgba(255,255,255,.16) 20.46%, rgba(255,255,255,.88) 99.78%); opacity: .74; }
     .hudi-nav-selected::after { content: ""; position: absolute; left: 1%; right: 1%; top: 34%; height: 66%; border-radius: inherit; background: linear-gradient(360deg, rgba(255,255,255,.42) -14.15%, rgba(255,255,255,.86) 5.5%, rgba(255,255,255,.26) 38%); filter: blur(1.4px); }
     .hudi-nav-selected span { position: relative; z-index: 1; }
-    .hudi-nav-pill.hudi-trade-button { --pill-bg: #28c4f5; --pill-inner-shadow: rgba(0,98,158,.34); --pill-label: #fff; position: absolute; z-index: 4; width: max-content; min-width: 0; height: 30px; padding: 0 18px; border: 0; border-radius: 15px; color: #fff; font-family: var(--sans); font-size: 12.8px; font-weight: 500; letter-spacing: 0; line-height: 1; transition: left 360ms cubic-bezier(.2,.8,.2,1), top 360ms cubic-bezier(.2,.8,.2,1), transform 160ms ease, filter 160ms ease, box-shadow 160ms ease; }
+    .hudi-nav-pill.hudi-trade-button { --pill-bg: #28c4f5; --pill-inner-shadow: rgba(0,98,158,.34); --pill-label: #fff; position: absolute; z-index: 4; width: max-content; min-width: 0; height: 30px; padding: 0 18px; border: 0; border-radius: 15px; color: #fff; flex: 0 0 auto; font-family: var(--sans); font-size: 12.8px; font-weight: 500; letter-spacing: 0; line-height: 1; white-space: nowrap; transition: left 360ms cubic-bezier(.2,.8,.2,1), top 360ms cubic-bezier(.2,.8,.2,1), transform 160ms ease, filter 160ms ease, box-shadow 160ms ease; }
     .hudi-nav-pill.hudi-trade-button .pill-label { background: none; color: #fff; filter: url(#hudi-pill-label-inner-blue); text-shadow: none; top: 0; -webkit-text-fill-color: #fff; }
     .hudi-nav-pill.hudi-trade-button:hover { filter: brightness(1.04) saturate(1.04); }
     .hudi-nav-pill.is-teleporting { animation: none !important; transition: none !important; }
@@ -1153,21 +1192,23 @@
     .hudi-nav-pill[data-slot="1"] { left: 172px; top: 188px; }
     .hudi-nav-menu.is-switching .hudi-nav-selected { animation: hudi-nav-selected-slot 420ms cubic-bezier(.2,.85,.2,1); }
     @keyframes hudi-nav-selected-slot { from { translate: var(--selected-from-x, -22px) var(--selected-from-y, 54px); scale: .86; opacity: .72; } to { translate: 0 0; scale: 1; opacity: 1; } }
-    .hudi-linear-nav-menu { --orb-size: 150px; position: relative; width: min(860px, 100%); min-height: 208px; margin: 0 auto; }
+    .hudi-linear-nav-menu { --orb-size: 132px; position: relative; width: min(860px, 100%); min-height: 208px; margin: 0 auto; }
     .hudi-linear-nav-menu .hudi-nav-bar { position: absolute; left: 56px; right: 22px; top: 78px; z-index: 0; }
     .hudi-linear-nav-menu .hudi-logo-orb { position: absolute; left: 24px; top: 20px; z-index: 3; width: var(--orb-size); }
-    .hudi-linear-nav-items { position: absolute; left: 255px; right: 34px; top: 91px; z-index: 4; display: flex; align-items: center; gap: 34px; }
-    .hudi-linear-nav-button.hudi-trade-button { --pill-bg: #28c4f5; --pill-inner-shadow: rgba(0,98,158,.34); --pill-label: #fff; width: max-content; min-width: 0; height: 42px; padding: 0 34px; border: 4px solid var(--outline-blue-2); border-radius: 23px; color: #fff; font-family: var(--sans); font-size: 20px; font-weight: 500; letter-spacing: 0; line-height: 1; transition: transform 180ms ease, filter 160ms ease, box-shadow 180ms ease, background-color 180ms ease; }
+    .hudi-linear-nav-items { position: absolute; left: calc(24px + var(--orb-size) + clamp(16px, 1.8vw, 24px)); right: 18px; top: 85.5px; z-index: 4; display: flex; align-items: center; gap: clamp(16px, 1.8vw, 24px); }
+    .hudi-linear-nav-button.hudi-trade-button { --pill-bg: #28c4f5; --pill-inner-shadow: rgba(0,98,158,.34); --pill-label: #fff; width: max-content; min-width: 0; height: 42px; padding: 0 clamp(16px, 1.8vw, 24px); border: 0; border-radius: 23px; color: #fff; flex: 0 0 auto; font-family: var(--sans); font-size: clamp(15px, 1.55vw, 18px); font-weight: 500; letter-spacing: 0; line-height: 1; white-space: nowrap; transition: transform 180ms ease, filter 160ms ease, box-shadow 180ms ease, background-color 180ms ease; }
     .hudi-linear-nav-button.hudi-trade-button .pill-label { background: none; color: #fff; filter: url(#hudi-pill-label-inner-blue); text-shadow: none; top: 0; -webkit-text-fill-color: #fff; }
-    .hudi-linear-nav-button[aria-pressed="true"] { background: #eef2ff; border: 0; color: #71809e; box-shadow: inset 0 4px 13px rgba(0,0,0,.28), inset 0 4px 50px rgba(0,0,0,.16); transform: scale(.94); }
+    .hudi-linear-nav-button[aria-pressed="true"] { background: #eef2ff; border: 0; color: #71809e; box-shadow: inset 0 4px 13px rgba(0,0,0,.28), inset 0 4px 50px rgba(0,0,0,.16); transform: none; }
     .hudi-linear-nav-button[aria-pressed="true"]::before { content: ""; position: absolute; left: 0; right: 0; top: -.5px; height: 69%; border-radius: inherit; background: linear-gradient(.24deg, rgba(255,255,255,.16) 20.46%, rgba(255,255,255,.88) 99.78%); opacity: .74; pointer-events: none; z-index: 1; }
     .hudi-linear-nav-button[aria-pressed="true"]::after { background: linear-gradient(360deg, rgba(255,255,255,.42) -14.15%, rgba(255,255,255,.86) 5.5%, rgba(255,255,255,.26) 38%); border-radius: inherit; bottom: 0; content: ""; filter: blur(1.4px); height: 66%; left: 1%; opacity: 1; pointer-events: none; position: absolute; right: 1%; top: auto; z-index: 1; }
     .hudi-linear-nav-button[aria-pressed="true"] .pill-top-contour,
     .hudi-linear-nav-button[aria-pressed="true"] .pill-bottom-highlight,
     .hudi-linear-nav-button[aria-pressed="true"] .pill-shine { opacity: 0; }
+    .sim-nav .hudi-linear-nav-button[aria-pressed="true"] .pill-top-contour { opacity: .7; mix-blend-mode: screen; z-index: 3; }
+    .sim-nav .hudi-linear-nav-button[aria-pressed="true"] .pill-bottom-highlight { opacity: .55; z-index: 3; }
     .hudi-linear-nav-button[aria-pressed="true"] .pill-label { color: #71809e; filter: url(#hudi-chamber-label-inner); z-index: 2; -webkit-text-fill-color: #71809e; }
     .hudi-linear-nav-button.is-compressing { animation: hudi-linear-nav-compress 220ms cubic-bezier(.2,.8,.2,1); }
-    @keyframes hudi-linear-nav-compress { 0% { transform: scale(1); } 62% { transform: scale(.88); } 100% { transform: scale(.94); } }
+    @keyframes hudi-linear-nav-compress { 0% { transform: scale(1); } 62% { transform: scale(.94); } 100% { transform: scale(1); } }
     @supports (-webkit-touch-callout: none) {
       .hudi-trade-button,
       .hudi-side-toggle,
@@ -1452,6 +1493,85 @@
       .leaderboard-title { margin-left: 16px; }
     }
 
+    .sim-shell {
+      display: none;
+      min-height: 100vh;
+      color: var(--dark-grey);
+      background:
+        linear-gradient(rgba(226,244,254,.42) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(226,244,254,.42) 1px, transparent 1px),
+        #fff;
+      background-size: 92px 92px;
+      overflow-x: hidden;
+    }
+    body.is-sim .masthead,
+    body.is-sim .shell { display: none; }
+    body.is-sim .sim-shell { display: block; }
+    .sim-exit {
+      position: fixed;
+      right: 22px;
+      top: 18px;
+      z-index: 40;
+      border: 0;
+      background: transparent;
+      color: var(--dark-grey);
+      font-family: var(--ocr);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .sim-page {
+      min-height: 100vh;
+      padding: 0 28px 72px;
+    }
+    .sim-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      min-height: 118px;
+    }
+    .sim-topbar [data-sim-nav] { width: 100%; }
+    .sim-topbar .hudi-app-nav { width: 100vw; margin-left: calc(50% - 50vw); min-height: 112px; }
+    .sim-nav .hudi-linear-nav-menu { min-height: 112px; }
+    .sim-nav .hudi-linear-nav-menu .hudi-nav-bar { top: 0; }
+    .sim-nav .hudi-linear-nav-menu .hudi-logo-orb { top: -22px; }
+    .sim-nav .hudi-linear-nav-items { top: 7.5px; }
+    .sim-nav .hudi-nav-readouts { top: 0; }
+    .sim-content {
+      width: min(1320px, calc(100vw - 88px));
+      margin: 24px auto 0;
+    }
+    .sim-leaderboard-note {
+      justify-self: end;
+      max-width: 480px;
+      margin: 0 54px -14px 0;
+      color: var(--light-grey);
+      font-family: var(--mono);
+      font-size: 16px;
+      line-height: 1.45;
+      text-align: right;
+    }
+    .sim-leaderboard-tools {
+      justify-self: end;
+      margin: -18px 54px -4px 0;
+    }
+    .sim-leaderboard-tools .hudi-search-button { height: 42px; min-width: 180px; }
+    .sim-leaderboard.leaderboard-component {
+      margin: 0 auto;
+    }
+    .sim-page-body { display: none; }
+    .sim-page-body.is-active { display: block; }
+    .sim-blank {
+      margin: 220px auto 0;
+      width: min(720px, 80vw);
+      color: var(--light-grey);
+      font-family: var(--ocr);
+      font-size: 24px;
+      letter-spacing: .16em;
+      text-align: center;
+    }
+
     details.reference { border-top: 1px solid rgba(0,0,0,.05); background: #f8fbff; }
     details.reference summary { padding: 10px 16px; color: var(--muted); font-family: var(--ocr); font-size: 10px; cursor: pointer; }
     .refs { display: flex; gap: 10px; padding: 0 16px 14px; overflow: auto; }
@@ -1462,6 +1582,9 @@
       .masthead-inner { grid-template-columns: 1fr; padding: 12px 0; }
       .nav { justify-content: flex-start; }
       .icon-orb-grid { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+      .sim-topbar { overflow-x: auto; overflow-y: visible; }
+      .sim-content { width: min(100% - 32px, 960px); margin-top: 18px; }
+      .sim-leaderboard-note, .sim-leaderboard-tools { margin-right: 24px; }
     }
     @media (max-width: 720px) {
       .shell, .masthead-inner { width: min(100% - 24px, 1500px); }
@@ -1477,6 +1600,10 @@
       .hudi-nav-menu, .hudi-linear-nav-menu { transform: scale(.82); transform-origin: left top; width: 122%; min-height: 230px; }
       .hudi-top-bar-sample { width: 100%; }
       h1 { font-size: 34px; }
+      .sim-page { padding: 0 14px 44px; }
+      .sim-topbar .hudi-app-nav { transform: scale(.82); transform-origin: left top; width: 122vw; }
+      .sim-leaderboard-note, .sim-leaderboard-tools { margin-right: 16px; }
+      .sim-leaderboard .leaderboard-panel { overflow-x: auto; }
     }
   </style>
   <script>
@@ -1507,6 +1634,7 @@
         <a href="#navigation">nav</a>
         <a href="#panels">panels</a>
         <a href="#chart">chart</a>
+        <button class="sim-open" type="button" data-sim-open>sim</button>
       </nav>
     </div>
   </header>
@@ -1519,22 +1647,22 @@
           <div class="card-head"><div><h3>Color index</h3></div><button class="copy-css" data-copy="Color and font index">Copy CSS</button></div>
           <div class="demo">
             <div class="token-grid">
-              <div class="token-swatch" style="--token:#171717"><div><strong>ink</strong><span>#171717</span></div></div>
-              <div class="token-swatch" style="--token:#a9a9a9"><div><strong>text light grey</strong><span>#a9a9a9</span></div></div>
-              <div class="token-swatch" style="--token:#74809b"><div><strong>text dark grey</strong><span>#74809b</span></div></div>
-              <div class="token-swatch" style="--token:#e9f4fe"><div><strong>outline blue</strong><span>#e9f4fe</span></div></div>
-              <div class="token-swatch" style="--token:#99cafa"><div><strong>outline blue select</strong><span>#99cafa</span></div></div>
-              <div class="token-swatch" style="--token:#e7e9ed"><div><strong>outline grey</strong><span>#e7e9ed</span></div></div>
-              <div class="token-swatch" style="--token:#fafcff"><div><strong>modal fill</strong><span>#fafcff</span></div></div>
-              <div class="token-swatch" style="--token:#5bb67c"><div><strong>text green</strong><span>#5bb67c</span></div></div>
-              <div class="token-swatch" style="--token:#3a7c50"><div><strong>text dark green</strong><span>#3a7c50</span></div></div>
-              <div class="token-swatch" style="--token:#d4429d"><div><strong>text pink</strong><span>#d4429d</span></div></div>
-              <div class="token-swatch" style="--token:#f097de"><div><strong>text light pink</strong><span>#f097de</span></div></div>
-              <div class="token-swatch" style="--token:#fbe8f5"><div><strong>off pink</strong><span>#fbe8f5</span></div></div>
-              <div class="token-swatch" style="--token:#e833b5"><div><strong>big loss</strong><span>#e833b5</span></div></div>
-              <div class="token-swatch" style="--token:#74f99b"><div><strong>big gain</strong><span>#74f99b</span></div></div>
-              <div class="token-swatch" style="--token:#affcd5"><div><strong>small gain</strong><span>#affcd5</span></div></div>
-              <div class="token-swatch" style="--token:#f2ff00"><div><strong>cursor yellow</strong><span>#f2ff00</span></div></div>
+              <div class="token-swatch" style="--token:#171717"><input type="color" value="#171717" data-token-var="--ink" aria-label="ink"><div><strong>ink</strong><span>#171717</span></div></div>
+              <div class="token-swatch" style="--token:#a9a9a9"><input type="color" value="#a9a9a9" data-token-var="--light-grey" aria-label="text light grey"><div><strong>text light grey</strong><span>#a9a9a9</span></div></div>
+              <div class="token-swatch" style="--token:#74809b"><input type="color" value="#74809b" data-token-var="--dark-grey" aria-label="text dark grey"><div><strong>text dark grey</strong><span>#74809b</span></div></div>
+              <div class="token-swatch" style="--token:#e9f4fe"><input type="color" value="#e9f4fe" data-token-var="--outline-blue" aria-label="outline blue"><div><strong>outline blue</strong><span>#e9f4fe</span></div></div>
+              <div class="token-swatch" style="--token:#99cafa"><input type="color" value="#99cafa" data-token-var="--select-blue" aria-label="outline blue select"><div><strong>outline blue select</strong><span>#99cafa</span></div></div>
+              <div class="token-swatch" style="--token:#e7e9ed"><input type="color" value="#e7e9ed" data-token-var="--outline-grey" aria-label="outline grey"><div><strong>outline grey</strong><span>#e7e9ed</span></div></div>
+              <div class="token-swatch" style="--token:#fafcff"><input type="color" value="#fafcff" data-token-var="--modal-fill" aria-label="modal fill"><div><strong>modal fill</strong><span>#fafcff</span></div></div>
+              <div class="token-swatch" style="--token:#5bb67c"><input type="color" value="#5bb67c" data-token-var="--text-green" aria-label="text green"><div><strong>text green</strong><span>#5bb67c</span></div></div>
+              <div class="token-swatch" style="--token:#3a7c50"><input type="color" value="#3a7c50" data-token-var="--text-dark-green" aria-label="text dark green"><div><strong>text dark green</strong><span>#3a7c50</span></div></div>
+              <div class="token-swatch" style="--token:#d4429d"><input type="color" value="#d4429d" data-token-var="--text-pink" aria-label="text pink"><div><strong>text pink</strong><span>#d4429d</span></div></div>
+              <div class="token-swatch" style="--token:#f097de"><input type="color" value="#f097de" data-token-var="--text-light-pink" aria-label="text light pink"><div><strong>text light pink</strong><span>#f097de</span></div></div>
+              <div class="token-swatch" style="--token:#fbe8f5"><input type="color" value="#fbe8f5" data-token-var="--off-pink" aria-label="off pink"><div><strong>off pink</strong><span>#fbe8f5</span></div></div>
+              <div class="token-swatch" style="--token:#e833b5"><input type="color" value="#e833b5" data-token-var="--big-loss" aria-label="big loss"><div><strong>big loss</strong><span>#e833b5</span></div></div>
+              <div class="token-swatch" style="--token:#74f99b"><input type="color" value="#74f99b" data-token-var="--big-gain" aria-label="big gain"><div><strong>big gain</strong><span>#74f99b</span></div></div>
+              <div class="token-swatch" style="--token:#affcd5"><input type="color" value="#affcd5" data-token-var="--small-gain" aria-label="small gain"><div><strong>small gain</strong><span>#affcd5</span></div></div>
+              <div class="token-swatch" style="--token:#f2ff00"><input type="color" value="#f2ff00" data-token-var="--yellow" aria-label="cursor yellow"><div><strong>cursor yellow</strong><span>#f2ff00</span></div></div>
             </div>
           </div>
         </article>
@@ -1553,6 +1681,7 @@
           <div class="card-head"><div><h3>Typesetting</h3><p>Perfect-fourth type scale for plain page text, separate from trading readouts and generated components.</p></div><button class="copy-css" data-copy="Typesetting">Copy CSS</button></div>
           <div class="demo">
             <div class="typography-demo">
+              <div class="typography-row"><code>41.08 / big title</code><h4 class="type-title-xxl">Big Syne title</h4></div>
               <div class="typography-row"><code>30.81 / title</code><h4 class="type-title-xl">Syne Bold title</h4></div>
               <div class="typography-row"><code>23.11 / section</code><h4 class="type-title-lg">Section heading</h4></div>
               <div class="typography-row"><code>17.33 / label</code><h4 class="type-title-sm">Small heading</h4></div>
@@ -1581,11 +1710,26 @@
         <article class="card span-6">
           <div class="card-head"><div><h3>Buttons</h3><p>Clickable orb-pill buttons and icon orb controls with hover and pressed states.</p></div><button class="copy-css" data-copy="Buttons">Copy current CSS</button></div>
           <div class="demo column">
-            <div class="trade-button-row">
-              <button class="hudi-trade-button confirm" type="button"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">confirm</span></button>
-              <button class="hudi-trade-button long" type="button"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">long</span></button>
-              <button class="hudi-trade-button short" type="button"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">short</span></button>
+            <span class="demo-subsection-label">button maker</span>
+            <div class="button-maker-demo">
+              <div class="button-preview-stage">
+                <button class="hudi-trade-button long" id="button-preview" type="button" style="--pill-bg:#01fd90;--pill-inner-shadow:rgba(0,95,60,.34);width:149px;min-width:149px;"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">long</span></button>
+              </div>
+              <div class="button-maker-controls" data-button-maker>
+                <div class="button-presets" role="group" aria-label="Button presets">
+                  <button class="button-preset" type="button" aria-pressed="true" aria-label="long button" data-type="long" data-label="long" data-base="#01fd90" data-shadow="rgba(0,95,60,.34)" data-width="149" style="--preset-base:#01fd90;--preset-shadow:rgba(0,95,60,.34)"></button>
+                  <button class="button-preset" type="button" aria-label="short button" data-type="short" data-label="short" data-base="#ff0fc4" data-shadow="rgba(118,0,82,.34)" data-width="149" style="--preset-base:#ff0fc4;--preset-shadow:rgba(118,0,82,.34)"></button>
+                  <button class="button-preset" type="button" aria-label="confirm button" data-type="confirm" data-label="confirm" data-base="#e9eef5" data-shadow="rgba(62,88,116,.28)" data-width="149" style="--preset-base:#e9eef5;--preset-shadow:rgba(62,88,116,.28)"></button>
+                </div>
+                <div class="button-color-row">
+                  <label class="button-color">base<input data-button-field="base" type="color" value="#01fd90"></label>
+                  <label class="button-color">shadow<input data-button-field="shadow" type="color" value="#005f3c"></label>
+                </div>
+                <label class="button-text">text<input data-button-field="label" type="text" value="long" maxlength="12" autocomplete="off"></label>
+                <label class="button-range"><span>width</span><input data-button-field="width" type="range" min="120" max="280" step="1" value="149"><output data-button-width-output>149px</output></label>
+              </div>
             </div>
+            <span class="demo-subsection-label">exit button</span>
             <div class="exit-button-demo">
               <button class="hudi-icon-orb hudi-exit-orb" type="button" aria-label="Close modal">
                 <svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1599,24 +1743,11 @@
                 </svg>
               </button>
             </div>
-            <div class="button-maker-demo">
-              <div class="button-preview-stage">
-                <button class="hudi-trade-button long" id="button-preview" type="button" style="--pill-bg:#01fd90;--pill-inner-shadow:rgba(0,95,60,.34);width:149px;min-width:149px;"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">long</span></button>
-              </div>
-              <div class="button-maker-controls" data-button-maker>
-                <div class="button-presets" role="group" aria-label="Button presets">
-                  <button class="button-preset" type="button" aria-pressed="true" aria-label="long button" data-type="long" data-label="long" data-base="#01fd90" data-shadow="rgba(0,95,60,.34)" data-width="149" style="--preset-base:#01fd90;--preset-shadow:rgba(0,95,60,.34)"></button>
-                  <button class="button-preset" type="button" aria-label="short button" data-type="short" data-label="short" data-base="#ff0fc4" data-shadow="rgba(118,0,82,.34)" data-width="149" style="--preset-base:#ff0fc4;--preset-shadow:rgba(118,0,82,.34)"></button>
-                  <button class="button-preset" type="button" aria-label="confirm button" data-type="confirm" data-label="confirm" data-base="#e9eef5" data-shadow="rgba(62,88,116,.28)" data-width="241" style="--preset-base:#e9eef5;--preset-shadow:rgba(62,88,116,.28)"></button>
-                </div>
-                <div class="button-color-row">
-                  <label class="button-color">base<input data-button-field="base" type="color" value="#01fd90"></label>
-                  <label class="button-color">shadow<input data-button-field="shadow" type="color" value="#005f3c"></label>
-                </div>
-                <label class="button-text">text<input data-button-field="label" type="text" value="long" maxlength="12" autocomplete="off"></label>
-                <label class="button-range"><span>width</span><input data-button-field="width" type="range" min="120" max="280" step="1" value="149"><output data-button-width-output>149px</output></label>
-              </div>
-            </div>
+            <span class="demo-subsection-label">search button</span>
+            <button class="hudi-search-button" type="button" aria-label="Search">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="5.75"/><path d="M15.2 15.2 20 20"/></svg>
+              <span>search</span>
+            </button>
           </div>
           <details class="reference"><summary>reference PNGs</summary><div class="refs"><img src="Important%20Buttons/Confirm%20Button%20Preview.png" alt=""><img src="Important%20Buttons/Long%20Preview.png" alt=""><img src="Important%20Buttons/Short%20Preview.png" alt=""></div></details>
         </article>
@@ -1800,9 +1931,9 @@
               </span>
               <div class="leverage-panel__top">
                 <span class="leverage-panel__title">LEVERAGE</span>
-                <output data-last-index="2" aria-live="polite"><span>5x</span></output>
+                <output aria-live="polite"><span>5x</span></output>
               </div>
-              <label class="hudi-slider short"><span class="hudi-slider-row"><span><span class="hudi-slider-control" style="--slider-percent: 40%"><span class="hudi-slider-visual" aria-hidden="true"></span><span class="hudi-slider-puck" aria-hidden="true"></span><input type="range" min="0" max="5" step="1" value="2" data-leverage-values="1,2,5,10,15,20"></span><span class="hudi-slider-markers" aria-hidden="true"><span>1x</span><span>2x</span><span aria-current="true">5x</span><span>10x</span><span>15x</span><span>20x</span></span></span></span></label>
+              <label class="hudi-slider short"><span class="hudi-slider-row"><span><span class="hudi-slider-control" style="--slider-percent: 16.6667%"><span class="hudi-slider-visual" aria-hidden="true"></span><span class="hudi-slider-puck" aria-hidden="true"></span><input type="range" min="0" max="24" step="1" value="4" data-leverage-values="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25"></span></span></span></label>
             </div>
           </div>
           <details class="reference"><summary>reference PNGs</summary><div class="refs"><img src="Slider/Long%20Leverage%20Preview.png" alt=""><img src="Slider/Short%20leverage%20preview.png" alt=""></div></details>
@@ -2017,6 +2148,20 @@
             </div>
           </div>
         </article>
+        <article class="card span-4">
+          <div class="card-head"><div><h3>Window orbs</h3><p>Blank orb material with an image clipped into the base fill.</p></div><button class="copy-css" data-copy="Window orbs">Copy CSS</button></div>
+          <div class="demo window-orb-demo">
+            <div class="hudi-blank-orb hudi-window-orb" id="window-orb-preview" style="--orb-sheen:#fbd39d;--orb-shadow:rgba(118,72,30,.4);--window-image:url('assets/window-orb-shanghai.png');"></div>
+            <div class="orb-maker-controls" data-window-orb-maker>
+              <label class="orb-file">image<input data-window-orb-field="image" type="file" accept="image/*"></label>
+              <label class="orb-color orb-color-master">colour<input data-window-orb-field="colour" type="color" value="#d99b62"></label>
+              <div class="orb-color-row">
+                <label class="orb-color">sheen<input data-window-orb-field="sheen" type="color" value="#fbd39d"></label>
+                <label class="orb-color">shadow<input data-window-orb-field="shadow" type="color" value="#76481e"></label>
+              </div>
+            </div>
+          </div>
+        </article>
         <article class="card span-8">
           <div class="card-head"><div><h3>Ticker orbs</h3></div><button class="copy-css" data-copy="Ticker orbs">Copy current CSS</button></div>
           <div class="demo orb-maker-demo">
@@ -2113,34 +2258,62 @@
             </div>
           </div>
         </article>
-        <article class="card span-7">
+        <article class="card span-12">
           <div class="card-head"><div><h3>Hudi nav bar</h3><p>Radial and linear top navigation with selected items seated into the bar.</p></div><button class="copy-css" data-copy="Hudi nav bar">Copy CSS</button></div>
           <div class="demo hudi-nav-demo">
+            <div class="hudi-nav-example">
+              <span class="demo-subsection-label">radial</span>
+            <div class="hudi-app-nav is-radial" data-hudi-app-nav="radial">
             <div class="hudi-nav-menu" data-hudi-nav data-selected="markets">
               <div class="hudi-nav-bar"></div>
-              <div class="hudi-logo-orb" style="--orb-base:#24d0ff;--orb-sheen:#00bfff;--orb-shadow:rgba(0,50,157,.4);--logo-inner:#93c0ff;">
+              <button class="hudi-logo-orb" type="button" data-hudi-logo-action aria-label="Light up Hudi logo" style="--orb-base:#24d0ff;--orb-sheen:#00bfff;--orb-shadow:rgba(0,50,157,.4);--logo-inner:#93c0ff;">
                 <svg class="hudi-logo-mark" width="47" height="49" viewBox="0 0 47 49" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <g filter="url(#hudi-logo-filter-nav)"><path d="M27.1405 48.0754C24.2967 48.0778 22.6508 45.9399 22.641 43.2398L22.5569 26.5795C22.5466 24.0301 20.9258 22.4611 18.4584 22.3485C15.1435 22.1982 21.5146 22.2441 18.1987 22.3269C15.5118 22.3984 13.9658 24.3797 13.9074 27.0385C13.7827 32.6096 13.9316 38.1338 13.6907 43.7113C13.578 46.2465 11.6705 48.0207 9.27112 48.0043L4.45862 47.9715C1.7311 47.9469 -0.0108297 45.9046 0.000347114 43.0949L0.160873 4.38224C0.170878 1.86718 2.2011 0.175674 4.437 0.0543588C6.11221 -0.0349212 7.62286 -0.00149948 9.25643 0.0666769C11.7717 0.165773 13.7002 1.72225 13.8331 4.40236C13.9218 6.16397 13.8599 9.76153 14.1877 11.5721C14.5423 13.5061 16.0413 14.7387 18.1468 14.7608L34.9218 14.9852C37.2186 15.0149 38.8885 16.2551 39.6939 18.2868C41.183 22.0346 46.0871 21.3893 46.0696 25.7752L45.9972 43.9769C45.9876 46.396 43.9299 48.1148 41.7286 48.1197L27.1405 48.0823L27.1405 48.0754Z" fill="url(#hudi-logo-gradient-nav)"/></g>
                   <defs><filter id="hudi-logo-filter-nav" x="0" y="0" width="46.0693" height="48.1191" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset/><feGaussianBlur stdDeviation="1.1"/><feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix type="matrix" values="0 0 0 0 0.574688 0 0 0 0 0.751902 0 0 0 0 1 0 0 0 1 0"/><feBlend mode="normal" in2="shape" result="effect1_innerShadow_121_362"/></filter><radialGradient id="hudi-logo-gradient-nav" cx="0" cy="0" r="1" gradientTransform="matrix(-0.000709991 82.9873 -82.8097 0.000702805 22.9657 -7.59041)" gradientUnits="userSpaceOnUse"><stop stop-color="white"/><stop offset="0.379952" stop-color="white"/><stop offset="0.681343" stop-color="#F2FBFF"/></radialGradient></defs>
                 </svg>
-              </div>
+              </button>
               <div class="hudi-nav-selected"><span>markets</span></div>
               <button class="hudi-trade-button hudi-nav-pill is-auto-white" type="button" data-nav-option="vault" data-slot="0"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">vault</span></button>
               <button class="hudi-trade-button hudi-nav-pill is-auto-white" type="button" data-nav-option="leaderboard" data-slot="1"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">leaderboard</span></button>
             </div>
+            <div class="hudi-nav-readouts">
+              <div class="hudi-nav-readout"><span>PORTFOLIO</span><strong class="is-gain">$24,580.42</strong></div>
+              <span class="hudi-nav-divider" aria-hidden="true"></span>
+              <div class="hudi-nav-readout"><span>POINTS</span><strong>5,542,762</strong></div>
+              <span class="hudi-nav-divider" aria-hidden="true"></span>
+              <div class="hudi-nav-readout"><span>RANK</span><strong class="is-gain">spike</strong></div>
+              <span data-nav-pfp></span>
+              <span data-nav-deposit></span>
+            </div>
+            </div>
+            </div>
+            <div class="hudi-nav-example">
+              <span class="demo-subsection-label">linear</span>
+            <div class="hudi-app-nav is-linear" data-hudi-app-nav="linear">
             <div class="hudi-linear-nav-menu" data-hudi-linear-nav>
               <div class="hudi-nav-bar"></div>
-              <div class="hudi-logo-orb" style="--orb-base:#24d0ff;--orb-sheen:#00bfff;--orb-shadow:rgba(0,50,157,.4);--logo-inner:#93c0ff;">
+              <button class="hudi-logo-orb" type="button" data-hudi-logo-action aria-label="Light up Hudi logo" style="--orb-base:#24d0ff;--orb-sheen:#00bfff;--orb-shadow:rgba(0,50,157,.4);--logo-inner:#93c0ff;">
                 <svg class="hudi-logo-mark" width="47" height="49" viewBox="0 0 47 49" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <g filter="url(#hudi-logo-filter-linear)"><path d="M27.1405 48.0754C24.2967 48.0778 22.6508 45.9399 22.641 43.2398L22.5569 26.5795C22.5466 24.0301 20.9258 22.4611 18.4584 22.3485C15.1435 22.1982 21.5146 22.2441 18.1987 22.3269C15.5118 22.3984 13.9658 24.3797 13.9074 27.0385C13.7827 32.6096 13.9316 38.1338 13.6907 43.7113C13.578 46.2465 11.6705 48.0207 9.27112 48.0043L4.45862 47.9715C1.7311 47.9469 -0.0108297 45.9046 0.000347114 43.0949L0.160873 4.38224C0.170878 1.86718 2.2011 0.175674 4.437 0.0543588C6.11221 -0.0349212 7.62286 -0.00149948 9.25643 0.0666769C11.7717 0.165773 13.7002 1.72225 13.8331 4.40236C13.9218 6.16397 13.8599 9.76153 14.1877 11.5721C14.5423 13.5061 16.0413 14.7387 18.1468 14.7608L34.9218 14.9852C37.2186 15.0149 38.8885 16.2551 39.6939 18.2868C41.183 22.0346 46.0871 21.3893 46.0696 25.7752L45.9972 43.9769C45.9876 46.396 43.9299 48.1148 41.7286 48.1197L27.1405 48.0823L27.1405 48.0754Z" fill="url(#hudi-logo-gradient-linear)"/></g>
                   <defs><filter id="hudi-logo-filter-linear" x="0" y="0" width="46.0693" height="48.1191" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset/><feGaussianBlur stdDeviation="1.1"/><feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix type="matrix" values="0 0 0 0 0.574688 0 0 0 0 0.751902 0 0 0 0 1 0 0 0 1 0"/><feBlend mode="normal" in2="shape" result="effect1_innerShadow_121_362"/></filter><radialGradient id="hudi-logo-gradient-linear" cx="0" cy="0" r="1" gradientTransform="matrix(-0.000709991 82.9873 -82.8097 0.000702805 22.9657 -7.59041)" gradientUnits="userSpaceOnUse"><stop stop-color="white"/><stop offset="0.379952" stop-color="white"/><stop offset="0.681343" stop-color="#F2FBFF"/></radialGradient></defs>
                 </svg>
-              </div>
+              </button>
               <div class="hudi-linear-nav-items">
-                <button class="hudi-trade-button hudi-linear-nav-button is-auto-white" type="button" data-linear-nav-option="market" aria-pressed="true"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">market</span></button>
+                <button class="hudi-trade-button hudi-linear-nav-button is-auto-white" type="button" data-linear-nav-option="markets" aria-pressed="true"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">markets</span></button>
                 <button class="hudi-trade-button hudi-linear-nav-button is-auto-white" type="button" data-linear-nav-option="vault" aria-pressed="false"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">vault</span></button>
                 <button class="hudi-trade-button hudi-linear-nav-button is-auto-white" type="button" data-linear-nav-option="leaderboard" aria-pressed="false"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hudi-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">leaderboard</span></button>
               </div>
+            </div>
+            <div class="hudi-nav-readouts">
+              <div class="hudi-nav-readout"><span>PORTFOLIO</span><strong class="is-gain">$24,580.42</strong></div>
+              <span class="hudi-nav-divider" aria-hidden="true"></span>
+              <div class="hudi-nav-readout"><span>POINTS</span><strong>5,542,762</strong></div>
+              <span class="hudi-nav-divider" aria-hidden="true"></span>
+              <div class="hudi-nav-readout"><span>RANK</span><strong class="is-gain">spike</strong></div>
+              <span data-nav-pfp></span>
+              <span data-nav-deposit></span>
+            </div>
+            </div>
             </div>
           </div>
         </article>
@@ -2309,6 +2482,49 @@
     </section>
   </main>
 
+  <main class="sim-shell" data-sim-view aria-hidden="true">
+    <button class="sim-exit" type="button" data-sim-exit>exit</button>
+    <section class="sim-page" aria-label="Hudi simulation">
+      <div class="sim-topbar">
+        <div data-sim-nav></div>
+      </div>
+
+      <div class="sim-page-body is-active" data-sim-page="leaderboard">
+        <div class="sim-content">
+          <div class="leaderboard-component sim-leaderboard" data-leaderboard>
+            <h2 class="leaderboard-title">leaderboard</h2>
+            <div class="sim-leaderboard-tools">
+              <button class="hudi-search-button" type="button" aria-label="Search leaderboard">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="5.75"/><path d="M15.2 15.2 20 20"/></svg>
+                <span>search</span>
+              </button>
+            </div>
+            <div class="sim-leaderboard-note">Top traders ranked by PNL. Excludes accounts under $100K value and $10M volume.</div>
+            <div class="leaderboard-panel">
+              <div class="leaderboard-grid leaderboard-head">
+                <span></span>
+                <span>PLACE</span>
+                <span>USERNAME</span>
+                <button class="is-right" type="button" data-leaderboard-sort="value" aria-sort="descending">VALUE</button>
+                <button class="is-right" type="button" data-leaderboard-sort="pnl">PNL</button>
+                <button class="is-right" type="button" data-leaderboard-sort="roi">ROI</button>
+                <button class="is-right" type="button" data-leaderboard-sort="volume">VOLUME</button>
+              </div>
+              <div class="leaderboard-scroll" data-leaderboard-body></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-page-body" data-sim-page="markets">
+        <div class="sim-blank">markets page blank</div>
+      </div>
+      <div class="sim-page-body" data-sim-page="vault">
+        <div class="sim-blank">vault page blank</div>
+      </div>
+    </section>
+  </main>
+
   <svg class="hudi-svg-defs" aria-hidden="true" focusable="false">
     <defs>
       <symbol id="hudi-info-icon" viewBox="0 0 42 42">
@@ -2400,6 +2616,20 @@
     const snippets = JSON.parse(document.getElementById("css-snippets").textContent);
     snippets["Buttons"] = snippets["Buttons"] || snippets["Trade buttons"] || "";
     delete snippets["Trade buttons"];
+    snippets["Color and font index"] = (snippets["Color and font index"] || "") + `
+
+:root {
+  --type-big-title: 41.08px;
+}
+.type-title-xxl {
+  margin: 0;
+  color: var(--dark-grey);
+  font-family: var(--sans);
+  font-size: var(--type-big-title);
+  font-weight: 700;
+  letter-spacing: var(--type-title-tracking);
+  line-height: .98;
+}`;
 
     function initHudiCursor() {
       if (!window.matchMedia || !window.matchMedia("(pointer: fine)").matches || !document.body) return;
@@ -2680,6 +2910,8 @@ h1, .section-title h2, .card h3 {
 }`;
 	    const blankOrbPreview = document.getElementById("blank-orb-preview");
 	    const blankOrbControls = document.querySelector("[data-blank-orb-maker]");
+    const windowOrbPreview = document.getElementById("window-orb-preview");
+    const windowOrbControls = document.querySelector("[data-window-orb-maker]");
 	    const orbPreview = document.getElementById("orb-preview");
 	    const orbPreviews = Array.from(document.querySelectorAll("[data-orb-preview]"));
 	    const orbControls = document.querySelector("[data-orb-maker]");
@@ -3182,6 +3414,119 @@ h1, .section-title h2, .card h3 {
       });
     }
 
+    function setSimPage(page = "leaderboard") {
+      document.querySelectorAll("[data-sim-page]").forEach((panel) => {
+        panel.classList.toggle("is-active", panel.dataset.simPage === page);
+      });
+    }
+
+    function createDepositNavPill(label = "deposit", width = 110) {
+      const sourceButton = document.querySelector(".deposit-modal-demo [data-deposit-open]") || document.querySelector("#button-preview");
+      if (!sourceButton) return null;
+      const button = sourceButton.cloneNode(true);
+      button.removeAttribute("id");
+      button.classList.remove("long", "short", "is-auto-white", "is-auto-gradient", "is-white-tint-blue", "is-white-tint-pink", "is-white-tint-green");
+      button.classList.add("long", "hudi-nav-deposit-button");
+      button.dataset.depositOpen = "";
+      button.style.setProperty("--pill-bg", "#dbfd01");
+      button.style.setProperty("--pill-inner-shadow", "rgba(83,112,0,.34)");
+      button.querySelector(".pill-label")?.replaceChildren(label);
+      button.style.width = width + "px";
+      button.style.minWidth = width + "px";
+      return button;
+    }
+
+    function syncNavChrome(root = document, force = false) {
+      root.querySelectorAll("[data-nav-pfp]").forEach((mount, index) => {
+        if (!force && mount.firstElementChild?.classList?.contains("leaderboard-pfp")) return;
+        const avatar = createLeaderboardPfp(pfpPalettes[index % pfpPalettes.length], index, false);
+        avatar.classList.add("hudi-nav-status-pfp");
+        mount.replaceChildren(avatar);
+      });
+      root.querySelectorAll("[data-nav-deposit]").forEach((mount) => {
+        if (!force && mount.firstElementChild?.classList?.contains("hudi-trade-button")) return;
+        const button = createDepositNavPill("deposit", 110);
+        if (button) mount.replaceChildren(button);
+      });
+    }
+
+    function initComponentTags() {
+      document.querySelectorAll(".card").forEach((card, index) => {
+        const heading = card.querySelector(".card-head h3");
+        if (!heading || heading.querySelector(".component-tag")) return;
+        const slug = (heading.textContent || "component")
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "") || `component-${index + 1}`;
+        card.dataset.componentTag = slug;
+        const tag = document.createElement("span");
+        tag.className = "component-tag";
+        tag.textContent = "#" + slug;
+        heading.append(" ", tag);
+      });
+    }
+
+    function namespaceClonedSvgPaint(root, prefix = "sim") {
+      const idMap = new Map();
+      root.querySelectorAll("svg [id]").forEach((element, index) => {
+        const oldId = element.id;
+        const newId = `${prefix}-${oldId}-${index}`;
+        idMap.set(oldId, newId);
+        element.id = newId;
+      });
+      if (!idMap.size) return;
+
+      const replaceUrlRefs = (value) => value.replace(/url\(#([^)]+)\)/g, (match, id) => {
+        return idMap.has(id) ? `url(#${idMap.get(id)})` : match;
+      });
+      root.querySelectorAll("svg *").forEach((element) => {
+        ["fill", "stroke", "filter", "clip-path", "mask", "style"].forEach((name) => {
+          const value = element.getAttribute(name);
+          if (value?.includes("url(#")) element.setAttribute(name, replaceUrlRefs(value));
+        });
+        ["href", "xlink:href"].forEach((name) => {
+          const value = element.getAttribute(name);
+          if (value?.startsWith("#") && idMap.has(value.slice(1))) element.setAttribute(name, `#${idMap.get(value.slice(1))}`);
+        });
+      });
+      root.querySelectorAll(".pill-top-contour").forEach((svg) => {
+        const gradient = svg.querySelector("linearGradient[id]");
+        const path = svg.querySelector("path");
+        if (gradient && path) path.style.fill = `url(#${gradient.id})`;
+      });
+    }
+
+    function syncSimSources() {
+      syncNavChrome();
+      const simNavMount = document.querySelector("[data-sim-nav]");
+      const sourceNav = document.querySelector('#navigation [data-hudi-app-nav="linear"]');
+      if (simNavMount && sourceNav) {
+        const navClone = sourceNav.cloneNode(true);
+        navClone.classList.add("sim-nav");
+        navClone.querySelectorAll("[data-linear-nav-option]").forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.linearNavOption === "leaderboard"));
+        });
+        namespaceClonedSvgPaint(navClone, "sim-nav");
+        simNavMount.replaceChildren(navClone);
+        syncNavChrome(navClone);
+      }
+    }
+
+    function openSim() {
+      syncSimSources();
+      setSimPage("leaderboard");
+      document.body.classList.add("is-sim");
+      document.querySelector("[data-sim-view]")?.setAttribute("aria-hidden", "false");
+      window.scrollTo(0, 0);
+    }
+
+    function closeSim() {
+      document.body.classList.remove("is-sim");
+      document.querySelector("[data-sim-view]")?.setAttribute("aria-hidden", "true");
+      window.scrollTo(0, 0);
+    }
+
     function hexToRgba(hex, alpha = .4) {
       const clean = hex.replace("#", "");
       const r = parseInt(clean.slice(0, 2), 16);
@@ -3195,6 +3540,15 @@ h1, .section-title h2, .card h3 {
         base: blankOrbControls?.querySelector('[data-blank-orb-field="base"]')?.value || "#24d0ff",
         sheen: blankOrbControls?.querySelector('[data-blank-orb-field="sheen"]')?.value || "#00ffbf",
         shadowHex: blankOrbControls?.querySelector('[data-blank-orb-field="shadow"]')?.value || "#00329d",
+      };
+    }
+
+    function getWindowOrbState() {
+      return {
+        colour: windowOrbControls?.querySelector('[data-window-orb-field="colour"]')?.value || "#d99b62",
+        sheen: windowOrbControls?.querySelector('[data-window-orb-field="sheen"]')?.value || "#fbd39d",
+        shadowHex: windowOrbControls?.querySelector('[data-window-orb-field="shadow"]')?.value || "#76481e",
+        image: windowOrbPreview?.dataset.windowImage || "assets/window-orb-shanghai.png",
       };
     }
 
@@ -3368,6 +3722,11 @@ h1, .section-title h2, .card h3 {
       if (field) field.value = value;
     }
 
+    function setWindowOrbField(name, value) {
+      const field = windowOrbControls?.querySelector(`[data-window-orb-field="${name}"]`);
+      if (field) field.value = value;
+    }
+
     function applyBlankOrbColour(base) {
       const palette = deriveOrbPalette(base);
       setBlankOrbField("colour", palette.base);
@@ -3375,6 +3734,14 @@ h1, .section-title h2, .card h3 {
       setBlankOrbField("sheen", palette.sheen);
       setBlankOrbField("shadow", palette.shadowHex);
       updateBlankOrbPreview();
+    }
+
+    function applyWindowOrbColour(base) {
+      const palette = deriveOrbPalette(base);
+      setWindowOrbField("colour", palette.base);
+      setWindowOrbField("sheen", palette.sheen);
+      setWindowOrbField("shadow", palette.shadowHex);
+      updateWindowOrbPreview();
     }
 
     function applyOrbColour(base) {
@@ -3471,6 +3838,8 @@ h1, .section-title h2, .card h3 {
 
     function buildIndicatorGradient({ value, color }) {
       const end = Math.max(0, Math.min(100, value));
+      if (end >= 100) return `linear-gradient(90deg, ${color} 0%, ${color} 100%)`;
+      if (end <= 0) return "linear-gradient(90deg, #fff 0%, #fff 100%)";
       const fadeStart = Math.max(0, end - 1.4);
       const fadeEnd = Math.min(100, end + 3.6);
       return `linear-gradient(90deg, ${color} 0%, ${color} ${formatPercent(fadeStart)}, #fff ${formatPercent(fadeEnd)}, #fff 100%)`;
@@ -3729,14 +4098,42 @@ function buildCustomToggleCss(state) {
 }`;
     }
 
+    function buildSearchButtonCss() {
+      return `.hudi-search-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 168px;
+  height: 46px;
+  padding: 0 24px;
+  border: 4px solid var(--outline-blue);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--dark-grey);
+  font-family: "OCRA Fixed", ui-monospace, monospace;
+  font-size: 15px;
+  letter-spacing: .18em;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.96);
+}
+.hudi-search-button svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2.4;
+}
+.hudi-search-button:hover {
+  border-color: var(--select-blue);
+  background: linear-gradient(180deg, #fff 0%, #f4fbff 100%);
+}`;
+    }
+
     function buildButtonCss(state) {
       const shadow = hexToRgba(state.shadowHex, state.type === "confirm" ? .28 : .34);
       const labelMode = buttonLabelMode(state);
       const labelTint = labelMode === "white" ? whiteLabelTint(state.base) : "blue";
-      const confirmShape = state.type === "confirm" ? `
-  border-radius: 28px;
-  font-size: 23px;
-  height: 56px;` : "";
       const labelTop = state.type === "confirm" ? "-1px" : "0px";
       return `/* Current orb-pill button: ${state.label} */
 .hudi-trade-button {
@@ -3762,7 +4159,7 @@ function buildCustomToggleCss(state) {
   line-height: 1;
   overflow: hidden;
   position: relative;
-  text-transform: lowercase;${confirmShape}
+  text-transform: lowercase;
 }
 .hudi-trade-button::after {
   background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%);
@@ -3865,6 +4262,55 @@ function buildCustomToggleCss(state) {
   height: 18.06%;
   border-radius: 50%;
   background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%);
+  z-index: 1;
+}`;
+    }
+
+    function buildWindowOrbCss(state) {
+      const shadow = hexToRgba(state.shadowHex, .4);
+      const image = state.image.startsWith("data:") ? "/* uploaded image data URL */" : state.image;
+      return `/* Window orb material */
+.hudi-window-orb {
+  --orb-sheen: ${state.sheen};
+  --orb-shadow: ${shadow};
+  --orb-size: 148px;
+  --window-image: url("${image}");
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--orb-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: #cdd8df;
+  background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 58%), var(--window-image);
+  background-position: center;
+  background-size: cover;
+  box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow), inset 0 0 calc(var(--orb-size) * .09) color-mix(in srgb, var(--orb-sheen) 58%, transparent);
+  overflow: hidden;
+}
+.hudi-window-orb::before {
+  content: "";
+  position: absolute;
+  left: 18.6%;
+  top: 3.8%;
+  width: 64%;
+  height: 46%;
+  border-radius: 50%;
+  background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%);
+  mix-blend-mode: screen;
+  opacity: .8;
+  z-index: 1;
+}
+.hudi-window-orb::after {
+  content: "";
+  position: absolute;
+  left: 32.05%;
+  top: 1.1%;
+  width: 36.34%;
+  height: 18.06%;
+  border-radius: 50%;
+  background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%);
+  opacity: .8;
   z-index: 1;
 }`;
     }
@@ -3989,11 +4435,16 @@ function buildCustomToggleCss(state) {
   place-items: center;
   width: 120px;
   aspect-ratio: 1;
+  border: 0;
+  padding: 0;
   border-radius: 50%;
   background-color: var(--orb-base);
   background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%);
   box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow), inset 0 0 9px color-mix(in srgb, var(--logo-inner) 62%, transparent);
   overflow: hidden;
+  cursor: pointer;
+  transition: filter 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+  -webkit-tap-highlight-color: transparent;
 }
 .hudi-logo-orb::before {
   content: "";
@@ -4020,9 +4471,20 @@ function buildCustomToggleCss(state) {
 .hudi-logo-mark {
   position: relative;
   z-index: 2;
-  width: 62.4px;
+  width: 52%;
   height: auto;
   filter: drop-shadow(0 1px 2px rgba(31,104,178,.14));
+}
+.hudi-logo-orb:hover {
+  filter: brightness(1.02) saturate(1.03);
+}
+.hudi-logo-orb.is-lit {
+  filter: brightness(1.08) saturate(1.12);
+  transform: scale(.98);
+  box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow), inset 0 0 16px color-mix(in srgb, var(--logo-inner) 78%, transparent), 0 0 18px color-mix(in srgb, var(--logo-inner) 50%, transparent);
+}
+.hudi-logo-orb.is-lit .hudi-logo-mark {
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--logo-inner) 90%, transparent));
 }`;
     }
 
@@ -4040,6 +4502,11 @@ function buildCustomToggleCss(state) {
   background: linear-gradient(180deg, #fcfcfc 0%, #b7ccda 100%);
   box-shadow: 0 10px 10px rgba(209,228,249,.95);
 }
+.hudi-nav-example {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
 .hudi-nav-menu .hudi-nav-bar {
   position: absolute;
   left: 74px;
@@ -4056,7 +4523,7 @@ function buildCustomToggleCss(state) {
 .hudi-nav-selected {
   position: absolute;
   left: 296px;
-  top: 78px;
+  top: 74.5px;
   z-index: 2;
   display: grid;
   place-items: center;
@@ -4091,18 +4558,19 @@ function buildCustomToggleCss(state) {
   border: 0;
   border-radius: 15px;
   color: #fff;
+  flex: 0 0 auto;
   font-family: "Syne Hudi", Syne, sans-serif;
   font-size: 12.8px;
   font-weight: 500;
   letter-spacing: 0;
   line-height: 1;
-  line-height: 1;
+  white-space: nowrap;
   transition: left 360ms cubic-bezier(.2,.8,.2,1), top 360ms cubic-bezier(.2,.8,.2,1), transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
 }
 .hudi-nav-pill.hudi-trade-button .pill-label {
   background: none;
   color: #fff;
-  filter: url(#hudi-chamber-label-inner);
+  filter: url(#hudi-pill-label-inner-blue);
   top: 0;
   text-shadow: none;
   -webkit-text-fill-color: #fff;
@@ -4127,7 +4595,7 @@ function buildCustomToggleCss(state) {
   to { translate: 0 0; scale: 1; opacity: 1; }
 }
 .hudi-linear-nav-menu {
-  --orb-size: 150px;
+  --orb-size: 132px;
   position: relative;
   width: min(860px, 100%);
   min-height: 208px;
@@ -4147,13 +4615,13 @@ function buildCustomToggleCss(state) {
 }
 .hudi-linear-nav-items {
   position: absolute;
-  left: 255px;
-  right: 34px;
-  top: 91px;
+  left: calc(24px + var(--orb-size) + clamp(16px, 1.8vw, 24px));
+  right: 18px;
+  top: 85.5px;
   z-index: 4;
   display: flex;
   align-items: center;
-  gap: 34px;
+  gap: clamp(16px, 1.8vw, 24px);
 }
 .hudi-linear-nav-button.hudi-trade-button {
   --pill-bg: #28c4f5;
@@ -4162,21 +4630,23 @@ function buildCustomToggleCss(state) {
   width: max-content;
   min-width: 0;
   height: 42px;
-  padding: 0 34px;
-  border: 4px solid #e2f2ff;
+  padding: 0 clamp(16px, 1.8vw, 24px);
+  border: 0;
   border-radius: 23px;
   color: #fff;
+  flex: 0 0 auto;
   font-family: "Syne Hudi", Syne, sans-serif;
-  font-size: 20px;
+  font-size: clamp(15px, 1.55vw, 18px);
   font-weight: 500;
   letter-spacing: 0;
   line-height: 1;
+  white-space: nowrap;
   transition: transform 180ms ease, filter 160ms ease, box-shadow 180ms ease, background-color 180ms ease;
 }
 .hudi-linear-nav-button.hudi-trade-button .pill-label {
   background: none;
   color: #fff;
-  filter: url(#hudi-chamber-label-inner);
+  filter: url(#hudi-pill-label-inner-blue);
   top: 0;
   text-shadow: none;
   -webkit-text-fill-color: #fff;
@@ -4186,7 +4656,7 @@ function buildCustomToggleCss(state) {
   border: 0;
   color: #71809e;
   box-shadow: inset 0 4px 13px rgba(0,0,0,.28), inset 0 4px 50px rgba(0,0,0,.16);
-  transform: scale(.94);
+  transform: none;
 }
 .hudi-linear-nav-button[aria-pressed="true"]::before {
   content: "";
@@ -4218,6 +4688,15 @@ function buildCustomToggleCss(state) {
 .hudi-linear-nav-button[aria-pressed="true"] .pill-bottom-highlight,
 .hudi-linear-nav-button[aria-pressed="true"] .pill-shine {
   opacity: 0;
+}
+.sim-nav .hudi-linear-nav-button[aria-pressed="true"] .pill-top-contour {
+  opacity: .7;
+  mix-blend-mode: screen;
+  z-index: 3;
+}
+.sim-nav .hudi-linear-nav-button[aria-pressed="true"] .pill-bottom-highlight {
+  opacity: .55;
+  z-index: 3;
 }
 .hudi-linear-nav-button[aria-pressed="true"] .pill-label {
   color: #71809e;
@@ -4444,20 +4923,11 @@ function buildCustomToggleCss(state) {
   transition: left 220ms cubic-bezier(.2,.8,.2,1);
   pointer-events: none;
 }
+.hudi-slider.is-clicked .hudi-slider-puck {
+  animation: hudi-slider-puck-click 140ms ease-out;
+}
 .hudi-slider-markers {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  margin-top: 10px;
-  color: #a6a6a6;
-  font-family: "OCRA Fixed", ui-monospace, monospace;
-  font-size: 13px;
-  line-height: 1;
-}
-.hudi-slider-markers span {
-  text-align: center;
-}
-.hudi-slider-markers span[aria-current="true"] {
-  color: #71809e;
+  display: none;
 }
 .leverage-panel output {
   display: inline-grid;
@@ -4474,6 +4944,15 @@ function buildCustomToggleCss(state) {
   line-height: 1;
   text-align: center;
   overflow: hidden;
+}
+.leverage-panel output.is-clicked {
+  animation: hudi-leverage-click 140ms ease-out;
+}
+@keyframes hudi-leverage-click {
+  50% { transform: scale(.96); }
+}
+@keyframes hudi-slider-puck-click {
+  50% { transform: translate(-50%, -50%) scale(.9); }
 }`;
     }
 
@@ -4594,6 +5073,16 @@ function buildCustomToggleCss(state) {
       updateOrbShadowScale(blankOrbPreview.parentElement || document);
     }
 
+    function updateWindowOrbPreview() {
+      if (!windowOrbPreview || !windowOrbControls) return;
+      const state = getWindowOrbState();
+      windowOrbPreview.style.setProperty("--orb-sheen", state.sheen);
+      windowOrbPreview.style.setProperty("--orb-shadow", hexToRgba(state.shadowHex, .4));
+      windowOrbPreview.style.setProperty("--window-image", `url("${state.image}")`);
+      snippets["Window orbs"] = buildWindowOrbCss(state);
+      updateOrbShadowScale(windowOrbPreview.parentElement || document);
+    }
+
     function updateOrbPreview() {
       const previews = orbPreviews.length ? orbPreviews : orbPreview ? [orbPreview] : [];
       if (!previews.length || !orbControls) return;
@@ -4615,6 +5104,7 @@ function buildCustomToggleCss(state) {
       updateOrbShadowScale();
     }
     updateBlankOrbPreview();
+    updateWindowOrbPreview();
     updateOrbPreview();
     updateOrbTickerLayout();
     applyGeneratedOrbPalette();
@@ -4648,9 +5138,10 @@ function buildCustomToggleCss(state) {
       buttonPreview.style.minWidth = state.width + "px";
         buttonPreview.querySelector(".pill-label").textContent = state.label;
         buttonControls.querySelector("[data-button-width-output]").textContent = state.width + "px";
-      snippets["Buttons"] = buildButtonCss(state) + "\n\n" + buildExitButtonCss();
+      snippets["Buttons"] = buildButtonCss(state) + "\n\n" + buildExitButtonCss() + "\n\n" + buildSearchButtonCss();
       updatePillTopContour(buttonPreview.querySelector(".pill-top-contour"));
       queuePillTopContours(buttonPreview);
+      syncNavChrome(document, true);
     }
 	    updateButtonPreview();
 	    updatePillTopContours();
@@ -4843,42 +5334,33 @@ function buildCustomToggleCss(state) {
     renderDotMatrixText(document.querySelector("[data-dot-matrix-input]")?.value);
     document.querySelectorAll("[data-pfp-generator]").forEach(renderPfpGenerator);
     applyChatPfpPalettes();
+    initComponentTags();
+    syncNavChrome();
     document.querySelectorAll("[data-leaderboard]").forEach((board) => {
       board.dataset.sortKey = board.dataset.sortKey || "value";
       board.dataset.sortDirection = board.dataset.sortDirection || "desc";
       renderLeaderboard(board);
     });
 
-    const leverageOutputTimers = new WeakMap();
-
     function formatLeverageValue(value) {
       const rounded = Math.round(value * 10) / 10;
       return (Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)) + "x";
     }
 
-    function setLeverageOutput(output, value, direction) {
-      output.classList.remove("is-up", "is-down");
+    function setLeverageOutput(output, value) {
       output.replaceChildren(Object.assign(document.createElement("span"), { textContent: formatLeverageValue(value) }));
-      requestAnimationFrame(() => output.classList.add(direction));
     }
 
-    function animateLeverageOutput(output, previousIndex, nextIndex, values) {
-      leverageOutputTimers.get(output)?.forEach(clearTimeout);
-      const direction = nextIndex > previousIndex ? "is-up" : "is-down";
-      const start = Math.min(previousIndex, nextIndex);
-      const end = Math.max(previousIndex, nextIndex);
-      const sequence = values
-        .slice(start + 1, end + 1)
-        .map(Number);
-      if (direction === "is-down") sequence.reverse();
-      const timers = [];
-      output.dataset.lastValue = String(values[nextIndex]);
-
-      sequence.forEach((value, index) => {
-        timers.push(setTimeout(() => setLeverageOutput(output, value, direction), (index + 1) * 150));
+    function clickLeverageSlider(input) {
+      const slider = input.closest(".hudi-slider");
+      const output = input.closest("[data-leverage-panel]")?.querySelector("output") || input.closest(".hudi-slider-row")?.querySelector("output");
+      [slider, output].forEach((element) => {
+        if (!element) return;
+        element.classList.remove("is-clicked");
+        void element.offsetWidth;
+        element.classList.add("is-clicked");
+        setTimeout(() => element.classList.remove("is-clicked"), 170);
       });
-
-      leverageOutputTimers.set(output, timers);
     }
 
     const depositStageOrder = ["fund", "network", "coin", "deposit"];
@@ -4913,6 +5395,7 @@ function buildCustomToggleCss(state) {
     function openDepositModal() {
       const backdrop = document.querySelector("[data-deposit-modal]");
       if (!backdrop) return;
+      if (backdrop.parentElement !== document.body) document.body.append(backdrop);
       backdrop.hidden = false;
       document.body.style.overflow = "hidden";
       setDepositModalStage("fund");
@@ -4934,12 +5417,31 @@ function buildCustomToggleCss(state) {
     }
 
     document.addEventListener("click", async (event) => {
+      if (event.target.closest("[data-sim-open]")) {
+        openSim();
+        return;
+      }
+
+      if (event.target.closest("[data-sim-exit]")) {
+        closeSim();
+        return;
+      }
+
       const copy = event.target.closest("[data-copy]");
       if (copy) {
         await navigator.clipboard.writeText(snippets[copy.dataset.copy] || "");
         const label = copy.textContent;
         copy.textContent = "Copied";
         setTimeout(() => copy.textContent = label, 900);
+      }
+
+      const logoOrb = event.target.closest("[data-hudi-logo-action]");
+      if (logoOrb) {
+        logoOrb.classList.remove("is-lit");
+        void logoOrb.offsetWidth;
+        logoOrb.classList.add("is-lit");
+        setTimeout(() => logoOrb.classList.remove("is-lit"), 420);
+        return;
       }
 
       if (event.target.closest("[data-deposit-open]")) {
@@ -5038,6 +5540,9 @@ function buildCustomToggleCss(state) {
           button.setAttribute("aria-pressed", String(button === linearNavButton));
           button.classList.remove("is-compressing");
         });
+        if (linearNavButton.closest("[data-sim-view]")) {
+          setSimPage(linearNavButton.dataset.linearNavOption);
+        }
         linearNavButton.offsetHeight;
         linearNavButton.classList.add("is-compressing");
       }
@@ -5153,17 +5658,20 @@ function buildCustomToggleCss(state) {
     });
 
     document.addEventListener("input", (event) => {
+      if (event.target.matches('[data-token-var]')) {
+        const value = event.target.value.toLowerCase();
+        const swatch = event.target.closest(".token-swatch");
+        document.documentElement.style.setProperty(event.target.dataset.tokenVar, value);
+        swatch?.style.setProperty("--token", value);
+        swatch?.querySelector("span")?.replaceChildren(value);
+      }
       if (event.target.matches('.hudi-slider input[type="range"]')) {
         updateLeverageSlider(event.target);
         const values = (event.target.dataset.leverageValues || "").split(",").filter(Boolean).map(Number);
         const index = Number(event.target.value);
         const output = event.target.closest("[data-leverage-panel]")?.querySelector("output") || event.target.closest(".hudi-slider-row")?.querySelector("output");
         if (output) {
-          const previous = Number(output.dataset.lastIndex ?? index);
-          output.dataset.lastIndex = String(index);
-          if (index !== previous) {
-            animateLeverageOutput(output, previous, index, values);
-          }
+          setLeverageOutput(output, values[index]);
         }
       }
       if (event.target.matches('[data-orb-field]')) {
@@ -5186,6 +5694,13 @@ function buildCustomToggleCss(state) {
           updateBlankOrbPreview();
         }
       }
+      if (event.target.matches('[data-window-orb-field]') && event.target.dataset.windowOrbField !== "image") {
+        if (event.target.dataset.windowOrbField === "colour") {
+          applyWindowOrbColour(event.target.value);
+        } else {
+          updateWindowOrbPreview();
+        }
+      }
       if (event.target.matches('[data-hudi-orb-field]')) {
         updateHudiLogoPreview();
       }
@@ -5205,6 +5720,30 @@ function buildCustomToggleCss(state) {
         renderDotMatrixText(event.target.value);
       }
 	    });
+
+    document.addEventListener("pointerup", (event) => {
+      if (event.target.matches('.hudi-slider input[type="range"]')) {
+        clickLeverageSlider(event.target);
+      }
+    });
+
+    document.addEventListener("keyup", (event) => {
+      if (event.target.matches('.hudi-slider input[type="range"]') && ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) {
+        clickLeverageSlider(event.target);
+      }
+    });
+
+    document.addEventListener("change", (event) => {
+      if (!event.target.matches('[data-window-orb-field="image"]')) return;
+      const file = event.target.files?.[0];
+      if (!file || !windowOrbPreview) return;
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        windowOrbPreview.dataset.windowImage = String(reader.result || "");
+        updateWindowOrbPreview();
+      });
+      reader.readAsDataURL(file);
+    });
 
 	    window.addEventListener("resize", () => {
 	      queuePillTopContours();
