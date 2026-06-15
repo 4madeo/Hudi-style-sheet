@@ -1120,7 +1120,7 @@
     .blank-orb-demo { display: grid; gap: 18px; justify-items: center; }
     .blank-orb-demo .hudi-blank-orb { --orb-size: 132px; }
     .window-orb-demo { display: grid; gap: 18px; justify-items: center; }
-    .window-orb-demo .hudi-window-orb { --orb-size: 148px; --window-image: url("assets/window-orb-shanghai.png"); background-color: #cdd8df; background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 58%), var(--window-image); background-position: center; background-size: cover; }
+    .window-orb-demo .hudi-window-orb { --orb-base: #61caff; --orb-sheen: #cff3ff; --orb-shadow: rgba(189,228,255,.56); --orb-size: 148px; --window-image: url("assets/window-orb-shanghai.png"); background-color: var(--orb-base); background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 58%), var(--window-image); background-position: center; background-size: cover; }
     .window-orb-demo .hudi-window-orb::before { mix-blend-mode: screen; opacity: .8; }
     .window-orb-demo .hudi-window-orb::after { opacity: .8; }
     .window-orb-demo .orb-color-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1136,8 +1136,11 @@
     .orb-color-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
     .orb-color { display: grid; gap: 5px; color: var(--muted); font-family: var(--ocr); font-size: 9px; }
     .orb-color input { width: 100%; height: 28px; padding: 2px; border: 2px solid var(--outline-blue); border-radius: 999px; background: #fff; cursor: pointer; }
-    .orb-file { display: grid; gap: 5px; color: var(--muted); font-family: var(--ocr); font-size: 9px; }
-    .orb-file input { width: 100%; min-width: 0; color: var(--dark-grey); font: inherit; font-size: 10px; }
+    .orb-file { position: relative; display: grid; gap: 7px; justify-items: start; color: var(--muted); font-family: var(--ocr); font-size: 9px; cursor: pointer; }
+    .orb-file input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    .orb-upload-button.hudi-trade-button { --pill-bg: #f6ffff; --pill-inner-shadow: rgba(0,62,59,.28); --pill-label: #4f6966; width: 154px; min-width: 154px; height: 48px; border-width: 5px; border-radius: 999px; font-size: 21px; font-weight: 400; }
+    .orb-upload-button.hudi-trade-button .pill-label { color: var(--pill-label); -webkit-text-fill-color: var(--pill-label); }
+    .orb-file:focus-within .orb-upload-button { outline: 3px solid var(--select-blue); outline-offset: 3px; }
 
     .hudi-logo-orb { --orb-base: #24d0ff; --orb-sheen: #00ffbf; --orb-shadow: rgba(0,50,157,.4); --logo-inner: #93c0ff; position: relative; display: grid; place-items: center; width: 120px; aspect-ratio: 1; border: 0; padding: 0; border-radius: 50%; background-color: var(--orb-base); background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 100%); box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow), inset 0 0 9px color-mix(in srgb, var(--logo-inner) 62%, transparent); overflow: hidden; cursor: pointer; transition: filter 160ms ease, transform 160ms ease, box-shadow 160ms ease; -webkit-tap-highlight-color: transparent; }
     .hudi-logo-orb::before { background: linear-gradient(359.42deg, rgba(255,255,255,0) .5%, #fff 99.5%); border-radius: 50%; content: ""; height: 46%; left: 18.6%; position: absolute; top: 3.8%; width: 64%; z-index: 1; }
@@ -1177,7 +1180,7 @@
     .hudi-nav-divider { width: .8px; height: 28px; background: rgba(0,0,0,.05); }
     .hudi-nav-status-pfp.leaderboard-pfp,
     .hudi-nav-status-pfp.leaderboard-pfp svg { width: 34px; height: 32px; }
-    .hudi-nav-deposit-button.hudi-trade-button { --pill-bg: #dbfd01; --pill-inner-shadow: rgba(83,112,0,.34); width: 110px; min-width: 110px; height: 30px; padding: 0 16px; border-radius: 16px; font-size: 10px; }
+    .hudi-nav-deposit-button.hudi-trade-button { --pill-bg: #dbfd01; --pill-inner-shadow: rgba(83,112,0,.34); width: 112px; min-width: 112px; height: 34px; padding: 0 16px; border-radius: 18px; font-size: 13.5px; }
     .hudi-nav-menu { --orb-size: 132px; position: relative; width: min(860px, 100%); min-height: 270px; margin: 0 auto; }
     .hudi-nav-menu .hudi-nav-bar { position: absolute; left: 74px; right: 22px; top: 64px; z-index: 0; }
     .hudi-nav-menu .hudi-logo-orb { position: absolute; left: 118px; top: 24px; z-index: 3; width: var(--orb-size); }
@@ -1364,19 +1367,24 @@
       overflow: hidden;
     }
     .dot-matrix-char {
-      display: grid;
-      grid-template-columns: repeat(5, var(--dot-size));
-      grid-template-rows: repeat(9, var(--dot-size));
-      gap: var(--dot-gap);
+      display: block;
       flex: 0 0 auto;
+      width: calc((var(--dot-size) * 5) + (var(--dot-gap) * 4));
+      height: calc((var(--dot-size) * 9) + (var(--dot-gap) * 8));
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
     }
     .dot-matrix-dot {
+      display: block;
+      flex: 0 0 auto;
       width: var(--dot-size);
       height: var(--dot-size);
+      aspect-ratio: 1;
       border-radius: 50%;
-      background: #e1e1e1;
+      background: var(--outline-grey);
     }
-    .dot-matrix-dot.is-on { background: #050505; }
+    .dot-matrix-dot.is-on { background: var(--dark-grey); }
     .dot-matrix-controls {
       display: grid;
       gap: 6px;
@@ -1424,11 +1432,14 @@
     .leaderboard-grid {
       --leader-dot-size: var(--leader-dot-size-override, 2px);
       --leader-dot-gap: var(--leader-dot-gap-override, .75px);
+      --leader-row-height: 26px;
+      --leader-avatar-size: var(--leader-row-height);
+      --leader-avatar-gap: calc(var(--leader-dot-size) * 3);
       --leader-char-width: calc((var(--leader-dot-size) * 5) + (var(--leader-dot-gap) * 4));
       --leader-char-step: calc(var(--leader-char-width) + var(--leader-dot-size));
       --leader-section-gap: var(--leader-dot-size);
       display: grid;
-      grid-template-columns: 26px calc((var(--leader-char-step) * 5) - var(--leader-dot-size)) calc((var(--leader-char-step) * 16) - var(--leader-dot-size)) repeat(4, calc((var(--leader-char-step) * 10) - var(--leader-dot-size)));
+      grid-template-columns: calc(var(--leader-avatar-size) + var(--leader-avatar-gap)) calc((var(--leader-char-step) * 5) - var(--leader-dot-size)) calc((var(--leader-char-step) * 16) - var(--leader-dot-size)) repeat(4, calc((var(--leader-char-step) * 10) - var(--leader-dot-size)));
       column-gap: var(--leader-section-gap);
       align-items: center;
       min-width: max-content;
@@ -1466,14 +1477,14 @@
       border-radius: 999px;
       background: var(--outline-blue);
     }
-    .leaderboard-row { min-height: 26px; }
+    .leaderboard-row { min-height: var(--leader-row-height); }
     .leaderboard-pfp {
       display: grid;
       place-items: center;
-      width: 24px;
-      height: 24px;
+      width: var(--leader-avatar-size);
+      height: var(--leader-avatar-size);
     }
-    .leaderboard-pfp svg { width: 24px; height: 22px; display: block; overflow: visible; }
+    .leaderboard-pfp svg { width: var(--leader-avatar-size); height: var(--leader-avatar-size); display: block; overflow: visible; }
     .leaderboard-pfp.is-flipped svg { transform: scaleX(-1); }
     .leaderboard-pfp .head { fill: var(--pfp-head, #e8ff1b); stroke: var(--pfp-stroke, #84b426); stroke-linejoin: miter; stroke-miterlimit: 2.6; stroke-width: 5.4; }
     .leaderboard-pfp .eye-base { fill: var(--pfp-eye, #ffffff); }
@@ -1481,6 +1492,8 @@
     .leaderboard-matrix {
       --dot-size: var(--leader-dot-size);
       --dot-gap: var(--leader-dot-gap);
+      --leader-dot-off: var(--outline-grey);
+      --leader-dot-on: var(--dark-grey);
       display: flex;
       gap: var(--dot-size);
       align-items: center;
@@ -1541,7 +1554,7 @@
     .sim-nav .hudi-nav-readouts { top: 0; }
     .sim-content {
       width: min(1408px, calc(100vw - 180px));
-      margin: 122px auto 0;
+      margin: 0 auto;
     }
     .sim-leaderboard.leaderboard-component { margin: 0 auto; gap: 24px; }
     .sim-leaderboard .leaderboard-title {
@@ -1562,16 +1575,30 @@
     }
     .sim-leaderboard-tools {
       justify-self: end;
-      margin: -20px 54px 0 0;
+      margin: -8px 54px 0 0;
     }
     .sim-leaderboard-tools .hudi-search-button { height: 42px; min-width: 180px; }
-    .sim-leaderboard .leaderboard-panel { position: relative; height: max(240px, calc(100vh - 446px)); min-height: 0; padding: 0; border: 0; border-radius: 0; background: transparent; overflow: visible; }
-    .sim-leaderboard .leaderboard-head { display: none; }
-    .sim-leaderboard .leaderboard-scroll { align-content: start; height: 100%; max-height: none; row-gap: 8px; padding-right: 0; overflow-x: hidden; overflow-y: auto; scrollbar-color: transparent transparent; scrollbar-width: none; }
+    .sim-leaderboard .leaderboard-panel { position: relative; height: max(240px, calc(100vh - 324px)); min-height: 0; padding: 0; border: 0; border-radius: 0; background: transparent; overflow: visible; }
+    .sim-leaderboard .leaderboard-head {
+      display: grid;
+      padding: 0 0 calc(var(--leader-dot-size-override, 2px) * 3);
+    }
+    .sim-leaderboard .leaderboard-scroll {
+      align-content: start;
+      box-sizing: border-box;
+      height: 100%;
+      max-height: none;
+      row-gap: calc(var(--leader-dot-size-override, 2px) * 6.25);
+      padding: calc(var(--leader-dot-size-override, 2px) * 2) 0 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-color: transparent transparent;
+      scrollbar-width: none;
+    }
     .sim-leaderboard .leaderboard-scroll::-webkit-scrollbar { width: 0; height: 0; }
     .sim-leaderboard-scrollbar {
       position: absolute;
-      top: 0;
+      top: var(--sim-leaderboard-scrollbar-offset, 0px);
       right: -24px;
       bottom: 0;
       width: 14px;
@@ -1621,7 +1648,7 @@
       .nav { justify-content: flex-start; }
       .icon-orb-grid { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
       .sim-topbar { overflow-x: auto; overflow-y: visible; }
-      .sim-content { width: min(100% - 32px, 960px); margin-top: 18px; }
+      .sim-content { width: min(100% - 32px, 960px); margin-top: 0; }
       .sim-leaderboard-note, .sim-leaderboard-tools { margin-right: 24px; }
     }
     @media (max-width: 720px) {
@@ -2189,13 +2216,13 @@
         <article class="card span-4">
           <div class="card-head"><div><h3>Window orbs</h3><p>Blank orb material with an image clipped into the base fill.</p></div><button class="copy-css" data-copy="Window orbs">Copy CSS</button></div>
           <div class="demo window-orb-demo">
-            <div class="hudi-blank-orb hudi-window-orb" id="window-orb-preview" style="--orb-sheen:#fbd39d;--orb-shadow:rgba(118,72,30,.4);--window-image:url('assets/window-orb-shanghai.png');"></div>
+            <div class="hudi-blank-orb hudi-window-orb" id="window-orb-preview" style="--orb-base:#61caff;--orb-sheen:#cff3ff;--orb-shadow:rgba(189,228,255,.56);--window-image:url('assets/window-orb-shanghai.png');"></div>
             <div class="orb-maker-controls" data-window-orb-maker>
-              <label class="orb-file">image<input data-window-orb-field="image" type="file" accept="image/*"></label>
-              <label class="orb-color orb-color-master">colour<input data-window-orb-field="colour" type="color" value="#d99b62"></label>
+              <label class="orb-file"><span>image</span><span class="hudi-trade-button long pfp-generate-button orb-upload-button" aria-hidden="true"><svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none"><defs><linearGradient id="hudi-window-upload-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs><path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z" fill="url(#hudi-window-upload-top-gradient)"/></svg><span class="pill-bottom-highlight" aria-hidden="true"></span><span class="pill-shine" aria-hidden="true"></span><span class="pill-label">upload</span></span><input data-window-orb-field="image" type="file" accept="image/*"></label>
+              <label class="orb-color orb-color-master">colour<input data-window-orb-field="colour" type="color" value="#61caff"></label>
               <div class="orb-color-row">
-                <label class="orb-color">sheen<input data-window-orb-field="sheen" type="color" value="#fbd39d"></label>
-                <label class="orb-color">shadow<input data-window-orb-field="shadow" type="color" value="#76481e"></label>
+                <label class="orb-color">sheen<input data-window-orb-field="sheen" type="color" value="#cff3ff"></label>
+                <label class="orb-color">shadow<input data-window-orb-field="shadow" type="color" value="#bde4ff"></label>
               </div>
             </div>
           </div>
@@ -2394,8 +2421,8 @@
               <div class="leaderboard-panel">
                 <div class="leaderboard-grid leaderboard-head">
                   <span></span>
-                  <span>PLACE</span>
-                  <span>USERNAME</span>
+                  <button class="is-left" type="button" data-leaderboard-sort="place">PLACE</button>
+                  <button class="is-left" type="button" data-leaderboard-sort="username">USERNAME</button>
                   <button class="is-right" type="button" data-leaderboard-sort="value" aria-sort="descending">VALUE</button>
                   <button class="is-right" type="button" data-leaderboard-sort="pnl">PNL</button>
                   <button class="is-right" type="button" data-leaderboard-sort="roi">ROI</button>
@@ -2541,8 +2568,8 @@
             <div class="leaderboard-panel">
               <div class="leaderboard-grid leaderboard-head">
                 <span></span>
-                <span>PLACE</span>
-                <span>USERNAME</span>
+                <button class="is-left" type="button" data-leaderboard-sort="place">PLACE</button>
+                <button class="is-left" type="button" data-leaderboard-sort="username">USERNAME</button>
                 <button class="is-right" type="button" data-leaderboard-sort="value" aria-sort="descending">VALUE</button>
                 <button class="is-right" type="button" data-leaderboard-sort="pnl">PNL</button>
                 <button class="is-right" type="button" data-leaderboard-sort="roi">ROI</button>
@@ -3077,19 +3104,24 @@ h1, .section-title h2, .card h3 {
   overflow: hidden;
 }
 .dot-matrix-char {
-  display: grid;
-  grid-template-columns: repeat(5, var(--dot-size));
-  grid-template-rows: repeat(9, var(--dot-size));
-  gap: var(--dot-gap);
+  display: block;
   flex: 0 0 auto;
+  width: calc((var(--dot-size) * 5) + (var(--dot-gap) * 4));
+  height: calc((var(--dot-size) * 9) + (var(--dot-gap) * 8));
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 .dot-matrix-dot {
+  display: block;
+  flex: 0 0 auto;
   width: var(--dot-size);
   height: var(--dot-size);
+  aspect-ratio: 1;
   border-radius: 50%;
-  background: #e1e1e1;
+  background: #e7e9ed;
 }
-.dot-matrix-dot.is-on { background: #050505; }`;
+.dot-matrix-dot.is-on { background: #74809b; }`;
     snippets["Leaderboard"] = `.leaderboard-panel {
   display: grid;
   grid-template-rows: auto 1fr;
@@ -3103,11 +3135,14 @@ h1, .section-title h2, .card h3 {
 .leaderboard-grid {
   --leader-dot-size: var(--leader-dot-size-override, 2px);
   --leader-dot-gap: var(--leader-dot-gap-override, .75px);
+  --leader-row-height: 26px;
+  --leader-avatar-size: var(--leader-row-height);
+  --leader-avatar-gap: calc(var(--leader-dot-size) * 3);
   --leader-char-width: calc((var(--leader-dot-size) * 5) + (var(--leader-dot-gap) * 4));
   --leader-char-step: calc(var(--leader-char-width) + var(--leader-dot-size));
   --leader-section-gap: var(--leader-dot-size);
   display: grid;
-  grid-template-columns: 26px calc((var(--leader-char-step) * 5) - var(--leader-dot-size)) calc((var(--leader-char-step) * 16) - var(--leader-dot-size)) repeat(4, calc((var(--leader-char-step) * 10) - var(--leader-dot-size)));
+  grid-template-columns: calc(var(--leader-avatar-size) + var(--leader-avatar-gap)) calc((var(--leader-char-step) * 5) - var(--leader-dot-size)) calc((var(--leader-char-step) * 16) - var(--leader-dot-size)) repeat(4, calc((var(--leader-char-step) * 10) - var(--leader-dot-size)));
   column-gap: var(--leader-section-gap);
   align-items: center;
   min-width: max-content;
@@ -3126,6 +3161,9 @@ h1, .section-title h2, .card h3 {
 }
 .leaderboard-head button[aria-sort="descending"]::after { content: " ^"; font-size: 10px; }
 .leaderboard-head button[aria-sort="ascending"]::after { content: " ˅"; font-size: 10px; }
+.leaderboard-head button { cursor: pointer; text-align: inherit; }
+.leaderboard-head .is-left { text-align: left; }
+.leaderboard-head .is-right { text-align: right; }
 .leaderboard-scroll {
   max-height: 178px;
   display: grid;
@@ -3138,9 +3176,9 @@ h1, .section-title h2, .card h3 {
 .leaderboard-scroll::-webkit-scrollbar { width: 16px; height: 16px; }
 .leaderboard-scroll::-webkit-scrollbar-track { background: transparent; }
 .leaderboard-scroll::-webkit-scrollbar-thumb { border: 5px solid #fff; border-radius: 999px; background: #e9f4fe; }
-.leaderboard-row { min-height: 26px; }
-.leaderboard-pfp { display: grid; place-items: center; width: 24px; height: 24px; }
-.leaderboard-pfp svg { width: 24px; height: 22px; display: block; overflow: visible; }
+.leaderboard-row { min-height: var(--leader-row-height); }
+.leaderboard-pfp { display: grid; place-items: center; width: var(--leader-avatar-size); height: var(--leader-avatar-size); }
+.leaderboard-pfp svg { width: var(--leader-avatar-size); height: var(--leader-avatar-size); display: block; overflow: visible; }
 .leaderboard-pfp.is-flipped svg { transform: scaleX(-1); }
 .leaderboard-pfp .head { fill: var(--pfp-head, #e8ff1b); stroke: var(--pfp-stroke, #84b426); stroke-linejoin: miter; stroke-miterlimit: 2.6; stroke-width: 5.4; }
 .leaderboard-pfp .eye-base { fill: var(--pfp-eye, #fff); }
@@ -3148,6 +3186,8 @@ h1, .section-title h2, .card h3 {
 .leaderboard-matrix {
   --dot-size: var(--leader-dot-size);
   --dot-gap: var(--leader-dot-gap);
+  --leader-dot-off: #e7e9ed;
+  --leader-dot-on: #74809b;
   display: flex;
   gap: var(--dot-size);
   align-items: center;
@@ -3207,38 +3247,82 @@ h1, .section-title h2, .card h3 {
       "■": ["#####","#####","#####","#####","#####","#####","#####","#####","#####"]
     };
 
-    function createDotMatrixChar(char) {
-      const cell = document.createElement("span");
-      const rows = HUDI_DOT_MATRIX[char] || HUDI_DOT_MATRIX[char.toUpperCase()] || HUDI_DOT_MATRIX[" "];
-      cell.className = "dot-matrix-char";
-      cell.setAttribute("aria-hidden", "true");
-      rows.forEach((row) => {
-        row.padEnd(5, ".").slice(0, 5).split("").forEach((pixel) => {
-          const dot = document.createElement("span");
-          dot.className = "dot-matrix-dot" + (pixel === "#" ? " is-on" : "");
-          cell.append(dot);
+    const DOT_MATRIX_SVG_CACHE = new Map();
+
+    function getDotMatrixCharKey(char) {
+      const value = String(char ?? " ").toUpperCase();
+      return HUDI_DOT_MATRIX[value] ? value : " ";
+    }
+
+    function getDotMatrixRows(char) {
+      return HUDI_DOT_MATRIX[getDotMatrixCharKey(char)];
+    }
+
+    function getDotMatrixSvgUrl(char) {
+      const key = getDotMatrixCharKey(char);
+      if (DOT_MATRIX_SVG_CACHE.has(key)) return DOT_MATRIX_SVG_CACHE.get(key);
+      const rows = getDotMatrixRows(key);
+      const dotSize = 1.2;
+      const dotGap = .52;
+      const step = dotSize + dotGap;
+      const width = (dotSize * 5) + (dotGap * 4);
+      const height = (dotSize * 9) + (dotGap * 8);
+      const dots = [];
+      rows.forEach((row, y) => {
+        row.padEnd(5, ".").slice(0, 5).split("").forEach((pixel, x) => {
+          const fill = pixel === "#" ? "#74809b" : "#e7e9ed";
+          dots.push(`<circle cx="${(x * step) + (dotSize / 2)}" cy="${(y * step) + (dotSize / 2)}" r="${dotSize / 2}" fill="${fill}"/>`);
         });
       });
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" shape-rendering="geometricPrecision">${dots.join("")}</svg>`;
+      const url = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+      DOT_MATRIX_SVG_CACHE.set(key, url);
+      return url;
+    }
+
+    function updateDotMatrixChar(cell, char) {
+      if (!cell) return;
+      const key = getDotMatrixCharKey(char);
+      if (cell.dataset.matrixChar === key && cell.style.backgroundImage) return;
+      if (cell.children.length) cell.replaceChildren();
+      cell.style.backgroundImage = getDotMatrixSvgUrl(key);
+      cell.dataset.matrixChar = key;
+    }
+
+    function createDotMatrixChar(char) {
+      const cell = document.createElement("span");
+      cell.className = "dot-matrix-char";
+      cell.setAttribute("aria-hidden", "true");
+      updateDotMatrixChar(cell, char);
       return cell;
     }
 
     function normalizeDotMatrixText(value, maxLength = 18) {
-      return (value || "")
+      return String(value ?? "")
         .toUpperCase()
         .replace(/\.\.\./g, "…")
         .slice(0, maxLength);
     }
 
-    function renderDotMatrixInto(display, value, minCells = 12, maxLength = 18, padSide = "end") {
-      if (!display) return;
+    function getDotMatrixDisplayState(value, minCells = 12, maxLength = 18, padSide = "end") {
       const normalized = normalizeDotMatrixText(value, maxLength);
       const chars = [...normalized];
       while (chars.length < minCells) {
         if (padSide === "start") chars.unshift(" ");
         else chars.push(" ");
       }
+      return { normalized, chars };
+    }
+
+    function renderDotMatrixInto(display, value, minCells = 12, maxLength = 18, padSide = "end") {
+      if (!display) return;
+      const { normalized, chars } = getDotMatrixDisplayState(value, minCells, maxLength, padSide);
       display.replaceChildren(...chars.map(createDotMatrixChar));
       display.setAttribute("aria-label", normalized);
+      display.dataset.matrixText = normalized;
+      display.dataset.matrixMinCells = String(minCells);
+      display.dataset.matrixMaxLength = String(maxLength);
+      display.dataset.matrixPadSide = padSide;
     }
 
     function renderDotMatrixText(value) {
@@ -3296,17 +3380,67 @@ h1, .section-title h2, .card h3 {
     }
 
     const leaderboardEntries = [
-      { username: "KAI_XX", value: 271.9, pnl: 271.9, roi: 271.0, volume: 271.9, pfp: pfpPalettes[0], flip: false },
-      { username: "VISADEBIT_OSTAR", value: 60.14, pnl: 60.14, roi: 460.14, volume: 60.14, pfp: pfpPalettes[7], flip: true },
-      { username: "CHUDMAXXER57", value: 53.08, pnl: 53.08, roi: 253.00, volume: 53.00, pfp: pfpPalettes[4], flip: false },
-      { username: "ALEX-HY39", value: 43.93, pnl: 43.93, roi: 943.90, volume: 43.00, pfp: pfpPalettes[0], flip: true },
-      { username: "MIYO", value: .778, pnl: .778, roi: 877.00, volume: .778, pfp: pfpPalettes[1], flip: false },
-      { username: "0X5478…893", value: .663, pnl: .663, roi: 66.00, volume: .663, pfp: pfpPalettes[3], flip: true },
-      { username: "LINUXBAG_88", value: .421, pnl: .421, roi: 118.42, volume: .421, pfp: pfpPalettes[5], flip: false },
-      { username: "0X91F2…A70", value: .317, pnl: .317, roi: 74.30, volume: .317, pfp: pfpPalettes[0], flip: true },
-      { username: "MINTEDBREAD", value: .209, pnl: .209, roi: 51.80, volume: .209, pfp: pfpPalettes[2], flip: false },
-      { username: "0XAA04…12C", value: .145, pnl: .145, roi: 22.90, volume: .145, pfp: pfpPalettes[6], flip: true }
-    ];
+      ["KAI_XX", 271.9, 271.9, 271.0, 271.9],
+      ["VISADEBIT_OSTAR", 60.14, 60.14, 460.14, 60.14],
+      ["CHUDMAXXER57", 53.08, 53.08, 253.00, 53.00],
+      ["ALEX-HY39", 43.93, 43.93, 943.90, 43.00],
+      ["MIYO", .778, .778, 877.00, .778],
+      ["0X5478…893", .663, .663, 66.00, .663],
+      ["LINUXBAG_88", .421, .421, 118.42, .421],
+      ["0X91F2…A70", .317, .317, 74.30, .317],
+      ["MINTEDBREAD", .209, .209, 51.80, .209],
+      ["0XAA04…12C", .145, .145, 22.90, .145],
+      ["FROSTBYTE7", 38.62, 36.88, 319.42, 49.18],
+      ["YIELDWIZ_04", 34.71, 32.44, 288.05, 41.73],
+      ["0X72BC…9D1", 31.06, 30.12, 241.77, 36.40],
+      ["NOVA-MODE", 28.92, 27.61, 205.43, 34.12],
+      ["SUSHI_POCKET", 25.87, 24.90, 190.38, 31.66],
+      ["LILHEDGE", 22.35, 21.71, 176.20, 28.45],
+      ["PIXELMINT", 19.84, 18.06, 162.91, 25.18],
+      ["0XE18F…442", 17.63, 16.98, 149.35, 22.09],
+      ["MOONVAULT_5", 15.49, 14.82, 132.74, 19.77],
+      ["BAGMODE99", 13.77, 13.09, 121.52, 17.94],
+      ["SPARK-DAO", 12.42, 11.86, 109.83, 15.22],
+      ["0X4E20…BEE", 10.95, 10.48, 98.31, 13.68],
+      ["HYPERJUNO", 9.72, 9.35, 91.04, 12.31],
+      ["SLOWRUGS", 8.66, 8.04, 82.64, 10.94],
+      ["ZENITH_13", 7.81, 7.12, 77.18, 9.88],
+      ["0XF0AM…777", 6.94, 6.28, 70.55, 8.79],
+      ["TINY_WHALE", 6.12, 5.83, 64.20, 7.93],
+      ["KITEFINANCE", 5.46, 5.21, 58.76, 6.70],
+      ["0X19AD…C04", 4.83, 4.51, 53.19, 5.91],
+      ["RISKYBENTO", 4.21, 3.98, 48.83, 5.24],
+      ["BLOOM-777", 3.78, 3.42, 43.64, 4.62],
+      ["WAGMI_LABS", 3.31, 3.08, 39.17, 4.01],
+      ["0X02DF…8A8", 2.94, 2.66, 35.02, 3.58],
+      ["SNOWPILL", 2.61, 2.31, 31.86, 3.09],
+      ["BYTEFARMER", 2.25, 2.04, 28.44, 2.73],
+      ["0X6C30…1FE", 1.98, 1.76, 24.95, 2.38],
+      ["GHOSTLIMIT", 1.71, 1.52, 21.72, 2.04],
+      ["PILLCHASER", 1.45, 1.20, 18.63, 1.78],
+      ["0XBB88…E91", 1.18, 1.04, 15.98, 1.42],
+      ["TURBO_TARO", .982, .914, 14.45, 1.18],
+      ["MINIBIDDER", .884, .805, 13.10, 1.04],
+      ["0X80AC…431", .756, .702, 11.76, .941],
+      ["PUDGYDELTA", .681, .622, 10.82, .830],
+      ["SEEDROUND", .604, .558, 9.71, .762],
+      ["0X3499…AD0", .536, .501, 8.92, .684],
+      ["CLOUDY_PNL", .472, .429, 7.84, .596],
+      ["DREAMFILL", .416, .382, 6.91, .522],
+      ["0X5B77…9CA", .361, .336, 5.82, .451],
+      ["PAPERORBIT", .299, .274, 4.76, .378],
+      ["LIMESTOP", .231, .210, 3.44, .302]
+    ].map(([username, value, pnl, roi, volume], index) => ({
+      id: "leaderboard-entry-" + index,
+      username,
+      value,
+      pnl,
+      roi,
+      volume,
+      pfp: pfpPalettes[index % pfpPalettes.length],
+      flip: index % 2 === 1
+    }));
+    leaderboardEntries.sort((a, b) => b.value - a.value);
 
     function formatLeaderboardMoney(value) {
       if (value >= 1) return "$" + value.toFixed(2) + "M";
@@ -3325,6 +3459,9 @@ h1, .section-title h2, .card h3 {
     function createLeaderboardMatrix(text, minCells, align = "left") {
       const cell = document.createElement("span");
       cell.className = "leaderboard-matrix is-" + align;
+      cell.dataset.leaderboardMinCells = String(minCells);
+      cell.dataset.leaderboardAlign = align;
+      cell.dataset.leaderboardMaxLength = "24";
       renderDotMatrixInto(cell, text, minCells, 24, align === "right" ? "start" : "end");
       return cell;
     }
@@ -3419,12 +3556,27 @@ h1, .section-title h2, .card h3 {
     }
 
     function updateSimLeaderboardScale(board = document.querySelector(".sim-leaderboard")) {
-      if (!board?.classList?.contains("sim-leaderboard")) return;
+      if (!board?.classList?.contains("sim-leaderboard")) return false;
       const panelWidth = board.querySelector(".leaderboard-panel")?.getBoundingClientRect().width || 0;
-      if (!panelWidth) return;
-      const dotSize = Math.max(.85, (panelWidth - 26) / 457.5);
+      if (!panelWidth) return false;
+      const textWidth = panelWidth - 26;
+      const dotUnits = 369;
+      const gapUnits = 244;
+      const snapStep = .5;
+      const idealDotSize = Math.max(.75, textWidth / 457.5);
+      let dotSize = Math.max(.75, Math.round(idealDotSize / snapStep) * snapStep);
+      let dotGap = (textWidth - dotUnits * dotSize) / gapUnits;
+      while (dotGap < .25 && dotSize > .75) {
+        dotSize -= snapStep;
+        dotGap = (textWidth - dotUnits * dotSize) / gapUnits;
+      }
+      const nextDotGap = Math.max(.25, dotGap);
+      const scaleKey = dotSize + ":" + nextDotGap.toFixed(4);
+      if (board.dataset.simLeaderboardScaleKey === scaleKey) return false;
+      board.dataset.simLeaderboardScaleKey = scaleKey;
       board.style.setProperty("--leader-dot-size-override", dotSize + "px");
-      board.style.setProperty("--leader-dot-gap-override", (dotSize * .375) + "px");
+      board.style.setProperty("--leader-dot-gap-override", nextDotGap + "px");
+      return true;
     }
 
     function updateSimLeaderboardScrollbar(board = document.querySelector(".sim-leaderboard")) {
@@ -3444,6 +3596,7 @@ h1, .section-title h2, .card h3 {
         scroll.dataset.simLeaderboardScrollBound = "true";
         scroll.addEventListener("scroll", () => updateSimLeaderboardScrollbar(board), { passive: true });
       }
+      panel.style.setProperty("--sim-leaderboard-scrollbar-offset", scroll.offsetTop + "px");
       const maxScroll = scroll.scrollHeight - scroll.clientHeight;
       panel.classList.toggle("is-scrollable", maxScroll > 1);
       if (maxScroll <= 1) return;
@@ -3459,34 +3612,277 @@ h1, .section-title h2, .card h3 {
       updateSimLeaderboardScrollbar(board);
     }
 
-    function renderLeaderboard(board = document.querySelector("[data-leaderboard]")) {
+    function getLeaderboardDisplayCells(entry) {
+      return [
+        [String(entry.displayPlace ?? entry.originalPlace).padStart(2, "0"), 5, "left"],
+        [entry.username, 16, "left"],
+        [formatLeaderboardMoney(entry.value), 10, "right"],
+        [formatLeaderboardMoney(entry.pnl), 10, "right"],
+        [formatLeaderboardRoi(entry.roi), 10, "right"],
+        [formatLeaderboardVolume(entry.volume), 10, "right"]
+      ];
+    }
+
+    function getLeaderboardRankedEntries(sortKey = "value", direction = "desc") {
+      const useDisplayPlace = sortKey === "value" && direction === "desc";
+      return leaderboardEntries
+        .map((entry, index) => ({ ...entry, originalPlace: index + 1 }))
+        .sort((a, b) => {
+          const aValue = sortKey === "place" ? a.originalPlace : a[sortKey];
+          const bValue = sortKey === "place" ? b.originalPlace : b[sortKey];
+          const result = typeof aValue === "string" ? aValue.localeCompare(bValue) : aValue - bValue;
+          return direction === "asc" ? result : -result;
+        })
+        .map((entry, index) => ({ ...entry, displayPlace: useDisplayPlace ? index + 1 : entry.originalPlace }));
+    }
+
+    const leaderboardLiveRandomChars = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$%+._-…"];
+    const leaderboardLiveInterval = 3600;
+    const leaderboardLiveDuration = 960;
+    const leaderboardLiveFlickerWindow = 280;
+    const leaderboardLiveGlyphTick = 44;
+    let leaderboardLiveRevision = 0;
+    let leaderboardLiveTimer = 0;
+    let leaderboardLiveFrame = 0;
+    let leaderboardLiveAnimationToken = 0;
+    let leaderboardLiveAnimating = false;
+
+    function clampLeaderboardValue(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function getLeaderboardDisplayCellsForEntry(entry) {
+      return getLeaderboardDisplayCells(entry);
+    }
+
+    function isLeaderboardBoardVisible(board) {
+      const body = board?.querySelector("[data-leaderboard-body]");
+      return Boolean(board?.isConnected && body?.getClientRects().length);
+    }
+
+    function getVisibleLeaderboardBoards() {
+      return Array.from(document.querySelectorAll("[data-leaderboard]")).filter(isLeaderboardBoardVisible);
+    }
+
+    function getVisibleLeaderboardRows(board) {
+      const body = board?.querySelector("[data-leaderboard-body]");
+      if (!body) return [];
+      const bodyRect = body.getBoundingClientRect();
+      return Array.from(body.querySelectorAll(".leaderboard-row")).filter((row) => {
+        const rowRect = row.getBoundingClientRect();
+        return rowRect.bottom > bodyRect.top && rowRect.top < bodyRect.bottom;
+      });
+    }
+
+    function isLeaderboardLiveRankBoard(board) {
+      return (board?.dataset.sortKey || "value") === "value" && (board?.dataset.sortDirection || "desc") === "desc";
+    }
+
+    function pickLeaderboardLiveMove(boards) {
+      const rankRows = boards
+        .filter(isLeaderboardLiveRankBoard)
+        .flatMap((board) => getVisibleLeaderboardRows(board))
+        .map((row) => Number(row.dataset.leaderboardIndex))
+        .filter((index) => Number.isInteger(index) && index >= 0 && index < leaderboardEntries.length);
+      const uniqueRows = [...new Set(rankRows)].sort((a, b) => a - b);
+      if (uniqueRows.length < 2) return null;
+      const moves = [];
+      uniqueRows.forEach((fromIndex) => {
+        if (fromIndex > 0 && uniqueRows.includes(fromIndex - 1)) moves.push({ fromIndex, toIndex: fromIndex - 1 });
+        if (fromIndex < leaderboardEntries.length - 1 && uniqueRows.includes(fromIndex + 1) && Math.random() < .35) moves.push({ fromIndex, toIndex: fromIndex + 1 });
+        if (fromIndex > 1 && uniqueRows.includes(fromIndex - 2) && Math.random() < .42) moves.push({ fromIndex, toIndex: fromIndex - 2 });
+      });
+      return moves[Math.floor(Math.random() * moves.length)] || null;
+    }
+
+    function rebalanceLeaderboardRange(startIndex, endIndex) {
+      const start = Math.max(0, Math.min(startIndex, endIndex) - 1);
+      const end = Math.min(leaderboardEntries.length - 1, Math.max(startIndex, endIndex) + 1);
+      const topAnchor = start > 0 ? leaderboardEntries[start - 1].value : leaderboardEntries[start].value * 1.08;
+      const bottomAnchor = end < leaderboardEntries.length - 1 ? leaderboardEntries[end + 1].value : Math.max(.001, leaderboardEntries[end].value * .86);
+      const spread = Math.max(.001, topAnchor - bottomAnchor);
+      const step = spread / (end - start + 2);
+      for (let index = start; index <= end; index += 1) {
+        const entry = leaderboardEntries[index];
+        const value = clampLeaderboardValue(topAnchor - (step * (index - start + 1)), .001, 999);
+        entry.value = value;
+        entry.pnl = clampLeaderboardValue(value * (.86 + Math.random() * .18), .001, 999);
+        entry.roi = clampLeaderboardValue(entry.roi + (Math.random() * 3.2) - 1.45, -99.99, 999.99);
+        entry.volume = clampLeaderboardValue(value * (1.02 + Math.random() * .44), .001, 999);
+      }
+    }
+
+    function applyLeaderboardLiveMove(move) {
+      if (!move || move.fromIndex === move.toIndex) return null;
+      const fromIndex = clampLeaderboardValue(move.fromIndex, 0, leaderboardEntries.length - 1);
+      const toIndex = clampLeaderboardValue(move.toIndex, 0, leaderboardEntries.length - 1);
+      const [entry] = leaderboardEntries.splice(fromIndex, 1);
+      leaderboardEntries.splice(toIndex, 0, entry);
+      const startIndex = Math.min(fromIndex, toIndex);
+      const endIndex = Math.max(fromIndex, toIndex);
+      rebalanceLeaderboardRange(startIndex, endIndex);
+      return { startIndex, endIndex };
+    }
+
+    function randomLeaderboardLiveChar() {
+      return leaderboardLiveRandomChars[Math.floor(Math.random() * leaderboardLiveRandomChars.length)] || " ";
+    }
+
+    function syncDotMatrixCharCount(cell, count) {
+      while (cell.children.length < count) cell.append(createDotMatrixChar(" "));
+      while (cell.children.length > count) cell.lastElementChild?.remove();
+    }
+
+    function updateLeaderboardRowAvatar(row, entry) {
+      const avatar = row?.querySelector(".leaderboard-pfp");
+      if (!avatar || avatar.dataset.entryId === entry.id) return;
+      const nextAvatar = createLeaderboardPfp(entry.pfp, entry.displayPlace || entry.originalPlace || 0, entry.flip);
+      nextAvatar.dataset.entryId = entry.id;
+      avatar.replaceWith(nextAvatar);
+    }
+
+    function prepareLeaderboardRowAnimation(row, entry) {
+      const jobs = [];
+      const matrixCells = Array.from(row.querySelectorAll(".leaderboard-matrix"));
+      let globalIndex = 0;
+      row.dataset.entryId = entry.id;
+      row.dataset.leaderboardIndex = String((entry.displayPlace || 1) - 1);
+      updateLeaderboardRowAvatar(row, entry);
+      getLeaderboardDisplayCellsForEntry(entry).forEach(([text, minCells, align], cellIndex) => {
+        const cell = matrixCells[cellIndex];
+        if (!cell) return;
+        const { normalized, chars } = getDotMatrixDisplayState(text, minCells, 24, align === "right" ? "start" : "end");
+        cell.dataset.matrixText = normalized;
+        cell.dataset.matrixMinCells = String(minCells);
+        cell.dataset.matrixMaxLength = "24";
+        cell.dataset.matrixPadSide = align === "right" ? "start" : "end";
+        cell.setAttribute("aria-label", normalized);
+        syncDotMatrixCharCount(cell, chars.length);
+        Array.from(cell.children).forEach((charCell, charIndex) => {
+          const target = chars[charIndex] || " ";
+          const current = charCell.dataset.matrixChar || " ";
+          const order = globalIndex;
+          globalIndex += 1;
+          if (current === target) return;
+          if (target === " ") {
+            updateDotMatrixChar(charCell, target);
+            return;
+          }
+          jobs.push({ charCell, target, order, tick: -1, settled: false });
+        });
+      });
+      return { row, jobs, totalChars: globalIndex };
+    }
+
+    function cancelLeaderboardLiveAnimation() {
+      leaderboardLiveAnimationToken += 1;
+      leaderboardLiveAnimating = false;
+      if (leaderboardLiveFrame) cancelAnimationFrame(leaderboardLiveFrame);
+      leaderboardLiveFrame = 0;
+    }
+
+    function animateLeaderboardRows(preparedRows) {
+      const activeRows = preparedRows.filter((item) => item.jobs.length);
+      if (!activeRows.length) return;
+      const token = leaderboardLiveAnimationToken + 1;
+      const startedAt = performance.now();
+      let finishAt = 0;
+      leaderboardLiveAnimationToken = token;
+      leaderboardLiveAnimating = true;
+      activeRows.forEach((item) => {
+        const delay = Math.max(4, (leaderboardLiveDuration - leaderboardLiveFlickerWindow) / Math.max(1, item.totalChars - 1));
+        item.jobs.forEach((job) => {
+          job.start = job.order * delay;
+          job.end = job.start + leaderboardLiveFlickerWindow;
+          finishAt = Math.max(finishAt, job.end);
+        });
+      });
+      const jobs = activeRows.flatMap((item) => item.jobs);
+      const step = (now) => {
+        if (token !== leaderboardLiveAnimationToken) return;
+        const elapsed = now - startedAt;
+        jobs.forEach((job) => {
+          if (elapsed < job.start) return;
+          if (elapsed >= job.end) {
+            if (!job.settled) {
+              updateDotMatrixChar(job.charCell, job.target);
+              job.settled = true;
+            }
+            return;
+          }
+          const tick = Math.floor((elapsed - job.start) / leaderboardLiveGlyphTick);
+          if (tick !== job.tick) {
+            job.tick = tick;
+            updateDotMatrixChar(job.charCell, randomLeaderboardLiveChar());
+          }
+        });
+        if (elapsed < finishAt) {
+          leaderboardLiveFrame = requestAnimationFrame(step);
+          return;
+        }
+        jobs.forEach((job) => {
+          if (!job.settled) updateDotMatrixChar(job.charCell, job.target);
+        });
+        leaderboardLiveFrame = 0;
+        leaderboardLiveAnimating = false;
+      };
+      leaderboardLiveFrame = requestAnimationFrame(step);
+    }
+
+    function runLeaderboardLiveUpdate() {
+      if (document.hidden || leaderboardLiveAnimating || window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
+      const boards = getVisibleLeaderboardBoards();
+      if (!boards.length) return;
+      const rankBoards = boards.filter(isLeaderboardLiveRankBoard);
+      const move = pickLeaderboardLiveMove(rankBoards);
+      const range = applyLeaderboardLiveMove(move);
+      if (!range) return;
+      leaderboardLiveRevision += 1;
+      const rows = getLeaderboardRankedEntries("value", "desc");
+      const updateStart = Math.max(0, range.startIndex - 1);
+      const updateEnd = Math.min(rows.length - 1, range.endIndex + 1);
+      const preparedRows = [];
+      rankBoards.forEach((board) => {
+        board.dataset.leaderboardRevision = String(leaderboardLiveRevision);
+        const visibleRows = getVisibleLeaderboardRows(board);
+        visibleRows.forEach((row) => {
+          const rowIndex = Number(row.dataset.leaderboardIndex);
+          if (!Number.isInteger(rowIndex) || rowIndex < updateStart || rowIndex > updateEnd) return;
+          const entry = rows[rowIndex];
+          if (entry) preparedRows.push(prepareLeaderboardRowAnimation(row, entry));
+        });
+      });
+      animateLeaderboardRows(preparedRows);
+    }
+
+    function syncLeaderboardIfStale(board) {
+      if (!board || board.dataset.leaderboardRevision === String(leaderboardLiveRevision)) return;
+      renderLeaderboard(board);
+    }
+
+    function startLeaderboardLiveUpdates() {
+      if (leaderboardLiveTimer || window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
+      leaderboardLiveTimer = window.setInterval(runLeaderboardLiveUpdate, leaderboardLiveInterval);
+      window.setTimeout(runLeaderboardLiveUpdate, 1400);
+    }
+
+    function renderLeaderboard(board = document.querySelector("[data-leaderboard]"), options = {}) {
       if (!board) return;
+      cancelLeaderboardLiveAnimation();
       const body = board.querySelector("[data-leaderboard-body]");
       const sortKey = board.dataset.sortKey || "value";
       const direction = board.dataset.sortDirection || "desc";
-      const sorted = leaderboardEntries
-        .map((entry, index) => ({ ...entry, originalPlace: index + 1 }))
-        .sort((a, b) => {
-          const aValue = a[sortKey];
-          const bValue = b[sortKey];
-          const result = typeof aValue === "string" ? aValue.localeCompare(bValue) : aValue - bValue;
-          return direction === "asc" ? result : -result;
-        });
-      const rows = board.classList.contains("sim-leaderboard")
-        ? Array.from({ length: 4 }, () => sorted).flat()
-        : sorted;
+      const rows = getLeaderboardRankedEntries(sortKey, direction);
       body.replaceChildren(...rows.map((entry, index) => {
         const row = document.createElement("div");
         row.className = "leaderboard-grid leaderboard-row";
-        const displayPlace = board.classList.contains("sim-leaderboard") ? (index % sorted.length) + 1 : index + 1;
+        row.dataset.entryId = entry.id;
+        row.dataset.leaderboardIndex = String(index);
+        const avatar = createLeaderboardPfp(entry.pfp, entry.displayPlace, entry.flip);
+        avatar.dataset.entryId = entry.id;
         row.append(
-          createLeaderboardPfp(entry.pfp, entry.originalPlace, entry.flip),
-          createLeaderboardMatrix(String(displayPlace).padStart(2, "0"), 5, "left"),
-          createLeaderboardMatrix(entry.username, 16, "left"),
-          createLeaderboardMatrix(formatLeaderboardMoney(entry.value), 10, "right"),
-          createLeaderboardMatrix(formatLeaderboardMoney(entry.pnl), 10, "right"),
-          createLeaderboardMatrix(formatLeaderboardRoi(entry.roi), 10, "right"),
-          createLeaderboardMatrix(formatLeaderboardVolume(entry.volume), 10, "right")
+          avatar,
+          ...getLeaderboardDisplayCells(entry).map(([text, minCells, align]) => createLeaderboardMatrix(text, minCells, align))
         );
         return row;
       }));
@@ -3497,18 +3893,22 @@ h1, .section-title h2, .card h3 {
           button.setAttribute("aria-sort", direction === "asc" ? "ascending" : "descending");
         }
       });
+      board.dataset.leaderboardRevision = String(leaderboardLiveRevision);
     }
 
     function setSimPage(page = "leaderboard") {
       document.querySelectorAll("[data-sim-page]").forEach((panel) => {
         panel.classList.toggle("is-active", panel.dataset.simPage === page);
       });
+      if (page === "leaderboard") {
+        document.querySelectorAll(".sim-leaderboard").forEach(syncLeaderboardIfStale);
+      }
       requestAnimationFrame(() => {
         document.querySelectorAll(".sim-leaderboard").forEach(updateSimLeaderboardLayout);
       });
     }
 
-    function createDepositNavPill(label = "deposit", width = 110) {
+    function createDepositNavPill(label = "deposit", width = 112) {
       const sourceButton = document.querySelector(".deposit-modal-demo [data-deposit-open]") || document.querySelector("#button-preview");
       if (!sourceButton) return null;
       const button = sourceButton.cloneNode(true);
@@ -3533,7 +3933,7 @@ h1, .section-title h2, .card h3 {
       });
       root.querySelectorAll("[data-nav-deposit]").forEach((mount) => {
         if (!force && mount.firstElementChild?.classList?.contains("hudi-trade-button")) return;
-        const button = createDepositNavPill("deposit", 110);
+        const button = createDepositNavPill("deposit", 112);
         if (button) mount.replaceChildren(button);
       });
     }
@@ -3612,6 +4012,7 @@ h1, .section-title h2, .card h3 {
     function closeSim() {
       document.body.classList.remove("is-sim");
       document.querySelector("[data-sim-view]")?.setAttribute("aria-hidden", "true");
+      document.querySelectorAll("[data-leaderboard]").forEach(syncLeaderboardIfStale);
       window.scrollTo(0, 0);
     }
 
@@ -3633,9 +4034,9 @@ h1, .section-title h2, .card h3 {
 
     function getWindowOrbState() {
       return {
-        colour: windowOrbControls?.querySelector('[data-window-orb-field="colour"]')?.value || "#d99b62",
-        sheen: windowOrbControls?.querySelector('[data-window-orb-field="sheen"]')?.value || "#fbd39d",
-        shadowHex: windowOrbControls?.querySelector('[data-window-orb-field="shadow"]')?.value || "#76481e",
+        colour: windowOrbControls?.querySelector('[data-window-orb-field="colour"]')?.value || "#61caff",
+        sheen: windowOrbControls?.querySelector('[data-window-orb-field="sheen"]')?.value || "#cff3ff",
+        shadowHex: windowOrbControls?.querySelector('[data-window-orb-field="shadow"]')?.value || "#bde4ff",
         image: windowOrbPreview?.dataset.windowImage || "assets/window-orb-shanghai.png",
       };
     }
@@ -3800,6 +4201,13 @@ h1, .section-title h2, .card h3 {
       return { base, sheen: rgbToHex(sheen), shadowHex: rgbToHex(shadow) };
     }
 
+    function deriveWindowOrbPalette(base) {
+      const baseRgb = hexToRgb(base);
+      const sheen = mixRgb(baseRgb, { r: 255, g: 255, b: 255 }, .7);
+      const shadow = mixRgb(baseRgb, { r: 255, g: 246, b: 255 }, .58);
+      return { base, sheen: rgbToHex(sheen), shadowHex: rgbToHex(shadow) };
+    }
+
     function setOrbField(name, value) {
       const field = orbControls?.querySelector(`[data-orb-field="${name}"]`);
       if (field) field.value = value;
@@ -3825,7 +4233,7 @@ h1, .section-title h2, .card h3 {
     }
 
     function applyWindowOrbColour(base) {
-      const palette = deriveOrbPalette(base);
+      const palette = deriveWindowOrbPalette(base);
       setWindowOrbField("colour", palette.base);
       setWindowOrbField("sheen", palette.sheen);
       setWindowOrbField("shadow", palette.shadowHex);
@@ -4355,10 +4763,11 @@ function buildCustomToggleCss(state) {
     }
 
     function buildWindowOrbCss(state) {
-      const shadow = hexToRgba(state.shadowHex, .4);
+      const shadow = hexToRgba(state.shadowHex, .56);
       const image = state.image.startsWith("data:") ? "/* uploaded image data URL */" : state.image;
       return `/* Window orb material */
 .hudi-window-orb {
+  --orb-base: ${state.colour};
   --orb-sheen: ${state.sheen};
   --orb-shadow: ${shadow};
   --orb-size: 148px;
@@ -4369,7 +4778,7 @@ function buildCustomToggleCss(state) {
   width: var(--orb-size);
   aspect-ratio: 1;
   border-radius: 50%;
-  background-color: #cdd8df;
+  background-color: var(--orb-base);
   background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255,255,255,0) 58%), var(--window-image);
   background-position: center;
   background-size: cover;
@@ -4400,6 +4809,43 @@ function buildCustomToggleCss(state) {
   background: radial-gradient(51.58% 50% at 50% 50%, #fff 0%, rgba(255,255,255,.14) 100%);
   opacity: .8;
   z-index: 1;
+}
+.orb-file {
+  position: relative;
+  display: grid;
+  gap: 7px;
+  justify-items: start;
+  color: #a9a9a9;
+  font-family: "OCRA Fixed", ui-monospace, monospace;
+  font-size: 9px;
+  cursor: pointer;
+}
+.orb-file input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.orb-upload-button.hudi-trade-button {
+  --pill-bg: #f6ffff;
+  --pill-inner-shadow: rgba(0,62,59,.28);
+  --pill-label: #4f6966;
+  width: 154px;
+  min-width: 154px;
+  height: 48px;
+  border-width: 5px;
+  border-radius: 999px;
+  font-size: 21px;
+  font-weight: 400;
+}
+.orb-upload-button.hudi-trade-button .pill-label {
+  color: var(--pill-label);
+  -webkit-text-fill-color: var(--pill-label);
+}
+.orb-file:focus-within .orb-upload-button {
+  outline: 3px solid #8bccff;
+  outline-offset: 3px;
 }`;
     }
 
@@ -4662,6 +5108,16 @@ function buildCustomToggleCss(state) {
   top: 0;
   text-shadow: none;
   -webkit-text-fill-color: #fff;
+}
+.hudi-nav-deposit-button.hudi-trade-button {
+  --pill-bg: #dbfd01;
+  --pill-inner-shadow: rgba(83,112,0,.34);
+  width: 112px;
+  min-width: 112px;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 18px;
+  font-size: 13.5px;
 }
 .hudi-nav-pill.is-teleporting {
   animation: none !important;
@@ -5207,8 +5663,9 @@ function buildCustomToggleCss(state) {
     function updateWindowOrbPreview() {
       if (!windowOrbPreview || !windowOrbControls) return;
       const state = getWindowOrbState();
+      windowOrbPreview.style.setProperty("--orb-base", state.colour);
       windowOrbPreview.style.setProperty("--orb-sheen", state.sheen);
-      windowOrbPreview.style.setProperty("--orb-shadow", hexToRgba(state.shadowHex, .4));
+      windowOrbPreview.style.setProperty("--orb-shadow", hexToRgba(state.shadowHex, .56));
       windowOrbPreview.style.setProperty("--window-image", `url("${state.image}")`);
       snippets["Window orbs"] = buildWindowOrbCss(state);
       updateOrbShadowScale(windowOrbPreview.parentElement || document);
@@ -5442,11 +5899,26 @@ function buildCustomToggleCss(state) {
     document.querySelectorAll(".time-selector").forEach(updateTimeSelector);
     document.fonts?.ready.then(() => document.querySelectorAll(".time-selector").forEach(updateTimeSelector));
     document.fonts?.ready.then(() => queuePillTopContours());
-    window.addEventListener("resize", () => {
+    let hudiResizeFrame = 0;
+    let hudiResizeLayoutTimer = 0;
+    function runHudiResizeWork() {
+      hudiResizeFrame = 0;
       document.querySelectorAll(".time-selector").forEach(updateTimeSelector);
       queuePillTopContours();
-      document.querySelectorAll(".sim-leaderboard").forEach(updateSimLeaderboardLayout);
-    });
+      updateOrbShadowScale();
+    }
+    function runDeferredHudiResizeLayout() {
+      hudiResizeLayoutTimer = 0;
+      if (document.body.classList.contains("is-sim")) {
+        document.querySelectorAll(".sim-leaderboard").forEach(updateSimLeaderboardLayout);
+      }
+    }
+    function scheduleHudiResizeWork() {
+      if (!hudiResizeFrame) hudiResizeFrame = requestAnimationFrame(runHudiResizeWork);
+      if (hudiResizeLayoutTimer) window.clearTimeout(hudiResizeLayoutTimer);
+      hudiResizeLayoutTimer = window.setTimeout(runDeferredHudiResizeLayout, 140);
+    }
+    window.addEventListener("resize", scheduleHudiResizeWork, { passive: true });
 
     function updateLeverageSlider(input) {
       const values = (input.dataset.leverageValues || "").split(",").filter(Boolean);
@@ -5493,8 +5965,13 @@ function buildCustomToggleCss(state) {
     document.querySelectorAll("[data-leaderboard]").forEach((board) => {
       board.dataset.sortKey = board.dataset.sortKey || "value";
       board.dataset.sortDirection = board.dataset.sortDirection || "desc";
-      renderLeaderboard(board);
+      try {
+        renderLeaderboard(board);
+      } catch (error) {
+        console.error("Leaderboard render failed", error);
+      }
     });
+    startLeaderboardLiveUpdates();
 
     function formatLeverageValue(value) {
       const rounded = Math.round(value * 10) / 10;
@@ -5719,7 +6196,7 @@ function buildCustomToggleCss(state) {
         const currentKey = board.dataset.sortKey || "value";
         const currentDirection = board.dataset.sortDirection || "desc";
         board.dataset.sortKey = nextKey;
-        board.dataset.sortDirection = nextKey === currentKey ? currentDirection === "desc" ? "asc" : "desc" : nextKey === "place" ? "asc" : "desc";
+        board.dataset.sortDirection = nextKey === currentKey ? currentDirection === "desc" ? "asc" : "desc" : nextKey === "place" || nextKey === "username" ? "asc" : "desc";
         renderLeaderboard(board);
       }
 
@@ -5898,12 +6375,6 @@ function buildCustomToggleCss(state) {
       });
       reader.readAsDataURL(file);
     });
-
-	    window.addEventListener("resize", () => {
-	      queuePillTopContours();
-	      updateOrbShadowScale();
-	      document.querySelectorAll(".sim-leaderboard").forEach(updateSimLeaderboardLayout);
-	    });
 
 	    document.querySelectorAll(".chart-demo").forEach((chart) => {
       const scroll = chart.querySelector(".chart-scroll");
