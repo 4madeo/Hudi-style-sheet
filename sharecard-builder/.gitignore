@@ -1,0 +1,8 @@
+.DS_Store
+outputs/
+*.log
+node_modules/
+dist/
+build/
+.env
+.env.*
