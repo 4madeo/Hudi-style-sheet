@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PNL Sharecard Maker</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="workspace" aria-label="PNL sharecard maker">
+        <form id="controls" class="controls">
+          <div class="topbar">
+            <div>
+              <p class="kicker">PNL Sharecard Maker</p>
+              <h1>Trade result card</h1>
+            </div>
+            <output id="pnl-pill" class="pnl-pill" name="pnl">+0.00%</output>
+          </div>
+
+          <details class="control-section main-settings" open>
+            <summary><span>Main settings</span></summary>
+            <div class="section-body main-settings-body">
+          <details class="control-section" open>
+            <summary><span>Trade setup</span></summary>
+            <div class="section-body">
+              <fieldset class="scenario-picker">
+                <legend>Result type</legend>
+                <label>
+                  <input type="radio" name="scenario" value="slight-profit" checked />
+                  <span>Slight profit</span>
+                </label>
+                <label>
+                  <input type="radio" name="scenario" value="big-profit" />
+                  <span>Big profit</span>
+                </label>
+                <label>
+                  <input type="radio" name="scenario" value="huge-profit" />
+                  <span>Huge profit</span>
+                </label>
+                <label>
+                  <input type="radio" name="scenario" value="slight-loss" />
+                  <span>Slight loss</span>
+                </label>
+                <label>
+                  <input type="radio" name="scenario" value="big-loss" />
+                  <span>Big loss</span>
+                </label>
+                <label>
+                  <input type="radio" name="scenario" value="huge-loss" />
+                  <span>Huge loss</span>
+                </label>
+              </fieldset>
+
+              <div class="field-grid">
+                <label>
+                  Token name
+                  <input name="token" type="text" maxlength="4" value="TENC" list="market-list" autocomplete="off" />
+                  <datalist id="market-list"></datalist>
+                </label>
+
+                <label>
+                  Hudi
+                  <input name="hudi" type="text" maxlength="26" value="@hudi" autocomplete="off" />
+                </label>
+
+                <label>
+                  Entry price (sim)
+                  <input name="entry" type="number" min="0" step="0.0001" value="19.82" readonly />
+                </label>
+
+                <label>
+                  Exit price (sim)
+                  <input name="exit" type="number" min="0" step="0.0001" value="20.45" readonly />
+                </label>
+              </div>
+
+              <div class="field-grid compact">
+                <label>
+                  PNL %
+                  <input name="pnlOverride" type="number" step="0.1" value="20.6" />
+                </label>
+
+                <label>
+                  Position
+                  <select name="side">
+                    <option value="long">Long</option>
+                    <option value="short">Short</option>
+                  </select>
+                </label>
+
+                <label>
+                  Leverage
+                  <input name="leverage" type="number" min="1" max="20" step="1" value="20" />
+                </label>
+
+                <label>
+                  Card size
+                  <select name="size">
+                    <option value="chat">Sharecard 1200x800</option>
+                    <option value="chat-orb" selected>1200x800 with orb</option>
+                  </select>
+                </label>
+              </div>
+
+              <label>
+                Note
+                <input
+                  name="note"
+                  type="text"
+                  maxlength="56"
+                  value="Clean execution. Risk managed."
+                  autocomplete="off"
+                />
+              </label>
+            </div>
+          </details>
+
+          <details class="customizer" hidden>
+            <summary>
+              <span>Card customizer</span>
+              <button type="button" id="reset-customizer" class="ghost mini-button">Reset</button>
+            </summary>
+
+            <div id="card-customizer" class="customizer-body">
+              <div class="customizer-group">
+                <h3>Assets + data box</h3>
+                <div class="slider-grid compact-sliders">
+                  <label>
+                    Text X
+                    <input name="textX" type="range" min="-280" max="280" step="1" value="0" data-suffix="px" />
+                    <output data-output="textX">0px</output>
+                  </label>
+                  <label>
+                    Text Y
+                    <input name="textY" type="range" min="-220" max="220" step="1" value="0" data-suffix="px" />
+                    <output data-output="textY">0px</output>
+                  </label>
+                  <label>
+                    Hudi X
+                    <input name="hudiX" type="range" min="-260" max="260" step="1" value="0" data-suffix="px" />
+                    <output data-output="hudiX">0px</output>
+                  </label>
+                  <label>
+                    Hudi Y
+                    <input name="hudiY" type="range" min="-260" max="260" step="1" value="0" data-suffix="px" />
+                    <output data-output="hudiY">0px</output>
+                  </label>
+                  <label>
+                    Hudi scale
+                    <input name="hudiScale" type="range" min="0.55" max="1.65" step="0.01" value="1" data-suffix="x" />
+                    <output data-output="hudiScale">1.00x</output>
+                  </label>
+                </div>
+              </div>
+
+              <div class="customizer-group">
+                <h3>Orb + graph</h3>
+                <div class="slider-grid compact-sliders">
+                  <label>
+                    Orb X
+                    <input name="orbX" type="range" min="-260" max="260" step="1" value="0" data-suffix="px" />
+                    <output data-output="orbX">0px</output>
+                  </label>
+                  <label>
+                    Orb Y
+                    <input name="orbY" type="range" min="-220" max="220" step="1" value="0" data-suffix="px" />
+                    <output data-output="orbY">0px</output>
+                  </label>
+                  <label>
+                    Orb + text scale
+                    <input name="orbGroupScale" type="range" min="0.55" max="1.65" step="0.01" value="1" data-suffix="x" />
+                    <output data-output="orbGroupScale">1.00x</output>
+                  </label>
+                  <label>
+                    Orb scale
+                    <input name="orbScale" type="range" min="0.55" max="1.45" step="0.01" value="1" data-suffix="x" />
+                    <output data-output="orbScale">1.00x</output>
+                  </label>
+                  <label>
+                    Text scale
+                    <input name="textScale" type="range" min="0.55" max="1.45" step="0.01" value="1" data-suffix="x" />
+                    <output data-output="textScale">1.00x</output>
+                  </label>
+                  <label>
+                    Orb sheen
+                    <input name="orbSheenOpacity" type="range" min="0" max="1.25" step="0.01" value="1" />
+                    <output data-output="orbSheenOpacity">1.00</output>
+                  </label>
+                  <label>
+                    Orb glass
+                    <input name="orbGlassOpacity" type="range" min="0" max="1.25" step="0.01" value="1" />
+                    <output data-output="orbGlassOpacity">1.00</output>
+                  </label>
+                  <label>
+                    Top highlight
+                    <input name="orbHighlightOpacity" type="range" min="0" max="1.25" step="0.01" value="1" />
+                    <output data-output="orbHighlightOpacity">1.00</output>
+                  </label>
+                  <label>
+                    Bottom bloom
+                    <input name="orbBloomOpacity" type="range" min="0" max="1" step="0.01" value="0.35" />
+                    <output data-output="orbBloomOpacity">0.35</output>
+                  </label>
+                  <label>
+                    Inner shadow
+                    <input name="orbShadowOpacity" type="range" min="0" max="1" step="0.01" value="0.4" />
+                    <output data-output="orbShadowOpacity">0.40</output>
+                  </label>
+                  <label>
+                    Graph opacity
+                    <input name="chartOpacity" type="range" min="0" max="1" step="0.01" value="0.92" />
+                    <output data-output="chartOpacity">0.92</output>
+                  </label>
+                  <label>
+                    Graph X
+                    <input name="chartX" type="range" min="-300" max="300" step="1" value="0" data-suffix="px" />
+                    <output data-output="chartX">0px</output>
+                  </label>
+                  <label>
+                    Graph Y
+                    <input name="chartY" type="range" min="-300" max="300" step="1" value="0" data-suffix="px" />
+                    <output data-output="chartY">0px</output>
+                  </label>
+                  <label>
+                    Graph scale
+                    <input name="chartScale" type="range" min="0.45" max="2" step="0.01" value="1" data-suffix="x" />
+                    <output data-output="chartScale">1.00x</output>
+                  </label>
+                  <label>
+                    Candle Y range
+                    <input name="candleBodyScale" type="range" min="0.75" max="2.2" step="0.01" value="1.15" data-suffix="x" />
+                    <output data-output="candleBodyScale">1.15x</output>
+                  </label>
+                  <label>
+                    Candle stroke
+                    <input name="chartStrokeWidth" type="range" min="0" max="4" step="0.1" value="1" data-suffix="px" />
+                    <output data-output="chartStrokeWidth">1.0px</output>
+                  </label>
+                </div>
+              </div>
+
+              <div class="customizer-group">
+                <h3>Data colors + strokes</h3>
+                <div class="color-grid">
+                  <label>PNL <input name="pnlColor" type="color" value="#03fd91" /></label>
+                  <label>PNL stroke <input name="pnlStrokeColor" type="color" value="#171717" /></label>
+                  <label>Text <input name="textColor" type="color" value="#171717" /></label>
+                  <label>Token <input name="tokenColor" type="color" value="#333333" /></label>
+                  <label>Hudi <input name="hudiColor" type="color" value="#03fd91" /></label>
+                  <label>Orb profit <input name="orbProfitColor" type="color" value="#6bff97" /></label>
+                  <label>Orb loss <input name="orbLossColor" type="color" value="#fd01ba" /></label>
+                  <label>Orb sheen color <input name="orbSheenColor" type="color" value="#ffffff" /></label>
+                  <label>Orb shadow <input name="orbShadowColor" type="color" value="#3dffe8" /></label>
+                  <label>Chart stroke <input name="chartStrokeColor" type="color" value="#171717" /></label>
+                  <label>Background <input name="backgroundColor" type="color" value="#ffffff" /></label>
+                </div>
+                <div class="slider-grid compact-sliders">
+                  <label>
+                    PNL stroke
+                    <input name="pnlStrokeWidth" type="range" min="0" max="8" step="0.25" value="2" data-suffix="px" />
+                    <output data-output="pnlStrokeWidth">2.0px</output>
+                  </label>
+                  <label>
+                    Background opacity
+                    <input name="backgroundOpacity" type="range" min="0" max="1" step="0.01" value="1" />
+                    <output data-output="backgroundOpacity">1.00</output>
+                  </label>
+                  <label>
+                    Background wash
+                    <input name="washOpacity" type="range" min="0" max="0.75" step="0.01" value="0.2" />
+                    <output data-output="washOpacity">0.20</output>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="control-section" open>
+            <summary><span>Export + share</span></summary>
+            <div class="section-body">
+              <div class="actions" aria-label="Share actions">
+                <button type="button" id="copy-text">Copy text</button>
+                <button type="button" id="copy-png">Copy PNG</button>
+                <button type="button" id="copy-chat-card">Copy 3D card</button>
+                <button type="button" id="download-png" class="primary">Save PNG</button>
+              </div>
+            </div>
+          </details>
+
+          <p id="status" class="status" role="status" aria-live="polite"></p>
+            </div>
+          </details>
+        </form>
+
+        <section class="preview-panel">
+          <div class="preview-meta">
+            <div>
+              <p class="kicker">Live card</p>
+              <h2 id="size-label">1200 x 675</h2>
+            </div>
+            <div class="preview-actions">
+              <button type="button" id="replay-animation" class="ghost">Replay</button>
+              <button type="button" id="download-svg" class="ghost">SVG</button>
+            </div>
+          </div>
+
+          <div id="preview" class="preview" aria-live="polite"></div>
+        </section>
+      </section>
+
+      <section class="graph-playground" aria-label="Graph animation playground">
+        <div class="playground-head">
+          <div>
+            <p class="kicker">Graph Motion Lab</p>
+            <h2>Animation playground</h2>
+          </div>
+          <div class="preview-actions">
+            <button type="button" id="playground-replay" class="ghost">New variation</button>
+            <button type="button" id="export-lottie" class="ghost">Lottie JSON</button>
+            <button type="button" id="apply-graph" class="primary">Replay on sharecard</button>
+          </div>
+        </div>
+
+        <div class="playground-grid">
+          <form id="graph-controls" class="graph-controls">
+            <details class="control-section" open>
+              <summary><span>Graph controls</span></summary>
+              <div class="section-body">
+                <div class="field-grid compact">
+                  <label>
+                    Graph logic
+                    <input name="patternLabel" type="text" value="PNL driven" readonly />
+                    <input name="pattern" type="hidden" value="pnl-driven" />
+                  </label>
+
+                  <label>
+                    Animation type
+                    <input name="animationType" type="text" value="Flat anchor grow" readonly />
+                  </label>
+                </div>
+
+                <div class="slider-grid">
+                  <label>
+                    Bars
+                    <input name="barAmount" type="range" min="12" max="96" step="1" value="32" />
+                    <output data-output="barAmount">32</output>
+                  </label>
+
+                  <label>
+                    Time
+                    <input name="duration" type="range" min="0.4" max="4" step="0.1" value="1.4" />
+                    <output data-output="duration">1.4s</output>
+                  </label>
+
+                  <label>
+                    Sharecard scale
+                    <input name="cardScale" type="range" min="0.8" max="2.4" step="0.05" value="1.75" />
+                    <output data-output="cardScale">1.75x</output>
+                  </label>
+                </div>
+
+                <div class="curve-editor">
+                  <div class="curve-title">
+                    <span>Animation curve</span>
+                    <output id="curve-output">cubic-bezier(0.16, 1, 0.30, 1)</output>
+                  </div>
+
+                  <div class="bezier-pad" aria-label="Bezier curve editor">
+                    <svg id="bezier-editor" viewBox="0 0 320 180" role="img" aria-label="Drag handles to edit animation curve">
+                      <rect class="bezier-bg" x="1" y="1" width="318" height="178" rx="14" />
+                      <path class="bezier-grid" d="M80 1V179M160 1V179M240 1V179M1 45H319M1 90H319M1 135H319" />
+                      <line class="bezier-handle-line" data-line="start" x1="22" y1="158" x2="70" y2="22" />
+                      <line class="bezier-handle-line" data-line="end" x1="298" y1="22" x2="106" y2="22" />
+                      <path id="bezier-path" class="bezier-path" d="" />
+                      <circle class="bezier-endpoint" cx="22" cy="158" r="5" />
+                      <circle class="bezier-endpoint" cx="298" cy="22" r="5" />
+                      <circle class="bezier-handle" data-handle="p1" cx="70" cy="22" r="9" tabindex="0" />
+                      <circle class="bezier-handle" data-handle="p2" cx="106" cy="22" r="9" tabindex="0" />
+                    </svg>
+                  </div>
+
+                  <div class="slider-grid curve-sliders">
+                    <label>
+                      x1
+                      <input name="x1" type="range" min="0" max="1" step="0.01" value="0.16" />
+                      <output data-output="x1">0.16</output>
+                    </label>
+                    <label>
+                      y1
+                      <input name="y1" type="range" min="-0.8" max="1.8" step="0.01" value="1" />
+                      <output data-output="y1">1.00</output>
+                    </label>
+                    <label>
+                      x2
+                      <input name="x2" type="range" min="0" max="1" step="0.01" value="0.3" />
+                      <output data-output="x2">0.30</output>
+                    </label>
+                    <label>
+                      y2
+                      <input name="y2" type="range" min="-0.8" max="1.8" step="0.01" value="1" />
+                      <output data-output="y2">1.00</output>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </form>
+
+          <div class="graph-stage-wrap">
+            <div id="graph-preview" class="graph-preview" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

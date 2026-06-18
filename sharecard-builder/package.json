@@ -1,0 +1,17 @@
+{
+  "name": "hudi-card-builder",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prototype sharecard generator for Hudi trade PNL cards.",
+  "scripts": {
+    "start": "python3 -m http.server 4176",
+    "check": "node --check app.js"
+  },
+  "keywords": [
+    "hudi",
+    "sharecard",
+    "pnl",
+    "trading"
+  ],
+  "license": "UNLICENSED"
+}
