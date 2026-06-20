@@ -39,6 +39,12 @@
       --light-grey: #a9a9a9;
       --outline-blue: #e9f4fe;
       --outline-blue-2: #e2f2ff;
+      --landing-texture-square: #F6FCFF;
+      --landing-orb-base: #F9F9F9;
+      --landing-orb-sheen: #E1F7FF;
+      --landing-orb-inner-glow-blur: 25px;
+      --landing-texture-transition-ms: 1100ms;
+      --landing-texture-cycle-ms: 1400ms;
       --select-blue: #99cafa;
       --outline-grey: #e7e9ed;
       --text-green: #5bb67c;
@@ -1584,7 +1590,7 @@ h1 { margin: 0; font-family: var(--sans); font-size: clamp(34px, 4.4vw, 64px); l
 
 .hudi-pill-chamber { position: relative; width: 326px; max-width: 100%; height: 50px; border: 4px solid var(--outline-blue); border-radius: 26px; background: var(--selected-fill); box-shadow: inset 0 -3.08px 32.19px var(--chamber-shadow); overflow: hidden; isolation: isolate; }
 
-.hudi-side-toggle { --toggle-left: 50%; --toggle-bg: var(--pink); --toggle-label: var(--white); --toggle-shadow: var(--toggle-short-shadow-default); position: relative; width: 326px; max-width: 100%; height: 50px; border: 4px solid var(--outline-blue); border-radius: 26px; background: transparent; overflow: hidden; isolation: isolate; contain: paint; }
+.hudi-side-toggle { --toggle-left: 50%; --toggle-bg: var(--pink); --toggle-label: var(--white); --toggle-shadow: var(--toggle-short-shadow-default); position: relative; width: 326px; max-width: 100%; height: var(--space-44); border: 4px solid var(--outline-blue); border-radius: var(--space-24); background: transparent; overflow: hidden; isolation: isolate; contain: paint; }
 
 .hudi-side-toggle__bed { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--selected-fill); box-shadow: inset 0 -3.08px 32.19px var(--chamber-shadow); overflow: hidden; pointer-events: none; z-index: 0; }
 
@@ -1600,7 +1606,7 @@ h1 { margin: 0; font-family: var(--sans); font-size: clamp(34px, 4.4vw, 64px); l
 
 .hudi-side-toggle button { position: absolute; top: calc(var(--space-1) * -0.5); z-index: 4; width: 50%; height: 100%; border: 0; background: transparent; color: transparent; cursor: pointer; font-family: var(--sans); font-size: 19px; font-weight: var(--hudi-pill-font-weight, 500); letter-spacing: 0; }
 
-.hudi-side-toggle button::before { content: attr(data-label); position: absolute; inset: 0; display: grid; place-items: center; color: var(--toggle-inactive-label, var(--disabled-label)); opacity: var(--toggle-inactive-opacity, .54); text-shadow: 0 1px 1px var(--black-alpha-16), 0 -1px 0 var(--highlight-white-18); transform: translateY(3px); transition: opacity var(--motion-control) ease; -webkit-font-smoothing: antialiased; -webkit-text-fill-color: var(--toggle-inactive-label, var(--disabled-label)); }
+.hudi-side-toggle button::before { content: attr(data-label); position: absolute; inset: 0; display: grid; place-items: center; color: var(--toggle-inactive-label, var(--disabled-label)); opacity: var(--toggle-inactive-opacity, .54); text-shadow: 0 1px 1px var(--black-alpha-16), 0 -1px 0 var(--highlight-white-18); transform: translateY(2px); transition: opacity var(--motion-control) ease; -webkit-font-smoothing: antialiased; -webkit-text-fill-color: var(--toggle-inactive-label, var(--disabled-label)); }
 
 .hudi-side-toggle button[data-side="long"] { left: 0; }
 
@@ -1614,7 +1620,7 @@ h1 { margin: 0; font-family: var(--sans); font-size: clamp(34px, 4.4vw, 64px); l
 
 .hudi-side-toggle button:focus-visible { outline: 0; }
 
-.hudi-side-toggle__pill { --pill-top-contour-x: calc(var(--space-1) * -0.5); --pill-top-contour-y: calc(var(--space-1) * -0.5); --pill-top-contour-width: calc(100% - 7.5px); --pill-top-contour-height: 75.4%; position: absolute; top: -1px; bottom: -1px; left: var(--toggle-left); z-index: 2; display: grid; place-items: center; width: 50%; border-radius: 26px; background: var(--toggle-bg); box-shadow: inset 0 -3px 32px var(--toggle-shadow), 0 4px 4px var(--black-alpha-25); overflow: hidden; transition: left var(--motion-toggle) ease, background-color 180ms ease, box-shadow 180ms ease; will-change: left; }
+.hudi-side-toggle__pill { --pill-top-contour-x: calc(var(--space-1) * -0.5); --pill-top-contour-y: calc(var(--space-1) * -0.5); --pill-top-contour-width: calc(100% - 7.5px); --pill-top-contour-height: 75.4%; position: absolute; top: -1px; bottom: -1px; left: var(--toggle-left); z-index: 2; display: grid; place-items: center; width: 50%; border-radius: inherit; background: var(--toggle-bg); box-shadow: inset 0 -3px 32px var(--toggle-shadow), 0 4px 4px var(--black-alpha-25); overflow: hidden; transition: left var(--motion-toggle) ease, background-color 180ms ease, box-shadow 180ms ease; will-change: left; }
 
 .hudi-side-toggle__top-contour { height: var(--pill-top-contour-height); left: var(--pill-top-contour-x); mix-blend-mode: screen; overflow: visible; pointer-events: none; position: absolute; top: var(--pill-top-contour-y); width: var(--pill-top-contour-width); z-index: 3; }
 
@@ -2832,9 +2838,9 @@ h1 { margin: 0; font-family: var(--sans); font-size: clamp(34px, 4.4vw, 64px); l
 
 .terminal-side-toggle.hudi-side-toggle {
       width: 100%;
-      height: 72px;
+      height: var(--space-64);
       border-width: 5px;
-      border-radius: 40px;
+      border-radius: var(--space-36);
     }
 
 .terminal-side-toggle .hudi-side-toggle__bed { border-radius: inherit; }
@@ -2842,12 +2848,12 @@ h1 { margin: 0; font-family: var(--sans); font-size: clamp(34px, 4.4vw, 64px); l
 .terminal-side-toggle .hudi-side-toggle__pill {
       top: -1px;
       bottom: -1px;
-      border-radius: 40px;
+      border-radius: inherit;
     }
 
 .terminal-side-toggle button,
     .terminal-side-toggle .hudi-side-toggle__label {
-      font-size: clamp(24px, 4vw, 30px);
+      font-size: clamp(22px, 3.6vw, 28px);
       font-weight: 700;
     }
 
@@ -2882,7 +2888,7 @@ h1 { margin: 0; font-family: var(--sans); font-size: clamp(34px, 4.4vw, 64px); l
 
 .terminal-market-limit .market-limit-selector button {
       height: 38px;
-      font-size: 24px;
+      font-size: 22px;
     }
 
 .terminal-market-limit .market-limit-crosses {
@@ -3627,13 +3633,13 @@ body.is-sim .sim-shell { display: block; }
     }
 
 .sim-markets-terminal .terminal-side-toggle.hudi-side-toggle {
-      height: 58px;
+      height: var(--space-50);
       border-width: 4px;
     }
 
 .sim-markets-terminal .terminal-side-toggle button,
     .sim-markets-terminal .terminal-side-toggle .hudi-side-toggle__label {
-      font-size: 22px;
+      font-size: 20px;
     }
 
 .sim-markets-terminal .terminal-market-limit {
@@ -3649,7 +3655,7 @@ body.is-sim .sim-shell { display: block; }
 
 .sim-markets-terminal .terminal-market-limit .market-limit-selector button {
       height: 34px;
-      font-size: 22px;
+      font-size: 19px;
     }
 
 .sim-markets-terminal .terminal-market-limit .market-limit-crosses {
@@ -5083,7 +5089,7 @@ details.reference summary { padding: 10px 16px; color: var(--muted); font-family
       .blotter-row { min-height: 68px; }
       .long-short-terminal-demo { padding-inline: 0; }
       .long-short-terminal { padding: 20px 16px 28px; border-width: 4px; border-radius: 26px; }
-      .terminal-side-toggle.hudi-side-toggle { height: 62px; border-width: 4px; }
+      .terminal-side-toggle.hudi-side-toggle { height: 54px; border-width: 4px; }
       .terminal-market-limit { margin: 24px 0 26px; }
       .terminal-market-limit .market-limit-selector { grid-template-columns: 92px 92px; gap: var(--space-26); min-height: 64px; padding-inline: var(--space-10); }
       .terminal-market-limit .market-limit-selector button { height: 34px; font-size: 19px; }
@@ -10073,79 +10079,97 @@ h1, .section-title h2, .card h3 {
     hudiThemePalettes.sort((a, b) => hudiThemePaletteOrder.indexOf(a.name) - hudiThemePaletteOrder.indexOf(b.name));
 
     const hudiCursorThemeColoursByName = {
-      "full white": hudiCursorDefaultColours,
-      "default hudi blue": hudiCursorDefaultColours,
+      "full white": {
+        "--cursor-fill-top": "#ffffff",
+        "--cursor-fill-bottom": "#e9f8ff",
+        "--cursor-stroke-top": "#111111",
+        "--cursor-stroke-bottom": "#000000",
+        "--cursor-detail-fill": "#1497ff",
+      },
+      "default hudi blue": {
+        "--cursor-fill-top": "#ffffff",
+        "--cursor-fill-bottom": "#e4f8ff",
+        "--cursor-stroke-top": "#111111",
+        "--cursor-stroke-bottom": "#000000",
+        "--cursor-detail-fill": "#008fe8",
+      },
       "aqua graphite": {
-        "--cursor-fill-top": "#eefbff",
-        "--cursor-fill-bottom": "#dff5ff",
-        "--cursor-stroke-top": "#86c8dc",
-        "--cursor-stroke-bottom": "#284b5a",
-        "--cursor-detail-fill": "#274856",
+        "--cursor-fill-top": "#ffffff",
+        "--cursor-fill-bottom": "#ddfbff",
+        "--cursor-stroke-top": "#10191c",
+        "--cursor-stroke-bottom": "#00090c",
+        "--cursor-detail-fill": "#00a8c8",
       },
       "lime clamshell": {
         "--cursor-fill-top": "#ffffff",
-        "--cursor-fill-bottom": "#efffea",
-        "--cursor-stroke-top": "#b6e084",
-        "--cursor-stroke-bottom": "#26410f",
-        "--cursor-detail-fill": "#263b12",
+        "--cursor-fill-bottom": "#f4ffe0",
+        "--cursor-stroke-top": "#101509",
+        "--cursor-stroke-bottom": "#000000",
+        "--cursor-detail-fill": "#4cae00",
       },
       "butter yellow": {
-        "--cursor-fill-top": "#fffef8",
-        "--cursor-fill-bottom": "#fff7cc",
-        "--cursor-stroke-top": "#dbc873",
-        "--cursor-stroke-bottom": "#5f5529",
-        "--cursor-detail-fill": "#5f5529",
+        "--cursor-fill-top": "#ffffff",
+        "--cursor-fill-bottom": "#fff8d2",
+        "--cursor-stroke-top": "#171307",
+        "--cursor-stroke-bottom": "#000000",
+        "--cursor-detail-fill": "#d28b00",
       },
       "white orange": {
-        "--cursor-fill-top": "#fffaf5",
-        "--cursor-fill-bottom": "#ffe7d1",
-        "--cursor-stroke-top": "#daa06f",
-        "--cursor-stroke-bottom": "#61432a",
-        "--cursor-detail-fill": "#61432a",
+        "--cursor-fill-top": "#ffffff",
+        "--cursor-fill-bottom": "#ffe9d4",
+        "--cursor-stroke-top": "#1b0b00",
+        "--cursor-stroke-bottom": "#000000",
+        "--cursor-detail-fill": "#ff5a00",
       },
       "strawberry imac": {
-        "--cursor-fill-top": "#fff9fd",
-        "--cursor-fill-bottom": "#ffe3f3",
-        "--cursor-stroke-top": "#f59bce",
-        "--cursor-stroke-bottom": "#7e3f68",
-        "--cursor-detail-fill": "#74415f",
+        "--cursor-fill-top": "#ffffff",
+        "--cursor-fill-bottom": "#ffe0f4",
+        "--cursor-stroke-top": "#260018",
+        "--cursor-stroke-bottom": "#000000",
+        "--cursor-detail-fill": "#fd01ba",
       },
       "rainbow gloss": {
         "--cursor-fill-top": "#ffffff",
-        "--cursor-fill-bottom": "#eefaff",
-        "--cursor-stroke-top": "#97caf4",
-        "--cursor-stroke-bottom": "#384d86",
-        "--cursor-detail-fill": "#3e4c75",
+        "--cursor-fill-bottom": "#e5eeff",
+        "--cursor-stroke-top": "#111111",
+        "--cursor-stroke-bottom": "#000000",
+        "--cursor-detail-fill": "#005dff",
       },
       "deep red": {
-        "--cursor-fill-top": "#fff1f1",
-        "--cursor-fill-bottom": "#ffd6dc",
-        "--cursor-stroke-top": "#df8090",
-        "--cursor-stroke-bottom": "#4b1e26",
-        "--cursor-detail-fill": "#5d2630",
+        "--cursor-fill-top": "#ffffff",
+        "--cursor-fill-bottom": "#ffe0e4",
+        "--cursor-stroke-top": "#1c0000",
+        "--cursor-stroke-bottom": "#000000",
+        "--cursor-detail-fill": "#ff0000",
       },
       "deep blue": {
-        "--cursor-fill-top": "#edf7ff",
-        "--cursor-fill-bottom": "#d9efff",
-        "--cursor-stroke-top": "#74c6eb",
-        "--cursor-stroke-bottom": "#0f4260",
-        "--cursor-detail-fill": "#173d55",
+        "--cursor-fill-top": "#ffffff",
+        "--cursor-fill-bottom": "#e2f4ff",
+        "--cursor-stroke-top": "#08131c",
+        "--cursor-stroke-bottom": "#000000",
+        "--cursor-detail-fill": "#006ee8",
       },
       "dark blue": {
-        "--cursor-fill-top": "#f7fbff",
-        "--cursor-fill-bottom": "#dcecff",
-        "--cursor-stroke-top": "#7da7d9",
-        "--cursor-stroke-bottom": "#142b49",
-        "--cursor-detail-fill": "#173455",
+        "--cursor-fill-top": "#ffffff",
+        "--cursor-fill-bottom": "#e1efff",
+        "--cursor-stroke-top": "#0c1118",
+        "--cursor-stroke-bottom": "#000000",
+        "--cursor-detail-fill": "#1476ff",
       },
       "night candy": {
-        "--cursor-fill-top": "#fff2fd",
-        "--cursor-fill-bottom": "#ffd5f3",
-        "--cursor-stroke-top": "#ff73dc",
-        "--cursor-stroke-bottom": "#73315f",
-        "--cursor-detail-fill": "#f2e9ff",
+        "--cursor-fill-top": "#ffffff",
+        "--cursor-fill-bottom": "#ffe0f7",
+        "--cursor-stroke-top": "#210018",
+        "--cursor-stroke-bottom": "#000000",
+        "--cursor-detail-fill": "#fd35c8",
       },
-      "full black": hudiCursorDefaultColours,
+      "full black": {
+        "--cursor-fill-top": "#ffffff",
+        "--cursor-fill-bottom": "#fff0fb",
+        "--cursor-stroke-top": "#111111",
+        "--cursor-stroke-bottom": "#000000",
+        "--cursor-detail-fill": "#fd01ba",
+      },
     };
 
     hudiThemePalettes.forEach((palette) => {
@@ -10832,7 +10856,7 @@ h1, .section-title h2, .card h3 {
 	      const longLabel = deriveAutoLabelPalette("#01fd90");
 	      const shortLabel = deriveAutoLabelPalette("#fd01ba");
 	      return `:root { --hudi-pill-font-weight: 500; --disabled-label: #8f9aab; --toggle-inactive-label: var(--disabled-label); --toggle-inactive-opacity: .54; --toggle-active-label-opacity: .75; }
-.hudi-side-toggle { --toggle-left: 50%; --toggle-bg: #fd01ba; --toggle-label: #fff; --toggle-shadow: rgba(30,0,62,.4); position: relative; width: 326px; max-width: 100%; height: 50px; border: 4px solid #e6f4ff; border-radius: 26px; background: transparent; overflow: hidden; isolation: isolate; contain: paint; }
+.hudi-side-toggle { --toggle-left: 50%; --toggle-bg: #fd01ba; --toggle-label: #fff; --toggle-shadow: rgba(30,0,62,.4); position: relative; width: 326px; max-width: 100%; height: 44px; border: 4px solid #e6f4ff; border-radius: 24px; background: transparent; overflow: hidden; isolation: isolate; contain: paint; }
 .hudi-side-toggle__bed { content: ""; position: absolute; inset: 0; border-radius: inherit; background: #eef2ff; box-shadow: inset 0 -3.08px 32.19px rgba(0,62,59,.4); overflow: hidden; pointer-events: none; z-index: 0; }
 .hudi-chamber-highlight { position: absolute; left: 0; right: 0; bottom: -1px; z-index: 1; width: 100%; height: 70%; overflow: visible; pointer-events: none; }
 .hudi-chamber-bottom-shade { position: absolute; left: 1%; right: 1%; bottom: -1px; z-index: 1; width: 98%; height: 72%; overflow: visible; pointer-events: none; }
@@ -10840,14 +10864,14 @@ h1, .section-title h2, .card h3 {
 .hudi-side-toggle::after { content: ""; position: absolute; inset: -1px; border-radius: inherit; background: radial-gradient(85% 90% at 50% 0%, rgba(255,255,255,.72) 0%, rgba(255,255,255,.28) 52%, rgba(255,255,255,0) 100%), linear-gradient(180deg, rgba(255,255,255,.28), rgba(113,128,158,.08)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.24); opacity: 0; pointer-events: none; transition: opacity 140ms ease; z-index: 1; }
 .hudi-side-toggle:hover::after { opacity: .58; }
 .hudi-side-toggle button { position: absolute; top: -.5px; z-index: 4; width: 50%; height: 100%; border: 0; background: transparent; color: transparent; cursor: pointer; font-family: "Syne Hudi", Syne, sans-serif; font-size: 19px; font-weight: var(--hudi-pill-font-weight, 500); letter-spacing: 0; }
-.hudi-side-toggle button::before { content: attr(data-label); position: absolute; inset: 0; display: grid; place-items: center; color: var(--toggle-inactive-label, var(--disabled-label)); opacity: var(--toggle-inactive-opacity, .54); text-shadow: 0 1px 1px rgba(0,0,0,.16), 0 -1px 0 rgba(255,255,255,.18); transform: translateY(3px); transition: opacity 140ms ease; -webkit-font-smoothing: antialiased; -webkit-text-fill-color: var(--toggle-inactive-label, var(--disabled-label)); }
+.hudi-side-toggle button::before { content: attr(data-label); position: absolute; inset: 0; display: grid; place-items: center; color: var(--toggle-inactive-label, var(--disabled-label)); opacity: var(--toggle-inactive-opacity, .54); text-shadow: 0 1px 1px rgba(0,0,0,.16), 0 -1px 0 rgba(255,255,255,.18); transform: translateY(2px); transition: opacity 140ms ease; -webkit-font-smoothing: antialiased; -webkit-text-fill-color: var(--toggle-inactive-label, var(--disabled-label)); }
 .hudi-side-toggle button[data-side="long"] { left: 0; }
 .hudi-side-toggle button[data-side="short"] { right: 0; }
 .hudi-side-toggle button[aria-pressed="true"]::before { opacity: 0; }
 .hudi-side-toggle button:not([aria-pressed="true"]):hover::before { opacity: .65; }
 .hudi-side-toggle.is-inactive-white button::before { text-shadow: 0 1px 1px rgba(0,0,0,.22), 0 -1px 0 rgba(255,255,255,.18); }
 .hudi-side-toggle button:focus-visible { outline: 0; }
-.hudi-side-toggle__pill { --pill-top-contour-x: -.5px; --pill-top-contour-y: -.5px; --pill-top-contour-width: calc(100% - 7.5px); --pill-top-contour-height: 75.4%; position: absolute; top: -1px; bottom: -1px; left: var(--toggle-left); z-index: 2; display: grid; place-items: center; width: 50%; border-radius: 26px; background: var(--toggle-bg); box-shadow: inset 0 -3px 32px var(--toggle-shadow), 0 4px 4px rgba(0,0,0,.25); overflow: hidden; transition: left 180ms ease, background-color 180ms ease, box-shadow 180ms ease; will-change: left; }
+.hudi-side-toggle__pill { --pill-top-contour-x: -.5px; --pill-top-contour-y: -.5px; --pill-top-contour-width: calc(100% - 7.5px); --pill-top-contour-height: 75.4%; position: absolute; top: -1px; bottom: -1px; left: var(--toggle-left); z-index: 2; display: grid; place-items: center; width: 50%; border-radius: inherit; background: var(--toggle-bg); box-shadow: inset 0 -3px 32px var(--toggle-shadow), 0 4px 4px rgba(0,0,0,.25); overflow: hidden; transition: left 180ms ease, background-color 180ms ease, box-shadow 180ms ease; will-change: left; }
 .hudi-side-toggle__top-contour { height: var(--pill-top-contour-height); left: var(--pill-top-contour-x); mix-blend-mode: screen; overflow: visible; pointer-events: none; position: absolute; top: var(--pill-top-contour-y); width: var(--pill-top-contour-width); z-index: 3; }
 .hudi-side-toggle__top-contour path { fill: url(#hudi-pill-top-gradient); }
 .hudi-side-toggle__pill::after { content: ""; position: absolute; left: 9%; right: 9%; top: -.5px; height: 18%; border-radius: inherit; background: radial-gradient(ellipse at center, #fff 0%, rgba(255,255,255,.14) 100%); opacity: .82; pointer-events: none; z-index: 2; }

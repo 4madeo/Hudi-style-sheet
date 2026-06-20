@@ -1,0 +1,1757 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hudi Landing</title>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"
+      }
+    }
+  </script>
+  <style id="landing-style">
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      scroll-snap-type: y mandatory;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--page-bg-top);
+      color: var(--ink);
+      font-family: var(--mono);
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #landing-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .landing-shell {
+      --landing-panel-shadow: 3px 7px 10px var(--black-alpha-13);
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .hudi-svg-defs {
+      position: absolute;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    #blank-orb {
+      --orb-size: clamp(220px, 23vw, 440px);
+      --orb-base: var(--hudi-orb-colour);
+      --orb-sheen: var(--hudi-orb-sheen);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 2;
+      translate: -50% -50%;
+      scale: var(--landing-orb-scale, 1);
+      opacity: var(--landing-orb-opacity, 1);
+    }
+
+    .landing-orb-inner-glow {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      border-radius: inherit;
+      box-shadow: inset 0 0 var(--landing-orb-inner-glow-blur) var(--white);
+      pointer-events: none;
+    }
+
+    .landing-hudi-mark {
+      z-index: 3;
+      opacity: var(--landing-logo-opacity, 0);
+      transform: scale(var(--landing-logo-scale, .82));
+      transition: none;
+    }
+
+    .landing-hero-actions {
+      position: absolute;
+      left: 50%;
+      top: calc(50% + (clamp(220px, 23vw, 440px) * .56));
+      z-index: 2;
+      display: grid;
+      justify-items: center;
+      gap: var(--space-28);
+      opacity: var(--landing-first-level-opacity, 1);
+      transform: translateX(-50%);
+      pointer-events: auto;
+    }
+
+    .landing-world-tag {
+      color: var(--dark-grey);
+      font-family: var(--ocr);
+      font-size: clamp(16px, 1.55vw, 25px);
+      letter-spacing: .22em;
+      white-space: nowrap;
+    }
+
+    .landing-start-button.hudi-trade-button {
+      --pill-bg: var(--hudi-orb-colour);
+      --pill-inner-shadow: var(--hudi-orb-shadow);
+      --pill-label: var(--white);
+      min-width: clamp(220px, 19vw, 360px);
+      height: clamp(52px, 5vw, 76px);
+      border-width: 5px;
+      border-radius: var(--radius-pill);
+      font-size: clamp(24px, 2.2vw, 38px);
+      text-transform: lowercase;
+    }
+
+    .landing-start-button .pill-top-contour path {
+      fill: url(#landing-start-pill-top-gradient);
+    }
+
+    .market-showcase {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      opacity: var(--landing-market-opacity, 0);
+      pointer-events: none;
+    }
+
+    .market-showcase.is-popping .stock-card,
+    .market-showcase.is-popping + .landing-panel {
+      animation: landing-market-pop 360ms cubic-bezier(.18, .9, .2, 1.22) both;
+    }
+
+    .market-showcase.is-popping .stock-card:nth-child(2) {
+      animation-delay: 42ms;
+    }
+
+    .market-showcase.is-popping .stock-card:nth-child(3) {
+      animation-delay: 84ms;
+    }
+
+    .market-showcase.is-popping + .landing-panel {
+      animation-delay: 105ms;
+    }
+
+    .market-cards {
+      position: absolute;
+      left: clamp(var(--space-92), calc(17vw - var(--space-50)), calc(var(--space-180) * 2));
+      top: 23%;
+      display: grid;
+      gap: clamp(var(--space-48), 7vh, var(--space-72));
+    }
+
+    .stock-card {
+      position: relative;
+      --pnl-stroke: var(--big-gain);
+      --pnl-accent: var(--small-gain);
+      width: clamp(315px, 23vw, 470px);
+      height: clamp(88px, 7.8vw, 116px);
+      overflow: hidden;
+      border: 3px solid var(--outline-blue);
+      border-radius: var(--radius-card);
+      background: color-mix(in srgb, var(--panel-fill) 88%, transparent);
+      box-shadow: var(--landing-panel-shadow);
+    }
+
+    .stock-graph {
+      position: absolute;
+      inset: 8px 0 0;
+      z-index: 0;
+      width: 100%;
+      height: calc(100% - 8px);
+    }
+
+    .stock-graph path {
+      fill: none;
+      stroke: var(--pnl-stroke);
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .stock-graph .stock-graph-fill {
+      fill: color-mix(in srgb, var(--pnl-accent) 36%, transparent);
+      stroke: none;
+    }
+
+    .stock-card .hudi-stock-orb {
+      --orb-size: clamp(74px, 6.2vw, 104px);
+      --orb-ticker-base-size: 18px;
+      position: absolute;
+      left: clamp(var(--space-20), 2.4vw, var(--space-30));
+      top: 50%;
+      z-index: 2;
+      transform: translateY(-50%);
+    }
+
+    .stock-card .hudi-stock-orb__number {
+      top: var(--space-1);
+    }
+
+    .stock-card .hudi-stock-orb__number text {
+      font-size: 10.4px;
+    }
+
+    .stock-readout {
+      position: absolute;
+      top: clamp(var(--space-14), 1.55vw, var(--space-22));
+      right: clamp(var(--space-18), 2vw, var(--space-30));
+      z-index: 2;
+      display: grid;
+      justify-items: start;
+      gap: var(--space-4);
+      color: var(--dark-grey);
+      text-align: left;
+    }
+
+    .stock-readout .stock-name {
+      font-family: var(--ocr);
+      font-size: clamp(10px, .78vw, 14px);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .stock-readout .stock-roi {
+      font-family: var(--ocr);
+      font-size: clamp(26px, 2.4vw, 42px);
+      line-height: .78;
+      letter-spacing: .06em;
+    }
+
+    .stock-readout .stock-time {
+      color: var(--pnl-stroke);
+      font-family: var(--ocr);
+      font-size: clamp(10px, .8vw, 14px);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .landing-panel {
+      --market-panel-width: clamp(440px, 31vw, 620px);
+      position: absolute;
+      left: min(
+        calc(50% + clamp(190px, 14vw, 270px)),
+        calc(100vw - var(--market-panel-width) - var(--space-20))
+      );
+      right: auto;
+      top: 50%;
+      z-index: 2;
+      width: var(--market-panel-width);
+      min-height: clamp(166px, 18vh, 230px);
+      padding: clamp(var(--space-22), 2vw, var(--space-34));
+      display: grid;
+      align-content: start;
+      justify-items: start;
+      gap: clamp(var(--space-20), 2.6vh, var(--space-34));
+      box-shadow: var(--landing-panel-shadow);
+      opacity: var(--landing-panel-opacity, 0);
+      pointer-events: var(--landing-panel-events, none);
+      translate: 0 -50%;
+    }
+
+    .landing-panel h3 {
+      font-size: clamp(18px, 1.35vw, var(--type-card-title));
+      white-space: nowrap;
+    }
+
+    .landing-panel p {
+      max-width: 37ch;
+      font-size: clamp(var(--type-body), 1.16vw, 21px);
+      line-height: 1.12;
+    }
+
+    .market-copy-button.hudi-trade-button {
+      --pill-bg: var(--hudi-orb-colour);
+      --pill-inner-shadow: var(--hudi-orb-shadow);
+      --pill-label: var(--white);
+      justify-self: end;
+      min-width: clamp(176px, 10vw, 230px);
+      height: clamp(34px, 3.2vw, 46px);
+      border-width: 3px;
+      font-size: clamp(15px, 1.05vw, 20px);
+      text-transform: lowercase;
+    }
+
+    .market-copy-button .pill-top-contour path {
+      fill: url(#market-copy-pill-top-gradient);
+    }
+
+    .chat-showcase {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      opacity: var(--landing-chat-opacity, 0);
+      pointer-events: var(--landing-chat-events, none);
+      transition: opacity var(--motion-control) linear;
+    }
+
+    .chat-copy-panel {
+      position: absolute;
+      left: clamp(var(--space-120), 17vw, calc(var(--space-220) * 2));
+      top: 41%;
+      width: clamp(420px, 30vw, 600px);
+      min-height: clamp(150px, 16vh, 190px);
+      padding: clamp(var(--space-22), 2vw, var(--space-34));
+      display: grid;
+      align-content: center;
+      gap: var(--space-24);
+      border: 3px solid var(--outline-blue);
+      border-radius: var(--radius-card);
+      background: var(--panel-fill);
+      box-shadow: var(--landing-panel-shadow);
+      translate: 0 var(--landing-chat-copy-rise, 68px);
+      transform: translateY(-50%);
+    }
+
+    .chat-copy-panel h3 {
+      color: var(--dark-grey);
+      font-family: var(--sans);
+      font-size: clamp(var(--type-small-title), 1.6vw, var(--type-card-title));
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .chat-copy-panel p {
+      max-width: 34ch;
+      color: var(--dark-grey);
+      font-family: var(--mono);
+      font-size: clamp(15px, 1.18vw, 22px);
+      line-height: 1.08;
+    }
+
+    .chat-bubble-card {
+      position: absolute;
+      width: clamp(230px, 21vw, 450px);
+      color: var(--dark-grey);
+      filter: drop-shadow(3px 7px 10px var(--black-alpha-13));
+      translate: 0 var(--landing-chat-rise, 92px);
+      animation: chat-bubble-float 5200ms ease-in-out infinite;
+    }
+
+    .chat-bubble-card.is-large {
+      left: clamp(var(--space-118), 13.8vw, var(--space-296));
+      bottom: 8.5%;
+      animation-delay: -1800ms;
+    }
+
+    .chat-bubble-card.is-top-right {
+      right: clamp(var(--space-104), 11.2vw, var(--space-224));
+      top: 27%;
+      animation-delay: -600ms;
+    }
+
+    .chat-bubble-card.is-mid-right {
+      right: clamp(var(--space-160), 22vw, calc(var(--space-296) * 2));
+      top: 57%;
+      width: clamp(250px, 23vw, 360px);
+      animation-delay: -3000ms;
+    }
+
+    .chat-bubble-frame {
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+    }
+
+    .chat-bubble-content {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: var(--space-10);
+    }
+
+    .chat-bubble-card[data-tail="up"] .chat-bubble-content {
+      top: 34%;
+    }
+
+    .chat-bubble-card.is-mid-right .chat-bubble-content {
+      left: 7%;
+      right: 7%;
+      top: 39%;
+      gap: var(--space-6);
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+
+    .chat-bubble-card[data-tail="down"] .chat-bubble-content {
+      top: 16%;
+    }
+
+    .chat-bubble-card .pfp-avatar {
+      width: clamp(30px, 2.6vw, 48px);
+      height: clamp(30px, 2.6vw, 48px);
+    }
+
+    .chat-bubble-card .pfp-avatar svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .chat-bubble-card.is-mid-right .pfp-avatar {
+      width: clamp(22px, 2vw, 34px);
+      height: clamp(22px, 2vw, 34px);
+    }
+
+    .chat-bubble-text {
+      display: grid;
+      gap: var(--space-5);
+      min-width: 0;
+    }
+
+    .chat-bubble-name {
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: clamp(10px, .92vw, 15px);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .chat-bubble-message,
+    .chat-bubble-time {
+      color: var(--dark-grey);
+      font-family: var(--ocr);
+      font-size: clamp(7px, .55vw, 10px);
+      letter-spacing: .08em;
+      line-height: 1.25;
+    }
+
+    .chat-bubble-time {
+      align-self: start;
+      justify-self: end;
+      white-space: nowrap;
+    }
+
+    .chat-bubble-card.is-mid-right .chat-bubble-name {
+      font-size: clamp(8px, .72vw, 12px);
+    }
+
+    .chat-bubble-card.is-mid-right .chat-bubble-message,
+    .chat-bubble-card.is-mid-right .chat-bubble-time {
+      font-size: clamp(5px, .43vw, 8px);
+      letter-spacing: .04em;
+      line-height: 1.08;
+    }
+
+    .chat-bubble-card.is-mid-right .chat-bubble-message {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+
+    .chat-trade-line {
+      position: absolute;
+      left: 17%;
+      right: 8%;
+      bottom: 12%;
+      color: var(--dark-grey);
+      font-family: var(--ocr);
+      font-size: clamp(11px, .98vw, 18px);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .chat-bubble-graph {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 4%;
+      width: 100%;
+      height: 28%;
+    }
+
+    .chat-bubble-graph path {
+      fill: none;
+      stroke: var(--gain-track-end);
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @keyframes chat-bubble-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(calc(var(--space-8) * -1)); }
+    }
+
+    .final-showcase {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      display: grid;
+      place-items: center;
+      opacity: var(--landing-final-opacity, 0);
+      pointer-events: var(--landing-final-events, none);
+      translate: 0 var(--landing-final-rise, 96px);
+      transition: opacity var(--motion-control) linear;
+    }
+
+    .final-cluster {
+      display: grid;
+      justify-items: center;
+      gap: clamp(var(--space-28), 4vh, var(--space-48));
+      transform: translateY(8vh);
+    }
+
+    .landing-final-button.hudi-trade-button {
+      --pill-bg: var(--hudi-orb-colour);
+      --pill-inner-shadow: var(--hudi-orb-shadow);
+      --pill-label: var(--white);
+      min-width: clamp(360px, 33vw, 640px);
+      height: clamp(74px, 7vw, 116px);
+      border-width: 7px;
+      border-radius: var(--radius-pill);
+      font-size: clamp(42px, 4vw, 72px);
+      text-transform: lowercase;
+      box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow), var(--landing-panel-shadow);
+    }
+
+    .landing-final-button .pill-top-contour path {
+      fill: url(#landing-final-pill-top-gradient);
+    }
+
+    .final-tagline {
+      color: var(--dark-grey);
+      font-family: var(--ocr);
+      font-size: clamp(17px, 1.45vw, 30px);
+      letter-spacing: .16em;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .final-socials {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(var(--space-24), 2.8vw, var(--space-54));
+    }
+
+    .final-social-orb.hudi-window-orb {
+      --orb-base: var(--color-61caff);
+      --orb-sheen: var(--color-cff3ff);
+      --orb-shadow: var(--color-rgba-189-228-255-56);
+      --orb-size: clamp(90px, 7.8vw, 148px);
+      --window-image: none;
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: var(--orb-size);
+      aspect-ratio: 1;
+      border: 0;
+      border-radius: 50%;
+      background-color: var(--orb-base);
+      background-image: linear-gradient(180deg, var(--orb-sheen) 0%, var(--highlight-white-zero) 58%), var(--window-image);
+      background-position: center;
+      background-size: cover, 54% 54%;
+      background-repeat: no-repeat;
+      box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow), inset 0 0 calc(var(--orb-size) * .09) color-mix(in srgb, var(--orb-sheen) 58%, transparent), var(--landing-panel-shadow);
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .final-social-orb.hudi-window-orb::before {
+      content: "";
+      position: absolute;
+      left: 18.6%;
+      top: 3.8%;
+      z-index: 1;
+      width: 64%;
+      height: 46%;
+      border-radius: 50%;
+      background: linear-gradient(359.42deg, var(--highlight-white-zero) .5%, var(--white) 99.5%);
+      mix-blend-mode: screen;
+      opacity: .8;
+      pointer-events: none;
+    }
+
+    .final-social-orb.hudi-window-orb::after {
+      content: "";
+      position: absolute;
+      left: 32.05%;
+      top: 1.1%;
+      z-index: 1;
+      width: 36.34%;
+      height: 18.06%;
+      border-radius: 50%;
+      background: radial-gradient(51.58% 50% at 50% 50%, var(--white) 0%, var(--highlight-white-low) 100%);
+      opacity: .8;
+      pointer-events: none;
+    }
+
+    .final-social-orb.is-twitter {
+      --orb-base: var(--color-dbe7f3);
+      --orb-sheen: var(--white);
+      --orb-shadow: var(--color-rgba-139-204-255-22);
+      --window-image: url("data:image/svg+xml,%3Csvg width='128' height='128' viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M23 22h21.7l25.1 33.4L99 22h12L75.4 62.8 113 112H91.4L64.3 76 32.8 112H20.7l38-43.5L23 22Zm16.1 8.8 56.8 72.4h7L46.1 30.8h-7Z' fill='%23525c6f'/%3E%3C/svg%3E");
+    }
+
+    .final-social-orb.is-telegram {
+      --orb-base: var(--hudi-orb-colour);
+      --orb-sheen: var(--color-cff3ff);
+      --orb-shadow: var(--hudi-orb-shadow);
+      --window-image: url("data:image/svg+xml,%3Csvg width='128' height='128' viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M108.8 24.8 91.5 105c-1.3 5.7-4.7 7.1-9.5 4.4L55.6 89.9 42.9 102.1c-1.4 1.4-2.6 2.6-5.3 2.6l1.9-26.9 49-44.3c2.1-1.9-.5-3-3.3-1.1L24.6 70.6-1.5 62.4c-5.7-1.8-5.8-5.7 1.2-8.4l102-39.3c4.7-1.7 8.8 1.1 7.1 10.1Z' fill='%23f5fbff'/%3E%3C/svg%3E");
+    }
+
+    @keyframes landing-market-pop {
+      0% {
+        opacity: 0;
+        transform: scale(.84) translateY(var(--space-18));
+      }
+      62% {
+        opacity: 1;
+        transform: scale(1.045) translateY(calc(var(--space-3) * -1));
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .shape-toggle {
+      position: absolute;
+      right: var(--space-24);
+      bottom: var(--space-24);
+      z-index: 2;
+      min-height: 34px;
+      padding: var(--space-4) var(--space-14) var(--space-2);
+      border: 3px solid var(--outline-blue);
+      border-radius: var(--radius-pill);
+      background: var(--panel-fill);
+      color: var(--dark-grey);
+      font-family: var(--ocr);
+      font-size: 11px;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .shape-toggle[aria-pressed="true"] {
+      border-color: var(--select-blue);
+      color: var(--text-darker-grey);
+    }
+
+    .scroll-levels {
+      position: relative;
+      z-index: 0;
+    }
+
+    .scroll-level {
+      min-height: 100svh;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
+    @media (max-width: 700px) {
+      #blank-orb {
+        --orb-size: clamp(190px, 58vw, 300px);
+      }
+
+      .landing-hero-actions {
+        top: calc(50% + (clamp(190px, 58vw, 300px) * .62));
+        gap: var(--space-18);
+      }
+
+      .landing-panel {
+        left: var(--space-16);
+        right: var(--space-16);
+        bottom: var(--space-24);
+        top: auto;
+        width: auto;
+        min-height: 126px;
+        translate: 0;
+        transform: none;
+      }
+
+      .market-cards {
+        left: 50%;
+        top: 7%;
+        gap: var(--space-16);
+        transform: translateX(-50%) scale(.78);
+        transform-origin: top center;
+      }
+
+      .chat-copy-panel {
+        left: var(--space-16);
+        right: var(--space-16);
+        top: 22%;
+        width: auto;
+        min-height: 132px;
+        transform: none;
+      }
+
+      .chat-bubble-card.is-top-right {
+        left: var(--space-16);
+        right: var(--space-16);
+        top: 48%;
+        width: auto;
+      }
+
+      .chat-bubble-card.is-mid-right {
+        left: 28%;
+        right: var(--space-16);
+        top: 62%;
+        width: auto;
+      }
+
+      .chat-bubble-card.is-large {
+        left: var(--space-16);
+        right: var(--space-16);
+        bottom: 7%;
+        width: auto;
+      }
+
+      .shape-toggle {
+        right: var(--space-16);
+        bottom: var(--space-16);
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="landing-canvas" aria-hidden="true"></canvas>
+  <svg class="hudi-svg-defs" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="hudi-orb-text-gradient" cx="0" cy="0" r="1" gradientTransform="matrix(0 18 -40 0 50 -2)" gradientUnits="userSpaceOnUse">
+        <stop stop-color="var(--color-95afff)"/>
+        <stop offset=".48" stop-color="var(--color-000925)"/>
+        <stop offset="1" stop-color="var(--color-000925)"/>
+      </radialGradient>
+      <filter id="hudi-orb-text-inner" x="-10%" y="-40%" width="120%" height="180%" color-interpolation-filters="sRGB">
+        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+        <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feOffset dy=".55"/>
+        <feGaussianBlur stdDeviation=".7"/>
+        <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0.58 0 0 0 0 0.75 0 0 0 0 1 0 0 0 .55 0"/>
+        <feBlend in2="shape" result="effect1_innerShadow"/>
+      </filter>
+      <filter id="hudi-orb-dark-text-inner" x="-10%" y="-40%" width="120%" height="180%" color-interpolation-filters="sRGB">
+        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+        <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feOffset dy=".45"/>
+        <feGaussianBlur stdDeviation=".48"/>
+        <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" result="orbDarkTextInnerAlpha"/>
+        <feFlood flood-color="currentColor" flood-opacity=".76" result="orbDarkTextTint"/>
+        <feComposite in="orbDarkTextTint" in2="orbDarkTextInnerAlpha" operator="in" result="orbDarkTextInnerShadow"/>
+        <feBlend in="orbDarkTextInnerShadow" in2="shape" result="effect1_darkTextInnerShadow"/>
+      </filter>
+      <symbol id="landing-hudi-pfp" viewBox="-8 -8 207 192">
+        <path d="M59.437 16.8641L59.6136 16.8833C60.1503 17.2084 74.1963 48.7976 75.6525 52.0669C76.405 50.7974 77.8333 48.9575 78.7469 47.7156L84.7027 39.6816C92.1044 29.6271 99.6254 19.6582 107.264 9.77699C107.284 11.0117 107.851 13.2087 108.138 14.503L109.624 21.3027C111.294 29.0319 113.005 36.7519 114.757 44.463C115.722 48.6355 117.303 54.5316 117.991 58.5907C128.049 50.7305 138.065 43.0497 148.659 35.9003C150.523 34.6426 154.292 32.6597 155.741 31.182C155.346 35.3428 154.687 39.7766 154.169 43.951L151.24 67.3845L149.928 77.9131C149.759 79.292 149.508 82.1954 149.18 83.4158C150.759 83.7792 153.371 84.0282 155.099 84.2533L163.789 85.4468C169.376 86.1838 175.196 87.2531 180.814 87.6237C179.634 88.895 178.173 90.172 176.942 91.4739L162.377 106.971C160.137 109.346 157.241 112.228 155.182 114.68C158.16 116.196 163.211 119.378 165.927 120.459C163.223 123.694 160.433 125.482 156.963 127.78C154.431 129.549 149.904 131.961 147.1 133.422C150.033 138.34 152.523 143.647 155.715 148.466C156.859 150.194 158.141 152.302 159.088 154.127C152.733 154.516 146.381 154.96 140.034 155.462C128.144 156.398 116.809 157.8 105.077 159.929C95.1306 161.734 86.0722 164.276 75.8861 163.023C71.1161 162.435 68.2366 162.301 63.4355 160.87C60.6148 160.053 57.8756 158.987 55.2511 157.684C52.0013 156.048 48.9557 154.054 45.6096 152.508C44.1765 151.753 42.5021 151.293 41.0688 150.57C35.2304 147.626 29.1449 145.139 23.2513 142.328C25.1141 138.666 28.1307 132.347 29.5388 128.571C25.8871 125.75 21.6945 123.242 18.5859 119.719C16.8197 117.717 15.103 114.931 13.6849 112.66C15.2693 112.411 16.8338 112.048 18.3659 111.575C21.9343 110.459 24.8732 108.869 26.6616 105.507C26.6091 103.314 25.6714 100.01 25.1188 97.8506C24.4584 95.2758 23.8146 92.6971 23.1876 90.1142C21.2759 82.3357 19.5408 74.5155 17.9835 66.6593C23.3343 67.9093 30.5835 68.7235 36.15 69.7167C39.1237 61.6655 41.9967 53.6805 45.1813 45.7059C49.1804 35.691 53.1983 25.7988 59.437 16.8641Z" fill="var(--pfp-head, var(--pfp-lime))" stroke="var(--pfp-stroke, var(--pfp-lime-stroke))" stroke-linejoin="miter" stroke-miterlimit="2.6" stroke-width="5.4"/>
+        <path d="M116.824 118.248C117.376 118.053 117.873 117.882 118.34 117.73C120.304 117.09 121.733 116.794 124.438 116.558C125.979 118.585 127.391 121.668 128.002 124.155C129.262 129.278 128.44 134.692 125.717 139.21C121.634 145.892 114.777 148.229 107.298 148.894C104.178 149.173 99.8849 149.683 97.0987 147.974C96.3571 142.885 96.5666 140.151 98.1028 135.52C98.1563 135.358 98.2107 135.199 98.2659 135.04C101.447 125.924 107.605 121.505 116.824 118.248Z" fill="var(--pfp-eye, var(--white))"/>
+        <path d="M41.858 115.567C43.8504 115.03 46.3697 115.432 48.9166 116.27C51.2558 117.039 53.6184 118.176 55.6176 119.289C61.1639 122.378 65.3208 128.322 67.8717 133.537C69.7633 137.404 70.7718 140.871 70.8086 142.475C70.8546 144.477 69.5019 147.434 69.5019 147.434C69.5019 147.434 66.7027 150.577 63.8486 150.313C56.8526 149.666 50.9896 144.631 46.8457 139.675C42.1601 134.072 38.9642 127.118 39.8106 119.652C39.9732 116.535 40.7265 115.835 41.858 115.567Z" fill="var(--pfp-eye, var(--white))"/>
+        <path d="M108.85 144.934C115.717 145.496 121.844 139.093 122.536 130.633C122.956 125.489 121.27 120.769 118.34 117.733C117.873 117.885 117.376 118.057 116.824 118.251C107.605 121.508 101.447 125.927 98.2658 135.043C99.7926 140.493 103.823 144.523 108.85 144.934Z" fill="var(--pfp-pupil, var(--ink))"/>
+        <path d="M48.9162 116.266C51.2554 117.036 53.618 118.172 55.6172 119.286C61.1635 122.375 65.3204 128.318 67.8712 133.533C68.0715 138.38 66.5479 142.259 63.5396 143.434C58.93 145.235 52.5801 140.004 49.3568 131.752C47.0023 125.724 46.9673 119.75 48.9162 116.266Z" fill="var(--pfp-pupil, var(--ink))"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <main class="landing-shell" aria-label="Hudi landing page">
+    <div class="hudi-blank-orb" id="blank-orb" aria-hidden="true">
+      <span class="landing-orb-inner-glow"></span>
+      <svg class="hudi-logo-mark landing-hudi-mark" width="47" height="49" viewBox="0 0 47 49" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g filter="url(#landing-hudi-logo-filter)"><path d="M27.1405 48.0754C24.2967 48.0778 22.6508 45.9399 22.641 43.2398L22.5569 26.5795C22.5466 24.0301 20.9258 22.4611 18.4584 22.3485C15.1435 22.1982 21.5146 22.2441 18.1987 22.3269C15.5118 22.3984 13.9658 24.3797 13.9074 27.0385C13.7827 32.6096 13.9316 38.1338 13.6907 43.7113C13.578 46.2465 11.6705 48.0207 9.27112 48.0043L4.45862 47.9715C1.7311 47.9469 -0.0108297 45.9046 0.000347114 43.0949L0.160873 4.38224C0.170878 1.86718 2.2011 0.175674 4.437 0.0543588C6.11221 -0.0349212 7.62286 -0.00149948 9.25643 0.0666769C11.7717 0.165773 13.7002 1.72225 13.8331 4.40236C13.9218 6.16397 13.8599 9.76153 14.1877 11.5721C14.5423 13.5061 16.0413 14.7387 18.1468 14.7608L34.9218 14.9852C37.2186 15.0149 38.8885 16.2551 39.6939 18.2868C41.183 22.0346 46.0871 21.3893 46.0696 25.7752L45.9972 43.9769C45.9876 46.396 43.9299 48.1148 41.7286 48.1197L27.1405 48.0823L27.1405 48.0754Z" fill="url(#landing-hudi-logo-gradient)"/></g>
+        <defs><filter id="landing-hudi-logo-filter" x="0" y="0" width="46.0693" height="48.1191" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset/><feGaussianBlur stdDeviation="1.1"/><feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix type="matrix" values="0 0 0 0 0.574688 0 0 0 0 0.751902 0 0 0 0 1 0 0 0 1 0"/><feBlend mode="normal" in2="shape" result="effect1_innerShadow_121_362"/></filter><radialGradient id="landing-hudi-logo-gradient" cx="0" cy="0" r="1" gradientTransform="matrix(-0.000709991 82.9873 -82.8097 0.000702805 22.9657 -7.59041)" gradientUnits="userSpaceOnUse"><stop/><stop offset="0.379952"/><stop offset="0.681343"/></radialGradient></defs>
+      </svg>
+    </div>
+
+    <section class="market-showcase" aria-label="Market examples">
+      <div class="market-cards">
+        <article class="stock-card">
+          <svg class="stock-graph" viewBox="0 0 520 120" preserveAspectRatio="none" aria-hidden="true">
+            <path class="stock-graph-fill" d="M0 72 L20 66 L34 72 L52 58 L72 64 L92 62 L112 68 L134 62 L152 65 L174 57 L195 62 L216 61 L238 58 L256 62 L276 54 L294 56 L318 48 L334 40 L348 88 L374 87 L394 86 L416 90 L438 83 L454 74 L468 94 L492 88 L520 76 L520 120 L0 120 Z"/>
+            <path d="M0 72 L20 66 L34 72 L52 58 L72 64 L92 62 L112 68 L134 62 L152 65 L174 57 L195 62 L216 61 L238 58 L256 62 L276 54 L294 56 L318 48 L334 40 L348 88 L374 87 L394 86 L416 90 L438 83 L454 74 L468 94 L492 88 L520 76"/>
+          </svg>
+          <span class="hudi-stock-orb is-smsg-ref">
+            <svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="landing-smsng-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#landing-smsng-number-curve" startOffset="50%">3325</textPath></text></svg>
+            <svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="SMSG"><defs><linearGradient id="landing-smsng-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#landing-smsng-ticker-fill)">SMSG</text></svg>
+          </span>
+          <div class="stock-readout">
+            <span class="stock-name">Samsung</span>
+            <span class="stock-roi">+4500%</span>
+            <span class="stock-time">+3.14% all time</span>
+          </div>
+        </article>
+
+        <article class="stock-card" data-tone="lime">
+          <svg class="stock-graph" viewBox="0 0 520 120" preserveAspectRatio="none" aria-hidden="true">
+            <path class="stock-graph-fill" d="M0 78 L28 70 L44 76 L64 62 L92 68 L116 62 L144 66 L166 64 L188 70 L214 64 L236 68 L258 58 L278 46 L294 106 L334 105 L358 109 L382 102 L406 91 L424 112 L444 104 L470 108 L500 100 L520 92 L520 120 L0 120 Z"/>
+            <path d="M0 78 L28 70 L44 76 L64 62 L92 68 L116 62 L144 66 L166 64 L188 70 L214 64 L236 68 L258 58 L278 46 L294 106 L334 105 L358 109 L382 102 L406 91 L424 112 L444 104 L470 108 L500 100 L520 92"/>
+          </svg>
+          <span class="hudi-stock-orb green">
+            <svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="landing-baba-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#landing-baba-number-curve" startOffset="50%">6873</textPath></text></svg>
+            <svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="BABA"><defs><linearGradient id="landing-baba-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#landing-baba-ticker-fill)">BABA</text></svg>
+          </span>
+          <div class="stock-readout">
+            <span class="stock-name">Alibaba</span>
+            <span class="stock-roi">+4500%</span>
+            <span class="stock-time">+300% all time</span>
+          </div>
+        </article>
+
+        <article class="stock-card" data-tone="pink">
+          <svg class="stock-graph" viewBox="0 0 520 120" preserveAspectRatio="none" aria-hidden="true">
+            <path class="stock-graph-fill" d="M0 76 L22 69 L38 75 L58 64 L78 67 L106 63 L128 66 L152 63 L174 68 L198 61 L220 65 L240 58 L260 52 L276 92 L298 94 L320 92 L342 98 L360 88 L378 80 L394 102 L416 94 L438 97 L462 94 L486 86 L520 78 L520 120 L0 120 Z"/>
+            <path d="M0 76 L22 69 L38 75 L58 64 L78 67 L106 63 L128 66 L152 63 L174 68 L198 61 L220 65 L240 58 L260 52 L276 92 L298 94 L320 92 L342 98 L360 88 L378 80 L394 102 L416 94 L438 97 L462 94 L486 86 L520 78"/>
+          </svg>
+          <span class="hudi-stock-orb pink">
+            <svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="landing-tyo-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#landing-tyo-number-curve" startOffset="50%">1235</textPath></text></svg>
+            <svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="TYO"><defs><linearGradient id="landing-tyo-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#landing-tyo-ticker-fill)">TYO</text></svg>
+          </span>
+          <div class="stock-readout">
+            <span class="stock-name">Toyota</span>
+            <span class="stock-roi">+4500%</span>
+            <span class="stock-time">+3.14% all time</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="card landing-panel" aria-labelledby="landing-panel-title">
+      <h3 id="landing-panel-title">Unlock the Fastest Growing Markets</h3>
+      <p>Up to 25x on Korean, Japanese, and Hong Kong Stocks plus more added monthly.</p>
+      <button class="hudi-trade-button market-copy-button is-auto-white" type="button">
+        <svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true">
+          <defs><linearGradient id="market-copy-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs>
+          <path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z" fill="url(#market-copy-pill-top-gradient)"/>
+        </svg>
+        <span class="pill-bottom-highlight"></span>
+        <span class="pill-label">browse markets</span>
+        <span class="pill-shine"></span>
+      </button>
+    </section>
+
+    <section class="chat-showcase" aria-label="Chat room examples">
+      <article class="chat-copy-panel">
+        <h3>Win Together</h3>
+        <p>Every ticker is a chatroom. Chat with traders with open positions</p>
+      </article>
+
+      <article class="chat-bubble-card is-top-right" data-tail="down" aria-label="Kai chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--ink); --pfp-stroke: var(--ink); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Kai</strong><span class="chat-bubble-message">Yea get on it bro.</span></span>
+          <time class="chat-bubble-time">20 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-mid-right" data-tail="up" aria-label="Rio chat message">
+        <svg class="chat-bubble-frame" width="275" height="84" viewBox="0 0 275 84" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="25.2263" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="25.2263" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M33.876 10.2637L42.2764 22.3877L43.6826 24.418L21.9434 24.418L23.3496 22.3877L31.75 10.2637L32.8125 8.72949L33.876 10.2637Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8119 11L45.1319 28.9441L20.4919 28.9441L32.8119 11Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--text-light-pink); --pfp-stroke: var(--hot-pink); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Rio</strong><span class="chat-bubble-message">I'm looking at this trade right now and typing this message to let you guys know about it.</span></span>
+          <time class="chat-bubble-time">49 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-large" data-tail="up" aria-label="Alice trade message">
+        <svg class="chat-bubble-frame" width="275" height="84" viewBox="0 0 275 84" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="25.2263" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="25.2263" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M33.876 10.2637L42.2764 22.3877L43.6826 24.418L21.9434 24.418L23.3496 22.3877L31.75 10.2637L32.8125 8.72949L33.876 10.2637Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8119 11L45.1319 28.9441L20.4919 28.9441L32.8119 11Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--acid-lime); --pfp-stroke: var(--pfp-lime-stroke); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Alice</strong></span>
+          <time class="chat-bubble-time">48 mins ago</time>
+        </div>
+        <div class="chat-trade-line">traded samsung long 50x</div>
+        <svg class="chat-bubble-graph" viewBox="0 0 275 32" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 20 L16 17 L28 21 L42 20 L54 16 L70 18 L86 15 L104 13 L122 16 L140 15 L156 17 L174 14 L188 12 L199 28 L216 27 L232 29 L249 24 L263 30 L275 27"/>
+        </svg>
+      </article>
+    </section>
+
+    <section class="final-showcase" aria-label="Start trading">
+      <div class="final-cluster">
+        <button class="hudi-trade-button landing-final-button is-auto-white" type="button">
+          <svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true">
+            <defs><linearGradient id="landing-final-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs>
+            <path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z" fill="url(#landing-final-pill-top-gradient)"/>
+          </svg>
+          <span class="pill-bottom-highlight"></span>
+          <span class="pill-label">start trading</span>
+          <span class="pill-shine"></span>
+        </button>
+        <div class="final-tagline">on chain. 24/7. only on hudi</div>
+        <div class="final-socials" aria-label="Social links">
+          <button class="hudi-window-orb final-social-orb is-twitter" type="button" aria-label="X"></button>
+          <button class="hudi-window-orb final-social-orb is-telegram" type="button" aria-label="Telegram"></button>
+        </div>
+      </div>
+    </section>
+
+    <div class="landing-hero-actions">
+      <div class="landing-world-tag">trade the world</div>
+      <button class="hudi-trade-button landing-start-button is-auto-white" type="button">
+        <svg class="pill-top-contour" viewBox="0 0 151 35" preserveAspectRatio="none" aria-hidden="true">
+          <defs><linearGradient id="landing-start-pill-top-gradient" x1="71.3156" y1="27.6398" x2="71.3419" y2="0.0000278594" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.18"/><stop offset="1" stop-color="white" stop-opacity="0.91"/></linearGradient></defs>
+          <path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z" fill="url(#landing-start-pill-top-gradient)"/>
+        </svg>
+        <span class="pill-bottom-highlight"></span>
+        <span class="pill-label">start trading</span>
+        <span class="pill-shine"></span>
+      </button>
+    </div>
+
+    <button class="shape-toggle" type="button" aria-pressed="false" data-shape-toggle>
+      squares
+    </button>
+  </main>
+
+  <div class="scroll-levels" aria-hidden="true">
+    <section class="scroll-level" data-scroll-level="0"></section>
+    <section class="scroll-level" data-scroll-level="1"></section>
+    <section class="scroll-level" data-scroll-level="2"></section>
+    <section class="scroll-level" data-scroll-level="3"></section>
+  </div>
+
+  <script type="module">
+    import * as THREE from "three";
+
+    async function loadHudiStyles() {
+      const response = await fetch("kitchen-sink.html");
+      const html = await response.text();
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const sourceStyle = doc.querySelector("style");
+      const landingStyle = document.getElementById("landing-style");
+
+      if (!sourceStyle || !landingStyle) return;
+
+      const style = document.createElement("style");
+      style.textContent = sourceStyle.textContent;
+      document.head.insertBefore(style, landingStyle);
+    }
+
+    await loadHudiStyles();
+
+    const canvas = document.getElementById("landing-canvas");
+    const scene = new THREE.Scene();
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: false
+    });
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1200);
+    camera.setFocalLength(18);
+    camera.position.set(0, 0, 0);
+    camera.up.set(0, 1, 0);
+    camera.lookAt(1, Math.tan(THREE.MathUtils.degToRad(12)), 0);
+
+    const rootStyles = getComputedStyle(document.documentElement);
+    const token = (name) => rootStyles.getPropertyValue(name).trim();
+    const tokenMs = (name, fallback) => {
+      const value = token(name);
+      return value.endsWith("ms") ? Number.parseFloat(value) : fallback;
+    };
+    const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+    const smoothstep = (value) => {
+      const t = clamp(value);
+      return t * t * (3 - 2 * t);
+    };
+    let textureShape = "square";
+    const blankOrb = document.getElementById("blank-orb");
+    const landingShell = document.querySelector(".landing-shell");
+    const marketShowcase = document.querySelector(".market-showcase");
+    const scrollLevels = Array.from(document.querySelectorAll("[data-scroll-level]"));
+    const maxScrollIndex = Math.max(1, scrollLevels.length - 1);
+    const scrollState = {
+      index: 0,
+      segmentIndex: 0,
+      ramp: 0,
+      easedRamp: 0,
+      progress: 0,
+      easedProgress: 0,
+      skyboxRotation: 0,
+      firstLevelOpacity: 1,
+      finalOpacity: 0
+    };
+    let wasMarketVisible = false;
+
+    const shapeToggle = document.querySelector("[data-shape-toggle]");
+    shapeToggle?.addEventListener("click", () => {
+      textureShape = textureShape === "square" ? "circle" : "square";
+      shapeToggle.setAttribute("aria-pressed", String(textureShape === "circle"));
+      shapeToggle.textContent = textureShape === "circle" ? "circles" : "squares";
+    });
+
+    function parseColor(value) {
+      const color = value.trim();
+      if (color.startsWith("#")) {
+        const hex = color.slice(1);
+        const expanded = hex.length === 3
+          ? hex.split("").map((char) => char + char).join("")
+          : hex;
+
+        return [
+          Number.parseInt(expanded.slice(0, 2), 16),
+          Number.parseInt(expanded.slice(2, 4), 16),
+          Number.parseInt(expanded.slice(4, 6), 16),
+          expanded.length >= 8 ? Number.parseInt(expanded.slice(6, 8), 16) / 255 : 1
+        ];
+      }
+
+      const channels = color.match(/[\d.]+/g)?.map(Number) || [];
+      return [
+        channels[0] || 0,
+        channels[1] || 0,
+        channels[2] || 0,
+        channels.length > 3 ? channels[3] : 1
+      ];
+    }
+
+    function mixColor(from, to, amount) {
+      const start = parseColor(from);
+      const end = parseColor(to);
+      const mixed = start.map((value, index) => value + (end[index] - value) * amount);
+      return `rgba(${Math.round(mixed[0])}, ${Math.round(mixed[1])}, ${Math.round(mixed[2])}, ${mixed[3].toFixed(3)})`;
+    }
+
+    const orbMorphTokens = {
+      baseFrom: token("--hudi-orb-colour"),
+      baseTo: token("--hudi-orb-colour"),
+      sheenFrom: token("--hudi-orb-sheen"),
+      sheenTo: token("--hudi-orb-sheen"),
+      shadowFrom: token("--hudi-orb-shadow"),
+      shadowTo: token("--hudi-orb-shadow"),
+      innerTo: token("--hudi-orb-inner")
+    };
+
+    function updateScrollState() {
+      const progress = clamp(window.scrollY / Math.max(1, window.innerHeight), 0, maxScrollIndex);
+      const segmentIndex = Math.min(maxScrollIndex - 1, Math.floor(progress));
+      const ramp = clamp(progress - segmentIndex);
+      const morph = smoothstep(clamp(progress));
+      const chatMorph = smoothstep(clamp(progress - 1));
+      const finalMorph = smoothstep(clamp(progress - 2));
+      const marketPop = progress >= 0.82 ? 1 : 0;
+      const marketOpacity = progress <= 1 ? marketPop : 1 - chatMorph;
+      const chatOpacity = progress <= 2 ? chatMorph : 1 - finalMorph;
+      const skyboxProgress = smoothstep(progress / maxScrollIndex);
+      const firstLevelOpacity = 1 - smoothstep(progress);
+
+      scrollState.index = Math.min(maxScrollIndex, Math.round(progress));
+      scrollState.segmentIndex = segmentIndex;
+      scrollState.ramp = ramp;
+      scrollState.easedRamp = smoothstep(ramp);
+      scrollState.progress = progress;
+      scrollState.easedProgress = morph;
+      scrollState.skyboxRotation = skyboxProgress * 0.18;
+      scrollState.firstLevelOpacity = firstLevelOpacity;
+      scrollState.finalOpacity = finalMorph;
+      document.documentElement.dataset.scrollIndex = String(scrollState.index);
+
+      landingShell?.style.setProperty("--landing-first-level-opacity", firstLevelOpacity.toFixed(3));
+      landingShell?.style.setProperty("--landing-market-opacity", marketOpacity.toFixed(3));
+      landingShell?.style.setProperty("--landing-panel-opacity", marketOpacity.toFixed(3));
+      landingShell?.style.setProperty("--landing-panel-events", marketOpacity > 0.5 ? "auto" : "none");
+      landingShell?.style.setProperty("--landing-chat-opacity", chatOpacity.toFixed(3));
+      landingShell?.style.setProperty("--landing-chat-events", chatOpacity > 0.5 ? "auto" : "none");
+      landingShell?.style.setProperty("--landing-chat-rise", `${Math.round((1 - chatOpacity) * 92)}px`);
+      landingShell?.style.setProperty("--landing-chat-copy-rise", `${Math.round((1 - chatOpacity) * 68)}px`);
+      landingShell?.style.setProperty("--landing-final-opacity", finalMorph.toFixed(3));
+      landingShell?.style.setProperty("--landing-final-events", finalMorph > 0.5 ? "auto" : "none");
+      landingShell?.style.setProperty("--landing-final-rise", `${Math.round((1 - finalMorph) * 96)}px`);
+
+      const isMarketVisible = marketOpacity > 0.5;
+      if (marketShowcase && isMarketVisible && !wasMarketVisible) {
+        marketShowcase.classList.remove("is-popping");
+        marketShowcase.offsetWidth;
+        marketShowcase.classList.add("is-popping");
+      } else if (marketShowcase && !isMarketVisible) {
+        marketShowcase.classList.remove("is-popping");
+      }
+      wasMarketVisible = isMarketVisible;
+
+      if (!blankOrb) return;
+
+      blankOrb.style.setProperty("--orb-base", mixColor(orbMorphTokens.baseFrom, orbMorphTokens.baseTo, morph));
+      blankOrb.style.setProperty("--orb-sheen", mixColor(orbMorphTokens.sheenFrom, orbMorphTokens.sheenTo, morph));
+      blankOrb.style.setProperty("--orb-shadow", mixColor(orbMorphTokens.shadowFrom, orbMorphTokens.shadowTo, morph));
+      blankOrb.style.setProperty("--logo-inner", orbMorphTokens.innerTo);
+      blankOrb.style.setProperty("--landing-orb-scale", (1 - morph * 0.22).toFixed(3));
+      blankOrb.style.setProperty("--landing-orb-opacity", (1 - chatMorph).toFixed(3));
+      blankOrb.style.setProperty("--landing-logo-opacity", (1 - morph).toFixed(3));
+      blankOrb.style.setProperty("--landing-logo-scale", (1 - morph * 0.18).toFixed(3));
+    }
+
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+    window.addEventListener("resize", updateScrollState);
+    updateScrollState();
+
+    function fade(t) {
+      return t * t * (3 - 2 * t);
+    }
+
+    function hash(x, y) {
+      let value = (x * 374761393 + y * 668265263) ^ (x * y * 1274126177);
+      value = (value ^ (value >>> 13)) * 1274126177;
+      return ((value ^ (value >>> 16)) >>> 0) / 4294967295;
+    }
+
+    function valueNoise(x, y) {
+      const ix = Math.floor(x);
+      const iy = Math.floor(y);
+      const fx = fade(x - ix);
+      const fy = fade(y - iy);
+      const a = hash(ix, iy);
+      const b = hash(ix + 1, iy);
+      const c = hash(ix, iy + 1);
+      const d = hash(ix + 1, iy + 1);
+      const top = a + (b - a) * fx;
+      const bottom = c + (d - c) * fx;
+      return top + (bottom - top) * fy;
+    }
+
+    function createGridTextureAnimator() {
+      const size = 1024;
+      const cellsX = 24;
+      const cellsY = 24;
+      const gutterRatio = 0.18;
+      const transitionMs = tokenMs("--landing-texture-transition-ms", 2200);
+      const cycleMs = tokenMs("--landing-texture-cycle-ms", 2800);
+      const driftSpeed = 0.032 / cycleMs;
+      const textureTimeOffset = 46000;
+      const onThreshold = 0.56;
+      const offThreshold = 0.53;
+      const gridCanvas = document.createElement("canvas");
+      gridCanvas.width = size;
+      gridCanvas.height = size;
+
+      const ctx = gridCanvas.getContext("2d", { alpha: false });
+      ctx.imageSmoothingEnabled = false;
+      ctx.fillStyle = token("--page-bg-top");
+      ctx.fillRect(0, 0, size, size);
+      ctx.fillStyle = token("--landing-texture-square");
+
+      const cellW = size / cellsX;
+      const cellH = size / cellsY;
+      const marginX = Math.floor(cellW * gutterRatio);
+      const marginY = Math.floor(cellH * gutterRatio);
+      const squareW = cellW - marginX * 2;
+      const squareH = cellH - marginY * 2;
+      const cells = [];
+      const leaderboardTextureHeadFills = ["#e8ff1b", "#f2ff7a", "#ffffff", "#f7f4ee", "#ff0075", "#ff8ad8", "#24d0ff", "#01fdf9", "#d9f6ff", "#0a0a0c", "#f2ff00", "#64d2ff"];
+      const leaderboardTextureStrokes = ["#84b426", "#9ab83d", "#161616", "#ff0075", "#8e0047", "#7a2a61", "#045f86", "#007b92", "#0a84ff", "#f5f5f7", "#6f6f00", "#005d7c"];
+      const leaderboardTextureEyes = ["#ffffff", "#f8fff2", "#f5f5f7", "#fff6a8", "#64d2ff", "#01fdf9", "#ff0075", "#ffe6f5", "#001a34", "#0a0a0c"];
+      const leaderboardTexturePupils = ["#001a34", "#171717", "#0a0a0c", "#ff0075", "#007b92", "#ffffff"];
+      const leaderboardTextureSeedPalettes = [
+        { head: "#e8ff1b", stroke: "#84b426", eye: "#f8fff2", pupil: "#171717" },
+        { head: "#ffffff", stroke: "#161616", eye: "#f2ff7a", pupil: "#ff0075" },
+        { head: "#ff0075", stroke: "#8e0047", eye: "#ffffff", pupil: "#001a34" },
+        { head: "#24d0ff", stroke: "#045f86", eye: "#ffffff", pupil: "#001a34" },
+        { head: "#f2ff00", stroke: "#9ab83d", eye: "#ffffff", pupil: "#171717" },
+        { head: "#f7f4ee", stroke: "#ff0075", eye: "#64d2ff", pupil: "#001a34" },
+        { head: "#01fdf9", stroke: "#007b92", eye: "#ffffff", pupil: "#001a34" },
+        { head: "#d9f6ff", stroke: "#0a84ff", eye: "#f5f5f7", pupil: "#0a0a0c" },
+        { head: "#0a0a0c", stroke: "#f5f5f7", eye: "#f2ff00", pupil: "#ff0075" },
+        { head: "#ff8ad8", stroke: "#7a2a61", eye: "#ffffff", pupil: "#001a34" }
+      ];
+      const leaderboardTexturePaletteIds = new Set();
+      const leaderboardTextureEntries = [
+        ["KAI_XX", 271.9, 271.9, 271.0, 271.9],
+        ["VISADEBIT_QSTAR", 60.14, 60.14, 460.14, 60.14],
+        ["CHUDMAXXER57", 53.08, 53.08, 253.00, 53.00],
+        ["ALEX-HY39", 43.93, 43.93, 943.90, 43.00],
+        ["MIYO", .778, .778, 877.00, .778],
+        ["0X5478…893", .663, .663, 66.00, .663],
+        ["LINUXBAG_88", .421, .421, 118.42, .421],
+        ["0X91F2…A70", .317, .317, 74.30, .317],
+        ["MINTEDBREAD", .209, .209, 51.80, .209],
+        ["0XAA04…12C", .145, .145, 22.90, .145],
+        ["FROSTBYTE7", 38.62, 36.88, 319.42, 49.18],
+        ["YIELDWIZ_04", 34.71, 32.44, 288.05, 41.73],
+        ["0X72BC…9D1", 31.06, 30.12, 241.77, 36.40],
+        ["NOVA-MODE", 28.92, 27.61, 205.43, 34.12],
+        ["SUSHI_POCKET", 25.87, 24.90, 190.38, 31.66],
+        ["LILHEDGE", 22.35, 21.71, 176.20, 28.45],
+        ["PIXELMINT", 19.84, 18.06, 162.91, 25.18],
+        ["0XE18F…442", 17.63, 16.98, 149.35, 22.09],
+        ["MOONVAULT_5", 15.49, 14.82, 132.74, 19.77],
+        ["BAGMODE99", 13.77, 13.09, 121.52, 17.94],
+        ["SPARK-DAO", 12.42, 11.86, 109.83, 15.22],
+        ["0X4E20…BEE", 10.95, 10.48, 98.31, 13.68],
+        ["HYPERJUNO", 9.72, 9.35, 91.04, 12.31],
+        ["SLOWRUGS", 8.66, 8.04, 82.64, 10.94],
+        ["ZENITH_13", 7.81, 7.12, 77.18, 9.88],
+        ["0XF0AM…777", 6.94, 6.28, 70.55, 8.79],
+        ["TINY_WHALE", 6.12, 5.83, 64.20, 7.93],
+        ["KITEFINANCE", 5.46, 5.21, 58.76, 6.70],
+        ["0X19AD…C04", 4.83, 4.51, 53.19, 5.91],
+        ["RISKYBENTO", 4.21, 3.98, 48.83, 5.24],
+        ["BLOOM-777", 3.78, 3.42, 43.64, 4.62],
+        ["WAGMI_LABS", 3.31, 3.08, 39.17, 4.01],
+        ["0X02DF…8A8", 2.94, 2.66, 35.02, 3.58],
+        ["SNOWPILL", 2.61, 2.31, 31.86, 3.09],
+        ["BYTEFARMER", 2.25, 2.04, 28.44, 2.73],
+        ["0X6C30…1FE", 1.98, 1.76, 24.95, 2.38],
+        ["GHOSTLIMIT", 1.71, 1.52, 21.72, 2.04],
+        ["PILLCHASER", 1.45, 1.20, 18.63, 1.78],
+        ["0XBB88…E91", 1.18, 1.04, 15.98, 1.42],
+        ["TURBO_TARO", .982, .914, 14.45, 1.18],
+        ["MINIBIDDER", .884, .805, 13.10, 1.04],
+        ["0X80AC…431", .756, .702, 11.76, .941],
+        ["PUDGYDELTA", .681, .622, 10.82, .830],
+        ["SEEDROUND", .604, .558, 9.71, .762],
+        ["0X3499…AD0", .536, .501, 8.92, .684],
+        ["CLOUDY_PNL", .472, .429, 7.84, .596],
+        ["DREAMFILL", .416, .382, 6.91, .522],
+        ["0X5B77…9CA", .361, .336, 5.82, .451],
+        ["PAPERORBIT", .299, .274, 4.76, .378],
+        ["LIMESTOP", .231, .210, 3.44, .302]
+      ].map(([username, value, pnl, roi, volume], index) => ({
+        id: `leaderboard-entry-${index}`,
+        username,
+        value,
+        pnl,
+        roi,
+        volume,
+        pfp: createLeaderboardTexturePalette(index),
+        flip: index % 2 === 1
+      })).sort((a, b) => b.value - a.value);
+      const glyphs = {
+        " ": ["00000", "00000", "00000", "00000", "00000", "00000", "00000"],
+        "$": ["01110", "10100", "10100", "01110", "00101", "00101", "11110"],
+        "%": ["11001", "11010", "00100", "01000", "10011", "00111", "00000"],
+        "+": ["00000", "00100", "00100", "11111", "00100", "00100", "00000"],
+        "-": ["00000", "00000", "00000", "11111", "00000", "00000", "00000"],
+        ".": ["00000", "00000", "00000", "00000", "00000", "01100", "01100"],
+        "…": ["00000", "00000", "00000", "00000", "00000", "10101", "10101"],
+        "/": ["00001", "00010", "00100", "01000", "10000", "00000", "00000"],
+        "0": ["01110", "10001", "10011", "10101", "11001", "10001", "01110"],
+        "1": ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
+        "2": ["01110", "10001", "00001", "00010", "00100", "01000", "11111"],
+        "3": ["11110", "00001", "00001", "01110", "00001", "00001", "11110"],
+        "4": ["00010", "00110", "01010", "10010", "11111", "00010", "00010"],
+        "5": ["11111", "10000", "10000", "11110", "00001", "00001", "11110"],
+        "6": ["01110", "10000", "10000", "11110", "10001", "10001", "01110"],
+        "7": ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
+        "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"],
+        "9": ["01110", "10001", "10001", "01111", "00001", "00001", "01110"],
+        "A": ["01110", "10001", "10001", "11111", "10001", "10001", "10001"],
+        "B": ["11110", "10001", "10001", "11110", "10001", "10001", "11110"],
+        "C": ["01111", "10000", "10000", "10000", "10000", "10000", "01111"],
+        "D": ["11110", "10001", "10001", "10001", "10001", "10001", "11110"],
+        "E": ["11111", "10000", "10000", "11110", "10000", "10000", "11111"],
+        "F": ["11111", "10000", "10000", "11110", "10000", "10000", "10000"],
+        "G": ["01111", "10000", "10000", "10111", "10001", "10001", "01111"],
+        "H": ["10001", "10001", "10001", "11111", "10001", "10001", "10001"],
+        "I": ["11111", "00100", "00100", "00100", "00100", "00100", "11111"],
+        "J": ["00111", "00010", "00010", "00010", "00010", "10010", "01100"],
+        "K": ["10001", "10010", "10100", "11000", "10100", "10010", "10001"],
+        "L": ["10000", "10000", "10000", "10000", "10000", "10000", "11111"],
+        "M": ["10001", "11011", "10101", "10101", "10001", "10001", "10001"],
+        "N": ["10001", "11001", "10101", "10011", "10001", "10001", "10001"],
+        "O": ["01110", "10001", "10001", "10001", "10001", "10001", "01110"],
+        "P": ["11110", "10001", "10001", "11110", "10000", "10000", "10000"],
+        "Q": ["01110", "10001", "10001", "10001", "10101", "10010", "01101"],
+        "R": ["11110", "10001", "10001", "11110", "10100", "10010", "10001"],
+        "S": ["01111", "10000", "10000", "01110", "00001", "00001", "11110"],
+        "T": ["11111", "00100", "00100", "00100", "00100", "00100", "00100"],
+        "U": ["10001", "10001", "10001", "10001", "10001", "10001", "01110"],
+        "V": ["10001", "10001", "10001", "10001", "10001", "01010", "00100"],
+        "W": ["10001", "10001", "10001", "10101", "10101", "11011", "10001"],
+        "X": ["10001", "10001", "01010", "00100", "01010", "10001", "10001"],
+        "Y": ["10001", "10001", "01010", "00100", "00100", "00100", "00100"],
+        "Z": ["11111", "00001", "00010", "00100", "01000", "10000", "11111"],
+        "_": ["00000", "00000", "00000", "00000", "00000", "00000", "11111"]
+      };
+
+      function sampleCellValue(x, y, time) {
+        const offsetTime = time + textureTimeOffset;
+        const driftX = offsetTime * driftSpeed;
+        const driftY = offsetTime * driftSpeed * 0.58;
+        const primaryBroad = valueNoise(x * 0.17 + driftX + 11.3, y * 0.17 + driftY + 4.7);
+        const primaryCluster = valueNoise(x * 0.38 + driftX * 1.35 + 5.1, y * 0.38 + driftY * 1.35 + 22.8);
+        const secondaryBroad = valueNoise(x * 0.2 - driftX * 0.82 + 31.4, y * 0.2 + driftY * 0.94 + 18.6);
+        const secondaryCluster = valueNoise(x * 0.56 - driftX * 1.75 + 2.9, y * 0.56 + driftY * 1.55 + 41.2);
+        const edge = valueNoise(x * 1.02 + driftX * 2.65 + 19, y * 1.02 + driftY * 2.65 + 7);
+        const primary = primaryBroad * 0.62 + primaryCluster * 0.38;
+        const secondary = secondaryBroad * 0.58 + secondaryCluster * 0.42;
+        return Math.max(primary, secondary * 0.97) * 0.82 + edge * 0.18;
+      }
+
+      function sampleCellTarget(x, y, time, currentTarget = 0) {
+        const value = sampleCellValue(x, y, time);
+        const threshold = currentTarget > 0.5 ? offThreshold : onThreshold;
+        return Number(value >= threshold);
+      }
+
+      for (let y = 0; y < cellsY; y += 1) {
+        for (let x = 0; x < cellsX; x += 1) {
+          const targetScale = sampleCellTarget(x, y, 0);
+
+          cells.push({
+            x,
+            y,
+            scale: targetScale,
+            fromScale: targetScale,
+            targetScale,
+            startedAt: 0
+          });
+        }
+      }
+
+      function startTransition(cell, nextScale, time) {
+        if (cell.targetScale === nextScale) return;
+        cell.fromScale = cell.scale;
+        cell.targetScale = nextScale;
+        cell.startedAt = time;
+      }
+
+      function draw(time = 0) {
+        ctx.fillStyle = token("--page-bg-top");
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = token("--landing-texture-square");
+
+        cells.forEach((cell) => {
+          startTransition(
+            cell,
+            sampleCellTarget(cell.x, cell.y, time, cell.targetScale),
+            time
+          );
+
+          const elapsed = Math.max(0, time - cell.startedAt);
+          const progress = Math.min(1, elapsed / transitionMs);
+          cell.scale = cell.fromScale + (cell.targetScale - cell.fromScale) * progress;
+
+          if (cell.scale <= 0.001) return;
+
+          const width = Math.round(squareW * cell.scale);
+          const height = Math.round(squareH * cell.scale);
+          const centerX = cell.x * cellW + marginX + squareW / 2;
+          const centerY = cell.y * cellH + marginY + squareH / 2;
+
+          if (textureShape === "circle") {
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, Math.min(width, height) / 2, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            ctx.fillRect(
+              Math.round(centerX - width / 2),
+              Math.round(centerY - height / 2),
+              width,
+              height
+            );
+          }
+        });
+      }
+
+      function drawMatrixText(text, x, y, options = {}) {
+        const dot = options.dot || 2.4;
+        const gap = options.gap || 1.3;
+        const stepX = dot + gap;
+        const stepY = dot + gap;
+        const charStep = dot * 6 + gap * 4;
+        const on = options.on || token("--leaderboard-dot-on");
+        const off = options.off || token("--leaderboard-dot-off");
+        const offAlpha = options.offAlpha ?? 0.26;
+        const onAlpha = options.onAlpha ?? 0.74;
+
+        const normalizedText = String(text).toUpperCase();
+        const paddedText = options.minCells
+          ? (options.align === "right" ? normalizedText.padStart(options.minCells, " ") : normalizedText.padEnd(options.minCells, " "))
+          : normalizedText;
+
+        [...paddedText].forEach((char, charIndex) => {
+          const glyph = glyphs[char] || glyphs[" "];
+          const charX = x + charIndex * charStep;
+
+          glyph.forEach((row, rowIndex) => {
+            [...row].forEach((value, columnIndex) => {
+              ctx.globalAlpha = value === "1" ? onAlpha : offAlpha;
+              ctx.fillStyle = value === "1" ? on : off;
+              ctx.fillRect(
+                Math.round(charX + columnIndex * stepX),
+                Math.round(y + rowIndex * stepY),
+                dot,
+                dot
+              );
+            });
+          });
+        });
+      }
+
+      function hexToRgb(hex) {
+        const clean = hex.replace("#", "");
+        return {
+          r: parseInt(clean.slice(0, 2), 16),
+          g: parseInt(clean.slice(2, 4), 16),
+          b: parseInt(clean.slice(4, 6), 16)
+        };
+      }
+
+      function relativeLuminance({ r, g, b }) {
+        const channel = (value) => {
+          const next = value / 255;
+          return next <= .03928 ? next / 12.92 : Math.pow((next + .055) / 1.055, 2.4);
+        };
+        return .2126 * channel(r) + .7152 * channel(g) + .0722 * channel(b);
+      }
+
+      function contrastRatio(hexA, hexB) {
+        const a = relativeLuminance(hexToRgb(hexA));
+        const b = relativeLuminance(hexToRgb(hexB));
+        const lighter = Math.max(a, b);
+        const darker = Math.min(a, b);
+        return (lighter + .05) / (darker + .05);
+      }
+
+      function getContrastingPfpPupil(eye, preferred = "#171717") {
+        if (!eye || !preferred) return preferred || "#171717";
+        if (contrastRatio(eye, preferred) >= 2.8) return preferred;
+        return contrastRatio(eye, "#171717") >= contrastRatio(eye, "#ffffff") ? "#171717" : "#ffffff";
+      }
+
+      function getPfpPaletteId(palette) {
+        return [palette.head, palette.stroke, palette.eye, palette.pupil].join("-").replaceAll("#", "");
+      }
+
+      function normalizeLeaderboardTexturePalette(palette, index = 0) {
+        const source = palette || leaderboardTextureSeedPalettes[index % leaderboardTextureSeedPalettes.length];
+        const eye = source.eye || "#ffffff";
+        return {
+          head: source.head || "#e8ff1b",
+          stroke: source.stroke || "#84b426",
+          eye,
+          pupil: getContrastingPfpPupil(eye, source.pupil || source.stroke || "#171717")
+        };
+      }
+
+      function createLeaderboardTexturePalette(index) {
+        const candidates = [];
+        if (index < leaderboardTextureSeedPalettes.length) candidates.push(leaderboardTextureSeedPalettes[index]);
+        const maxAttempts = leaderboardTextureHeadFills.length * leaderboardTextureStrokes.length;
+
+        for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+          const eye = leaderboardTextureEyes[(index * 3 + attempt * 2) % leaderboardTextureEyes.length];
+          candidates.push({
+            head: leaderboardTextureHeadFills[(index + attempt * 3) % leaderboardTextureHeadFills.length],
+            stroke: leaderboardTextureStrokes[(index * 2 + attempt * 5 + 1) % leaderboardTextureStrokes.length],
+            eye,
+            pupil: getContrastingPfpPupil(eye, leaderboardTexturePupils[(index * 5 + attempt) % leaderboardTexturePupils.length])
+          });
+        }
+
+        for (const candidate of candidates) {
+          const normalized = normalizeLeaderboardTexturePalette(candidate, index);
+          const id = getPfpPaletteId(normalized);
+          if (!leaderboardTexturePaletteIds.has(id) && normalized.head !== normalized.stroke && normalized.eye !== normalized.pupil) {
+            leaderboardTexturePaletteIds.add(id);
+            return normalized;
+          }
+        }
+
+        return normalizeLeaderboardTexturePalette({
+          head: leaderboardTextureHeadFills[index % leaderboardTextureHeadFills.length],
+          stroke: leaderboardTextureStrokes[(index + 1) % leaderboardTextureStrokes.length],
+          eye: "#ffffff",
+          pupil: "#171717"
+        }, index);
+      }
+
+      function formatLeaderboardMoney(value) {
+        if (value >= 1) return `$${value.toFixed(2)}M`;
+        return `$${Math.round(value * 1000)}K`;
+      }
+
+      function formatLeaderboardVolume(value) {
+        if (value >= 1) return `$${value.toFixed(2)}B`;
+        return `$${Math.round(value * 1000)}M`;
+      }
+
+      function formatLeaderboardRoi(value) {
+        return `${value.toFixed(2)}%`;
+      }
+
+      function getLeaderboardTextureDisplayCells(entry, displayPlace) {
+        return [
+          [String(displayPlace).padStart(2, "0"), 5, "left"],
+          [entry.username, 16, "left"],
+          [formatLeaderboardMoney(entry.value), 10, "right"],
+          [formatLeaderboardMoney(entry.pnl), 10, "right"],
+          [formatLeaderboardRoi(entry.roi), 10, "right"],
+          [formatLeaderboardVolume(entry.volume), 10, "right"]
+        ];
+      }
+
+      function drawHudiMarker(x, y, size, palette, flip = false) {
+        const colors = normalizeLeaderboardTexturePalette(palette);
+        const points = [
+          [-0.42, -0.06], [-0.55, -0.34], [-0.32, -0.28], [-0.24, -0.55],
+          [-0.08, -0.28], [0.08, -0.58], [0.18, -0.27], [0.44, -0.42],
+          [0.35, -0.13], [0.58, -0.04], [0.38, 0.12], [0.46, 0.36],
+          [0.18, 0.3], [0.02, 0.48], [-0.18, 0.28], [-0.44, 0.34],
+          [-0.36, 0.1]
+        ];
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(flip ? -size : size, size);
+        ctx.beginPath();
+        points.forEach(([px, py], index) => {
+          if (index === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        });
+        ctx.closePath();
+        ctx.fillStyle = colors.head;
+        ctx.strokeStyle = colors.stroke;
+        ctx.lineJoin = "miter";
+        ctx.lineWidth = 0.08;
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = colors.eye;
+        ctx.beginPath();
+        ctx.ellipse(-0.18, 0.1, 0.12, 0.18, -0.42, 0, Math.PI * 2);
+        ctx.ellipse(0.2, 0.09, 0.12, 0.18, 0.42, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = colors.pupil;
+        ctx.beginPath();
+        ctx.ellipse(-0.16, 0.12, 0.055, 0.1, -0.42, 0, Math.PI * 2);
+        ctx.ellipse(0.18, 0.11, 0.055, 0.1, 0.42, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function drawLeaderboardTexture(finalOpacity, time = 0) {
+        if (finalOpacity <= 0.001) return;
+
+        const alpha = smoothstep(finalOpacity);
+        const rowHeight = 42;
+        const dot = 1.16;
+        const gap = .42;
+        const charStep = dot * 6 + gap * 4;
+        const sectionGap = dot;
+        const avatarColumn = 26 + dot * 3;
+        const cellWidth = (minCells) => charStep * minCells - dot;
+        const horizontalSections = [-82, 494, 1070];
+        const verticalOffset = -((time * 0.004) % rowHeight);
+
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.9;
+        ctx.fillStyle = token("--page-bg-top");
+        ctx.fillRect(0, 0, size, size);
+        ctx.restore();
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = token("--leaderboard-dot-off");
+
+        for (let y = verticalOffset - rowHeight; y < size + rowHeight; y += rowHeight) {
+          const sourceIndex = Math.abs(Math.round((y - verticalOffset) / rowHeight));
+          const entryIndex = sourceIndex % leaderboardTextureEntries.length;
+          const entry = leaderboardTextureEntries[entryIndex];
+          const cells = getLeaderboardTextureDisplayCells(entry, entryIndex + 1);
+          const isHeaderRow = sourceIndex % 13 === 0;
+
+          horizontalSections.forEach((sectionX, sectionIndex) => {
+            const jitter = ((entryIndex + sectionIndex) % 3) * 4;
+            const rowY = y + jitter;
+            const rowAlpha = 0.3 + ((entryIndex + sectionIndex) % 5) * 0.08;
+            const dimmer = sectionX < 0 || sectionX > 980 ? 0.58 : 1;
+            const textAlpha = alpha * rowAlpha * dimmer;
+            let cursorX = sectionX + avatarColumn + sectionGap;
+
+            if (isHeaderRow) {
+              const headers = [
+                ["PLACE", 5, "left"],
+                ["USERNAME", 16, "left"],
+                ["VALUE", 10, "right"],
+                ["PNL", 10, "right"],
+                ["ROI", 10, "right"],
+                ["VOLUME", 10, "right"]
+              ];
+
+              headers.forEach(([text, minCells, align]) => {
+                drawMatrixText(text, cursorX, rowY + 3, {
+                  dot,
+                  gap,
+                  minCells,
+                  align,
+                  onAlpha: textAlpha * .48,
+                  offAlpha: alpha * .035 * dimmer
+                });
+                cursorX += cellWidth(minCells) + sectionGap;
+              });
+              return;
+            }
+
+            ctx.globalAlpha = alpha * 0.34 * dimmer;
+            drawHudiMarker(sectionX + 14, rowY + 18, 18, entry.pfp, entry.flip);
+
+            cells.forEach(([text, minCells, align]) => {
+              drawMatrixText(text, cursorX, rowY + 4, {
+                dot,
+                gap,
+                minCells,
+                align,
+                onAlpha: textAlpha,
+                offAlpha: alpha * 0.07 * dimmer
+              });
+              cursorX += cellWidth(minCells) + sectionGap;
+            });
+          });
+        }
+
+        ctx.restore();
+      }
+
+      const texture = new THREE.CanvasTexture(gridCanvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.magFilter = THREE.NearestFilter;
+      texture.minFilter = THREE.NearestFilter;
+      texture.generateMipmaps = false;
+      texture.repeat.set(2.4, 1.6333333333);
+      texture.needsUpdate = true;
+      draw(0);
+
+      return {
+        texture,
+        update(time, finalOpacity = 0) {
+          draw(time);
+          drawLeaderboardTexture(finalOpacity, time);
+          texture.needsUpdate = true;
+        }
+      };
+    }
+
+    const gridTexture = createGridTextureAnimator();
+
+    function createTextRing() {
+      const ringCanvas = document.createElement("canvas");
+      ringCanvas.width = 4096;
+      ringCanvas.height = 256;
+
+      const ctx = ringCanvas.getContext("2d");
+      ctx.clearRect(0, 0, ringCanvas.width, ringCanvas.height);
+      ctx.save();
+      ctx.translate(ringCanvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.textBaseline = "middle";
+      ctx.font = `96px ${token("--sans")}`;
+
+      const words = [
+        ["trade", token("--light-grey")],
+        ["tokyo", token("--hudi-orb-colour")],
+        ["trade", token("--light-grey")],
+        ["hong kong", token("--hudi-orb-colour")],
+        ["trade", token("--light-grey")],
+        ["korea", token("--hudi-orb-colour")],
+        ["24/7", token("--light-grey")]
+      ];
+      const gap = 92;
+      let x = 0;
+
+      while (x < ringCanvas.width + 600) {
+        for (const [word, color] of words) {
+          ctx.fillStyle = color;
+          ctx.fillText(word, x, ringCanvas.height / 2);
+          x += ctx.measureText(word).width + gap;
+        }
+      }
+      ctx.restore();
+
+      const texture = new THREE.CanvasTexture(ringCanvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+      texture.repeat.set(1, 1);
+      texture.needsUpdate = true;
+
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        opacity: 1,
+        side: THREE.BackSide,
+        depthWrite: false
+      });
+      const mesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(245, 245, 64, 160, 1, true),
+        material
+      );
+      mesh.position.y = 42;
+      mesh.renderOrder = 1;
+      return mesh;
+    }
+
+    const skybox = new THREE.Mesh(
+      new THREE.SphereGeometry(500, 96, 64),
+      new THREE.MeshBasicMaterial({
+        map: gridTexture.texture,
+        side: THREE.BackSide
+      })
+    );
+    scene.add(skybox);
+
+    const textRing = createTextRing();
+    scene.add(textRing);
+
+    let rotationSpeed = 0;
+    let passiveRotation = 0;
+    let ringRotation = 0;
+
+    function resize() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+
+    function render() {
+      requestAnimationFrame(render);
+      gridTexture.update(performance.now(), scrollState.finalOpacity);
+      passiveRotation += rotationSpeed;
+      ringRotation += 0.00055 * scrollState.firstLevelOpacity;
+      textRing.rotation.y = ringRotation;
+      textRing.material.opacity = scrollState.firstLevelOpacity;
+      skybox.rotation.y = scrollState.skyboxRotation + passiveRotation;
+      renderer.render(scene, camera);
+    }
+
+    render();
+  </script>
+</body>
+</html>
