@@ -65,7 +65,7 @@
       left: 50%;
       top: 50%;
       z-index: 2;
-      translate: -50% -50%;
+      translate: -50% calc(-50% + var(--landing-orb-y, 0px));
       scale: var(--landing-orb-scale, 1);
       opacity: var(--landing-orb-opacity, 1);
     }
@@ -94,12 +94,16 @@
       display: grid;
       justify-items: center;
       gap: var(--space-28);
-      opacity: var(--landing-first-level-opacity, 1);
+      opacity: 1;
       transform: translateX(-50%);
-      pointer-events: auto;
+      pointer-events: var(--landing-first-events, auto);
     }
 
     .landing-world-tag {
+      display: block;
+      width: max-content;
+      max-width: none;
+      clip-path: inset(0 calc((1 - var(--landing-world-tag-reveal, 1)) * 100%) 0 0);
       color: var(--dark-grey);
       font-family: var(--ocr);
       font-size: clamp(16px, 1.55vw, 25px);
@@ -111,12 +115,26 @@
       --pill-bg: var(--hudi-orb-colour);
       --pill-inner-shadow: var(--hudi-orb-shadow);
       --pill-label: var(--white);
-      min-width: clamp(220px, 19vw, 360px);
-      height: clamp(52px, 5vw, 76px);
-      border-width: 5px;
-      border-radius: var(--radius-pill);
+      width: var(--landing-start-width, clamp(220px, 19vw, 360px));
+      min-width: 0;
+      height: var(--landing-start-height, clamp(52px, 5vw, 76px));
+      border: 0;
+      border-radius: var(--landing-start-radius, var(--radius-pill));
       font-size: clamp(24px, 2.2vw, 38px);
+      scale: var(--landing-start-scale, 1);
       text-transform: lowercase;
+      transform-origin: center;
+      will-change: width, border-radius, scale;
+    }
+
+    .landing-start-button .pill-label {
+      opacity: var(--landing-start-label-opacity, 1);
+      min-width: max-content;
+      white-space: nowrap;
+    }
+
+    .landing-start-button .pill-top-contour {
+      opacity: var(--landing-start-contour-opacity, 1);
     }
 
     .landing-start-button .pill-top-contour path {
@@ -127,8 +145,10 @@
       position: absolute;
       inset: 0;
       z-index: 1;
-      opacity: var(--landing-market-opacity, 0);
-      pointer-events: none;
+      opacity: 1;
+      pointer-events: var(--landing-panel-events, none);
+      translate: 0 var(--landing-market-y, 100vh);
+      will-change: translate;
     }
 
     .market-showcase.is-popping .stock-card,
@@ -192,20 +212,11 @@
 
     .stock-card .hudi-stock-orb {
       --orb-size: clamp(74px, 6.2vw, 104px);
-      --orb-ticker-base-size: 18px;
       position: absolute;
       left: clamp(var(--space-20), 2.4vw, var(--space-30));
       top: 50%;
       z-index: 2;
       transform: translateY(-50%);
-    }
-
-    .stock-card .hudi-stock-orb__number {
-      top: var(--space-1);
-    }
-
-    .stock-card .hudi-stock-orb__number text {
-      font-size: 10.4px;
     }
 
     .stock-readout {
@@ -243,7 +254,7 @@
     }
 
     .landing-panel {
-      --market-panel-width: clamp(440px, 31vw, 620px);
+      --market-panel-width: clamp(540px, 38vw, 740px);
       position: absolute;
       left: min(
         calc(50% + clamp(190px, 14vw, 270px)),
@@ -254,26 +265,25 @@
       z-index: 2;
       width: var(--market-panel-width);
       min-height: clamp(166px, 18vh, 230px);
-      padding: clamp(var(--space-22), 2vw, var(--space-34));
+      padding: clamp(var(--space-24), 2.1vw, var(--space-38));
       display: grid;
       align-content: start;
       justify-items: start;
-      gap: clamp(var(--space-20), 2.6vh, var(--space-34));
+      gap: clamp(var(--space-18), 2.2vh, var(--space-28));
       box-shadow: var(--landing-panel-shadow);
-      opacity: var(--landing-panel-opacity, 0);
+      opacity: 1;
       pointer-events: var(--landing-panel-events, none);
-      translate: 0 -50%;
+      translate: 0 calc(-50% + var(--landing-market-y, 100vh));
+      will-change: translate;
     }
 
     .landing-panel h3 {
-      font-size: clamp(18px, 1.35vw, var(--type-card-title));
       white-space: nowrap;
     }
 
     .landing-panel p {
-      max-width: 37ch;
-      font-size: clamp(var(--type-body), 1.16vw, 21px);
-      line-height: 1.12;
+      width: 100%;
+      max-width: none;
     }
 
     .market-copy-button.hudi-trade-button {
@@ -288,6 +298,10 @@
       text-transform: lowercase;
     }
 
+    .market-copy-button .pill-label {
+      white-space: nowrap;
+    }
+
     .market-copy-button .pill-top-contour path {
       fill: url(#market-copy-pill-top-gradient);
     }
@@ -296,9 +310,10 @@
       position: absolute;
       inset: 0;
       z-index: 3;
-      opacity: var(--landing-chat-opacity, 0);
+      opacity: 1;
       pointer-events: var(--landing-chat-events, none);
-      transition: opacity var(--motion-control) linear;
+      translate: 0 var(--landing-chat-y, 100vh);
+      will-change: translate;
     }
 
     .chat-copy-panel {
@@ -315,24 +330,11 @@
       border-radius: var(--radius-card);
       background: var(--panel-fill);
       box-shadow: var(--landing-panel-shadow);
-      translate: 0 var(--landing-chat-copy-rise, 68px);
       transform: translateY(-50%);
-    }
-
-    .chat-copy-panel h3 {
-      color: var(--dark-grey);
-      font-family: var(--sans);
-      font-size: clamp(var(--type-small-title), 1.6vw, var(--type-card-title));
-      font-weight: 700;
-      line-height: 1;
     }
 
     .chat-copy-panel p {
       max-width: 34ch;
-      color: var(--dark-grey);
-      font-family: var(--mono);
-      font-size: clamp(15px, 1.18vw, 22px);
-      line-height: 1.08;
     }
 
     .chat-bubble-card {
@@ -340,7 +342,6 @@
       width: clamp(230px, 21vw, 450px);
       color: var(--dark-grey);
       filter: drop-shadow(3px 7px 10px var(--black-alpha-13));
-      translate: 0 var(--landing-chat-rise, 92px);
       animation: chat-bubble-float 5200ms ease-in-out infinite;
     }
 
@@ -499,17 +500,17 @@
       z-index: 4;
       display: grid;
       place-items: center;
-      opacity: var(--landing-final-opacity, 0);
+      opacity: 1;
       pointer-events: var(--landing-final-events, none);
-      translate: 0 var(--landing-final-rise, 96px);
-      transition: opacity var(--motion-control) linear;
+      translate: 0 var(--landing-final-y, 100vh);
+      will-change: translate;
     }
 
     .final-cluster {
       display: grid;
       justify-items: center;
       gap: clamp(var(--space-28), 4vh, var(--space-48));
-      transform: translateY(8vh);
+      transform: translateY(clamp(var(--space-56), 10vh, var(--space-112)));
     }
 
     .landing-final-button.hudi-trade-button {
@@ -518,11 +519,15 @@
       --pill-label: var(--white);
       min-width: clamp(360px, 33vw, 640px);
       height: clamp(74px, 7vw, 116px);
-      border-width: 7px;
+      border: 0;
       border-radius: var(--radius-pill);
       font-size: clamp(42px, 4vw, 72px);
       text-transform: lowercase;
       box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow), var(--landing-panel-shadow);
+    }
+
+    .landing-final-button .pill-label {
+      white-space: nowrap;
     }
 
     .landing-final-button .pill-top-contour path {
@@ -536,6 +541,7 @@
       letter-spacing: .16em;
       line-height: 1;
       text-align: center;
+      text-shadow: 0 0 4px var(--white), 0 0 11px var(--white), 0 0 18px var(--white);
       white-space: nowrap;
     }
 
@@ -677,7 +683,7 @@
         top: auto;
         width: auto;
         min-height: 126px;
-        translate: 0;
+        translate: 0 var(--landing-market-y, 100vh);
         transform: none;
       }
 
@@ -842,7 +848,7 @@
     </section>
 
     <section class="chat-showcase" aria-label="Chat room examples">
-      <article class="chat-copy-panel">
+      <article class="card chat-copy-panel">
         <h3>Win Together</h3>
         <p>Every ticker is a chatroom. Chat with traders with open positions</p>
       </article>
@@ -948,14 +954,15 @@
       const sourceStyle = doc.querySelector("style");
       const landingStyle = document.getElementById("landing-style");
 
-      if (!sourceStyle || !landingStyle) return;
+      if (!sourceStyle || !landingStyle) return { doc, html };
 
       const style = document.createElement("style");
       style.textContent = sourceStyle.textContent;
       document.head.insertBefore(style, landingStyle);
+      return { doc, html };
     }
 
-    await loadHudiStyles();
+    const hudiSource = await loadHudiStyles();
 
     const canvas = document.getElementById("landing-canvas");
     const scene = new THREE.Scene();
@@ -988,6 +995,7 @@
     const blankOrb = document.getElementById("blank-orb");
     const landingShell = document.querySelector(".landing-shell");
     const marketShowcase = document.querySelector(".market-showcase");
+    const landingContourRoots = Array.from(document.querySelectorAll(".landing-start-button, .landing-final-button, .market-copy-button"));
     const scrollLevels = Array.from(document.querySelectorAll("[data-scroll-level]"));
     const maxScrollIndex = Math.max(1, scrollLevels.length - 1);
     const scrollState = {
@@ -998,10 +1006,13 @@
       progress: 0,
       easedProgress: 0,
       skyboxRotation: 0,
+      scrollVelocity: 0,
       firstLevelOpacity: 1,
       finalOpacity: 0
     };
     let wasMarketVisible = false;
+    let lastRawProgress = 0;
+    let lastScrollAt = performance.now();
 
     const shapeToggle = document.querySelector("[data-shape-toggle]");
     shapeToggle?.addEventListener("click", () => {
@@ -1052,18 +1063,87 @@
       innerTo: token("--hudi-orb-inner")
     };
 
+    function levelOffset(level, progress, speed = 100) {
+      return `${((level - progress) * speed).toFixed(3)}vh`;
+    }
+
+    function mapScrollProgress(rawProgress) {
+      if (rawProgress <= 1) return rawProgress;
+      if (rawProgress <= 2.4) return 1 + ((rawProgress - 1) / 1.4);
+      return 2 + ((rawProgress - 2.4) / .6);
+    }
+
+    function lerp(start, end, amount) {
+      return start + (end - start) * amount;
+    }
+
+    function getLandingStartMetrics() {
+      return {
+        width: clamp(window.innerWidth * .19, 220, 360),
+        height: clamp(window.innerWidth * .05, 52, 76)
+      };
+    }
+
+    function formatPathNumber(value) {
+      return Number(value.toFixed(3)).toString();
+    }
+
+    function buildPillTopContourPath(width, scale = 1) {
+      const sourceWidth = 151 * scale;
+      const delta = width - sourceWidth;
+      const leftX = (value) => formatPathNumber(value * scale);
+      const rightX = (value) => formatPathNumber((value * scale) + delta);
+      return `M${leftX(2.13303)} 11.6167C${leftX(6.00544)} 4.56248 ${leftX(10.3926)} 0 ${leftX(19.1527)} 0H${rightX(139.508)}C${rightX(145.4)} 0 ${rightX(150.393)} 4.02449 ${rightX(150.393)} 9.5C${rightX(150.393)} 15.5 ${rightX(145.4)} 19.8286 ${rightX(139.508)} 19.8286C${rightX(139.508)} 19.8286 ${leftX(25.5995)} 19.8286 ${leftX(17.1177)} 19.8286C${leftX(8.6358)} 19.8286 ${leftX(2.13303)} 27.8401 ${leftX(2.82881)} 34.7C${leftX(1.14587)} 33.999 ${leftX(-2.20684)} 19.5226 ${leftX(2.13303)} 11.6167Z`;
+    }
+
+    function updateLandingPillTopContour(svg) {
+      if (!svg) return;
+      const owner = svg.closest(".hudi-trade-button");
+      const ownerWidth = owner?.getBoundingClientRect().width || 0;
+      const cssWidth = parseFloat(getComputedStyle(svg).width) || 0;
+      const renderedWidth = svg.getBoundingClientRect().width || 0;
+      const width = Math.max(32, cssWidth || renderedWidth || ownerWidth || 151);
+      const cssHeight = parseFloat(getComputedStyle(svg).height) || 0;
+      const renderedHeight = svg.getBoundingClientRect().height || 0;
+      const scale = Math.max(.2, Math.min(2, (cssHeight || renderedHeight || 35) / 35));
+      svg.setAttribute("viewBox", `0 0 ${formatPathNumber(width)} 35`);
+      svg.querySelector("path")?.setAttribute("d", buildPillTopContourPath(width, scale));
+    }
+
+    function updateLandingPillTopContours() {
+      landingContourRoots.forEach((root) => {
+        updateLandingPillTopContour(root.querySelector(".pill-top-contour"));
+      });
+    }
+
     function updateScrollState() {
-      const progress = clamp(window.scrollY / Math.max(1, window.innerHeight), 0, maxScrollIndex);
+      const rawProgress = clamp(window.scrollY / Math.max(1, window.innerHeight), 0, maxScrollIndex);
+      const now = performance.now();
+      const elapsed = Math.max(16, now - lastScrollAt);
+      const scrollDelta = rawProgress - lastRawProgress;
+      scrollState.scrollVelocity = clamp(Math.abs(scrollDelta) / (elapsed / 16.667), 0, 1);
+      lastRawProgress = rawProgress;
+      lastScrollAt = now;
+      const progress = clamp(mapScrollProgress(rawProgress), 0, maxScrollIndex);
       const segmentIndex = Math.min(maxScrollIndex - 1, Math.floor(progress));
       const ramp = clamp(progress - segmentIndex);
       const morph = smoothstep(clamp(progress));
-      const chatMorph = smoothstep(clamp(progress - 1));
       const finalMorph = smoothstep(clamp(progress - 2));
-      const marketPop = progress >= 0.82 ? 1 : 0;
-      const marketOpacity = progress <= 1 ? marketPop : 1 - chatMorph;
-      const chatOpacity = progress <= 2 ? chatMorph : 1 - finalMorph;
       const skyboxProgress = smoothstep(progress / maxScrollIndex);
       const firstLevelOpacity = 1 - smoothstep(progress);
+      const startContract = smoothstep(progress / .46);
+      const startVanish = smoothstep((progress - .48) / .38);
+      const tagRetype = 1 - smoothstep(progress / .5);
+      const startMetrics = getLandingStartMetrics();
+      const startWidth = lerp(startMetrics.width, startMetrics.height, startContract);
+      const startScale = Math.max(0, 1 - startVanish);
+      const marketDistance = Math.abs(progress - 1);
+      const chatDistance = Math.abs(progress - 2);
+      const finalDistance = Math.abs(progress - 3);
+      const marketY = levelOffset(1, progress);
+      const chatY = levelOffset(2, progress);
+      const finalY = levelOffset(3, progress);
+      const orbY = progress <= 1 ? "0vh" : `${((1 - progress) * 112).toFixed(3)}vh`;
 
       scrollState.index = Math.min(maxScrollIndex, Math.round(progress));
       scrollState.segmentIndex = segmentIndex;
@@ -1076,19 +1156,22 @@
       scrollState.finalOpacity = finalMorph;
       document.documentElement.dataset.scrollIndex = String(scrollState.index);
 
-      landingShell?.style.setProperty("--landing-first-level-opacity", firstLevelOpacity.toFixed(3));
-      landingShell?.style.setProperty("--landing-market-opacity", marketOpacity.toFixed(3));
-      landingShell?.style.setProperty("--landing-panel-opacity", marketOpacity.toFixed(3));
-      landingShell?.style.setProperty("--landing-panel-events", marketOpacity > 0.5 ? "auto" : "none");
-      landingShell?.style.setProperty("--landing-chat-opacity", chatOpacity.toFixed(3));
-      landingShell?.style.setProperty("--landing-chat-events", chatOpacity > 0.5 ? "auto" : "none");
-      landingShell?.style.setProperty("--landing-chat-rise", `${Math.round((1 - chatOpacity) * 92)}px`);
-      landingShell?.style.setProperty("--landing-chat-copy-rise", `${Math.round((1 - chatOpacity) * 68)}px`);
-      landingShell?.style.setProperty("--landing-final-opacity", finalMorph.toFixed(3));
-      landingShell?.style.setProperty("--landing-final-events", finalMorph > 0.5 ? "auto" : "none");
-      landingShell?.style.setProperty("--landing-final-rise", `${Math.round((1 - finalMorph) * 96)}px`);
+      landingShell?.style.setProperty("--landing-market-y", marketY);
+      landingShell?.style.setProperty("--landing-chat-y", chatY);
+      landingShell?.style.setProperty("--landing-final-y", finalY);
+      landingShell?.style.setProperty("--landing-first-events", progress < .42 ? "auto" : "none");
+      landingShell?.style.setProperty("--landing-world-tag-reveal", tagRetype.toFixed(3));
+      landingShell?.style.setProperty("--landing-start-width", `${startWidth.toFixed(2)}px`);
+      landingShell?.style.setProperty("--landing-start-height", `${startMetrics.height.toFixed(2)}px`);
+      landingShell?.style.setProperty("--landing-start-radius", `${(startMetrics.height / 2).toFixed(2)}px`);
+      landingShell?.style.setProperty("--landing-start-scale", startScale.toFixed(3));
+      landingShell?.style.setProperty("--landing-start-label-opacity", (1 - smoothstep(progress / .28)).toFixed(3));
+      landingShell?.style.setProperty("--landing-start-contour-opacity", (1 - startVanish).toFixed(3));
+      landingShell?.style.setProperty("--landing-panel-events", marketDistance < 0.62 ? "auto" : "none");
+      landingShell?.style.setProperty("--landing-chat-events", chatDistance < 0.62 ? "auto" : "none");
+      landingShell?.style.setProperty("--landing-final-events", finalDistance < 0.62 ? "auto" : "none");
 
-      const isMarketVisible = marketOpacity > 0.5;
+      const isMarketVisible = marketDistance < 0.58;
       if (marketShowcase && isMarketVisible && !wasMarketVisible) {
         marketShowcase.classList.remove("is-popping");
         marketShowcase.offsetWidth;
@@ -1104,15 +1187,18 @@
       blankOrb.style.setProperty("--orb-sheen", mixColor(orbMorphTokens.sheenFrom, orbMorphTokens.sheenTo, morph));
       blankOrb.style.setProperty("--orb-shadow", mixColor(orbMorphTokens.shadowFrom, orbMorphTokens.shadowTo, morph));
       blankOrb.style.setProperty("--logo-inner", orbMorphTokens.innerTo);
+      blankOrb.style.setProperty("--landing-orb-y", orbY);
       blankOrb.style.setProperty("--landing-orb-scale", (1 - morph * 0.22).toFixed(3));
-      blankOrb.style.setProperty("--landing-orb-opacity", (1 - chatMorph).toFixed(3));
+      blankOrb.style.setProperty("--landing-orb-opacity", "1");
       blankOrb.style.setProperty("--landing-logo-opacity", (1 - morph).toFixed(3));
       blankOrb.style.setProperty("--landing-logo-scale", (1 - morph * 0.18).toFixed(3));
+      updateLandingPillTopContours();
     }
 
     window.addEventListener("scroll", updateScrollState, { passive: true });
     window.addEventListener("resize", updateScrollState);
     updateScrollState();
+    updateLandingPillTopContours();
 
     function fade(t) {
       return t * t * (3 - 2 * t);
@@ -1138,13 +1224,82 @@
       return top + (bottom - top) * fy;
     }
 
+    function extractArrayLiteral(source, name) {
+      const start = source.indexOf(`const ${name} = [`);
+      if (start < 0) return "";
+      const bracketStart = source.indexOf("[", start);
+      let depth = 0;
+      let quote = "";
+      let escaped = false;
+
+      for (let index = bracketStart; index < source.length; index += 1) {
+        const char = source[index];
+
+        if (quote) {
+          if (escaped) {
+            escaped = false;
+          } else if (char === "\\") {
+            escaped = true;
+          } else if (char === quote) {
+            quote = "";
+          }
+          continue;
+        }
+
+        if (char === "\"" || char === "'" || char === "`") {
+          quote = char;
+          continue;
+        }
+
+        if (char === "[") depth += 1;
+        if (char === "]") {
+          depth -= 1;
+          if (depth === 0) return source.slice(bracketStart, index + 1);
+        }
+      }
+
+      return "";
+    }
+
+    function evaluateSourceArray(source, name, fallback) {
+      const literal = extractArrayLiteral(source, name);
+      if (!literal) return fallback;
+      const pfpBackground = source.match(/const pfpBackground = "([^"]+)"/)?.[1] || "#ffffff";
+
+      try {
+        return Function(`"use strict"; const pfpBackground = ${JSON.stringify(pfpBackground)}; return (${literal});`)();
+      } catch {
+        return fallback;
+      }
+    }
+
+    const hudiSourceHtml = hudiSource?.html || "";
+    const hudiSourceArrays = {
+      pfpHeadFills: evaluateSourceArray(hudiSourceHtml, "pfpHeadFills", []),
+      pfpStrokes: evaluateSourceArray(hudiSourceHtml, "pfpStrokes", []),
+      pfpEyeBases: evaluateSourceArray(hudiSourceHtml, "pfpEyeBases", []),
+      pfpPupils: evaluateSourceArray(hudiSourceHtml, "pfpPupils", []),
+      pfpPalettes: evaluateSourceArray(hudiSourceHtml, "pfpPalettes", []),
+      leaderboardEntries: evaluateSourceArray(hudiSourceHtml, "leaderboardEntries", [])
+    };
+
     function createGridTextureAnimator() {
-      const size = 1024;
+      const screenMax = Math.max(window.innerWidth || 0, window.innerHeight || 0);
+      const screenTextureTarget = Math.max(1024, screenMax * Math.min(window.devicePixelRatio || 1, 2));
+      const size = Math.min(2048, 2 ** Math.ceil(Math.log2(screenTextureTarget)));
+      const leaderboardZoom = 1.75;
+      const leaderboardSize = Math.round(size * leaderboardZoom);
+      const leaderboardDot = 2;
+      const leaderboardGap = .75;
+      const leaderboardRowAdvance = 39;
+      const leaderboardAvatarSize = 26;
+      const leaderboardAvatarGap = leaderboardDot * 3;
+      const leaderboardSectionGap = leaderboardDot;
       const cellsX = 24;
       const cellsY = 24;
       const gutterRatio = 0.18;
-      const transitionMs = tokenMs("--landing-texture-transition-ms", 2200);
-      const cycleMs = tokenMs("--landing-texture-cycle-ms", 2800);
+      const transitionMs = tokenMs("--landing-texture-transition-ms", 2200) * .5;
+      const cycleMs = tokenMs("--landing-texture-cycle-ms", 2800) * .5;
       const driftSpeed = 0.032 / cycleMs;
       const textureTimeOffset = 46000;
       const onThreshold = 0.56;
@@ -1155,6 +1310,11 @@
 
       const ctx = gridCanvas.getContext("2d", { alpha: false });
       ctx.imageSmoothingEnabled = false;
+      const leaderboardCanvas = document.createElement("canvas");
+      leaderboardCanvas.width = leaderboardSize;
+      leaderboardCanvas.height = leaderboardSize;
+      const leaderboardCtx = leaderboardCanvas.getContext("2d");
+      leaderboardCtx.imageSmoothingEnabled = false;
       ctx.fillStyle = token("--page-bg-top");
       ctx.fillRect(0, 0, size, size);
       ctx.fillStyle = token("--landing-texture-square");
@@ -1166,11 +1326,11 @@
       const squareW = cellW - marginX * 2;
       const squareH = cellH - marginY * 2;
       const cells = [];
-      const leaderboardTextureHeadFills = ["#e8ff1b", "#f2ff7a", "#ffffff", "#f7f4ee", "#ff0075", "#ff8ad8", "#24d0ff", "#01fdf9", "#d9f6ff", "#0a0a0c", "#f2ff00", "#64d2ff"];
-      const leaderboardTextureStrokes = ["#84b426", "#9ab83d", "#161616", "#ff0075", "#8e0047", "#7a2a61", "#045f86", "#007b92", "#0a84ff", "#f5f5f7", "#6f6f00", "#005d7c"];
-      const leaderboardTextureEyes = ["#ffffff", "#f8fff2", "#f5f5f7", "#fff6a8", "#64d2ff", "#01fdf9", "#ff0075", "#ffe6f5", "#001a34", "#0a0a0c"];
-      const leaderboardTexturePupils = ["#001a34", "#171717", "#0a0a0c", "#ff0075", "#007b92", "#ffffff"];
-      const leaderboardTextureSeedPalettes = [
+      const fallbackLeaderboardTextureHeadFills = ["#e8ff1b", "#f2ff7a", "#ffffff", "#f7f4ee", "#ff0075", "#ff8ad8", "#24d0ff", "#01fdf9", "#d9f6ff", "#0a0a0c", "#f2ff00", "#64d2ff"];
+      const fallbackLeaderboardTextureStrokes = ["#84b426", "#9ab83d", "#161616", "#ff0075", "#8e0047", "#7a2a61", "#045f86", "#007b92", "#0a84ff", "#f5f5f7", "#6f6f00", "#005d7c"];
+      const fallbackLeaderboardTextureEyes = ["#ffffff", "#f8fff2", "#f5f5f7", "#fff6a8", "#64d2ff", "#01fdf9", "#ff0075", "#ffe6f5", "#001a34", "#0a0a0c"];
+      const fallbackLeaderboardTexturePupils = ["#001a34", "#171717", "#0a0a0c", "#ff0075", "#007b92", "#ffffff"];
+      const fallbackLeaderboardTextureSeedPalettes = [
         { head: "#e8ff1b", stroke: "#84b426", eye: "#f8fff2", pupil: "#171717" },
         { head: "#ffffff", stroke: "#161616", eye: "#f2ff7a", pupil: "#ff0075" },
         { head: "#ff0075", stroke: "#8e0047", eye: "#ffffff", pupil: "#001a34" },
@@ -1182,8 +1342,13 @@
         { head: "#0a0a0c", stroke: "#f5f5f7", eye: "#f2ff00", pupil: "#ff0075" },
         { head: "#ff8ad8", stroke: "#7a2a61", eye: "#ffffff", pupil: "#001a34" }
       ];
+      const leaderboardTextureHeadFills = hudiSourceArrays.pfpHeadFills.length ? hudiSourceArrays.pfpHeadFills : fallbackLeaderboardTextureHeadFills;
+      const leaderboardTextureStrokes = hudiSourceArrays.pfpStrokes.length ? hudiSourceArrays.pfpStrokes : fallbackLeaderboardTextureStrokes;
+      const leaderboardTextureEyes = hudiSourceArrays.pfpEyeBases.length ? hudiSourceArrays.pfpEyeBases : fallbackLeaderboardTextureEyes;
+      const leaderboardTexturePupils = hudiSourceArrays.pfpPupils.length ? hudiSourceArrays.pfpPupils : fallbackLeaderboardTexturePupils;
+      const leaderboardTextureSeedPalettes = hudiSourceArrays.pfpPalettes.length ? hudiSourceArrays.pfpPalettes : fallbackLeaderboardTextureSeedPalettes;
       const leaderboardTexturePaletteIds = new Set();
-      const leaderboardTextureEntries = [
+      const fallbackLeaderboardTextureEntries = [
         ["KAI_XX", 271.9, 271.9, 271.0, 271.9],
         ["VISADEBIT_QSTAR", 60.14, 60.14, 460.14, 60.14],
         ["CHUDMAXXER57", 53.08, 53.08, 253.00, 53.00],
@@ -1234,7 +1399,9 @@
         ["0X5B77…9CA", .361, .336, 5.82, .451],
         ["PAPERORBIT", .299, .274, 4.76, .378],
         ["LIMESTOP", .231, .210, 3.44, .302]
-      ].map(([username, value, pnl, roi, volume], index) => ({
+      ];
+      const leaderboardTextureSourceEntries = hudiSourceArrays.leaderboardEntries.length ? hudiSourceArrays.leaderboardEntries : fallbackLeaderboardTextureEntries;
+      const leaderboardTextureEntries = leaderboardTextureSourceEntries.map(([username, value, pnl, roi, volume], index) => ({
         id: `leaderboard-entry-${index}`,
         username,
         value,
@@ -1244,6 +1411,9 @@
         pfp: createLeaderboardTexturePalette(index),
         flip: index % 2 === 1
       })).sort((a, b) => b.value - a.value);
+      const leaderboardLiveInterval = 3600;
+      let leaderboardLastLiveAt = 0;
+      let leaderboardLayerDirty = true;
       const glyphs = {
         " ": ["00000", "00000", "00000", "00000", "00000", "00000", "00000"],
         "$": ["01110", "10100", "10100", "01110", "00101", "00101", "11110"],
@@ -1372,7 +1542,7 @@
         });
       }
 
-      function drawMatrixText(text, x, y, options = {}) {
+      function drawMatrixText(text, x, y, options = {}, targetCtx = ctx) {
         const dot = options.dot || 2.4;
         const gap = options.gap || 1.3;
         const stepX = dot + gap;
@@ -1394,9 +1564,9 @@
 
           glyph.forEach((row, rowIndex) => {
             [...row].forEach((value, columnIndex) => {
-              ctx.globalAlpha = value === "1" ? onAlpha : offAlpha;
-              ctx.fillStyle = value === "1" ? on : off;
-              ctx.fillRect(
+              targetCtx.globalAlpha = value === "1" ? onAlpha : offAlpha;
+              targetCtx.fillStyle = value === "1" ? on : off;
+              targetCtx.fillRect(
                 Math.round(charX + columnIndex * stepX),
                 Math.round(y + rowIndex * stepY),
                 dot,
@@ -1510,83 +1680,119 @@
         ];
       }
 
-      function drawHudiMarker(x, y, size, palette, flip = false) {
-        const colors = normalizeLeaderboardTexturePalette(palette);
-        const points = [
-          [-0.42, -0.06], [-0.55, -0.34], [-0.32, -0.28], [-0.24, -0.55],
-          [-0.08, -0.28], [0.08, -0.58], [0.18, -0.27], [0.44, -0.42],
-          [0.35, -0.13], [0.58, -0.04], [0.38, 0.12], [0.46, 0.36],
-          [0.18, 0.3], [0.02, 0.48], [-0.18, 0.28], [-0.44, 0.34],
-          [-0.36, 0.1]
-        ];
-
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.scale(flip ? -size : size, size);
-        ctx.beginPath();
-        points.forEach(([px, py], index) => {
-          if (index === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        });
-        ctx.closePath();
-        ctx.fillStyle = colors.head;
-        ctx.strokeStyle = colors.stroke;
-        ctx.lineJoin = "miter";
-        ctx.lineWidth = 0.08;
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.fillStyle = colors.eye;
-        ctx.beginPath();
-        ctx.ellipse(-0.18, 0.1, 0.12, 0.18, -0.42, 0, Math.PI * 2);
-        ctx.ellipse(0.2, 0.09, 0.12, 0.18, 0.42, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = colors.pupil;
-        ctx.beginPath();
-        ctx.ellipse(-0.16, 0.12, 0.055, 0.1, -0.42, 0, Math.PI * 2);
-        ctx.ellipse(0.18, 0.11, 0.055, 0.1, 0.42, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
+      function clampLeaderboardValue(value, min, max) {
+        return Math.min(max, Math.max(min, value));
       }
 
-      function drawLeaderboardTexture(finalOpacity, time = 0) {
-        if (finalOpacity <= 0.001) return;
+      function rebalanceLeaderboardTextureRange(startIndex, endIndex, seed) {
+        const start = Math.max(0, Math.min(startIndex, endIndex) - 1);
+        const end = Math.min(leaderboardTextureEntries.length - 1, Math.max(startIndex, endIndex) + 1);
+        const topAnchor = start > 0 ? leaderboardTextureEntries[start - 1].value : leaderboardTextureEntries[start].value * 1.08;
+        const bottomAnchor = end < leaderboardTextureEntries.length - 1 ? leaderboardTextureEntries[end + 1].value : Math.max(.001, leaderboardTextureEntries[end].value * .86);
+        const spread = Math.max(.001, topAnchor - bottomAnchor);
+        const step = spread / (end - start + 2);
 
-        const alpha = smoothstep(finalOpacity);
-        const rowHeight = 42;
-        const dot = 1.16;
-        const gap = .42;
+        for (let index = start; index <= end; index += 1) {
+          const entry = leaderboardTextureEntries[index];
+          const drift = hash(seed + index, index + 17);
+          const value = clampLeaderboardValue(topAnchor - (step * (index - start + 1)), .001, 999);
+          entry.value = value;
+          entry.pnl = clampLeaderboardValue(value * (.86 + drift * .18), .001, 999);
+          entry.roi = clampLeaderboardValue(entry.roi + (drift * 3.2) - 1.45, -99.99, 999.99);
+          entry.volume = clampLeaderboardValue(value * (1.02 + drift * .44), .001, 999);
+        }
+      }
+
+      function updateLeaderboardTextureLive(time, finalOpacity) {
+        if (finalOpacity < 0.45 || time - leaderboardLastLiveAt < leaderboardLiveInterval) return false;
+        leaderboardLastLiveAt = time;
+
+        const seed = Math.floor(time / leaderboardLiveInterval);
+        const fromIndex = clampLeaderboardValue(
+          1 + Math.floor(hash(seed, 29) * Math.max(1, leaderboardTextureEntries.length - 2)),
+          0,
+          leaderboardTextureEntries.length - 1
+        );
+        const direction = hash(seed, 71) < .62 ? -1 : 1;
+        const toIndex = clampLeaderboardValue(fromIndex + direction, 0, leaderboardTextureEntries.length - 1);
+        if (fromIndex === toIndex) return false;
+
+        const [entry] = leaderboardTextureEntries.splice(fromIndex, 1);
+        leaderboardTextureEntries.splice(toIndex, 0, entry);
+        rebalanceLeaderboardTextureRange(Math.min(fromIndex, toIndex), Math.max(fromIndex, toIndex), seed);
+        return true;
+      }
+
+      const leaderboardPfpPaths = typeof Path2D === "undefined" ? null : {
+        head: new Path2D("M59.437 16.8641L59.6136 16.8833C60.1503 17.2084 74.1963 48.7976 75.6525 52.0669C76.405 50.7974 77.8333 48.9575 78.7469 47.7156L84.7027 39.6816C92.1044 29.6271 99.6254 19.6582 107.264 9.77699C107.284 11.0117 107.851 13.2087 108.138 14.503L109.624 21.3027C111.294 29.0319 113.005 36.7519 114.757 44.463C115.722 48.6355 117.303 54.5316 117.991 58.5907C128.049 50.7305 138.065 43.0497 148.659 35.9003C150.523 34.6426 154.292 32.6597 155.741 31.182C155.346 35.3428 154.687 39.7766 154.169 43.951L151.24 67.3845L149.928 77.9131C149.759 79.292 149.508 82.1954 149.18 83.4158C150.759 83.7792 153.371 84.0282 155.099 84.2533L163.789 85.4468C169.376 86.1838 175.196 87.2531 180.814 87.6237C179.634 88.895 178.173 90.172 176.942 91.4739L162.377 106.971C160.137 109.346 157.241 112.228 155.182 114.68C158.16 116.196 163.211 119.378 165.927 120.459C163.223 123.694 160.433 125.482 156.963 127.78C154.431 129.549 149.904 131.961 147.1 133.422C150.033 138.34 152.523 143.647 155.715 148.466C156.859 150.194 158.141 152.302 159.088 154.127C152.733 154.516 146.381 154.96 140.034 155.462C128.144 156.398 116.809 157.8 105.077 159.929C95.1306 161.734 86.0722 164.276 75.8861 163.023C71.1161 162.435 68.2366 162.301 63.4355 160.87C60.6148 160.053 57.8756 158.987 55.2511 157.684C52.0013 156.048 48.9557 154.054 45.6096 152.508C44.1765 151.753 42.5021 151.293 41.0688 150.57C35.2304 147.626 29.1449 145.139 23.2513 142.328C25.1141 138.666 28.1307 132.347 29.5388 128.571C25.8871 125.75 21.6945 123.242 18.5859 119.719C16.8197 117.717 15.103 114.931 13.6849 112.66C15.2693 112.411 16.8338 112.048 18.3659 111.575C21.9343 110.459 24.8732 108.869 26.6616 105.507C26.6091 103.314 25.6714 100.01 25.1188 97.8506C24.4584 95.2758 23.8146 92.6971 23.1876 90.1142C21.2759 82.3357 19.5408 74.5155 17.9835 66.6593C23.3343 67.9093 30.5835 68.7235 36.15 69.7167C39.1237 61.6655 41.9967 53.6805 45.1813 45.7059C49.1804 35.691 53.1983 25.7988 59.437 16.8641Z"),
+        rightEye: new Path2D("M116.824 118.248C117.376 118.053 117.873 117.882 118.34 117.73C120.304 117.09 121.733 116.794 124.438 116.558C125.979 118.585 127.391 121.668 128.002 124.155C129.262 129.278 128.44 134.692 125.717 139.21C121.634 145.892 114.777 148.229 107.298 148.894C104.178 149.173 99.8849 149.683 97.0987 147.974C96.3571 142.885 96.5666 140.151 98.1028 135.52C98.1563 135.358 98.2107 135.199 98.2659 135.04C101.447 125.924 107.605 121.505 116.824 118.248Z"),
+        leftEye: new Path2D("M41.858 115.567C43.8504 115.03 46.3697 115.432 48.9166 116.27C51.2558 117.039 53.6184 118.176 55.6176 119.289C61.1639 122.378 65.3208 128.322 67.8717 133.537C69.7633 137.404 70.7718 140.871 70.8086 142.475C70.8546 144.477 69.5019 147.434 69.5019 147.434C69.5019 147.434 66.7027 150.577 63.8486 150.313C56.8526 149.666 50.9896 144.631 46.8457 139.675C42.1601 134.072 38.9642 127.118 39.8106 119.652C39.9732 116.535 40.7265 115.835 41.858 115.567Z"),
+        rightPupil: new Path2D("M108.85 144.934C115.717 145.496 121.844 139.093 122.536 130.633C122.956 125.489 121.27 120.769 118.34 117.733C117.873 117.885 117.376 118.057 116.824 118.251C107.605 121.508 101.447 125.927 98.2658 135.043C99.7926 140.493 103.823 144.523 108.85 144.934Z"),
+        leftPupil: new Path2D("M48.9162 116.266C51.2554 117.036 53.618 118.172 55.6172 119.286C61.1635 122.375 65.3204 128.318 67.8712 133.533C68.0715 138.38 66.5479 142.259 63.5396 143.434C58.93 145.235 52.5801 140.004 49.3568 131.752C47.0023 125.724 46.9673 119.75 48.9162 116.266Z")
+      };
+
+      function drawHudiMarker(x, y, size, palette, flip = false, targetCtx = ctx) {
+        const colors = normalizeLeaderboardTexturePalette(palette);
+        if (!leaderboardPfpPaths) return;
+
+        targetCtx.save();
+        targetCtx.translate(x - size / 2, y - size / 2);
+        targetCtx.scale(flip ? -size / 207 : size / 207, size / 207);
+        if (flip) targetCtx.translate(-199, 8);
+        else targetCtx.translate(8, 8);
+        targetCtx.fillStyle = colors.head;
+        targetCtx.strokeStyle = colors.stroke;
+        targetCtx.lineJoin = "miter";
+        targetCtx.miterLimit = 2.6;
+        targetCtx.lineWidth = 5.4;
+        targetCtx.fill(leaderboardPfpPaths.head);
+        targetCtx.stroke(leaderboardPfpPaths.head);
+
+        targetCtx.fillStyle = colors.eye;
+        targetCtx.fill(leaderboardPfpPaths.rightEye);
+        targetCtx.fill(leaderboardPfpPaths.leftEye);
+
+        targetCtx.fillStyle = colors.pupil;
+        targetCtx.fill(leaderboardPfpPaths.rightPupil);
+        targetCtx.fill(leaderboardPfpPaths.leftPupil);
+        targetCtx.restore();
+      }
+
+      function renderLeaderboardLayer() {
+        const rowHeight = leaderboardRowAdvance;
+        const dot = leaderboardDot;
+        const gap = leaderboardGap;
         const charStep = dot * 6 + gap * 4;
-        const sectionGap = dot;
-        const avatarColumn = 26 + dot * 3;
+        const sectionGap = leaderboardSectionGap;
+        const avatarColumn = leaderboardAvatarSize + leaderboardAvatarGap;
         const cellWidth = (minCells) => charStep * minCells - dot;
-        const horizontalSections = [-82, 494, 1070];
-        const verticalOffset = -((time * 0.004) % rowHeight);
+        const fullRowWidth = avatarColumn + sectionGap + [5, 16, 10, 10, 10, 10].reduce((sum, minCells) => sum + cellWidth(minCells) + sectionGap, 0);
+        const cropX = Math.round((leaderboardSize - size) / 2);
+        const sectionInset = 24;
+        const horizontalSections = [cropX + sectionInset];
+        if (size >= fullRowWidth * 2 + sectionInset * 3) {
+          horizontalSections.push(cropX + size - fullRowWidth - sectionInset);
+        }
 
-        ctx.save();
-        ctx.globalAlpha = alpha * 0.9;
-        ctx.fillStyle = token("--page-bg-top");
-        ctx.fillRect(0, 0, size, size);
-        ctx.restore();
+        leaderboardCtx.clearRect(0, 0, leaderboardSize, leaderboardSize);
+        leaderboardCtx.save();
+        leaderboardCtx.translate(leaderboardSize, 0);
+        leaderboardCtx.scale(-1, 1);
+        leaderboardCtx.fillStyle = token("--leaderboard-dot-off");
 
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        ctx.fillStyle = token("--leaderboard-dot-off");
-
-        for (let y = verticalOffset - rowHeight; y < size + rowHeight; y += rowHeight) {
-          const sourceIndex = Math.abs(Math.round((y - verticalOffset) / rowHeight));
+        for (let y = 0; y < leaderboardSize; y += rowHeight) {
+          const sourceIndex = Math.round(y / rowHeight);
           const entryIndex = sourceIndex % leaderboardTextureEntries.length;
           const entry = leaderboardTextureEntries[entryIndex];
           const cells = getLeaderboardTextureDisplayCells(entry, entryIndex + 1);
           const isHeaderRow = sourceIndex % 13 === 0;
 
           horizontalSections.forEach((sectionX, sectionIndex) => {
-            const jitter = ((entryIndex + sectionIndex) % 3) * 4;
+            const jitter = ((entryIndex + sectionIndex) % 3) * 2;
             const rowY = y + jitter;
-            const rowAlpha = 0.3 + ((entryIndex + sectionIndex) % 5) * 0.08;
-            const dimmer = sectionX < 0 || sectionX > 980 ? 0.58 : 1;
-            const textAlpha = alpha * rowAlpha * dimmer;
+            const rowAlpha = 0.3 + ((entryIndex + sectionIndex) % 5) * 0.07;
+            const dimmer = .92;
+            const textAlpha = rowAlpha * dimmer;
             let cursorX = sectionX + avatarColumn + sectionGap;
 
             if (isHeaderRow) {
@@ -1606,15 +1812,15 @@
                   minCells,
                   align,
                   onAlpha: textAlpha * .48,
-                  offAlpha: alpha * .035 * dimmer
-                });
+                  offAlpha: .035 * dimmer
+                }, leaderboardCtx);
                 cursorX += cellWidth(minCells) + sectionGap;
               });
               return;
             }
 
-            ctx.globalAlpha = alpha * 0.34 * dimmer;
-            drawHudiMarker(sectionX + 14, rowY + 18, 18, entry.pfp, entry.flip);
+            leaderboardCtx.globalAlpha = 0.34 * dimmer;
+            drawHudiMarker(sectionX + leaderboardAvatarSize / 2, rowY + leaderboardAvatarSize / 2, leaderboardAvatarSize, entry.pfp, entry.flip, leaderboardCtx);
 
             cells.forEach(([text, minCells, align]) => {
               drawMatrixText(text, cursorX, rowY + 4, {
@@ -1623,13 +1829,27 @@
                 minCells,
                 align,
                 onAlpha: textAlpha,
-                offAlpha: alpha * 0.07 * dimmer
-              });
+                offAlpha: 0.07 * dimmer
+              }, leaderboardCtx);
               cursorX += cellWidth(minCells) + sectionGap;
             });
           });
         }
 
+        leaderboardCtx.restore();
+        leaderboardLayerDirty = false;
+      }
+
+      function drawLeaderboardTexture(finalOpacity, time = 0) {
+        if (finalOpacity <= 0.001) return;
+        if (updateLeaderboardTextureLive(time, finalOpacity)) leaderboardLayerDirty = true;
+        if (leaderboardLayerDirty) renderLeaderboardLayer();
+
+        ctx.save();
+        ctx.globalAlpha = smoothstep(finalOpacity);
+        const cropX = Math.round((leaderboardSize - size) / 2);
+        const cropY = Math.round(((leaderboardSize - size) / 2) / leaderboardRowAdvance) * leaderboardRowAdvance;
+        ctx.drawImage(leaderboardCanvas, cropX, cropY, size, size, 0, 0, size, size);
         ctx.restore();
       }
 
@@ -1725,7 +1945,7 @@
     const textRing = createTextRing();
     scene.add(textRing);
 
-    let rotationSpeed = 0;
+    let rotationSpeed = 0.00008;
     let passiveRotation = 0;
     let ringRotation = 0;
 
@@ -1743,6 +1963,8 @@
     function render() {
       requestAnimationFrame(render);
       gridTexture.update(performance.now(), scrollState.finalOpacity);
+      rotationSpeed += ((0.00008 + scrollState.scrollVelocity * 0.0038) - rotationSpeed) * 0.06;
+      scrollState.scrollVelocity *= 0.92;
       passiveRotation += rotationSpeed;
       ringRotation += 0.00055 * scrollState.firstLevelOpacity;
       textRing.rotation.y = ringRotation;
