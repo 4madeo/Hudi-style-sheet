@@ -12,6 +12,8 @@
     }
   </script>
   <style id="landing-style">
+    @font-face { font-family: "OCRA Fixed"; src: url("assets/fonts/OCRAStdFIXED-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
+
     * { box-sizing: border-box; }
 
     html,
@@ -55,6 +57,10 @@
       height: 0;
       overflow: hidden;
       pointer-events: none;
+    }
+
+    .hudi-stock-orb__number text {
+      font-family: var(--ocr-fixed, "OCRA Fixed", ui-monospace, monospace);
     }
 
     #blank-orb {
@@ -105,7 +111,7 @@
       max-width: none;
       clip-path: inset(0 calc((1 - var(--landing-world-tag-reveal, 1)) * 100%) 0 0);
       color: var(--dark-grey);
-      font-family: var(--ocr);
+      font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
       font-size: clamp(16px, 1.55vw, 25px);
       letter-spacing: .22em;
       white-space: nowrap;
@@ -186,7 +192,6 @@
       border: 3px solid var(--outline-blue);
       border-radius: var(--radius-card);
       background: color-mix(in srgb, var(--panel-fill) 88%, transparent);
-      box-shadow: var(--landing-panel-shadow);
     }
 
     .stock-graph {
@@ -232,14 +237,14 @@
     }
 
     .stock-readout .stock-name {
-      font-family: var(--ocr);
+      font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
       font-size: clamp(10px, .78vw, 14px);
       letter-spacing: .12em;
       text-transform: uppercase;
     }
 
     .stock-readout .stock-roi {
-      font-family: var(--ocr);
+      font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
       font-size: clamp(26px, 2.4vw, 42px);
       line-height: .78;
       letter-spacing: .06em;
@@ -247,7 +252,7 @@
 
     .stock-readout .stock-time {
       color: var(--pnl-stroke);
-      font-family: var(--ocr);
+      font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
       font-size: clamp(10px, .8vw, 14px);
       letter-spacing: .1em;
       text-transform: uppercase;
@@ -429,7 +434,7 @@
     .chat-bubble-message,
     .chat-bubble-time {
       color: var(--dark-grey);
-      font-family: var(--ocr);
+      font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
       font-size: clamp(7px, .55vw, 10px);
       letter-spacing: .08em;
       line-height: 1.25;
@@ -465,7 +470,7 @@
       right: 8%;
       bottom: 12%;
       color: var(--dark-grey);
-      font-family: var(--ocr);
+      font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
       font-size: clamp(11px, .98vw, 18px);
       letter-spacing: .1em;
       text-transform: uppercase;
@@ -536,7 +541,7 @@
 
     .final-tagline {
       color: var(--dark-grey);
-      font-family: var(--ocr);
+      font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
       font-size: clamp(17px, 1.45vw, 30px);
       letter-spacing: .16em;
       line-height: 1;
@@ -644,7 +649,7 @@
       border-radius: var(--radius-pill);
       background: var(--panel-fill);
       color: var(--dark-grey);
-      font-family: var(--ocr);
+      font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
       font-size: 11px;
       cursor: pointer;
       pointer-events: auto;
@@ -785,49 +790,49 @@
       <div class="market-cards">
         <article class="stock-card">
           <svg class="stock-graph" viewBox="0 0 520 120" preserveAspectRatio="none" aria-hidden="true">
-            <path class="stock-graph-fill" d="M0 72 L20 66 L34 72 L52 58 L72 64 L92 62 L112 68 L134 62 L152 65 L174 57 L195 62 L216 61 L238 58 L256 62 L276 54 L294 56 L318 48 L334 40 L348 88 L374 87 L394 86 L416 90 L438 83 L454 74 L468 94 L492 88 L520 76 L520 120 L0 120 Z"/>
-            <path d="M0 72 L20 66 L34 72 L52 58 L72 64 L92 62 L112 68 L134 62 L152 65 L174 57 L195 62 L216 61 L238 58 L256 62 L276 54 L294 56 L318 48 L334 40 L348 88 L374 87 L394 86 L416 90 L438 83 L454 74 L468 94 L492 88 L520 76"/>
+            <path class="stock-graph-fill" d="M0 76 L20 69 L42 73 L62 61 L86 66 L110 58 L136 62 L158 56 L184 59 L210 50 L236 54 L260 46 L286 42 L306 64 L326 38 L348 86 L374 83 L398 91 L420 78 L444 96 L466 84 L492 79 L520 68 L520 120 L0 120 Z"/>
+            <path d="M0 76 L20 69 L42 73 L62 61 L86 66 L110 58 L136 62 L158 56 L184 59 L210 50 L236 54 L260 46 L286 42 L306 64 L326 38 L348 86 L374 83 L398 91 L420 78 L444 96 L466 84 L492 79 L520 68"/>
           </svg>
-          <span class="hudi-stock-orb is-smsg-ref">
+          <span class="hudi-stock-orb is-smsg-ref" data-orb-base="#00fbff">
             <svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="landing-smsng-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#landing-smsng-number-curve" startOffset="50%">3325</textPath></text></svg>
             <svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="SMSG"><defs><linearGradient id="landing-smsng-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#landing-smsng-ticker-fill)">SMSG</text></svg>
           </span>
           <div class="stock-readout">
             <span class="stock-name">Samsung</span>
-            <span class="stock-roi">+4500%</span>
-            <span class="stock-time">+3.14% all time</span>
+            <span class="stock-roi">+3284%</span>
+            <span class="stock-time">+7.82% all time</span>
           </div>
         </article>
 
         <article class="stock-card" data-tone="lime">
           <svg class="stock-graph" viewBox="0 0 520 120" preserveAspectRatio="none" aria-hidden="true">
-            <path class="stock-graph-fill" d="M0 78 L28 70 L44 76 L64 62 L92 68 L116 62 L144 66 L166 64 L188 70 L214 64 L236 68 L258 58 L278 46 L294 106 L334 105 L358 109 L382 102 L406 91 L424 112 L444 104 L470 108 L500 100 L520 92 L520 120 L0 120 Z"/>
-            <path d="M0 78 L28 70 L44 76 L64 62 L92 68 L116 62 L144 66 L166 64 L188 70 L214 64 L236 68 L258 58 L278 46 L294 106 L334 105 L358 109 L382 102 L406 91 L424 112 L444 104 L470 108 L500 100 L520 92"/>
+            <path class="stock-graph-fill" d="M0 84 L24 79 L48 68 L72 74 L96 63 L118 66 L142 60 L166 55 L190 62 L214 49 L238 45 L262 51 L286 38 L312 88 L338 93 L360 84 L384 102 L408 96 L432 108 L456 94 L482 88 L520 74 L520 120 L0 120 Z"/>
+            <path d="M0 84 L24 79 L48 68 L72 74 L96 63 L118 66 L142 60 L166 55 L190 62 L214 49 L238 45 L262 51 L286 38 L312 88 L338 93 L360 84 L384 102 L408 96 L432 108 L456 94 L482 88 L520 74"/>
           </svg>
-          <span class="hudi-stock-orb green">
+          <span class="hudi-stock-orb green" data-orb-base="#006eff">
             <svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="landing-baba-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#landing-baba-number-curve" startOffset="50%">6873</textPath></text></svg>
             <svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="BABA"><defs><linearGradient id="landing-baba-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#landing-baba-ticker-fill)">BABA</text></svg>
           </span>
           <div class="stock-readout">
             <span class="stock-name">Alibaba</span>
-            <span class="stock-roi">+4500%</span>
-            <span class="stock-time">+300% all time</span>
+            <span class="stock-roi">+6120%</span>
+            <span class="stock-time">+12.4% all time</span>
           </div>
         </article>
 
         <article class="stock-card" data-tone="pink">
           <svg class="stock-graph" viewBox="0 0 520 120" preserveAspectRatio="none" aria-hidden="true">
-            <path class="stock-graph-fill" d="M0 76 L22 69 L38 75 L58 64 L78 67 L106 63 L128 66 L152 63 L174 68 L198 61 L220 65 L240 58 L260 52 L276 92 L298 94 L320 92 L342 98 L360 88 L378 80 L394 102 L416 94 L438 97 L462 94 L486 86 L520 78 L520 120 L0 120 Z"/>
-            <path d="M0 76 L22 69 L38 75 L58 64 L78 67 L106 63 L128 66 L152 63 L174 68 L198 61 L220 65 L240 58 L260 52 L276 92 L298 94 L320 92 L342 98 L360 88 L378 80 L394 102 L416 94 L438 97 L462 94 L486 86 L520 78"/>
+            <path class="stock-graph-fill" d="M0 82 L18 75 L44 80 L66 70 L92 72 L118 65 L142 68 L164 58 L190 61 L212 54 L238 58 L260 48 L280 56 L300 96 L324 91 L348 104 L372 88 L396 111 L420 101 L446 106 L474 94 L500 82 L520 80 L520 120 L0 120 Z"/>
+            <path d="M0 82 L18 75 L44 80 L66 70 L92 72 L118 65 L142 68 L164 58 L190 61 L212 54 L238 58 L260 48 L280 56 L300 96 L324 91 L348 104 L372 88 L396 111 L420 101 L446 106 L474 94 L500 82 L520 80"/>
           </svg>
-          <span class="hudi-stock-orb pink">
+          <span class="hudi-stock-orb pink" data-orb-base="#ff05a3">
             <svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="landing-tyo-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#landing-tyo-number-curve" startOffset="50%">1235</textPath></text></svg>
             <svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="TYO"><defs><linearGradient id="landing-tyo-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#landing-tyo-ticker-fill)">TYO</text></svg>
           </span>
           <div class="stock-readout">
             <span class="stock-name">Toyota</span>
-            <span class="stock-roi">+4500%</span>
-            <span class="stock-time">+3.14% all time</span>
+            <span class="stock-roi">+2840%</span>
+            <span class="stock-time">+5.66% all time</span>
           </div>
         </article>
       </div>
@@ -1021,6 +1026,8 @@
       shapeToggle.textContent = textureShape === "circle" ? "circles" : "squares";
     });
 
+    applyLandingMarketOrbPalettes();
+
     function parseColor(value) {
       const color = value.trim();
       if (color.startsWith("#")) {
@@ -1051,6 +1058,123 @@
       const end = parseColor(to);
       const mixed = start.map((value, index) => value + (end[index] - value) * amount);
       return `rgba(${Math.round(mixed[0])}, ${Math.round(mixed[1])}, ${Math.round(mixed[2])}, ${mixed[3].toFixed(3)})`;
+    }
+
+    function hexToRgbValue(hex) {
+      const clean = hex.replace("#", "");
+      return {
+        r: parseInt(clean.slice(0, 2), 16),
+        g: parseInt(clean.slice(2, 4), 16),
+        b: parseInt(clean.slice(4, 6), 16)
+      };
+    }
+
+    function rgbToHexValue({ r, g, b }) {
+      const toHex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, "0");
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    }
+
+    function hexToRgbaValue(hex, alpha = .4) {
+      const { r, g, b } = hexToRgbValue(hex);
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    function mixRgbValue(a, b, amount) {
+      return {
+        r: a.r + (b.r - a.r) * amount,
+        g: a.g + (b.g - a.g) * amount,
+        b: a.b + (b.b - a.b) * amount
+      };
+    }
+
+    function rgbToHslValue({ r, g, b }) {
+      r /= 255;
+      g /= 255;
+      b /= 255;
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      const l = (max + min) / 2;
+      if (max === min) return { h: 0, s: 0, l };
+      const d = max - min;
+      const s = l > .5 ? d / (2 - max - min) : d / (max + min);
+      const h = max === r ? ((g - b) / d + (g < b ? 6 : 0)) : max === g ? ((b - r) / d + 2) : ((r - g) / d + 4);
+      return { h: h * 60, s, l };
+    }
+
+    function relativeLuminanceValue({ r, g, b }) {
+      const channel = (value) => {
+        const next = value / 255;
+        return next <= .03928 ? next / 12.92 : Math.pow((next + .055) / 1.055, 2.4);
+      };
+      return .2126 * channel(r) + .7152 * channel(g) + .0722 * channel(b);
+    }
+
+    function contrastRatioValue(hexA, hexB) {
+      const a = relativeLuminanceValue(hexToRgbValue(hexA));
+      const b = relativeLuminanceValue(hexToRgbValue(hexB));
+      const lighter = Math.max(a, b);
+      const darker = Math.min(a, b);
+      return (lighter + .05) / (darker + .05);
+    }
+
+    function hslToRgbValue({ h, s, l }) {
+      const hueToRgb = (p, q, t) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+        return p;
+      };
+      h = ((h % 360) + 360) % 360 / 360;
+      if (s === 0) {
+        const value = l * 255;
+        return { r: value, g: value, b: value };
+      }
+      const q = l < .5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      return {
+        r: hueToRgb(p, q, h + 1 / 3) * 255,
+        g: hueToRgb(p, q, h) * 255,
+        b: hueToRgb(p, q, h - 1 / 3) * 255
+      };
+    }
+
+    function shiftHueTowardValue(hue, target, amount) {
+      const delta = ((((target - hue) % 360) + 540) % 360) - 180;
+      return hue + delta * amount;
+    }
+
+    function deriveLandingOrbPalette(base) {
+      const hsl = rgbToHslValue(hexToRgbValue(base));
+      const sourceHue = hsl.s > .03 ? hsl.h : 196;
+      const sourceSaturation = Math.max(hsl.s, hsl.s > .03 ? hsl.s : .48);
+      const sheen = hslToRgbValue({
+        h: shiftHueTowardValue(sourceHue, 55, .21),
+        s: Math.max(.28, Math.min(.96, sourceSaturation * .9 + .1)),
+        l: Math.min(.88, hsl.l + .3)
+      });
+      const shadow = hslToRgbValue({
+        h: shiftHueTowardValue(sourceHue, 235, .12),
+        s: Math.min(1, sourceSaturation * 1.36 + .14),
+        l: Math.max(.2, Math.min(.48, hsl.l * .66))
+      });
+      return { base, sheen: rgbToHexValue(sheen), shadowHex: rgbToHexValue(shadow) };
+    }
+
+    function applyLandingMarketOrbPalettes(root = document) {
+      root.querySelectorAll(".market-cards .hudi-stock-orb[data-orb-base]").forEach((orb) => {
+        const palette = deriveLandingOrbPalette(orb.dataset.orbBase);
+        const ticker = orb.querySelector(".hudi-stock-orb__ticker");
+        const text = ticker?.querySelector("text");
+        const label = text?.textContent?.trim() || "";
+        orb.style.setProperty("--orb-base", palette.base);
+        orb.style.setProperty("--orb-sheen", palette.sheen);
+        orb.style.setProperty("--orb-shadow", hexToRgbaValue(palette.shadowHex, .4));
+        orb.style.setProperty("--orb-ticker-inner", rgbToHexValue(mixRgbValue(hexToRgbValue(palette.base), { r: 255, g: 255, b: 255 }, .61)));
+        orb.style.setProperty("--orb-ticker-scale", Math.max(.72, Math.min(1.68, 5 / Math.max(1, label.length))).toFixed(3));
+        orb.classList.toggle("is-auto-white", Math.min(contrastRatioValue(palette.base, "#506868"), contrastRatioValue(palette.sheen, "#506868")) < 3);
+      });
     }
 
     const orbMorphTokens = {
