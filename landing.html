@@ -193,7 +193,7 @@
       left: clamp(var(--space-92), calc(17vw - var(--space-50)), calc(var(--space-180) * 2));
       top: 50%;
       display: grid;
-      gap: clamp(var(--space-48), 7vh, var(--space-72));
+      gap: clamp(var(--space-64), 8.5vh, var(--space-92));
       translate: 0 calc(-50% + var(--landing-orb-anchor-y, 0vh) - var(--landing-market-y, 0vh));
     }
 
@@ -201,13 +201,29 @@
       position: relative;
       --pnl-stroke: var(--big-gain);
       --pnl-accent: var(--small-gain);
-      width: clamp(315px, 23vw, 470px);
-      height: clamp(88px, 7.8vw, 116px);
+      width: clamp(330px, 24.5vw, 490px);
+      height: clamp(78px, 6.8vw, 104px);
       overflow: hidden;
       border: 3px solid var(--outline-blue);
       border-radius: var(--radius-card);
       background: color-mix(in srgb, var(--panel-fill) 88%, transparent);
       box-shadow: var(--landing-panel-shadow);
+      translate: var(--market-card-x, 0px) 0;
+    }
+
+    .stock-card:nth-child(2) {
+      --market-card-x: calc(var(--space-92) * -1);
+      --stock-title-gap: var(--space-12);
+      width: clamp(330px, 24.5vw, 490px);
+      height: clamp(90px, 7.7vw, 118px);
+    }
+
+    .stock-card:nth-child(1),
+    .stock-card:nth-child(3) {
+      --stock-name-size: clamp(6.3px, .522vw, 9px);
+      --stock-roi-size: clamp(12.6px, 1.125vw, 19.8px);
+      --stock-time-size: clamp(4.5px, .396vw, 7.2px);
+      width: clamp(300px, 22.5vw, 450px);
     }
 
     .stock-graph {
@@ -221,7 +237,7 @@
     .stock-graph path {
       fill: none;
       stroke: var(--pnl-stroke);
-      stroke-width: 5;
+      stroke-width: 3.75;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
@@ -232,7 +248,7 @@
     }
 
     .stock-card .hudi-stock-orb {
-      --orb-size: clamp(74px, 6.2vw, 104px);
+      --orb-size: clamp(66px, 5.4vw, 92px);
       position: absolute;
       left: clamp(var(--space-20), 2.4vw, var(--space-30));
       top: 50%;
@@ -240,42 +256,48 @@
       transform: translateY(-50%);
     }
 
+    .stock-card:nth-child(2) .hudi-stock-orb {
+      --orb-size: clamp(76px, 6.1vw, 104px);
+    }
+
     .stock-readout {
+      --stock-readout-top: clamp(var(--space-4), .55vw, var(--space-8));
       position: absolute;
-      top: clamp(var(--space-14), 1.55vw, var(--space-22));
-      right: clamp(var(--space-18), 2vw, var(--space-30));
+      top: var(--stock-readout-top);
+      right: calc(var(--stock-readout-top) * 2.4);
       z-index: 2;
       display: grid;
-      justify-items: start;
-      gap: var(--space-4);
+      justify-items: end;
+      gap: var(--space-3);
       color: var(--dark-grey);
-      text-align: left;
+      text-align: right;
     }
 
     .stock-readout .stock-name {
       font-family: var(--ocr);
-      font-size: clamp(10px, .78vw, 14px);
+      margin-bottom: var(--stock-title-gap, var(--space-8));
+      font-size: var(--stock-name-size, clamp(7px, .58vw, 10px));
       letter-spacing: .12em;
       text-transform: uppercase;
     }
 
     .stock-readout .stock-roi {
       font-family: var(--ocr);
-      font-size: clamp(26px, 2.4vw, 42px);
-      line-height: .78;
+      font-size: var(--stock-roi-size, clamp(14px, 1.25vw, 22px));
+      line-height: .82;
       letter-spacing: .06em;
     }
 
     .stock-readout .stock-time {
       color: var(--pnl-stroke);
       font-family: var(--ocr);
-      font-size: clamp(10px, .8vw, 14px);
+      font-size: var(--stock-time-size, clamp(5px, .44vw, 8px));
       letter-spacing: .1em;
       text-transform: uppercase;
     }
 
     .landing-panel {
-      --market-panel-width: clamp(540px, 38vw, 740px);
+      --market-panel-width: clamp(382px, 28vw, 488px);
       position: absolute;
       left: min(
         calc(50% + (clamp(220px, 23vw, 440px) * .62)),
@@ -285,12 +307,13 @@
       top: 50%;
       z-index: 2;
       width: var(--market-panel-width);
-      min-height: clamp(166px, 18vh, 230px);
-      padding: clamp(var(--space-24), 2.1vw, var(--space-38));
+      min-height: clamp(168px, 17.5vh, 222px);
+      padding: clamp(var(--space-20), 1.75vw, var(--space-30));
       display: grid;
-      align-content: start;
+      grid-template-rows: auto 1fr auto;
+      align-content: stretch;
       justify-items: start;
-      gap: clamp(var(--space-18), 2.2vh, var(--space-28));
+      gap: clamp(var(--space-12), 1.6vh, var(--space-22));
       box-shadow: var(--landing-panel-shadow);
       opacity: 1;
       pointer-events: var(--landing-panel-events, none);
@@ -305,6 +328,8 @@
     .landing-panel p {
       width: 100%;
       max-width: none;
+      font-size: clamp(15px, 1.2vw, 19px);
+      line-height: 1.34;
     }
 
     .stock-card,
@@ -322,11 +347,12 @@
       --pill-bg: var(--hudi-orb-colour);
       --pill-inner-shadow: var(--hudi-orb-shadow);
       --pill-label: var(--white);
+      align-self: end;
       justify-self: end;
-      min-width: clamp(176px, 10vw, 230px);
-      height: clamp(34px, 3.2vw, 46px);
+      min-width: clamp(148px, 8.4vw, 188px);
+      height: clamp(30px, 2.65vw, 38px);
       border-width: 3px;
-      font-size: clamp(15px, 1.05vw, 20px);
+      font-size: clamp(13px, .92vw, 17px);
       text-transform: lowercase;
     }
 
@@ -350,6 +376,7 @@
 
     .chat-copy-panel {
       position: absolute;
+      z-index: 6;
       left: clamp(var(--space-120), 17vw, calc(var(--space-220) * 2));
       top: 68%;
       width: clamp(420px, 30vw, 600px);
@@ -370,31 +397,99 @@
     }
 
     .chat-bubble-card {
+      --chat-depth-scale: 1;
+      --chat-parallax-y: 0vh;
+      --chat-comments-lift: -10vh;
       position: absolute;
+      z-index: 1;
       width: clamp(230px, 21vw, 450px);
       color: var(--dark-grey);
+      opacity: var(--landing-comment-opacity, 1);
+      translate: 0 calc(var(--chat-parallax-y) + var(--chat-comments-lift));
+      scale: var(--chat-depth-scale);
+      transform-origin: center;
       filter: drop-shadow(3px 7px 10px var(--black-alpha-13));
       animation: chat-bubble-float 5200ms ease-in-out infinite;
-      will-change: transform;
-    }
-
-    .chat-bubble-card.is-large {
-      left: clamp(var(--space-118), 13.8vw, var(--space-296));
-      bottom: -12%;
-      animation-delay: -1800ms;
+      will-change: transform, translate, scale, opacity;
     }
 
     .chat-bubble-card.is-top-right {
+      z-index: 5;
       right: clamp(var(--space-104), 11.2vw, var(--space-224));
-      top: 54%;
+      top: 38%;
       animation-delay: -600ms;
     }
 
+    .chat-bubble-card.is-upper-mid {
+      --chat-depth-scale: .88;
+      --chat-parallax-y: var(--landing-chat-parallax-near, 0vh);
+      z-index: 4;
+      left: clamp(var(--space-260), 33vw, calc(var(--space-296) * 2));
+      top: 66%;
+      animation-delay: -2200ms;
+    }
+
     .chat-bubble-card.is-mid-right {
+      --chat-depth-scale: .74;
+      --chat-parallax-y: var(--landing-chat-parallax-deep, 0vh);
+      z-index: 2;
       right: clamp(var(--space-160), 22vw, calc(var(--space-296) * 2));
-      top: 84%;
-      width: clamp(250px, 23vw, 360px);
+      top: 82%;
       animation-delay: -3000ms;
+    }
+
+    .chat-bubble-card.is-left-low {
+      --chat-depth-scale: .8;
+      --chat-parallax-y: var(--landing-chat-parallax-mid, 0vh);
+      z-index: 3;
+      left: clamp(var(--space-72), 9vw, var(--space-180));
+      bottom: -9%;
+      animation-delay: -1800ms;
+    }
+
+    .chat-bubble-card.is-lower-right {
+      --chat-depth-scale: .84;
+      --chat-parallax-y: var(--landing-chat-parallax-near, 0vh);
+      z-index: 4;
+      right: clamp(var(--space-40), 8vw, var(--space-160));
+      bottom: -18%;
+      animation-delay: -3900ms;
+    }
+
+    .chat-bubble-card.is-center-low {
+      --chat-depth-scale: .68;
+      --chat-parallax-y: var(--landing-chat-parallax-deep, 0vh);
+      z-index: 1;
+      left: clamp(var(--space-296), 39vw, calc(var(--space-296) * 2.2));
+      bottom: -2%;
+      animation-delay: -1100ms;
+    }
+
+    .chat-bubble-card.is-left-mid {
+      --chat-depth-scale: .76;
+      --chat-parallax-y: var(--landing-chat-parallax-mid, 0vh);
+      z-index: 3;
+      right: clamp(var(--space-220), 28vw, calc(var(--space-296) * 2));
+      top: 56%;
+      animation-delay: -2700ms;
+    }
+
+    .chat-bubble-card.is-right-soft {
+      --chat-depth-scale: .7;
+      --chat-parallax-y: var(--landing-chat-parallax-deep, 0vh);
+      z-index: 2;
+      right: clamp(var(--space-52), 9vw, var(--space-180));
+      top: 64%;
+      animation-delay: -4400ms;
+    }
+
+    .chat-bubble-card.is-far-mid {
+      --chat-depth-scale: .58;
+      --chat-parallax-y: var(--landing-chat-parallax-far, 0vh);
+      z-index: 0;
+      left: clamp(var(--space-180), 27vw, calc(var(--space-296) * 1.8));
+      bottom: -13%;
+      animation-delay: -5100ms;
     }
 
     .chat-bubble-frame {
@@ -418,14 +513,6 @@
       top: 34%;
     }
 
-    .chat-bubble-card.is-mid-right .chat-bubble-content {
-      left: 7%;
-      right: 7%;
-      top: 39%;
-      gap: var(--space-6);
-      grid-template-columns: auto minmax(0, 1fr) auto;
-    }
-
     .chat-bubble-card[data-tail="down"] .chat-bubble-content {
       top: 16%;
     }
@@ -438,11 +525,6 @@
     .chat-bubble-card .pfp-avatar svg {
       width: 100%;
       height: 100%;
-    }
-
-    .chat-bubble-card.is-mid-right .pfp-avatar {
-      width: clamp(22px, 2vw, 34px);
-      height: clamp(22px, 2vw, 34px);
     }
 
     .chat-bubble-text {
@@ -472,54 +554,6 @@
       align-self: start;
       justify-self: end;
       white-space: nowrap;
-    }
-
-    .chat-bubble-card.is-mid-right .chat-bubble-name {
-      font-size: clamp(8px, .72vw, 12px);
-    }
-
-    .chat-bubble-card.is-mid-right .chat-bubble-message,
-    .chat-bubble-card.is-mid-right .chat-bubble-time {
-      font-size: clamp(5px, .43vw, 8px);
-      letter-spacing: .04em;
-      line-height: 1.08;
-    }
-
-    .chat-bubble-card.is-mid-right .chat-bubble-message {
-      display: -webkit-box;
-      overflow: hidden;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
-    }
-
-    .chat-trade-line {
-      position: absolute;
-      left: 17%;
-      right: 8%;
-      bottom: 12%;
-      color: var(--dark-grey);
-      font-family: var(--ocr);
-      font-size: clamp(11px, .98vw, 18px);
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .chat-bubble-graph {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 4%;
-      width: 100%;
-      height: 28%;
-    }
-
-    .chat-bubble-graph path {
-      fill: none;
-      stroke: var(--gain-track-end);
-      stroke-width: 3.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
     }
 
     @keyframes chat-bubble-float {
@@ -758,9 +792,16 @@
         width: auto;
       }
 
-      .chat-bubble-card.is-large {
+      .chat-bubble-card.is-left-low,
+      .chat-bubble-card.is-lower-right,
+      .chat-bubble-card.is-center-low,
+      .chat-bubble-card.is-upper-mid,
+      .chat-bubble-card.is-left-mid,
+      .chat-bubble-card.is-right-soft,
+      .chat-bubble-card.is-far-mid {
         left: var(--space-16);
         right: var(--space-16);
+        top: auto;
         bottom: -10%;
         width: auto;
       }
@@ -910,36 +951,116 @@
         </div>
       </article>
 
-      <article class="chat-bubble-card is-mid-right" data-tail="up" aria-label="Rio chat message">
-        <svg class="chat-bubble-frame" width="275" height="84" viewBox="0 0 275 84" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect x="1.29267" y="25.2263" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
-          <rect x="1.29267" y="25.2263" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M33.876 10.2637L42.2764 22.3877L43.6826 24.418L21.9434 24.418L23.3496 22.3877L31.75 10.2637L32.8125 8.72949L33.876 10.2637Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M32.8119 11L45.1319 28.9441L20.4919 28.9441L32.8119 11Z" fill="var(--panel-fill)"/>
+      <article class="chat-bubble-card is-upper-mid" data-tail="down" aria-label="Mina chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
         </svg>
         <div class="chat-bubble-content">
           <span class="pfp-avatar" style="--pfp-head: var(--text-light-pink); --pfp-stroke: var(--hot-pink); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
-          <span class="chat-bubble-text"><strong class="chat-bubble-name">Rio</strong><span class="chat-bubble-message">I'm looking at this trade right now and typing this message to let you guys know about it.</span></span>
-          <time class="chat-bubble-time">49 mins ago</time>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Mina</strong><span class="chat-bubble-message">Same entry?</span></span>
+          <time class="chat-bubble-time">28 mins ago</time>
         </div>
       </article>
 
-      <article class="chat-bubble-card is-large" data-tail="up" aria-label="Alice trade message">
-        <svg class="chat-bubble-frame" width="275" height="84" viewBox="0 0 275 84" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect x="1.29267" y="25.2263" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
-          <rect x="1.29267" y="25.2263" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M33.876 10.2637L42.2764 22.3877L43.6826 24.418L21.9434 24.418L23.3496 22.3877L31.75 10.2637L32.8125 8.72949L33.876 10.2637Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M32.8119 11L45.1319 28.9441L20.4919 28.9441L32.8119 11Z" fill="var(--panel-fill)"/>
+      <article class="chat-bubble-card is-mid-right" data-tail="down" aria-label="Rio chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
         </svg>
         <div class="chat-bubble-content">
           <span class="pfp-avatar" style="--pfp-head: var(--acid-lime); --pfp-stroke: var(--pfp-lime-stroke); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
-          <span class="chat-bubble-text"><strong class="chat-bubble-name">Alice</strong></span>
-          <time class="chat-bubble-time">48 mins ago</time>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Rio</strong><span class="chat-bubble-message">This candle is clean.</span></span>
+          <time class="chat-bubble-time">31 mins ago</time>
         </div>
-        <div class="chat-trade-line">traded samsung long 50x</div>
-        <svg class="chat-bubble-graph" viewBox="0 0 275 32" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M0 20 L16 17 L28 21 L42 20 L54 16 L70 18 L86 15 L104 13 L122 16 L140 15 L156 17 L174 14 L188 12 L199 28 L216 27 L232 29 L249 24 L263 30 L275 27"/>
+      </article>
+
+      <article class="chat-bubble-card is-left-low" data-tail="down" aria-label="Alice chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
         </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--acid-lime); --pfp-stroke: var(--pfp-lime-stroke); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Alice</strong><span class="chat-bubble-message">Watching this level.</span></span>
+          <time class="chat-bubble-time">34 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-center-low" data-tail="down" aria-label="Noah chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--color-61caff); --pfp-stroke: var(--color-2395ce); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Noah</strong><span class="chat-bubble-message">Volume just woke up.</span></span>
+          <time class="chat-bubble-time">36 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-left-mid" data-tail="down" aria-label="Emi chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--color-ffff86); --pfp-stroke: var(--ink); --pfp-eye: var(--white); --pfp-pupil: var(--hot-pink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Emi</strong><span class="chat-bubble-message">Adding on pullback.</span></span>
+          <time class="chat-bubble-time">38 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-right-soft" data-tail="down" aria-label="Sol chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--text-light-pink); --pfp-stroke: var(--hot-pink); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Sol</strong><span class="chat-bubble-message">Holding with you.</span></span>
+          <time class="chat-bubble-time">40 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-far-mid" data-tail="down" aria-label="Ari chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--acid-lime); --pfp-stroke: var(--pfp-lime-stroke); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Ari</strong><span class="chat-bubble-message">Breakout looks real.</span></span>
+          <time class="chat-bubble-time">41 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-lower-right" data-tail="down" aria-label="Jules chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--white); --pfp-stroke: var(--ink); --pfp-eye: var(--color-ffff86); --pfp-pupil: var(--hot-pink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Jules</strong><span class="chat-bubble-message">Korea move is clean.</span></span>
+          <time class="chat-bubble-time">42 mins ago</time>
+        </div>
       </article>
     </section>
 
@@ -1057,7 +1178,12 @@
       exitDurationRaw: .6,
       liftStartRaw: 2.81
     };
-    const marketItemRevealRaw = [1.18, 1.5, 1.82, 2.14];
+    const finalTiming = {
+      enterDurationRaw: .36,
+      revealDurationRaw: .18
+    };
+    const marketItemRevealDelayRaw = .14;
+    const marketItemRevealRaw = [1.18, 1.5, 1.82, 2.14].map((value) => value + marketItemRevealDelayRaw);
     const mapSlideTiming = {
       startRaw: .72,
       startOffset: -.045,
@@ -1380,7 +1506,8 @@
     }
 
     function updateScrollState() {
-      const rawProgress = clamp(window.scrollY / Math.max(1, window.innerHeight), 0, getMaxRawProgress());
+      const maxRawProgress = getMaxRawProgress();
+      const rawProgress = clamp(window.scrollY / Math.max(1, window.innerHeight), 0, maxRawProgress);
       const now = performance.now();
       const elapsed = Math.max(16, now - lastScrollAt);
       const scrollDelta = rawProgress - lastRawProgress;
@@ -1391,7 +1518,10 @@
       const segmentIndex = Math.min(maxScrollIndex - 1, Math.floor(progress));
       const ramp = clamp(progress - segmentIndex);
       const morph = smoothstep(clamp(progress));
-      const finalMorph = smoothstep((progress - 2.52) / .48);
+      const finalEnterStartRaw = Math.max(marketTiming.endRaw, maxRawProgress - finalTiming.enterDurationRaw);
+      const finalRevealStartRaw = Math.max(marketTiming.endRaw, maxRawProgress - finalTiming.revealDurationRaw);
+      const finalEnter = smoothstep((rawProgress - finalEnterStartRaw) / Math.max(.001, maxRawProgress - finalEnterStartRaw));
+      const finalMorph = smoothstep((rawProgress - finalRevealStartRaw) / Math.max(.001, maxRawProgress - finalRevealStartRaw));
       const skyboxProgress = smoothstep(progress / maxScrollIndex);
       const firstLevelOpacity = 1 - smoothstep(progress);
       const startContract = smoothstep(progress / .46);
@@ -1409,12 +1539,18 @@
         alibaba: smoothstep((rawProgress - (marketItemRevealRaw[1] - mapDotLeadRaw)) / mapDotLeadRaw),
         toyota: smoothstep((rawProgress - (marketItemRevealRaw[2] - mapDotLeadRaw)) / mapDotLeadRaw)
       };
-      const chatOpacity = 1 - smoothstep((progress - 2.36) / .34);
+      const chatOpacity = 1 - smoothstep((progress - 2.56) / .34);
       const chatDistance = Math.abs(progress - 2);
-      const finalDistance = Math.abs(progress - 3);
+      const finalDistance = Math.abs(finalEnter - 1);
       const marketY = levelOffset(1, progress);
       const chatY = levelOffset(2, progress);
-      const finalY = levelOffset(3, progress);
+      const finalY = `${((1 - finalEnter) * 100).toFixed(3)}vh`;
+      const chatYValue = (2 - progress) * 100;
+      const commentFadeIn = smoothstep((rawProgress - (marketTiming.liftStartRaw - .16)) / .34);
+      const chatParallaxNear = `${(-chatYValue * .28).toFixed(3)}vh`;
+      const chatParallaxMid = `${(-chatYValue * .48).toFixed(3)}vh`;
+      const chatParallaxDeep = `${(-chatYValue * .68).toFixed(3)}vh`;
+      const chatParallaxFar = `${(-chatYValue * .84).toFixed(3)}vh`;
       const marketLiftProgress = clamp((rawProgress - marketTiming.liftStartRaw) / (marketTiming.endRaw - marketTiming.liftStartRaw));
       const postMarketLift = Math.max(0, progress - 2) * (112 / (2 - 1.12));
       const orbLiftY = -((marketLiftProgress * 112) + postMarketLift);
@@ -1434,6 +1570,11 @@
       landingShell?.style.setProperty("--landing-market-y", marketY);
       landingShell?.style.setProperty("--landing-chat-y", chatY);
       landingShell?.style.setProperty("--landing-chat-opacity", chatOpacity.toFixed(3));
+      landingShell?.style.setProperty("--landing-comment-opacity", commentFadeIn.toFixed(3));
+      landingShell?.style.setProperty("--landing-chat-parallax-near", chatParallaxNear);
+      landingShell?.style.setProperty("--landing-chat-parallax-mid", chatParallaxMid);
+      landingShell?.style.setProperty("--landing-chat-parallax-deep", chatParallaxDeep);
+      landingShell?.style.setProperty("--landing-chat-parallax-far", chatParallaxFar);
       landingShell?.style.setProperty("--landing-final-y", finalY);
       landingShell?.style.setProperty("--landing-orb-anchor-y", orbY);
       landingShell?.style.setProperty("--landing-first-events", progress < .42 ? "auto" : "none");
