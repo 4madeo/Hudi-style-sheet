@@ -343,6 +343,11 @@
       animation: landing-market-pop 360ms cubic-bezier(.18, .9, .2, 1.22) both;
     }
 
+    .stock-card.is-market-hiding,
+    .landing-panel.is-market-hiding {
+      animation: landing-market-pop-out 260ms cubic-bezier(.45, 0, .55, 1) both;
+    }
+
     .market-copy-button.hudi-trade-button {
       --pill-bg: var(--hudi-orb-colour);
       --pill-inner-shadow: var(--hudi-orb-shadow);
@@ -411,6 +416,24 @@
       filter: drop-shadow(3px 7px 10px var(--black-alpha-13));
       animation: chat-bubble-float 5200ms ease-in-out infinite;
       will-change: transform, translate, scale, opacity;
+    }
+
+    .chat-bubble-pop-shell {
+      position: relative;
+      display: block;
+      width: 100%;
+      opacity: 0;
+      transform: scale(.84) translateY(var(--space-18));
+      transform-origin: center;
+      will-change: transform, opacity;
+    }
+
+    .chat-bubble-card.is-comment-visible .chat-bubble-pop-shell {
+      animation: landing-market-pop 360ms cubic-bezier(.18, .9, .2, 1.22) both;
+    }
+
+    .chat-bubble-card.is-comment-hiding .chat-bubble-pop-shell {
+      animation: landing-market-pop 260ms cubic-bezier(.45, 0, .55, 1) reverse both;
     }
 
     .chat-bubble-card.is-top-right {
@@ -697,6 +720,17 @@
       100% {
         opacity: 1;
         transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes landing-market-pop-out {
+      0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(.84) translateY(var(--space-18));
       }
     }
 
@@ -1177,6 +1211,22 @@
       ...document.querySelectorAll(".market-cards .stock-card"),
       document.querySelector(".landing-panel")
     ].filter(Boolean);
+    const marketHideTimers = new WeakMap();
+    const commentRevealItems = [
+      [".chat-bubble-card.is-top-right", 0],
+      [".chat-bubble-card.is-upper-mid", .035],
+      [".chat-bubble-card.is-lower-right", .065],
+      [".chat-bubble-card.is-left-low", .115],
+      [".chat-bubble-card.is-left-mid", .155],
+      [".chat-bubble-card.is-mid-right", .19],
+      [".chat-bubble-card.is-right-soft", .245],
+      [".chat-bubble-card.is-center-low", .285],
+      [".chat-bubble-card.is-far-mid", .34]
+    ].map(([selector, delayRaw]) => ({
+      element: document.querySelector(selector),
+      delayRaw
+    })).filter(({ element }) => element);
+    const commentHideTimers = new WeakMap();
     const landingContourRoots = Array.from(document.querySelectorAll(".landing-start-button, .landing-final-button, .market-copy-button"));
     const scrollLevels = Array.from(document.querySelectorAll("[data-scroll-level]"));
     const finalScrollLevel = document.querySelector('[data-scroll-level="4"]');
@@ -1291,7 +1341,60 @@
 
     function updateMarketRevealItems(rawProgress) {
       marketRevealItems.forEach((item, index) => {
-        item.classList.toggle("is-market-visible", rawProgress >= marketItemRevealRaw[index]);
+        const shouldShow = rawProgress >= marketItemRevealRaw[index];
+        if (shouldShow) {
+          const hideTimer = marketHideTimers.get(item);
+          if (hideTimer) window.clearTimeout(hideTimer);
+          marketHideTimers.delete(item);
+          item.classList.remove("is-market-hiding");
+          item.classList.add("is-market-visible");
+          return;
+        }
+
+        if (!item.classList.contains("is-market-visible")) return;
+
+        item.classList.add("is-market-hiding");
+        item.classList.remove("is-market-visible");
+        const hideTimer = window.setTimeout(() => {
+          if (!item.classList.contains("is-market-visible")) {
+            item.classList.remove("is-market-hiding");
+          }
+          marketHideTimers.delete(item);
+        }, 280);
+        marketHideTimers.set(item, hideTimer);
+      });
+    }
+
+    commentRevealItems.forEach(({ element }) => {
+      const shell = document.createElement("div");
+      shell.className = "chat-bubble-pop-shell";
+      while (element.firstChild) shell.appendChild(element.firstChild);
+      element.appendChild(shell);
+    });
+
+    function updateCommentRevealItems(rawProgress, startRaw) {
+      commentRevealItems.forEach(({ element, delayRaw }) => {
+        const shouldShow = rawProgress >= startRaw + delayRaw;
+        if (shouldShow) {
+          const hideTimer = commentHideTimers.get(element);
+          if (hideTimer) window.clearTimeout(hideTimer);
+          commentHideTimers.delete(element);
+          element.classList.remove("is-comment-hiding");
+          element.classList.add("is-comment-visible");
+          return;
+        }
+
+        if (!element.classList.contains("is-comment-visible")) return;
+
+        element.classList.add("is-comment-hiding");
+        element.classList.remove("is-comment-visible");
+        const hideTimer = window.setTimeout(() => {
+          if (!element.classList.contains("is-comment-visible")) {
+            element.classList.remove("is-comment-hiding");
+          }
+          commentHideTimers.delete(element);
+        }, 280);
+        commentHideTimers.set(element, hideTimer);
       });
     }
 
@@ -1557,8 +1660,9 @@
       const chatY = levelOffset(2, progress);
       const finalY = `${((1 - finalEnter) * 100).toFixed(3)}vh`;
       const chatYValue = (2 - progress) * 100;
-      const commentFadeIn = smoothstep((rawProgress - (marketTiming.liftStartRaw - .04)) / .34);
-      const commentFadeOut = 1 - smoothstep((progress - 2.52) / .3);
+      const commentRevealStartRaw = marketTiming.liftStartRaw - .04;
+      const commentFadeIn = smoothstep((rawProgress - commentRevealStartRaw) / .34);
+      const commentFadeOut = 1 - smoothstep((progress - 2.64) / .3);
       const commentOpacity = commentFadeIn * commentFadeOut;
       const chatParallaxNear = `${(-chatYValue * .28).toFixed(3)}vh`;
       const chatParallaxMid = `${(-chatYValue * .48).toFixed(3)}vh`;
@@ -1603,6 +1707,7 @@
       landingShell?.style.setProperty("--landing-final-events", finalDistance < 0.62 ? "auto" : "none");
 
       updateMarketRevealItems(rawProgress);
+      updateCommentRevealItems(rawProgress, commentRevealStartRaw);
 
       if (!blankOrb) return;
 
