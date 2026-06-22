@@ -6,7 +6,7 @@
     },
     {
       "source": "/",
-      "destination": "/kitchen-sink.html"
+      "destination": "/index.html"
     }
   ]
 }
