@@ -740,8 +740,8 @@
     }
 
     .scroll-level--chat-final-gap {
-      min-height: 420vh;
-      height: 420vh;
+      min-height: 10vh;
+      height: 10vh;
       scroll-snap-align: start;
       scroll-snap-stop: always;
     }
@@ -1557,8 +1557,8 @@
       const chatY = levelOffset(2, progress);
       const finalY = `${((1 - finalEnter) * 100).toFixed(3)}vh`;
       const chatYValue = (2 - progress) * 100;
-      const commentFadeIn = smoothstep((rawProgress - (marketTiming.liftStartRaw - .16)) / .34);
-      const commentFadeOut = 1 - smoothstep((progress - 2.36) / .3);
+      const commentFadeIn = smoothstep((rawProgress - (marketTiming.liftStartRaw - .04)) / .34);
+      const commentFadeOut = 1 - smoothstep((progress - 2.52) / .3);
       const commentOpacity = commentFadeIn * commentFadeOut;
       const chatParallaxNear = `${(-chatYValue * .28).toFixed(3)}vh`;
       const chatParallaxMid = `${(-chatYValue * .48).toFixed(3)}vh`;
