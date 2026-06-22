@@ -320,6 +320,9 @@
       align-content: stretch;
       justify-items: start;
       gap: clamp(var(--space-12), 1.6vh, var(--space-22));
+      border: 3px solid var(--outline-blue);
+      border-radius: var(--radius-card);
+      background: var(--panel-fill);
       box-shadow: var(--landing-panel-shadow);
       opacity: 1;
       pointer-events: var(--landing-panel-events, none);
@@ -389,22 +392,36 @@
       position: absolute;
       z-index: 6;
       left: clamp(var(--space-120), 17vw, calc(var(--space-220) * 2));
-      top: 68%;
-      width: clamp(420px, 30vw, 600px);
-      min-height: clamp(150px, 16vh, 190px);
-      padding: clamp(var(--space-22), 2vw, var(--space-34));
+      top: 50%;
+      width: clamp(300px, 22vw, 410px);
+      min-height: clamp(124px, 13vh, 158px);
+      padding: clamp(var(--space-16), 1.45vw, var(--space-24));
       display: grid;
       align-content: center;
-      gap: var(--space-24);
+      gap: clamp(var(--space-12), 1.4vh, var(--space-18));
       border: 3px solid var(--outline-blue);
       border-radius: var(--radius-card);
       background: var(--panel-fill);
       box-shadow: var(--landing-panel-shadow);
-      transform: translateY(-50%);
+      opacity: var(--landing-chat-panel-opacity, 0);
+      translate: 0 var(--landing-chat-panel-counter-y, -100vh);
+      transform: translateY(calc(-50% + var(--landing-chat-panel-y-pop, var(--space-18)))) scale(var(--landing-chat-panel-scale, .84));
+      transform-origin: center;
+      will-change: transform, translate, opacity;
+    }
+
+    .chat-copy-panel h3 {
+      margin: 0;
+      font-size: clamp(17px, 1.45vw, 25px);
+      line-height: 1.02;
     }
 
     .chat-copy-panel p {
-      max-width: 34ch;
+      width: 100%;
+      max-width: none;
+      font-size: clamp(11px, .9vw, 15px);
+      line-height: 1.32;
+      white-space: normal;
     }
 
     .chat-bubble-card {
@@ -521,6 +538,51 @@
       animation-delay: -5100ms;
     }
 
+    .chat-bubble-card.is-extra-left {
+      --chat-depth-scale: .78;
+      --chat-parallax-y: var(--landing-chat-parallax-mid, 0vh);
+      z-index: 3;
+      left: clamp(var(--space-96), 15vw, var(--space-260));
+      bottom: -34%;
+      animation-delay: -3400ms;
+    }
+
+    .chat-bubble-card.is-extra-mid {
+      --chat-depth-scale: .7;
+      --chat-parallax-y: var(--landing-chat-parallax-deep, 0vh);
+      z-index: 2;
+      left: clamp(var(--space-260), 42vw, calc(var(--space-296) * 2.25));
+      bottom: -45%;
+      animation-delay: -1600ms;
+    }
+
+    .chat-bubble-card.is-extra-right {
+      --chat-depth-scale: .82;
+      --chat-parallax-y: var(--landing-chat-parallax-near, 0vh);
+      z-index: 4;
+      right: clamp(var(--space-72), 12vw, var(--space-220));
+      bottom: -57%;
+      animation-delay: -4200ms;
+    }
+
+    .chat-bubble-card.is-extra-far {
+      --chat-depth-scale: .56;
+      --chat-parallax-y: var(--landing-chat-parallax-far, 0vh);
+      z-index: 0;
+      left: clamp(var(--space-132), 29vw, calc(var(--space-296) * 1.7));
+      bottom: -69%;
+      animation-delay: -2900ms;
+    }
+
+    .chat-bubble-card.is-extra-low {
+      --chat-depth-scale: .74;
+      --chat-parallax-y: var(--landing-chat-parallax-deep, 0vh);
+      z-index: 2;
+      right: clamp(var(--space-180), 31vw, calc(var(--space-296) * 2));
+      bottom: -82%;
+      animation-delay: -5300ms;
+    }
+
     .chat-bubble-frame {
       display: block;
       width: 100%;
@@ -598,8 +660,7 @@
       place-items: center;
       opacity: 1;
       pointer-events: var(--landing-final-events, none);
-      translate: 0 var(--landing-final-y, 100vh);
-      will-change: translate;
+      translate: 0 var(--landing-final-y, 0vh);
     }
 
     .final-cluster {
@@ -613,17 +674,27 @@
       --pill-bg: var(--hudi-orb-colour);
       --pill-inner-shadow: var(--hudi-orb-shadow);
       --pill-label: var(--white);
-      min-width: clamp(360px, 33vw, 640px);
-      height: clamp(74px, 7vw, 116px);
+      width: var(--landing-final-width, clamp(360px, 33vw, 640px));
+      min-width: 0;
+      height: var(--landing-final-height, clamp(74px, 7vw, 116px));
       border: 0;
-      border-radius: var(--radius-pill);
+      border-radius: var(--landing-final-radius, var(--radius-pill));
       font-size: clamp(42px, 4vw, 72px);
+      opacity: var(--landing-final-button-opacity, 0);
+      scale: var(--landing-final-button-scale, 0);
       text-transform: lowercase;
+      transform-origin: center;
       box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow), var(--landing-panel-shadow);
+      will-change: width, border-radius, scale, opacity;
     }
 
     .landing-final-button .pill-label {
+      opacity: var(--landing-final-label-opacity, 0);
       white-space: nowrap;
+    }
+
+    .landing-final-button .pill-top-contour {
+      opacity: var(--landing-final-contour-opacity, 0);
     }
 
     .landing-final-button .pill-top-contour path {
@@ -639,6 +710,9 @@
       text-align: center;
       text-shadow: 0 0 4px var(--white), 0 0 11px var(--white), 0 0 18px var(--white);
       white-space: nowrap;
+      opacity: var(--landing-final-tagline-opacity, 0);
+      clip-path: inset(0 calc((1 - var(--landing-final-tagline-reveal, 0)) * 100%) 0 0);
+      will-change: clip-path, opacity;
     }
 
     .final-socials {
@@ -669,6 +743,8 @@
       box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow), inset 0 0 calc(var(--orb-size) * .09) color-mix(in srgb, var(--orb-sheen) 58%, transparent), var(--landing-panel-shadow);
       cursor: pointer;
       overflow: hidden;
+      transform-origin: center;
+      will-change: scale, opacity;
     }
 
     .final-social-orb.hudi-window-orb::before {
@@ -705,6 +781,8 @@
       --orb-sheen: var(--white);
       --orb-shadow: var(--color-rgba-139-204-255-22);
       --window-image: url("data:image/svg+xml,%3Csvg width='128' height='128' viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M23 22h21.7l25.1 33.4L99 22h12L75.4 62.8 113 112H91.4L64.3 76 32.8 112H20.7l38-43.5L23 22Zm16.1 8.8 56.8 72.4h7L46.1 30.8h-7Z' fill='%23525c6f'/%3E%3C/svg%3E");
+      opacity: var(--landing-final-x-opacity, 0);
+      scale: var(--landing-final-x-scale, .84);
     }
 
     .final-social-orb.is-telegram {
@@ -712,6 +790,8 @@
       --orb-sheen: var(--color-cff3ff);
       --orb-shadow: var(--hudi-orb-shadow);
       --window-image: url("data:image/svg+xml,%3Csvg width='128' height='128' viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M108.8 24.8 91.5 105c-1.3 5.7-4.7 7.1-9.5 4.4L55.6 89.9 42.9 102.1c-1.4 1.4-2.6 2.6-5.3 2.6l1.9-26.9 49-44.3c2.1-1.9-.5-3-3.3-1.1L24.6 70.6-1.5 62.4c-5.7-1.8-5.8-5.7 1.2-8.4l102-39.3c4.7-1.7 8.8 1.1 7.1 10.1Z' fill='%23f5fbff'/%3E%3C/svg%3E");
+      opacity: var(--landing-final-telegram-opacity, 0);
+      scale: var(--landing-final-telegram-scale, .84);
     }
 
     @keyframes landing-market-pop {
@@ -780,8 +860,8 @@
     }
 
     .scroll-level--chat-final-gap {
-      min-height: 10vh;
-      height: 10vh;
+      min-height: 135vh;
+      height: 135vh;
       scroll-snap-align: start;
       scroll-snap-stop: always;
     }
@@ -819,10 +899,9 @@
       .chat-copy-panel {
         left: var(--space-16);
         right: var(--space-16);
-        top: 45%;
+        top: 50%;
         width: auto;
         min-height: 132px;
-        transform: none;
       }
 
       .chat-bubble-card.is-top-right {
@@ -845,7 +924,12 @@
       .chat-bubble-card.is-upper-mid,
       .chat-bubble-card.is-left-mid,
       .chat-bubble-card.is-right-soft,
-      .chat-bubble-card.is-far-mid {
+      .chat-bubble-card.is-far-mid,
+      .chat-bubble-card.is-extra-left,
+      .chat-bubble-card.is-extra-mid,
+      .chat-bubble-card.is-extra-right,
+      .chat-bubble-card.is-extra-far,
+      .chat-bubble-card.is-extra-low {
         left: var(--space-16);
         right: var(--space-16);
         top: auto;
@@ -1109,6 +1193,76 @@
           <time class="chat-bubble-time">42 mins ago</time>
         </div>
       </article>
+
+      <article class="chat-bubble-card is-extra-left" data-tail="down" aria-label="Ren chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--color-61caff); --pfp-stroke: var(--color-2395ce); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Ren</strong><span class="chat-bubble-message">Adding small here.</span></span>
+          <time class="chat-bubble-time">44 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-extra-mid" data-tail="down" aria-label="Mika chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--text-light-pink); --pfp-stroke: var(--hot-pink); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Mika</strong><span class="chat-bubble-message">Risk looks nice.</span></span>
+          <time class="chat-bubble-time">45 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-extra-right" data-tail="down" aria-label="Ada chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--color-ffff86); --pfp-stroke: var(--ink); --pfp-eye: var(--white); --pfp-pupil: var(--hot-pink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Ada</strong><span class="chat-bubble-message">Watching Seoul now.</span></span>
+          <time class="chat-bubble-time">46 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-extra-far" data-tail="down" aria-label="Theo chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--acid-lime); --pfp-stroke: var(--pfp-lime-stroke); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Theo</strong><span class="chat-bubble-message">Taking profit soon.</span></span>
+          <time class="chat-bubble-time">47 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-extra-low" data-tail="down" aria-label="June chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--white); --pfp-stroke: var(--ink); --pfp-eye: var(--color-ffff86); --pfp-pupil: var(--hot-pink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">June</strong><span class="chat-bubble-message">Clean retest.</span></span>
+          <time class="chat-bubble-time">48 mins ago</time>
+        </div>
+      </article>
     </section>
 
     <section class="final-showcase" aria-label="Start trading">
@@ -1227,7 +1381,12 @@
       [".chat-bubble-card.is-mid-right", .19],
       [".chat-bubble-card.is-right-soft", .245],
       [".chat-bubble-card.is-center-low", .285],
-      [".chat-bubble-card.is-far-mid", .34]
+      [".chat-bubble-card.is-far-mid", .34],
+      [".chat-bubble-card.is-extra-left", .395],
+      [".chat-bubble-card.is-extra-mid", .45],
+      [".chat-bubble-card.is-extra-right", .505],
+      [".chat-bubble-card.is-extra-far", .56],
+      [".chat-bubble-card.is-extra-low", .615]
     ].map(([selector, delayRaw]) => ({
       element: document.querySelector(selector),
       delayRaw
@@ -1244,11 +1403,28 @@
       liftStartRaw: 2.81
     };
     const finalTiming = {
-      enterDurationRaw: .36,
-      revealDurationRaw: .18
+      enterLeadRaw: .92,
+      buttonTotalRaw: .5,
+      buttonLabelRaw: .21,
+      buttonContractRaw: .27,
+      buttonVanishStartRaw: .29,
+      buttonVanishDurationRaw: .21,
+      buttonFadeDelayRaw: .16,
+      buttonFadeRaw: .14,
+      taglineDurationRaw: .26,
+      socialDurationRaw: .12,
+      socialGapRaw: .04,
+      revealDurationRaw: .42
     };
     const marketItemRevealDelayRaw = .14;
     const marketItemRevealRaw = [1.18, 1.5, 1.82, 2.14].map((value) => value + marketItemRevealDelayRaw);
+    const marketExitStartRaw = marketTiming.liftStartRaw - .04;
+    const marketExitGapRaw = .11;
+    const marketItemHideRaw = [0, 1, 2, 3].map((index) => marketExitStartRaw + index * marketExitGapRaw);
+    const marketOrbExitTiming = {
+      startRaw: marketExitStartRaw + 4 * marketExitGapRaw,
+      endRaw: marketExitStartRaw + 4 * marketExitGapRaw + .24
+    };
     const mapSlideTiming = {
       startRaw: .72,
       startOffset: -.045,
@@ -1466,7 +1642,7 @@
 
     function updateMarketRevealItems(rawProgress) {
       marketRevealItems.forEach((item, index) => {
-        const shouldShow = rawProgress >= marketItemRevealRaw[index];
+        const shouldShow = rawProgress >= marketItemRevealRaw[index] && rawProgress < marketItemHideRaw[index];
         if (shouldShow) {
           const hideTimer = marketHideTimers.get(item);
           if (hideTimer) window.clearTimeout(hideTimer);
@@ -1710,6 +1886,13 @@
       };
     }
 
+    function getLandingFinalMetrics() {
+      return {
+        width: clamp(window.innerWidth * .33, 360, 640),
+        height: clamp(window.innerWidth * .07, 74, 116)
+      };
+    }
+
     function formatPathNumber(value) {
       return Number(value.toFixed(3)).toString();
     }
@@ -1752,14 +1935,26 @@
       scrollState.scrollVelocity = clamp(Math.abs(scrollDelta) / (elapsed / 16.667), 0, 1);
       lastRawProgress = rawProgress;
       lastScrollAt = now;
-      const progress = clamp(mapScrollProgress(rawProgress), 0, maxScrollIndex);
+      const mappedProgress = mapScrollProgress(rawProgress);
+      const progress = clamp(mappedProgress, 0, maxScrollIndex);
       const segmentIndex = Math.min(maxScrollIndex - 1, Math.floor(progress));
       const ramp = clamp(progress - segmentIndex);
       const morph = smoothstep(clamp(progress));
       const finalLevelStartRaw = finalScrollLevel ? finalScrollLevel.offsetTop / viewportHeight : maxRawProgress;
-      const finalEnterStartRaw = Math.max(marketTiming.endRaw, finalLevelStartRaw - finalTiming.enterDurationRaw);
-      const finalRevealStartRaw = Math.max(marketTiming.endRaw, finalLevelStartRaw - finalTiming.revealDurationRaw);
-      const finalEnter = smoothstep((rawProgress - finalEnterStartRaw) / finalTiming.enterDurationRaw);
+      const finalSequenceStartRaw = Math.max(marketTiming.endRaw, finalLevelStartRaw - finalTiming.enterLeadRaw);
+      const finalRevealStartRaw = finalSequenceStartRaw;
+      const finalButtonReverseRaw = clamp(finalTiming.buttonTotalRaw - (rawProgress - finalSequenceStartRaw), 0, finalTiming.buttonTotalRaw);
+      const finalButtonContract = smoothstep(finalButtonReverseRaw / finalTiming.buttonContractRaw);
+      const finalButtonVanish = smoothstep((finalButtonReverseRaw - finalTiming.buttonVanishStartRaw) / finalTiming.buttonVanishDurationRaw);
+      const finalButtonScaleProgress = 1 - finalButtonVanish;
+      const finalButtonFadeProgress = smoothstep((rawProgress - (finalSequenceStartRaw + finalTiming.buttonFadeDelayRaw)) / finalTiming.buttonFadeRaw);
+      const finalButtonLabelOpacity = 1 - smoothstep(finalButtonReverseRaw / finalTiming.buttonLabelRaw);
+      const finalTaglineStartRaw = finalSequenceStartRaw + (finalTiming.buttonTotalRaw * .5);
+      const finalTaglineProgress = smoothstep((rawProgress - finalTaglineStartRaw) / finalTiming.taglineDurationRaw);
+      const finalSocialStartRaw = finalTaglineStartRaw + (finalTiming.taglineDurationRaw * .5);
+      const finalXProgress = smoothstep((rawProgress - finalSocialStartRaw) / finalTiming.socialDurationRaw);
+      const finalTelegramProgress = smoothstep((rawProgress - (finalSocialStartRaw + finalTiming.socialGapRaw)) / finalTiming.socialDurationRaw);
+      const finalContentProgress = Math.max(finalButtonScaleProgress, finalTaglineProgress, finalXProgress, finalTelegramProgress);
       const finalMorph = smoothstep((rawProgress - finalRevealStartRaw) / finalTiming.revealDurationRaw);
       const skyboxProgress = smoothstep(progress / maxScrollIndex);
       const firstLevelOpacity = 1 - smoothstep(progress);
@@ -1771,32 +1966,58 @@
       const startScale = Math.max(0, 1 - startVanish);
       const mapReveal = smoothstep((progress - .72) / .36);
       const mapSlideProgress = clamp((rawProgress - mapSlideTiming.startRaw) / (mapSlideTiming.endRaw - mapSlideTiming.startRaw));
-      const mapSlideOffset = mapSlideTiming.startOffset + (exponentialEaseOut(mapSlideProgress, mapSlideTiming.easeStrength) * mapSlideEndTravel);
+      const orbExitRawProgress = clamp((rawProgress - marketOrbExitTiming.startRaw) / (marketOrbExitTiming.endRaw - marketOrbExitTiming.startRaw));
+      const orbExitProgress = smoothstep(orbExitRawProgress);
+      const mapExitSpinOffset = orbExitRawProgress * orbExitRawProgress * .32;
+      const mapSlideOffset = mapSlideTiming.startOffset + (exponentialEaseOut(mapSlideProgress, mapSlideTiming.easeStrength) * mapSlideEndTravel) + mapExitSpinOffset;
       const mapDotLeadRaw = .12;
-      const mapDotHighlights = {
-        samsung: smoothstep((rawProgress - (marketItemRevealRaw[0] - mapDotLeadRaw)) / mapDotLeadRaw),
-        alibaba: smoothstep((rawProgress - (marketItemRevealRaw[1] - mapDotLeadRaw)) / mapDotLeadRaw),
-        toyota: smoothstep((rawProgress - (marketItemRevealRaw[2] - mapDotLeadRaw)) / mapDotLeadRaw)
+      const mapDotValue = (index) => {
+        const fadeIn = smoothstep((rawProgress - (marketItemRevealRaw[index] - mapDotLeadRaw)) / mapDotLeadRaw);
+        const fadeOut = 1 - orbExitProgress;
+        return fadeIn * fadeOut;
       };
-      const chatOpacity = 1 - smoothstep((progress - 2.56) / .34);
-      const chatDistance = Math.abs(progress - 2);
-      const finalDistance = Math.abs(finalEnter - 1);
+      const mapDotHighlights = {
+        samsung: mapDotValue(0),
+        alibaba: mapDotValue(1),
+        toyota: mapDotValue(2)
+      };
+      const commentRevealStartRaw = marketOrbExitTiming.endRaw + .04;
+      const chatPanelRevealStartRaw = commentRevealStartRaw - .05;
+      const commentRevealBaseRaw = marketExitStartRaw;
+      const chatProgressOffset = mapScrollProgress(commentRevealStartRaw) - mapScrollProgress(commentRevealBaseRaw);
+      const chatProgress = Math.max(0, mappedProgress - chatProgressOffset);
+      const commentFadeOutStart = 3.28;
+      const commentFadeOutDuration = .36;
+      const chatPanelExitStart = commentFadeOutStart + (commentFadeOutDuration * .55);
+      const chatPanelExitDuration = .2;
+      const chatPanelEnterProgress = smoothstep((rawProgress - chatPanelRevealStartRaw) / .1);
+      const chatPanelExitProgress = smoothstep((chatProgress - chatPanelExitStart) / chatPanelExitDuration);
+      const chatPanelOpacity = chatPanelEnterProgress * (1 - chatPanelExitProgress);
+      const chatPanelScale = .84 + (.16 * chatPanelEnterProgress * (1 - chatPanelExitProgress));
+      const chatPanelPopDistance = Number.parseFloat(token("--space-18")) || 18;
+      const chatPanelPopY = `${(((1 - chatPanelEnterProgress) + chatPanelExitProgress) * chatPanelPopDistance).toFixed(2)}px`;
+      const chatOpacity = 1 - smoothstep((chatProgress - (chatPanelExitStart + chatPanelExitDuration + .08)) / .22);
+      const chatDistance = Math.abs(chatProgress - 2);
+      const finalDistance = Math.abs(finalContentProgress - 1);
       const marketY = levelOffset(1, progress);
-      const chatY = levelOffset(2, progress);
-      const finalY = `${((1 - finalEnter) * 100).toFixed(3)}vh`;
-      const chatYValue = (2 - progress) * 100;
-      const commentRevealStartRaw = marketTiming.liftStartRaw - .04;
+      const chatY = levelOffset(2, chatProgress);
+      const finalY = "0vh";
+      const chatYValue = (2 - chatProgress) * 100;
+      const chatPanelCounterY = `${(-chatYValue).toFixed(3)}vh`;
       const commentFadeIn = smoothstep((rawProgress - commentRevealStartRaw) / .34);
-      const commentFadeOut = 1 - smoothstep((progress - 2.64) / .3);
+      const commentFadeOut = 1 - smoothstep((chatProgress - commentFadeOutStart) / commentFadeOutDuration);
       const commentOpacity = commentFadeIn * commentFadeOut;
-      const chatParallaxNear = `${(-chatYValue * .28).toFixed(3)}vh`;
-      const chatParallaxMid = `${(-chatYValue * .48).toFixed(3)}vh`;
-      const chatParallaxDeep = `${(-chatYValue * .68).toFixed(3)}vh`;
-      const chatParallaxFar = `${(-chatYValue * .84).toFixed(3)}vh`;
-      const marketLiftProgress = clamp((rawProgress - marketTiming.liftStartRaw) / (marketTiming.endRaw - marketTiming.liftStartRaw));
-      const postMarketLift = Math.max(0, progress - 2) * (112 / (2 - 1.12));
-      const orbLiftY = -((marketLiftProgress * 112) + postMarketLift);
-      const orbY = `${orbLiftY.toFixed(3)}vh`;
+      const chatParallaxNear = `${(-chatYValue * .24).toFixed(3)}vh`;
+      const chatParallaxMid = `${(-chatYValue * .62).toFixed(3)}vh`;
+      const chatParallaxDeep = `${(-chatYValue * .86).toFixed(3)}vh`;
+      const chatParallaxFar = `${(-chatYValue * .97).toFixed(3)}vh`;
+      const finalMetrics = getLandingFinalMetrics();
+      const finalButtonWidth = lerp(finalMetrics.width, finalMetrics.height, finalButtonContract);
+      const finalXScale = .84 + (.16 * finalXProgress);
+      const finalTelegramScale = .84 + (.16 * finalTelegramProgress);
+      const orbY = "0vh";
+      const orbScale = (1 - morph * 0.22) * (1 - orbExitProgress * .22);
+      const orbOpacity = 1 - Math.pow(orbExitProgress, 1.45);
 
       scrollState.index = Math.min(maxScrollIndex, Math.round(progress));
       scrollState.segmentIndex = segmentIndex;
@@ -1811,6 +2032,10 @@
 
       landingShell?.style.setProperty("--landing-market-y", marketY);
       landingShell?.style.setProperty("--landing-chat-y", chatY);
+      landingShell?.style.setProperty("--landing-chat-panel-counter-y", chatPanelCounterY);
+      landingShell?.style.setProperty("--landing-chat-panel-opacity", chatPanelOpacity.toFixed(3));
+      landingShell?.style.setProperty("--landing-chat-panel-scale", chatPanelScale.toFixed(3));
+      landingShell?.style.setProperty("--landing-chat-panel-y-pop", chatPanelPopY);
       landingShell?.style.setProperty("--landing-chat-opacity", chatOpacity.toFixed(3));
       landingShell?.style.setProperty("--landing-comment-opacity", commentOpacity.toFixed(3));
       landingShell?.style.setProperty("--landing-chat-parallax-near", chatParallaxNear);
@@ -1818,6 +2043,19 @@
       landingShell?.style.setProperty("--landing-chat-parallax-deep", chatParallaxDeep);
       landingShell?.style.setProperty("--landing-chat-parallax-far", chatParallaxFar);
       landingShell?.style.setProperty("--landing-final-y", finalY);
+      landingShell?.style.setProperty("--landing-final-width", `${finalButtonWidth.toFixed(2)}px`);
+      landingShell?.style.setProperty("--landing-final-height", `${finalMetrics.height.toFixed(2)}px`);
+      landingShell?.style.setProperty("--landing-final-radius", `${(finalMetrics.height / 2).toFixed(2)}px`);
+      landingShell?.style.setProperty("--landing-final-button-opacity", finalButtonFadeProgress.toFixed(3));
+      landingShell?.style.setProperty("--landing-final-button-scale", finalButtonScaleProgress.toFixed(3));
+      landingShell?.style.setProperty("--landing-final-label-opacity", finalButtonLabelOpacity.toFixed(3));
+      landingShell?.style.setProperty("--landing-final-contour-opacity", finalButtonScaleProgress.toFixed(3));
+      landingShell?.style.setProperty("--landing-final-tagline-opacity", finalTaglineProgress.toFixed(3));
+      landingShell?.style.setProperty("--landing-final-tagline-reveal", finalTaglineProgress.toFixed(3));
+      landingShell?.style.setProperty("--landing-final-x-opacity", finalXProgress.toFixed(3));
+      landingShell?.style.setProperty("--landing-final-x-scale", finalXScale.toFixed(3));
+      landingShell?.style.setProperty("--landing-final-telegram-opacity", finalTelegramProgress.toFixed(3));
+      landingShell?.style.setProperty("--landing-final-telegram-scale", finalTelegramScale.toFixed(3));
       landingShell?.style.setProperty("--landing-orb-anchor-y", orbY);
       landingShell?.style.setProperty("--landing-first-events", progress < .42 ? "auto" : "none");
       landingShell?.style.setProperty("--landing-world-tag-reveal", tagRetype.toFixed(3));
@@ -1827,7 +2065,7 @@
       landingShell?.style.setProperty("--landing-start-scale", startScale.toFixed(3));
       landingShell?.style.setProperty("--landing-start-label-opacity", (1 - smoothstep(progress / .28)).toFixed(3));
       landingShell?.style.setProperty("--landing-start-contour-opacity", (1 - startVanish).toFixed(3));
-      landingShell?.style.setProperty("--landing-panel-events", rawProgress >= marketItemRevealRaw[0] && rawProgress < marketTiming.endRaw ? "auto" : "none");
+      landingShell?.style.setProperty("--landing-panel-events", rawProgress >= marketItemRevealRaw[0] && rawProgress < marketItemHideRaw[marketItemHideRaw.length - 1] ? "auto" : "none");
       landingShell?.style.setProperty("--landing-chat-events", chatDistance < 0.62 && chatOpacity > .1 ? "auto" : "none");
       landingShell?.style.setProperty("--landing-final-events", finalDistance < 0.62 ? "auto" : "none");
 
@@ -1841,8 +2079,8 @@
       blankOrb.style.setProperty("--orb-shadow", mixColor(orbMorphTokens.shadowFrom, orbMorphTokens.shadowTo, morph));
       blankOrb.style.setProperty("--logo-inner", orbMorphTokens.innerTo);
       blankOrb.style.setProperty("--landing-orb-y", orbY);
-      blankOrb.style.setProperty("--landing-orb-scale", (1 - morph * 0.22).toFixed(3));
-      blankOrb.style.setProperty("--landing-orb-opacity", "1");
+      blankOrb.style.setProperty("--landing-orb-scale", orbScale.toFixed(3));
+      blankOrb.style.setProperty("--landing-orb-opacity", orbOpacity.toFixed(3));
       blankOrb.style.setProperty("--landing-logo-opacity", (1 - morph).toFixed(3));
       blankOrb.style.setProperty("--landing-logo-scale", (1 - morph * 0.18).toFixed(3));
       blankOrb.style.setProperty("--landing-map-opacity", mapReveal.toFixed(3));
