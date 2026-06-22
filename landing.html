@@ -85,6 +85,43 @@
       pointer-events: none;
     }
 
+    .landing-orb-world-map-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: block;
+      width: 100%;
+      height: 100%;
+      opacity: var(--landing-map-opacity, 0);
+      mix-blend-mode: screen;
+      pointer-events: none;
+      transform: translateZ(0);
+    }
+
+    .landing-orb-world-map-highlight-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: block;
+      width: 100%;
+      height: 100%;
+      opacity: var(--landing-map-highlight-opacity, 0);
+      pointer-events: none;
+      transform: translateZ(0);
+    }
+
+    .landing-orb-world-map-gloss {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background:
+        radial-gradient(circle at 50% 50%, transparent 0 36%, var(--black) 66%),
+        radial-gradient(circle at 36% 24%, var(--white-alpha-38) 0 9%, transparent 28%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
     .landing-hudi-mark {
       z-index: 3;
       opacity: var(--landing-logo-opacity, 0);
@@ -157,41 +194,42 @@
       will-change: translate;
     }
 
-    .market-showcase.is-popping .stock-card,
-    .market-showcase.is-popping + .landing-panel {
-      animation: landing-market-pop 360ms cubic-bezier(.18, .9, .2, 1.22) both;
-    }
-
-    .market-showcase.is-popping .stock-card:nth-child(2) {
-      animation-delay: 42ms;
-    }
-
-    .market-showcase.is-popping .stock-card:nth-child(3) {
-      animation-delay: 84ms;
-    }
-
-    .market-showcase.is-popping + .landing-panel {
-      animation-delay: 105ms;
-    }
-
     .market-cards {
       position: absolute;
       left: clamp(var(--space-92), calc(17vw - var(--space-50)), calc(var(--space-180) * 2));
-      top: 23%;
+      top: 50%;
       display: grid;
-      gap: clamp(var(--space-48), 7vh, var(--space-72));
+      gap: clamp(var(--space-64), 8.5vh, var(--space-92));
+      translate: 0 calc(-50% + var(--landing-orb-anchor-y, 0vh) - var(--landing-market-y, 0vh));
     }
 
     .stock-card {
       position: relative;
       --pnl-stroke: var(--big-gain);
       --pnl-accent: var(--small-gain);
-      width: clamp(315px, 23vw, 470px);
-      height: clamp(88px, 7.8vw, 116px);
+      width: clamp(330px, 24.5vw, 490px);
+      height: clamp(78px, 6.8vw, 104px);
       overflow: hidden;
       border: 3px solid var(--outline-blue);
       border-radius: var(--radius-card);
       background: color-mix(in srgb, var(--panel-fill) 88%, transparent);
+      box-shadow: var(--landing-panel-shadow);
+      translate: var(--market-card-x, 0px) 0;
+    }
+
+    .stock-card:nth-child(2) {
+      --market-card-x: calc(var(--space-92) * -1);
+      --stock-title-gap: var(--space-12);
+      width: clamp(330px, 24.5vw, 490px);
+      height: clamp(90px, 7.7vw, 118px);
+    }
+
+    .stock-card:nth-child(1),
+    .stock-card:nth-child(3) {
+      --stock-name-size: clamp(6.3px, .522vw, 9px);
+      --stock-roi-size: clamp(12.6px, 1.125vw, 19.8px);
+      --stock-time-size: clamp(4.5px, .396vw, 7.2px);
+      width: clamp(300px, 22.5vw, 450px);
     }
 
     .stock-graph {
@@ -205,7 +243,7 @@
     .stock-graph path {
       fill: none;
       stroke: var(--pnl-stroke);
-      stroke-width: 5;
+      stroke-width: 3.75;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
@@ -216,7 +254,7 @@
     }
 
     .stock-card .hudi-stock-orb {
-      --orb-size: clamp(74px, 6.2vw, 104px);
+      --orb-size: clamp(66px, 5.4vw, 92px);
       position: absolute;
       left: clamp(var(--space-20), 2.4vw, var(--space-30));
       top: 50%;
@@ -224,62 +262,69 @@
       transform: translateY(-50%);
     }
 
+    .stock-card:nth-child(2) .hudi-stock-orb {
+      --orb-size: clamp(76px, 6.1vw, 104px);
+    }
+
     .stock-readout {
+      --stock-readout-top: clamp(var(--space-4), .55vw, var(--space-8));
       position: absolute;
-      top: clamp(var(--space-14), 1.55vw, var(--space-22));
-      right: clamp(var(--space-18), 2vw, var(--space-30));
+      top: var(--stock-readout-top);
+      right: calc(var(--stock-readout-top) * 2.4);
       z-index: 2;
       display: grid;
-      justify-items: start;
-      gap: var(--space-4);
+      justify-items: end;
+      gap: var(--space-3);
       color: var(--dark-grey);
-      text-align: left;
+      text-align: right;
     }
 
     .stock-readout .stock-name {
-      font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
-      font-size: clamp(10px, .78vw, 14px);
+      font-family: var(--ocr);
+      margin-bottom: var(--stock-title-gap, var(--space-8));
+      font-size: var(--stock-name-size, clamp(7px, .58vw, 10px));
       letter-spacing: .12em;
       text-transform: uppercase;
     }
 
     .stock-readout .stock-roi {
-      font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
-      font-size: clamp(26px, 2.4vw, 42px);
-      line-height: .78;
+      font-family: var(--ocr);
+      font-size: var(--stock-roi-size, clamp(14px, 1.25vw, 22px));
+      line-height: .82;
       letter-spacing: .06em;
     }
 
     .stock-readout .stock-time {
       color: var(--pnl-stroke);
-      font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
-      font-size: clamp(10px, .8vw, 14px);
+      font-family: var(--ocr);
+      font-size: var(--stock-time-size, clamp(5px, .44vw, 8px));
       letter-spacing: .1em;
       text-transform: uppercase;
     }
 
     .landing-panel {
-      --market-panel-width: clamp(540px, 38vw, 740px);
+      --market-panel-width: clamp(382px, 28vw, 488px);
       position: absolute;
       left: min(
-        calc(50% + clamp(190px, 14vw, 270px)),
+        calc(50% + (clamp(220px, 23vw, 440px) * .62)),
         calc(100vw - var(--market-panel-width) - var(--space-20))
       );
       right: auto;
       top: 50%;
       z-index: 2;
       width: var(--market-panel-width);
-      min-height: clamp(166px, 18vh, 230px);
-      padding: clamp(var(--space-24), 2.1vw, var(--space-38));
+      min-height: clamp(168px, 17.5vh, 222px);
+      padding: clamp(var(--space-20), 1.75vw, var(--space-30));
       display: grid;
-      align-content: start;
+      grid-template-rows: auto 1fr auto;
+      align-content: stretch;
       justify-items: start;
-      gap: clamp(var(--space-18), 2.2vh, var(--space-28));
+      gap: clamp(var(--space-12), 1.6vh, var(--space-22));
       box-shadow: var(--landing-panel-shadow);
       opacity: 1;
       pointer-events: var(--landing-panel-events, none);
-      translate: 0 calc(-50% + var(--landing-market-y, 100vh));
-      will-change: translate;
+      translate: 0 calc(-50% + var(--landing-orb-anchor-y, 0vh));
+      will-change: translate, transform, opacity;
     }
 
     .landing-panel h3 {
@@ -289,17 +334,36 @@
     .landing-panel p {
       width: 100%;
       max-width: none;
+      font-size: clamp(15px, 1.2vw, 19px);
+      line-height: 1.34;
+    }
+
+    .stock-card,
+    .landing-panel {
+      opacity: 0;
+      transform: scale(.84) translateY(var(--space-18));
+    }
+
+    .stock-card.is-market-visible,
+    .landing-panel.is-market-visible {
+      animation: landing-market-pop 360ms cubic-bezier(.18, .9, .2, 1.22) both;
+    }
+
+    .stock-card.is-market-hiding,
+    .landing-panel.is-market-hiding {
+      animation: landing-market-pop-out 260ms cubic-bezier(.45, 0, .55, 1) both;
     }
 
     .market-copy-button.hudi-trade-button {
       --pill-bg: var(--hudi-orb-colour);
       --pill-inner-shadow: var(--hudi-orb-shadow);
       --pill-label: var(--white);
+      align-self: end;
       justify-self: end;
-      min-width: clamp(176px, 10vw, 230px);
-      height: clamp(34px, 3.2vw, 46px);
+      min-width: clamp(148px, 8.4vw, 188px);
+      height: clamp(30px, 2.65vw, 38px);
       border-width: 3px;
-      font-size: clamp(15px, 1.05vw, 20px);
+      font-size: clamp(13px, .92vw, 17px);
       text-transform: lowercase;
     }
 
@@ -315,16 +379,17 @@
       position: absolute;
       inset: 0;
       z-index: 3;
-      opacity: 1;
+      opacity: var(--landing-chat-opacity, 1);
       pointer-events: var(--landing-chat-events, none);
       translate: 0 var(--landing-chat-y, 100vh);
-      will-change: translate;
+      will-change: translate, opacity;
     }
 
     .chat-copy-panel {
       position: absolute;
+      z-index: 6;
       left: clamp(var(--space-120), 17vw, calc(var(--space-220) * 2));
-      top: 41%;
+      top: 68%;
       width: clamp(420px, 30vw, 600px);
       min-height: clamp(150px, 16vh, 190px);
       padding: clamp(var(--space-22), 2vw, var(--space-34));
@@ -343,30 +408,117 @@
     }
 
     .chat-bubble-card {
+      --chat-depth-scale: 1;
+      --chat-parallax-y: 0vh;
+      --chat-comments-lift: -10vh;
       position: absolute;
+      z-index: 1;
       width: clamp(230px, 21vw, 450px);
       color: var(--dark-grey);
+      opacity: var(--landing-comment-opacity, 1);
+      translate: 0 calc(var(--chat-parallax-y) + var(--chat-comments-lift));
+      scale: var(--chat-depth-scale);
+      transform-origin: center;
       filter: drop-shadow(3px 7px 10px var(--black-alpha-13));
       animation: chat-bubble-float 5200ms ease-in-out infinite;
+      will-change: transform, translate, scale, opacity;
     }
 
-    .chat-bubble-card.is-large {
-      left: clamp(var(--space-118), 13.8vw, var(--space-296));
-      bottom: 8.5%;
-      animation-delay: -1800ms;
+    .chat-bubble-pop-shell {
+      position: relative;
+      display: block;
+      width: 100%;
+      opacity: 0;
+      transform: scale(.84) translateY(var(--space-18));
+      transform-origin: center;
+      will-change: transform, opacity;
+    }
+
+    .chat-bubble-card.is-comment-visible .chat-bubble-pop-shell {
+      animation: landing-market-pop 360ms cubic-bezier(.18, .9, .2, 1.22) both;
+    }
+
+    .chat-bubble-card.is-comment-hiding .chat-bubble-pop-shell {
+      animation: landing-market-pop 260ms cubic-bezier(.45, 0, .55, 1) reverse both;
     }
 
     .chat-bubble-card.is-top-right {
+      z-index: 5;
       right: clamp(var(--space-104), 11.2vw, var(--space-224));
-      top: 27%;
+      top: 38%;
       animation-delay: -600ms;
     }
 
+    .chat-bubble-card.is-upper-mid {
+      --chat-depth-scale: .88;
+      --chat-parallax-y: var(--landing-chat-parallax-near, 0vh);
+      z-index: 4;
+      left: clamp(var(--space-260), 33vw, calc(var(--space-296) * 2));
+      top: 66%;
+      animation-delay: -2200ms;
+    }
+
     .chat-bubble-card.is-mid-right {
+      --chat-depth-scale: .74;
+      --chat-parallax-y: var(--landing-chat-parallax-deep, 0vh);
+      z-index: 2;
       right: clamp(var(--space-160), 22vw, calc(var(--space-296) * 2));
-      top: 57%;
-      width: clamp(250px, 23vw, 360px);
+      top: 82%;
       animation-delay: -3000ms;
+    }
+
+    .chat-bubble-card.is-left-low {
+      --chat-depth-scale: .8;
+      --chat-parallax-y: var(--landing-chat-parallax-mid, 0vh);
+      z-index: 3;
+      left: clamp(var(--space-72), 9vw, var(--space-180));
+      bottom: -9%;
+      animation-delay: -1800ms;
+    }
+
+    .chat-bubble-card.is-lower-right {
+      --chat-depth-scale: .84;
+      --chat-parallax-y: var(--landing-chat-parallax-near, 0vh);
+      z-index: 4;
+      right: clamp(var(--space-40), 8vw, var(--space-160));
+      bottom: -18%;
+      animation-delay: -3900ms;
+    }
+
+    .chat-bubble-card.is-center-low {
+      --chat-depth-scale: .68;
+      --chat-parallax-y: var(--landing-chat-parallax-deep, 0vh);
+      z-index: 1;
+      left: clamp(var(--space-296), 39vw, calc(var(--space-296) * 2.2));
+      bottom: -2%;
+      animation-delay: -1100ms;
+    }
+
+    .chat-bubble-card.is-left-mid {
+      --chat-depth-scale: .76;
+      --chat-parallax-y: var(--landing-chat-parallax-mid, 0vh);
+      z-index: 3;
+      right: clamp(var(--space-220), 28vw, calc(var(--space-296) * 2));
+      top: 56%;
+      animation-delay: -2700ms;
+    }
+
+    .chat-bubble-card.is-right-soft {
+      --chat-depth-scale: .7;
+      --chat-parallax-y: var(--landing-chat-parallax-deep, 0vh);
+      z-index: 2;
+      right: clamp(var(--space-52), 9vw, var(--space-180));
+      top: 64%;
+      animation-delay: -4400ms;
+    }
+
+    .chat-bubble-card.is-far-mid {
+      --chat-depth-scale: .58;
+      --chat-parallax-y: var(--landing-chat-parallax-far, 0vh);
+      z-index: 0;
+      left: clamp(var(--space-180), 27vw, calc(var(--space-296) * 1.8));
+      bottom: -13%;
+      animation-delay: -5100ms;
     }
 
     .chat-bubble-frame {
@@ -390,14 +542,6 @@
       top: 34%;
     }
 
-    .chat-bubble-card.is-mid-right .chat-bubble-content {
-      left: 7%;
-      right: 7%;
-      top: 39%;
-      gap: var(--space-6);
-      grid-template-columns: auto minmax(0, 1fr) auto;
-    }
-
     .chat-bubble-card[data-tail="down"] .chat-bubble-content {
       top: 16%;
     }
@@ -410,11 +554,6 @@
     .chat-bubble-card .pfp-avatar svg {
       width: 100%;
       height: 100%;
-    }
-
-    .chat-bubble-card.is-mid-right .pfp-avatar {
-      width: clamp(22px, 2vw, 34px);
-      height: clamp(22px, 2vw, 34px);
     }
 
     .chat-bubble-text {
@@ -446,54 +585,6 @@
       white-space: nowrap;
     }
 
-    .chat-bubble-card.is-mid-right .chat-bubble-name {
-      font-size: clamp(8px, .72vw, 12px);
-    }
-
-    .chat-bubble-card.is-mid-right .chat-bubble-message,
-    .chat-bubble-card.is-mid-right .chat-bubble-time {
-      font-size: clamp(5px, .43vw, 8px);
-      letter-spacing: .04em;
-      line-height: 1.08;
-    }
-
-    .chat-bubble-card.is-mid-right .chat-bubble-message {
-      display: -webkit-box;
-      overflow: hidden;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
-    }
-
-    .chat-trade-line {
-      position: absolute;
-      left: 17%;
-      right: 8%;
-      bottom: 12%;
-      color: var(--dark-grey);
-      font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
-      font-size: clamp(11px, .98vw, 18px);
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .chat-bubble-graph {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 4%;
-      width: 100%;
-      height: 28%;
-    }
-
-    .chat-bubble-graph path {
-      fill: none;
-      stroke: var(--gain-track-end);
-      stroke-width: 3.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
     @keyframes chat-bubble-float {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(calc(var(--space-8) * -1)); }
@@ -515,7 +606,7 @@
       display: grid;
       justify-items: center;
       gap: clamp(var(--space-28), 4vh, var(--space-48));
-      transform: translateY(clamp(var(--space-56), 10vh, var(--space-112)));
+      transform: translateY(clamp(var(--space-56), 24vh, calc(var(--space-112) * 1.9)));
     }
 
     .landing-final-button.hudi-trade-button {
@@ -638,6 +729,17 @@
       }
     }
 
+    @keyframes landing-market-pop-out {
+      0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(.84) translateY(var(--space-18));
+      }
+    }
+
     .shape-toggle {
       position: absolute;
       right: var(--space-24);
@@ -671,6 +773,19 @@
       scroll-snap-stop: always;
     }
 
+    .scroll-level--market-extension {
+      min-height: 105svh;
+      scroll-snap-align: none;
+      scroll-snap-stop: normal;
+    }
+
+    .scroll-level--chat-final-gap {
+      min-height: 10vh;
+      height: 10vh;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
     @media (max-width: 700px) {
       #blank-orb {
         --orb-size: clamp(190px, 58vw, 300px);
@@ -696,6 +811,7 @@
         left: 50%;
         top: 7%;
         gap: var(--space-16);
+        translate: 0;
         transform: translateX(-50%) scale(.78);
         transform-origin: top center;
       }
@@ -703,7 +819,7 @@
       .chat-copy-panel {
         left: var(--space-16);
         right: var(--space-16);
-        top: 22%;
+        top: 45%;
         width: auto;
         min-height: 132px;
         transform: none;
@@ -712,21 +828,28 @@
       .chat-bubble-card.is-top-right {
         left: var(--space-16);
         right: var(--space-16);
-        top: 48%;
+        top: 72%;
         width: auto;
       }
 
       .chat-bubble-card.is-mid-right {
         left: 28%;
         right: var(--space-16);
-        top: 62%;
+        top: 88%;
         width: auto;
       }
 
-      .chat-bubble-card.is-large {
+      .chat-bubble-card.is-left-low,
+      .chat-bubble-card.is-lower-right,
+      .chat-bubble-card.is-center-low,
+      .chat-bubble-card.is-upper-mid,
+      .chat-bubble-card.is-left-mid,
+      .chat-bubble-card.is-right-soft,
+      .chat-bubble-card.is-far-mid {
         left: var(--space-16);
         right: var(--space-16);
-        bottom: 7%;
+        top: auto;
+        bottom: -10%;
         width: auto;
       }
 
@@ -780,6 +903,9 @@
   <main class="landing-shell" aria-label="Hudi landing page">
     <div class="hudi-blank-orb" id="blank-orb" aria-hidden="true">
       <span class="landing-orb-inner-glow"></span>
+      <canvas class="landing-orb-world-map-canvas" id="landing-orb-world-map-canvas" width="1024" height="1024" aria-hidden="true"></canvas>
+      <canvas class="landing-orb-world-map-highlight-canvas" id="landing-orb-world-map-highlight-canvas" width="1024" height="1024" aria-hidden="true"></canvas>
+      <span class="landing-orb-world-map-gloss" aria-hidden="true"></span>
       <svg class="hudi-logo-mark landing-hudi-mark" width="47" height="49" viewBox="0 0 47 49" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <g filter="url(#landing-hudi-logo-filter)"><path d="M27.1405 48.0754C24.2967 48.0778 22.6508 45.9399 22.641 43.2398L22.5569 26.5795C22.5466 24.0301 20.9258 22.4611 18.4584 22.3485C15.1435 22.1982 21.5146 22.2441 18.1987 22.3269C15.5118 22.3984 13.9658 24.3797 13.9074 27.0385C13.7827 32.6096 13.9316 38.1338 13.6907 43.7113C13.578 46.2465 11.6705 48.0207 9.27112 48.0043L4.45862 47.9715C1.7311 47.9469 -0.0108297 45.9046 0.000347114 43.0949L0.160873 4.38224C0.170878 1.86718 2.2011 0.175674 4.437 0.0543588C6.11221 -0.0349212 7.62286 -0.00149948 9.25643 0.0666769C11.7717 0.165773 13.7002 1.72225 13.8331 4.40236C13.9218 6.16397 13.8599 9.76153 14.1877 11.5721C14.5423 13.5061 16.0413 14.7387 18.1468 14.7608L34.9218 14.9852C37.2186 15.0149 38.8885 16.2551 39.6939 18.2868C41.183 22.0346 46.0871 21.3893 46.0696 25.7752L45.9972 43.9769C45.9876 46.396 43.9299 48.1148 41.7286 48.1197L27.1405 48.0823L27.1405 48.0754Z" fill="url(#landing-hudi-logo-gradient)"/></g>
         <defs><filter id="landing-hudi-logo-filter" x="0" y="0" width="46.0693" height="48.1191" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset/><feGaussianBlur stdDeviation="1.1"/><feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix type="matrix" values="0 0 0 0 0.574688 0 0 0 0 0.751902 0 0 0 0 1 0 0 0 1 0"/><feBlend mode="normal" in2="shape" result="effect1_innerShadow_121_362"/></filter><radialGradient id="landing-hudi-logo-gradient" cx="0" cy="0" r="1" gradientTransform="matrix(-0.000709991 82.9873 -82.8097 0.000702805 22.9657 -7.59041)" gradientUnits="userSpaceOnUse"><stop/><stop offset="0.379952"/><stop offset="0.681343"/></radialGradient></defs>
@@ -872,36 +998,116 @@
         </div>
       </article>
 
-      <article class="chat-bubble-card is-mid-right" data-tail="up" aria-label="Rio chat message">
-        <svg class="chat-bubble-frame" width="275" height="84" viewBox="0 0 275 84" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect x="1.29267" y="25.2263" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
-          <rect x="1.29267" y="25.2263" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M33.876 10.2637L42.2764 22.3877L43.6826 24.418L21.9434 24.418L23.3496 22.3877L31.75 10.2637L32.8125 8.72949L33.876 10.2637Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M32.8119 11L45.1319 28.9441L20.4919 28.9441L32.8119 11Z" fill="var(--panel-fill)"/>
+      <article class="chat-bubble-card is-upper-mid" data-tail="down" aria-label="Mina chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
         </svg>
         <div class="chat-bubble-content">
           <span class="pfp-avatar" style="--pfp-head: var(--text-light-pink); --pfp-stroke: var(--hot-pink); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
-          <span class="chat-bubble-text"><strong class="chat-bubble-name">Rio</strong><span class="chat-bubble-message">I'm looking at this trade right now and typing this message to let you guys know about it.</span></span>
-          <time class="chat-bubble-time">49 mins ago</time>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Mina</strong><span class="chat-bubble-message">Same entry?</span></span>
+          <time class="chat-bubble-time">28 mins ago</time>
         </div>
       </article>
 
-      <article class="chat-bubble-card is-large" data-tail="up" aria-label="Alice trade message">
-        <svg class="chat-bubble-frame" width="275" height="84" viewBox="0 0 275 84" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect x="1.29267" y="25.2263" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
-          <rect x="1.29267" y="25.2263" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M33.876 10.2637L42.2764 22.3877L43.6826 24.418L21.9434 24.418L23.3496 22.3877L31.75 10.2637L32.8125 8.72949L33.876 10.2637Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M32.8119 11L45.1319 28.9441L20.4919 28.9441L32.8119 11Z" fill="var(--panel-fill)"/>
+      <article class="chat-bubble-card is-mid-right" data-tail="down" aria-label="Rio chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
         </svg>
         <div class="chat-bubble-content">
           <span class="pfp-avatar" style="--pfp-head: var(--acid-lime); --pfp-stroke: var(--pfp-lime-stroke); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
-          <span class="chat-bubble-text"><strong class="chat-bubble-name">Alice</strong></span>
-          <time class="chat-bubble-time">48 mins ago</time>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Rio</strong><span class="chat-bubble-message">This candle is clean.</span></span>
+          <time class="chat-bubble-time">31 mins ago</time>
         </div>
-        <div class="chat-trade-line">traded samsung long 50x</div>
-        <svg class="chat-bubble-graph" viewBox="0 0 275 32" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M0 20 L16 17 L28 21 L42 20 L54 16 L70 18 L86 15 L104 13 L122 16 L140 15 L156 17 L174 14 L188 12 L199 28 L216 27 L232 29 L249 24 L263 30 L275 27"/>
+      </article>
+
+      <article class="chat-bubble-card is-left-low" data-tail="down" aria-label="Alice chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
         </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--acid-lime); --pfp-stroke: var(--pfp-lime-stroke); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Alice</strong><span class="chat-bubble-message">Watching this level.</span></span>
+          <time class="chat-bubble-time">34 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-center-low" data-tail="down" aria-label="Noah chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--color-61caff); --pfp-stroke: var(--color-2395ce); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Noah</strong><span class="chat-bubble-message">Volume just woke up.</span></span>
+          <time class="chat-bubble-time">36 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-left-mid" data-tail="down" aria-label="Emi chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--color-ffff86); --pfp-stroke: var(--ink); --pfp-eye: var(--white); --pfp-pupil: var(--hot-pink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Emi</strong><span class="chat-bubble-message">Adding on pullback.</span></span>
+          <time class="chat-bubble-time">38 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-right-soft" data-tail="down" aria-label="Sol chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--text-light-pink); --pfp-stroke: var(--hot-pink); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Sol</strong><span class="chat-bubble-message">Holding with you.</span></span>
+          <time class="chat-bubble-time">40 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-far-mid" data-tail="down" aria-label="Ari chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--acid-lime); --pfp-stroke: var(--pfp-lime-stroke); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Ari</strong><span class="chat-bubble-message">Breakout looks real.</span></span>
+          <time class="chat-bubble-time">41 mins ago</time>
+        </div>
+      </article>
+
+      <article class="chat-bubble-card is-lower-right" data-tail="down" aria-label="Jules chat message">
+        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+        </svg>
+        <div class="chat-bubble-content">
+          <span class="pfp-avatar" style="--pfp-head: var(--white); --pfp-stroke: var(--ink); --pfp-eye: var(--color-ffff86); --pfp-pupil: var(--hot-pink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
+          <span class="chat-bubble-text"><strong class="chat-bubble-name">Jules</strong><span class="chat-bubble-message">Korea move is clean.</span></span>
+          <time class="chat-bubble-time">42 mins ago</time>
+        </div>
       </article>
     </section>
 
@@ -945,8 +1151,10 @@
   <div class="scroll-levels" aria-hidden="true">
     <section class="scroll-level" data-scroll-level="0"></section>
     <section class="scroll-level" data-scroll-level="1"></section>
+    <section class="scroll-level scroll-level--market-extension"></section>
     <section class="scroll-level" data-scroll-level="2"></section>
-    <section class="scroll-level" data-scroll-level="3"></section>
+    <section class="scroll-level scroll-level--chat-final-gap" data-scroll-level="3"></section>
+    <section class="scroll-level" data-scroll-level="4"></section>
   </div>
 
   <script type="module">
@@ -996,13 +1204,61 @@
       const t = clamp(value);
       return t * t * (3 - 2 * t);
     };
+    const exponentialEaseOut = (value, strength = 9) => {
+      const t = clamp(value);
+      return (1 - Math.exp(-strength * t)) / (1 - Math.exp(-strength));
+    };
     let textureShape = "square";
     const blankOrb = document.getElementById("blank-orb");
+    const globeMapCanvas = document.getElementById("landing-orb-world-map-canvas");
+    const globeMapHighlightCanvas = document.getElementById("landing-orb-world-map-highlight-canvas");
     const landingShell = document.querySelector(".landing-shell");
-    const marketShowcase = document.querySelector(".market-showcase");
+    const marketRevealItems = [
+      ...document.querySelectorAll(".market-cards .stock-card"),
+      document.querySelector(".landing-panel")
+    ].filter(Boolean);
+    const marketHideTimers = new WeakMap();
+    const commentRevealItems = [
+      [".chat-bubble-card.is-top-right", 0],
+      [".chat-bubble-card.is-upper-mid", .035],
+      [".chat-bubble-card.is-lower-right", .065],
+      [".chat-bubble-card.is-left-low", .115],
+      [".chat-bubble-card.is-left-mid", .155],
+      [".chat-bubble-card.is-mid-right", .19],
+      [".chat-bubble-card.is-right-soft", .245],
+      [".chat-bubble-card.is-center-low", .285],
+      [".chat-bubble-card.is-far-mid", .34]
+    ].map(([selector, delayRaw]) => ({
+      element: document.querySelector(selector),
+      delayRaw
+    })).filter(({ element }) => element);
+    const commentHideTimers = new WeakMap();
     const landingContourRoots = Array.from(document.querySelectorAll(".landing-start-button, .landing-final-button, .market-copy-button"));
     const scrollLevels = Array.from(document.querySelectorAll("[data-scroll-level]"));
+    const finalScrollLevel = document.querySelector('[data-scroll-level="4"]');
     const maxScrollIndex = Math.max(1, scrollLevels.length - 1);
+    const marketTiming = {
+      startRaw: 1,
+      endRaw: 3.45,
+      exitDurationRaw: .6,
+      liftStartRaw: 2.81
+    };
+    const finalTiming = {
+      enterDurationRaw: .36,
+      revealDurationRaw: .18
+    };
+    const marketItemRevealDelayRaw = .14;
+    const marketItemRevealRaw = [1.18, 1.5, 1.82, 2.14].map((value) => value + marketItemRevealDelayRaw);
+    const mapSlideTiming = {
+      startRaw: .72,
+      startOffset: -.045,
+      asiaRaw: marketItemRevealRaw[0],
+      asiaTravel: .3,
+      endRaw: marketTiming.endRaw,
+      easeStrength: 9
+    };
+    const mapSlideAsiaProgress = clamp((mapSlideTiming.asiaRaw - mapSlideTiming.startRaw) / (mapSlideTiming.endRaw - mapSlideTiming.startRaw));
+    const mapSlideEndTravel = mapSlideTiming.asiaTravel / exponentialEaseOut(mapSlideAsiaProgress, mapSlideTiming.easeStrength);
     const scrollState = {
       index: 0,
       segmentIndex: 0,
@@ -1015,7 +1271,6 @@
       firstLevelOpacity: 1,
       finalOpacity: 0
     };
-    let wasMarketVisible = false;
     let lastRawProgress = 0;
     let lastScrollAt = performance.now();
 
@@ -1192,14 +1447,261 @@
     }
 
     function mapScrollProgress(rawProgress) {
-      if (rawProgress <= 1) return rawProgress;
-      if (rawProgress <= 2.4) return 1 + ((rawProgress - 1) / 1.4);
-      return 2 + ((rawProgress - 2.4) / .6);
+      if (rawProgress <= marketTiming.startRaw) return rawProgress;
+      if (rawProgress <= marketTiming.endRaw) {
+        return 1 + ((rawProgress - marketTiming.startRaw) / (marketTiming.endRaw - marketTiming.startRaw));
+      }
+      return 2 + ((rawProgress - marketTiming.endRaw) / marketTiming.exitDurationRaw);
     }
 
     function lerp(start, end, amount) {
       return start + (end - start) * amount;
     }
+
+    function getMaxRawProgress() {
+      const pageHeight = document.documentElement.scrollHeight;
+      const viewportHeight = Math.max(1, window.innerHeight);
+      return Math.max(maxScrollIndex, (pageHeight - viewportHeight) / viewportHeight);
+    }
+
+    function updateMarketRevealItems(rawProgress) {
+      marketRevealItems.forEach((item, index) => {
+        const shouldShow = rawProgress >= marketItemRevealRaw[index];
+        if (shouldShow) {
+          const hideTimer = marketHideTimers.get(item);
+          if (hideTimer) window.clearTimeout(hideTimer);
+          marketHideTimers.delete(item);
+          item.classList.remove("is-market-hiding");
+          item.classList.add("is-market-visible");
+          return;
+        }
+
+        if (!item.classList.contains("is-market-visible")) return;
+
+        item.classList.add("is-market-hiding");
+        item.classList.remove("is-market-visible");
+        const hideTimer = window.setTimeout(() => {
+          if (!item.classList.contains("is-market-visible")) {
+            item.classList.remove("is-market-hiding");
+          }
+          marketHideTimers.delete(item);
+        }, 280);
+        marketHideTimers.set(item, hideTimer);
+      });
+    }
+
+    commentRevealItems.forEach(({ element }) => {
+      const shell = document.createElement("div");
+      shell.className = "chat-bubble-pop-shell";
+      while (element.firstChild) shell.appendChild(element.firstChild);
+      element.appendChild(shell);
+    });
+
+    function updateCommentRevealItems(rawProgress, startRaw) {
+      commentRevealItems.forEach(({ element, delayRaw }) => {
+        const shouldShow = rawProgress >= startRaw + delayRaw;
+        if (shouldShow) {
+          const hideTimer = commentHideTimers.get(element);
+          if (hideTimer) window.clearTimeout(hideTimer);
+          commentHideTimers.delete(element);
+          element.classList.remove("is-comment-hiding");
+          element.classList.add("is-comment-visible");
+          return;
+        }
+
+        if (!element.classList.contains("is-comment-visible")) return;
+
+        element.classList.add("is-comment-hiding");
+        element.classList.remove("is-comment-visible");
+        const hideTimer = window.setTimeout(() => {
+          if (!element.classList.contains("is-comment-visible")) {
+            element.classList.remove("is-comment-hiding");
+          }
+          commentHideTimers.delete(element);
+        }, 280);
+        commentHideTimers.set(element, hideTimer);
+      });
+    }
+
+    function createOrbGlobeRenderer(mapCanvas, options = {}) {
+      if (!mapCanvas) return null;
+
+      const {
+        src = "assets/Black_on_white_dotted_world_map_vector.svg?white-transparent-map=1",
+        highlight = false,
+        rasterWidth = 2048
+      } = options;
+      const highlightColor = parseColor(token("--color-ff4a22"));
+      const emptyCanvas = document.createElement("canvas");
+      emptyCanvas.width = 1;
+      emptyCanvas.height = 1;
+      const emptyTexture = new THREE.CanvasTexture(emptyCanvas);
+      emptyTexture.colorSpace = THREE.SRGBColorSpace;
+
+      const globeScene = new THREE.Scene();
+      const globeCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      const uniforms = {
+        uMap: { value: emptyTexture },
+        uResolution: { value: new THREE.Vector2(512, 512) },
+        uMapOffset: { value: new THREE.Vector2(0, 0) },
+        uMapAspect: { value: 2 },
+        uMapCopies: { value: 2 },
+        uMapZoom: { value: 1.18 },
+        uHighlightSamsung: { value: 0 },
+        uHighlightAlibaba: { value: 0 },
+        uHighlightToyota: { value: 0 },
+        uHighlightColor: { value: new THREE.Vector3(highlightColor[0] / 255, highlightColor[1] / 255, highlightColor[2] / 255) },
+        uOpacity: { value: 0 }
+      };
+      const globeRenderer = new THREE.WebGLRenderer({
+        canvas: mapCanvas,
+        alpha: true,
+        antialias: true,
+        premultipliedAlpha: false,
+        powerPreference: "high-performance"
+      });
+      const material = new THREE.ShaderMaterial({
+        uniforms,
+        transparent: true,
+        depthTest: false,
+        depthWrite: false,
+        vertexShader: `
+          varying vec2 vUv;
+
+          void main() {
+            vUv = uv;
+            gl_Position = vec4(position.xy, 0.0, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform sampler2D uMap;
+          uniform vec2 uResolution;
+          uniform vec2 uMapOffset;
+          uniform float uMapAspect;
+          uniform float uMapCopies;
+          uniform float uMapZoom;
+          uniform float uHighlightSamsung;
+          uniform float uHighlightAlibaba;
+          uniform float uHighlightToyota;
+          uniform vec3 uHighlightColor;
+          uniform float uOpacity;
+          varying vec2 vUv;
+
+          const float PI = 3.141592653589793;
+
+          void main() {
+            vec2 fragCoord = vUv * uResolution.xy;
+            vec2 uv = fragCoord.xy * 2.0 / uResolution.xy - vec2(1.0);
+
+            float d = length(uv);
+            if (d > 1.0 || uOpacity <= 0.001) {
+              discard;
+            }
+
+            float z = sqrt(max(0.0, 1.0 - d * d));
+            float r = atan(d, z) / PI;
+            float phi = atan(uv.y, uv.x);
+            vec2 globeUv = vec2(r * cos(phi) + .5, r * sin(phi) + .5);
+            vec2 coverUv = vec2(
+              (globeUv.x - .5) / (uMapAspect * uMapZoom) + .5,
+              (globeUv.y - .5) / uMapZoom + .5
+            );
+            vec2 mapUv = vec2(
+              fract((coverUv.x + uMapOffset.x) / uMapCopies),
+              clamp(coverUv.y + uMapOffset.y, 0.0, 1.0)
+            );
+            vec4 texel = texture2D(uMap, mapUv);
+            float alpha = ${highlight
+              ? "max(texel.r * uHighlightSamsung, max(texel.g * uHighlightAlibaba, texel.b * uHighlightToyota)) * texel.a * uOpacity"
+              : "texel.a * uOpacity"};
+            alpha *= smoothstep(1.0, .78, d);
+
+            gl_FragColor = ${highlight ? "vec4(uHighlightColor, alpha)" : "vec4(texel.rgb, alpha)"};
+          }
+        `
+      });
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+      let needsRender = true;
+
+      globeRenderer.setClearColor(0x000000, 0);
+      globeRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
+      globeScene.add(mesh);
+
+      function markDirty() {
+        needsRender = true;
+      }
+
+      function resize() {
+        const rect = mapCanvas.getBoundingClientRect();
+        const size = Math.max(1, Math.round(Math.max(rect.width, rect.height)));
+        globeRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
+        globeRenderer.setSize(size, size, false);
+        globeRenderer.getDrawingBufferSize(uniforms.uResolution.value);
+        markDirty();
+      }
+
+      function setProgress(mapReveal, mapOffset = 0, highlights = {}) {
+        const reveal = clamp(mapReveal);
+        uniforms.uOpacity.value = reveal > .001 ? 1 : 0;
+        uniforms.uMapOffset.value.x = mapOffset;
+        uniforms.uHighlightSamsung.value = highlights.samsung || 0;
+        uniforms.uHighlightAlibaba.value = highlights.alibaba || 0;
+        uniforms.uHighlightToyota.value = highlights.toyota || 0;
+        markDirty();
+      }
+
+      function render() {
+        if (!needsRender) return;
+        globeRenderer.render(globeScene, globeCamera);
+        needsRender = false;
+      }
+
+      const sourceMap = new Image();
+      sourceMap.onload = () => {
+        const textureCanvas = document.createElement("canvas");
+        const textureWidth = sourceMap.naturalWidth || sourceMap.width || 2;
+        const textureHeight = sourceMap.naturalHeight || sourceMap.height || 1;
+        const mapCopies = 2;
+        const rasterHeight = Math.round(rasterWidth / (textureWidth / Math.max(1, textureHeight)));
+        textureCanvas.width = rasterWidth * mapCopies;
+        textureCanvas.height = rasterHeight;
+        const textureContext = textureCanvas.getContext("2d");
+        textureContext.imageSmoothingEnabled = true;
+        textureContext.imageSmoothingQuality = "high";
+
+        for (let index = 0; index < mapCopies; index += 1) {
+          textureContext.drawImage(sourceMap, index * rasterWidth, 0, rasterWidth, rasterHeight);
+        }
+
+        const texture = new THREE.CanvasTexture(textureCanvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+        texture.generateMipmaps = false;
+        uniforms.uMapCopies.value = mapCopies;
+        uniforms.uMapAspect.value = textureWidth / Math.max(1, textureHeight);
+        uniforms.uMap.value = texture;
+        markDirty();
+      };
+      sourceMap.src = src;
+
+      resize();
+
+      return {
+        resize,
+        render,
+        setProgress
+      };
+    }
+
+    const orbGlobe = createOrbGlobeRenderer(globeMapCanvas);
+    const orbGlobeHighlights = createOrbGlobeRenderer(globeMapHighlightCanvas, {
+      src: "assets/landing-map-highlight-dots.svg?highlight-dots=1",
+      highlight: true,
+      rasterWidth: 4096
+    });
 
     function getLandingStartMetrics() {
       return {
@@ -1241,7 +1743,9 @@
     }
 
     function updateScrollState() {
-      const rawProgress = clamp(window.scrollY / Math.max(1, window.innerHeight), 0, maxScrollIndex);
+      const maxRawProgress = getMaxRawProgress();
+      const viewportHeight = Math.max(1, window.innerHeight);
+      const rawProgress = clamp(window.scrollY / viewportHeight, 0, maxRawProgress);
       const now = performance.now();
       const elapsed = Math.max(16, now - lastScrollAt);
       const scrollDelta = rawProgress - lastRawProgress;
@@ -1252,7 +1756,11 @@
       const segmentIndex = Math.min(maxScrollIndex - 1, Math.floor(progress));
       const ramp = clamp(progress - segmentIndex);
       const morph = smoothstep(clamp(progress));
-      const finalMorph = smoothstep(clamp(progress - 2));
+      const finalLevelStartRaw = finalScrollLevel ? finalScrollLevel.offsetTop / viewportHeight : maxRawProgress;
+      const finalEnterStartRaw = Math.max(marketTiming.endRaw, finalLevelStartRaw - finalTiming.enterDurationRaw);
+      const finalRevealStartRaw = Math.max(marketTiming.endRaw, finalLevelStartRaw - finalTiming.revealDurationRaw);
+      const finalEnter = smoothstep((rawProgress - finalEnterStartRaw) / finalTiming.enterDurationRaw);
+      const finalMorph = smoothstep((rawProgress - finalRevealStartRaw) / finalTiming.revealDurationRaw);
       const skyboxProgress = smoothstep(progress / maxScrollIndex);
       const firstLevelOpacity = 1 - smoothstep(progress);
       const startContract = smoothstep(progress / .46);
@@ -1261,13 +1769,34 @@
       const startMetrics = getLandingStartMetrics();
       const startWidth = lerp(startMetrics.width, startMetrics.height, startContract);
       const startScale = Math.max(0, 1 - startVanish);
-      const marketDistance = Math.abs(progress - 1);
+      const mapReveal = smoothstep((progress - .72) / .36);
+      const mapSlideProgress = clamp((rawProgress - mapSlideTiming.startRaw) / (mapSlideTiming.endRaw - mapSlideTiming.startRaw));
+      const mapSlideOffset = mapSlideTiming.startOffset + (exponentialEaseOut(mapSlideProgress, mapSlideTiming.easeStrength) * mapSlideEndTravel);
+      const mapDotLeadRaw = .12;
+      const mapDotHighlights = {
+        samsung: smoothstep((rawProgress - (marketItemRevealRaw[0] - mapDotLeadRaw)) / mapDotLeadRaw),
+        alibaba: smoothstep((rawProgress - (marketItemRevealRaw[1] - mapDotLeadRaw)) / mapDotLeadRaw),
+        toyota: smoothstep((rawProgress - (marketItemRevealRaw[2] - mapDotLeadRaw)) / mapDotLeadRaw)
+      };
+      const chatOpacity = 1 - smoothstep((progress - 2.56) / .34);
       const chatDistance = Math.abs(progress - 2);
-      const finalDistance = Math.abs(progress - 3);
+      const finalDistance = Math.abs(finalEnter - 1);
       const marketY = levelOffset(1, progress);
       const chatY = levelOffset(2, progress);
-      const finalY = levelOffset(3, progress);
-      const orbY = progress <= 1 ? "0vh" : `${((1 - progress) * 112).toFixed(3)}vh`;
+      const finalY = `${((1 - finalEnter) * 100).toFixed(3)}vh`;
+      const chatYValue = (2 - progress) * 100;
+      const commentRevealStartRaw = marketTiming.liftStartRaw - .04;
+      const commentFadeIn = smoothstep((rawProgress - commentRevealStartRaw) / .34);
+      const commentFadeOut = 1 - smoothstep((progress - 2.64) / .3);
+      const commentOpacity = commentFadeIn * commentFadeOut;
+      const chatParallaxNear = `${(-chatYValue * .28).toFixed(3)}vh`;
+      const chatParallaxMid = `${(-chatYValue * .48).toFixed(3)}vh`;
+      const chatParallaxDeep = `${(-chatYValue * .68).toFixed(3)}vh`;
+      const chatParallaxFar = `${(-chatYValue * .84).toFixed(3)}vh`;
+      const marketLiftProgress = clamp((rawProgress - marketTiming.liftStartRaw) / (marketTiming.endRaw - marketTiming.liftStartRaw));
+      const postMarketLift = Math.max(0, progress - 2) * (112 / (2 - 1.12));
+      const orbLiftY = -((marketLiftProgress * 112) + postMarketLift);
+      const orbY = `${orbLiftY.toFixed(3)}vh`;
 
       scrollState.index = Math.min(maxScrollIndex, Math.round(progress));
       scrollState.segmentIndex = segmentIndex;
@@ -1282,7 +1811,14 @@
 
       landingShell?.style.setProperty("--landing-market-y", marketY);
       landingShell?.style.setProperty("--landing-chat-y", chatY);
+      landingShell?.style.setProperty("--landing-chat-opacity", chatOpacity.toFixed(3));
+      landingShell?.style.setProperty("--landing-comment-opacity", commentOpacity.toFixed(3));
+      landingShell?.style.setProperty("--landing-chat-parallax-near", chatParallaxNear);
+      landingShell?.style.setProperty("--landing-chat-parallax-mid", chatParallaxMid);
+      landingShell?.style.setProperty("--landing-chat-parallax-deep", chatParallaxDeep);
+      landingShell?.style.setProperty("--landing-chat-parallax-far", chatParallaxFar);
       landingShell?.style.setProperty("--landing-final-y", finalY);
+      landingShell?.style.setProperty("--landing-orb-anchor-y", orbY);
       landingShell?.style.setProperty("--landing-first-events", progress < .42 ? "auto" : "none");
       landingShell?.style.setProperty("--landing-world-tag-reveal", tagRetype.toFixed(3));
       landingShell?.style.setProperty("--landing-start-width", `${startWidth.toFixed(2)}px`);
@@ -1291,19 +1827,12 @@
       landingShell?.style.setProperty("--landing-start-scale", startScale.toFixed(3));
       landingShell?.style.setProperty("--landing-start-label-opacity", (1 - smoothstep(progress / .28)).toFixed(3));
       landingShell?.style.setProperty("--landing-start-contour-opacity", (1 - startVanish).toFixed(3));
-      landingShell?.style.setProperty("--landing-panel-events", marketDistance < 0.62 ? "auto" : "none");
-      landingShell?.style.setProperty("--landing-chat-events", chatDistance < 0.62 ? "auto" : "none");
+      landingShell?.style.setProperty("--landing-panel-events", rawProgress >= marketItemRevealRaw[0] && rawProgress < marketTiming.endRaw ? "auto" : "none");
+      landingShell?.style.setProperty("--landing-chat-events", chatDistance < 0.62 && chatOpacity > .1 ? "auto" : "none");
       landingShell?.style.setProperty("--landing-final-events", finalDistance < 0.62 ? "auto" : "none");
 
-      const isMarketVisible = marketDistance < 0.58;
-      if (marketShowcase && isMarketVisible && !wasMarketVisible) {
-        marketShowcase.classList.remove("is-popping");
-        marketShowcase.offsetWidth;
-        marketShowcase.classList.add("is-popping");
-      } else if (marketShowcase && !isMarketVisible) {
-        marketShowcase.classList.remove("is-popping");
-      }
-      wasMarketVisible = isMarketVisible;
+      updateMarketRevealItems(rawProgress);
+      updateCommentRevealItems(rawProgress, commentRevealStartRaw);
 
       if (!blankOrb) return;
 
@@ -1316,6 +1845,10 @@
       blankOrb.style.setProperty("--landing-orb-opacity", "1");
       blankOrb.style.setProperty("--landing-logo-opacity", (1 - morph).toFixed(3));
       blankOrb.style.setProperty("--landing-logo-scale", (1 - morph * 0.18).toFixed(3));
+      blankOrb.style.setProperty("--landing-map-opacity", mapReveal.toFixed(3));
+      blankOrb.style.setProperty("--landing-map-highlight-opacity", (mapReveal * .6).toFixed(3));
+      orbGlobe?.setProgress(mapReveal, mapSlideOffset);
+      orbGlobeHighlights?.setProgress(mapReveal, mapSlideOffset, mapDotHighlights);
       updateLandingPillTopContours();
     }
 
@@ -2079,6 +2612,8 @@
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
+      orbGlobe?.resize();
+      orbGlobeHighlights?.resize();
     }
 
     window.addEventListener("resize", resize);
@@ -2094,6 +2629,8 @@
       textRing.rotation.y = ringRotation;
       textRing.material.opacity = scrollState.firstLevelOpacity;
       skybox.rotation.y = scrollState.skyboxRotation + passiveRotation;
+      orbGlobe?.render();
+      orbGlobeHighlights?.render();
       renderer.render(scene, camera);
     }
 
