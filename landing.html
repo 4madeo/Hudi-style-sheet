@@ -51,6 +51,40 @@
       pointer-events: none;
     }
 
+    .landing-text-ribbon {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      opacity: var(--landing-text-ring-opacity, 1);
+      pointer-events: none;
+      transition: none;
+    }
+
+    .landing-text-ribbon__svg {
+      position: absolute;
+      left: -18vw;
+      top: 54%;
+      width: 136vw;
+      height: 28vh;
+      overflow: visible;
+      transform: translateY(-50%);
+    }
+
+    .landing-text-ribbon__text {
+      fill: var(--light-grey);
+      font-family: "Syne Hudi", Syne, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: clamp(42px, 4.8vw, 82px);
+      font-weight: 200;
+      letter-spacing: .12em;
+      text-rendering: geometricPrecision;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .landing-text-ribbon__text .is-city {
+      fill: var(--info-blue);
+    }
+
     .hudi-svg-defs {
       position: absolute;
       width: 0;
@@ -331,14 +365,18 @@
     }
 
     .landing-panel h3 {
+      margin: 0;
+      font-size: clamp(17px, 1.45vw, 25px);
+      line-height: 1.02;
       white-space: nowrap;
     }
 
     .landing-panel p {
       width: 100%;
       max-width: none;
-      font-size: clamp(15px, 1.2vw, 19px);
-      line-height: 1.34;
+      font-size: clamp(11px, .9vw, 15px);
+      line-height: 1.32;
+      white-space: normal;
     }
 
     .stock-card,
@@ -426,14 +464,15 @@
 
     .chat-bubble-card {
       --chat-depth-scale: 1;
-      --chat-parallax-y: 0vh;
-      --chat-comments-lift: -10vh;
+      --chat-parallax-x: 0vw;
+      --chat-lane-offset-x: 0vw;
+      --chat-comments-lift: 0vh;
       position: absolute;
       z-index: 1;
       width: clamp(230px, 21vw, 450px);
       color: var(--dark-grey);
       opacity: var(--landing-comment-opacity, 1);
-      translate: 0 calc(var(--chat-parallax-y) + var(--chat-comments-lift));
+      translate: calc(var(--chat-parallax-x) + var(--chat-lane-offset-x)) calc(var(--landing-chat-comments-counter-y, 0vh) + var(--chat-comments-lift));
       scale: var(--chat-depth-scale);
       transform-origin: center;
       filter: drop-shadow(3px 7px 10px var(--black-alpha-13));
@@ -455,131 +494,150 @@
       animation: landing-market-pop 360ms cubic-bezier(.18, .9, .2, 1.22) both;
     }
 
+    .chat-bubble-card.is-comment-hiding {
+      opacity: 1;
+    }
+
     .chat-bubble-card.is-comment-hiding .chat-bubble-pop-shell {
-      animation: landing-market-pop 260ms cubic-bezier(.45, 0, .55, 1) reverse both;
+      animation: landing-market-pop 360ms cubic-bezier(.18, .9, .2, 1.22) reverse both;
     }
 
     .chat-bubble-card.is-top-right {
+      --chat-parallax-x: var(--landing-chat-parallax-near, 0vw);
+      --chat-lane-offset-x: -44vw;
       z-index: 5;
-      right: clamp(var(--space-104), 11.2vw, var(--space-224));
-      top: 38%;
+      right: 0vw;
+      top: 8%;
       animation-delay: -600ms;
     }
 
     .chat-bubble-card.is-upper-mid {
       --chat-depth-scale: .88;
-      --chat-parallax-y: var(--landing-chat-parallax-near, 0vh);
+      --chat-parallax-x: var(--landing-chat-parallax-near, 0vw);
+      --chat-lane-offset-x: -28vw;
       z-index: 4;
-      left: clamp(var(--space-260), 33vw, calc(var(--space-296) * 2));
-      top: 66%;
+      left: 2vw;
+      top: 16%;
       animation-delay: -2200ms;
     }
 
     .chat-bubble-card.is-mid-right {
       --chat-depth-scale: .74;
-      --chat-parallax-y: var(--landing-chat-parallax-deep, 0vh);
+      --chat-parallax-x: var(--landing-chat-parallax-deep, 0vw);
+      --chat-lane-offset-x: 22vw;
       z-index: 2;
-      right: clamp(var(--space-160), 22vw, calc(var(--space-296) * 2));
-      top: 82%;
+      right: 28vw;
+      top: 24%;
       animation-delay: -3000ms;
     }
 
     .chat-bubble-card.is-left-low {
       --chat-depth-scale: .8;
-      --chat-parallax-y: var(--landing-chat-parallax-mid, 0vh);
+      --chat-parallax-x: var(--landing-chat-parallax-mid, 0vw);
+      --chat-lane-offset-x: 0vw;
       z-index: 3;
-      left: clamp(var(--space-72), 9vw, var(--space-180));
-      bottom: -9%;
+      left: 14vw;
+      top: 32%;
       animation-delay: -1800ms;
     }
 
     .chat-bubble-card.is-lower-right {
       --chat-depth-scale: .84;
-      --chat-parallax-y: var(--landing-chat-parallax-near, 0vh);
+      --chat-parallax-x: var(--landing-chat-parallax-near, 0vw);
+      --chat-lane-offset-x: -12vw;
       z-index: 4;
-      right: clamp(var(--space-40), 8vw, var(--space-160));
-      bottom: -18%;
+      right: 15vw;
+      top: 40%;
       animation-delay: -3900ms;
     }
 
     .chat-bubble-card.is-center-low {
       --chat-depth-scale: .68;
-      --chat-parallax-y: var(--landing-chat-parallax-deep, 0vh);
+      --chat-parallax-x: var(--landing-chat-parallax-deep, 0vw);
+      --chat-lane-offset-x: 40vw;
       z-index: 1;
-      left: clamp(var(--space-296), 39vw, calc(var(--space-296) * 2.2));
-      bottom: -2%;
+      left: 58vw;
+      top: 48%;
       animation-delay: -1100ms;
     }
 
     .chat-bubble-card.is-left-mid {
       --chat-depth-scale: .76;
-      --chat-parallax-y: var(--landing-chat-parallax-mid, 0vh);
+      --chat-parallax-x: var(--landing-chat-parallax-mid, 0vw);
+      --chat-lane-offset-x: 12vw;
       z-index: 3;
-      right: clamp(var(--space-220), 28vw, calc(var(--space-296) * 2));
+      right: 55vw;
       top: 56%;
       animation-delay: -2700ms;
     }
 
     .chat-bubble-card.is-right-soft {
       --chat-depth-scale: .7;
-      --chat-parallax-y: var(--landing-chat-parallax-deep, 0vh);
+      --chat-parallax-x: var(--landing-chat-parallax-deep, 0vw);
+      --chat-lane-offset-x: 32vw;
       z-index: 2;
-      right: clamp(var(--space-52), 9vw, var(--space-180));
+      right: 5vw;
       top: 64%;
       animation-delay: -4400ms;
     }
 
     .chat-bubble-card.is-far-mid {
       --chat-depth-scale: .58;
-      --chat-parallax-y: var(--landing-chat-parallax-far, 0vh);
+      --chat-parallax-x: var(--landing-chat-parallax-far, 0vw);
+      --chat-lane-offset-x: 48vw;
       z-index: 0;
-      left: clamp(var(--space-180), 27vw, calc(var(--space-296) * 1.8));
-      bottom: -13%;
+      left: 0vw;
+      top: 72%;
       animation-delay: -5100ms;
     }
 
     .chat-bubble-card.is-extra-left {
       --chat-depth-scale: .78;
-      --chat-parallax-y: var(--landing-chat-parallax-mid, 0vh);
+      --chat-parallax-x: var(--landing-chat-parallax-mid, 0vw);
+      --chat-lane-offset-x: 56vw;
       z-index: 3;
-      left: clamp(var(--space-96), 15vw, var(--space-260));
-      bottom: -34%;
+      left: 32vw;
+      top: 80%;
       animation-delay: -3400ms;
     }
 
     .chat-bubble-card.is-extra-mid {
       --chat-depth-scale: .7;
-      --chat-parallax-y: var(--landing-chat-parallax-deep, 0vh);
+      --chat-parallax-x: var(--landing-chat-parallax-deep, 0vw);
+      --chat-lane-offset-x: 64vw;
       z-index: 2;
-      left: clamp(var(--space-260), 42vw, calc(var(--space-296) * 2.25));
-      bottom: -45%;
+      left: 70vw;
+      top: 88%;
       animation-delay: -1600ms;
     }
 
     .chat-bubble-card.is-extra-right {
       --chat-depth-scale: .82;
-      --chat-parallax-y: var(--landing-chat-parallax-near, 0vh);
+      --chat-parallax-x: var(--landing-chat-parallax-near, 0vw);
+      --chat-lane-offset-x: 72vw;
       z-index: 4;
-      right: clamp(var(--space-72), 12vw, var(--space-220));
-      bottom: -57%;
+      right: 24vw;
+      top: 18%;
       animation-delay: -4200ms;
     }
 
     .chat-bubble-card.is-extra-far {
       --chat-depth-scale: .56;
-      --chat-parallax-y: var(--landing-chat-parallax-far, 0vh);
+      --chat-parallax-x: var(--landing-chat-parallax-far, 0vw);
+      --chat-lane-offset-x: 80vw;
       z-index: 0;
-      left: clamp(var(--space-132), 29vw, calc(var(--space-296) * 1.7));
-      bottom: -69%;
+      left: 43vw;
+      top: 68%;
       animation-delay: -2900ms;
     }
 
     .chat-bubble-card.is-extra-low {
       --chat-depth-scale: .74;
-      --chat-parallax-y: var(--landing-chat-parallax-deep, 0vh);
+      --chat-parallax-x: var(--landing-chat-parallax-deep, 0vw);
+      --chat-lane-offset-x: 88vw;
       z-index: 2;
-      right: clamp(var(--space-180), 31vw, calc(var(--space-296) * 2));
-      bottom: -82%;
+      right: 37vw;
+      top: 92%;
       animation-delay: -5300ms;
     }
 
@@ -905,6 +963,7 @@
       }
 
       .chat-bubble-card.is-top-right {
+        --chat-lane-offset-x: 0vw;
         left: var(--space-16);
         right: var(--space-16);
         top: 72%;
@@ -912,6 +971,7 @@
       }
 
       .chat-bubble-card.is-mid-right {
+        --chat-lane-offset-x: 0vw;
         left: 28%;
         right: var(--space-16);
         top: 88%;
@@ -930,6 +990,7 @@
       .chat-bubble-card.is-extra-right,
       .chat-bubble-card.is-extra-far,
       .chat-bubble-card.is-extra-low {
+        --chat-lane-offset-x: 0vw;
         left: var(--space-16);
         right: var(--space-16);
         top: auto;
@@ -985,6 +1046,17 @@
   </svg>
 
   <main class="landing-shell" aria-label="Hudi landing page">
+    <section class="landing-text-ribbon" aria-hidden="true" data-landing-text-ribbon>
+      <svg class="landing-text-ribbon__svg" viewBox="0 0 1600 220" preserveAspectRatio="none" focusable="false">
+        <defs>
+          <path id="landing-text-ribbon-curve" d="M -300 198 C 260 64 1340 64 1900 198"/>
+        </defs>
+        <text class="landing-text-ribbon__text">
+          <textPath href="#landing-text-ribbon-curve" data-landing-text-ribbon-path></textPath>
+        </text>
+      </svg>
+    </section>
+
     <div class="hudi-blank-orb" id="blank-orb" aria-hidden="true">
       <span class="landing-orb-inner-glow"></span>
       <canvas class="landing-orb-world-map-canvas" id="landing-orb-world-map-canvas" width="1024" height="1024" aria-hidden="true"></canvas>
@@ -1332,21 +1404,6 @@
     const hudiSource = await loadHudiStyles();
 
     const canvas = document.getElementById("landing-canvas");
-    const scene = new THREE.Scene();
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: true,
-      alpha: false
-    });
-
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-
-    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1200);
-    camera.setFocalLength(18);
-    camera.position.set(0, 0, 0);
-    camera.up.set(0, 1, 0);
-    camera.lookAt(1, Math.tan(THREE.MathUtils.degToRad(12)), 0);
-
     const rootStyles = getComputedStyle(document.documentElement);
     const token = (name) => rootStyles.getPropertyValue(name).trim();
     const tokenMs = (name, fallback) => {
@@ -1367,6 +1424,7 @@
     const globeMapCanvas = document.getElementById("landing-orb-world-map-canvas");
     const globeMapHighlightCanvas = document.getElementById("landing-orb-world-map-highlight-canvas");
     const landingShell = document.querySelector(".landing-shell");
+    const landingTextRibbonPath = document.querySelector("[data-landing-text-ribbon-path]");
     const marketRevealItems = [
       ...document.querySelectorAll(".market-cards .stock-card"),
       document.querySelector(".landing-panel")
@@ -1396,6 +1454,32 @@
     const scrollLevels = Array.from(document.querySelectorAll("[data-scroll-level]"));
     const finalScrollLevel = document.querySelector('[data-scroll-level="4"]');
     const maxScrollIndex = Math.max(1, scrollLevels.length - 1);
+    const svgNamespace = "http://www.w3.org/2000/svg";
+
+    function setupLandingTextRibbon() {
+      if (!landingTextRibbonPath) return;
+
+      const cities = ["seoul", "tokyo", "hong kong"];
+      landingTextRibbonPath.replaceChildren();
+
+      for (let index = 0; index < 18; index += 1) {
+        const city = cities[index % cities.length];
+        const trade = document.createElementNS(svgNamespace, "tspan");
+        const cityName = document.createElementNS(svgNamespace, "tspan");
+
+        trade.textContent = "trade";
+        trade.classList.add("is-trade");
+        trade.setAttribute("dx", index === 0 ? "0" : "132");
+        cityName.textContent = city;
+        cityName.classList.add("is-city");
+        cityName.setAttribute("dx", "28");
+
+        landingTextRibbonPath.append(trade, cityName);
+      }
+    }
+
+    setupLandingTextRibbon();
+
     const marketTiming = {
       startRaw: 1,
       endRaw: 3.45,
@@ -1694,7 +1778,7 @@
             element.classList.remove("is-comment-hiding");
           }
           commentHideTimers.delete(element);
-        }, 280);
+        }, 380);
         commentHideTimers.set(element, hideTimer);
       });
     }
@@ -2007,10 +2091,12 @@
       const commentFadeIn = smoothstep((rawProgress - commentRevealStartRaw) / .34);
       const commentFadeOut = 1 - smoothstep((chatProgress - commentFadeOutStart) / commentFadeOutDuration);
       const commentOpacity = commentFadeIn * commentFadeOut;
-      const chatParallaxNear = `${(-chatYValue * .24).toFixed(3)}vh`;
-      const chatParallaxMid = `${(-chatYValue * .62).toFixed(3)}vh`;
-      const chatParallaxDeep = `${(-chatYValue * .86).toFixed(3)}vh`;
-      const chatParallaxFar = `${(-chatYValue * .97).toFixed(3)}vh`;
+      const chatSideProgress = clamp((chatProgress - 1.68) / 2.6);
+      const chatXTravel = (1 - (chatSideProgress * 2)) * 112;
+      const chatParallaxNear = `${(chatXTravel * 1).toFixed(3)}vw`;
+      const chatParallaxMid = `${(chatXTravel * .72).toFixed(3)}vw`;
+      const chatParallaxDeep = `${(chatXTravel * .48).toFixed(3)}vw`;
+      const chatParallaxFar = `${(chatXTravel * .28).toFixed(3)}vw`;
       const finalMetrics = getLandingFinalMetrics();
       const finalButtonWidth = lerp(finalMetrics.width, finalMetrics.height, finalButtonContract);
       const finalXScale = .84 + (.16 * finalXProgress);
@@ -2025,7 +2111,7 @@
       scrollState.easedRamp = smoothstep(ramp);
       scrollState.progress = progress;
       scrollState.easedProgress = morph;
-      scrollState.skyboxRotation = skyboxProgress * 0.18;
+      scrollState.skyboxRotation = skyboxProgress * 0.32;
       scrollState.firstLevelOpacity = firstLevelOpacity;
       scrollState.finalOpacity = finalMorph;
       document.documentElement.dataset.scrollIndex = String(scrollState.index);
@@ -2033,6 +2119,7 @@
       landingShell?.style.setProperty("--landing-market-y", marketY);
       landingShell?.style.setProperty("--landing-chat-y", chatY);
       landingShell?.style.setProperty("--landing-chat-panel-counter-y", chatPanelCounterY);
+      landingShell?.style.setProperty("--landing-chat-comments-counter-y", chatPanelCounterY);
       landingShell?.style.setProperty("--landing-chat-panel-opacity", chatPanelOpacity.toFixed(3));
       landingShell?.style.setProperty("--landing-chat-panel-scale", chatPanelScale.toFixed(3));
       landingShell?.style.setProperty("--landing-chat-panel-y-pop", chatPanelPopY);
@@ -2180,8 +2267,8 @@
 
     function createGridTextureAnimator() {
       const screenMax = Math.max(window.innerWidth || 0, window.innerHeight || 0);
-      const screenTextureTarget = Math.max(1024, screenMax * Math.min(window.devicePixelRatio || 1, 2));
-      const size = Math.min(2048, 2 ** Math.ceil(Math.log2(screenTextureTarget)));
+      const screenTextureTarget = Math.max(1024, screenMax * Math.min(window.devicePixelRatio || 1, 3));
+      const size = Math.min(4096, 2 ** Math.ceil(Math.log2(screenTextureTarget)));
       const leaderboardZoom = 1.75;
       const leaderboardSize = Math.round(size * leaderboardZoom);
       const leaderboardDot = 2;
@@ -2199,12 +2286,18 @@
       const textureTimeOffset = 46000;
       const onThreshold = 0.56;
       const offThreshold = 0.53;
+      const leaderboardTextureScale = 0.54;
       const gridCanvas = document.createElement("canvas");
       gridCanvas.width = size;
       gridCanvas.height = size;
 
       const ctx = gridCanvas.getContext("2d", { alpha: false });
       ctx.imageSmoothingEnabled = false;
+      const leaderboardCompositeCanvas = document.createElement("canvas");
+      leaderboardCompositeCanvas.width = size;
+      leaderboardCompositeCanvas.height = size;
+      const leaderboardCompositeCtx = leaderboardCompositeCanvas.getContext("2d", { alpha: true });
+      leaderboardCompositeCtx.imageSmoothingEnabled = false;
       const leaderboardCanvas = document.createElement("canvas");
       leaderboardCanvas.width = leaderboardSize;
       leaderboardCanvas.height = leaderboardSize;
@@ -2671,8 +2764,6 @@
 
         leaderboardCtx.clearRect(0, 0, leaderboardSize, leaderboardSize);
         leaderboardCtx.save();
-        leaderboardCtx.translate(leaderboardSize, 0);
-        leaderboardCtx.scale(-1, 1);
         leaderboardCtx.fillStyle = token("--leaderboard-dot-off");
 
         for (let y = 0; y < leaderboardSize; y += rowHeight) {
@@ -2736,120 +2827,225 @@
       }
 
       function drawLeaderboardTexture(finalOpacity, time = 0) {
+        leaderboardCompositeCtx.clearRect(0, 0, size, size);
         if (finalOpacity <= 0.001) return;
         if (updateLeaderboardTextureLive(time, finalOpacity)) leaderboardLayerDirty = true;
         if (leaderboardLayerDirty) renderLeaderboardLayer();
 
-        ctx.save();
-        ctx.globalAlpha = smoothstep(finalOpacity);
-        const cropX = Math.round((leaderboardSize - size) / 2);
-        const cropY = Math.round(((leaderboardSize - size) / 2) / leaderboardRowAdvance) * leaderboardRowAdvance;
-        ctx.drawImage(leaderboardCanvas, cropX, cropY, size, size, 0, 0, size, size);
-        ctx.restore();
+        leaderboardCompositeCtx.save();
+        leaderboardCompositeCtx.globalAlpha = smoothstep(finalOpacity);
+        leaderboardCompositeCtx.imageSmoothingEnabled = true;
+        leaderboardCompositeCtx.imageSmoothingQuality = "high";
+        const cropSize = Math.round(size * leaderboardTextureScale);
+        const cropX = Math.round((leaderboardSize - cropSize) / 2);
+        const cropY = Math.round(((leaderboardSize - cropSize) / 2) / leaderboardRowAdvance) * leaderboardRowAdvance;
+        leaderboardCompositeCtx.drawImage(leaderboardCanvas, cropX, cropY, cropSize, cropSize, 0, 0, size, size);
+        leaderboardCompositeCtx.restore();
+        leaderboardCompositeCtx.imageSmoothingEnabled = false;
       }
 
-      const texture = new THREE.CanvasTexture(gridCanvas);
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.wrapS = THREE.RepeatWrapping;
-      texture.wrapT = THREE.RepeatWrapping;
-      texture.magFilter = THREE.NearestFilter;
-      texture.minFilter = THREE.NearestFilter;
-      texture.generateMipmaps = false;
-      texture.repeat.set(2.4, 1.6333333333);
-      texture.needsUpdate = true;
       draw(0);
 
       return {
-        texture,
+        canvas: gridCanvas,
+        leaderboardCanvas: leaderboardCompositeCanvas,
         update(time, finalOpacity = 0) {
           draw(time);
           drawLeaderboardTexture(finalOpacity, time);
-          texture.needsUpdate = true;
         }
       };
     }
 
     const gridTexture = createGridTextureAnimator();
 
-    function createTextRing() {
-      const ringCanvas = document.createElement("canvas");
-      ringCanvas.width = 4096;
-      ringCanvas.height = 256;
+    function createLandingBackgroundRenderer(targetCanvas, backgroundCanvas, leaderboardCanvas) {
+      const contextOptions = {
+        alpha: false,
+        antialias: true,
+        depth: false,
+        stencil: false,
+        premultipliedAlpha: false
+      };
+      const gl = targetCanvas.getContext("webgl2", contextOptions) || targetCanvas.getContext("webgl", contextOptions);
 
-      const ctx = ringCanvas.getContext("2d");
-      ctx.clearRect(0, 0, ringCanvas.width, ringCanvas.height);
-      ctx.save();
-      ctx.translate(ringCanvas.width, 0);
-      ctx.scale(-1, 1);
-      ctx.textBaseline = "middle";
-      ctx.font = `96px ${token("--sans")}`;
-
-      const words = [
-        ["trade", token("--light-grey")],
-        ["tokyo", token("--hudi-orb-colour")],
-        ["trade", token("--light-grey")],
-        ["hong kong", token("--hudi-orb-colour")],
-        ["trade", token("--light-grey")],
-        ["korea", token("--hudi-orb-colour")],
-        ["24/7", token("--light-grey")]
-      ];
-      const gap = 92;
-      let x = 0;
-
-      while (x < ringCanvas.width + 600) {
-        for (const [word, color] of words) {
-          ctx.fillStyle = color;
-          ctx.fillText(word, x, ringCanvas.height / 2);
-          x += ctx.measureText(word).width + gap;
-        }
+      if (!gl) {
+        return {
+          resize() {},
+          render() {}
+        };
       }
-      ctx.restore();
 
-      const texture = new THREE.CanvasTexture(ringCanvas);
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.wrapS = THREE.RepeatWrapping;
-      texture.wrapT = THREE.ClampToEdgeWrapping;
-      texture.repeat.set(1, 1);
-      texture.needsUpdate = true;
+      const vertexSource = `
+        attribute vec2 aPosition;
+        varying vec2 vUv;
 
-      const material = new THREE.MeshBasicMaterial({
-        map: texture,
-        transparent: true,
-        opacity: 1,
-        side: THREE.BackSide,
-        depthWrite: false
-      });
-      const mesh = new THREE.Mesh(
-        new THREE.CylinderGeometry(245, 245, 64, 160, 1, true),
-        material
-      );
-      mesh.position.y = 42;
-      mesh.renderOrder = 1;
-      return mesh;
+        void main() {
+          vUv = aPosition * 0.5 + 0.5;
+          gl_Position = vec4(aPosition, 0.0, 1.0);
+        }
+      `;
+      const fragmentSource = `
+        #ifdef GL_FRAGMENT_PRECISION_HIGH
+        precision highp float;
+        #else
+        precision mediump float;
+        #endif
+
+        uniform sampler2D uBackground;
+        uniform sampler2D uLeaderboard;
+        uniform vec2 uResolution;
+        uniform vec2 uRepeat;
+        uniform float uBackgroundOffset;
+        uniform float uLeaderboardOffset;
+        uniform float uEffect;
+        uniform float uEffectScale;
+
+        varying vec2 vUv;
+
+        const float PI = 3.141592653589793;
+
+        vec2 pincushionUv(vec2 screenUv) {
+          vec2 uv = screenUv * 2.0 - 1.0;
+          float d = length(uv);
+          float z = sqrt(max(0.0001, 1.0 + d * d * uEffect));
+          float r = atan(d, z) / PI;
+          r *= uEffectScale;
+          float phi = atan(uv.y, uv.x);
+          return vec2(r * cos(phi) + 0.5, r * sin(phi) + 0.5);
+        }
+
+        void main() {
+          vec2 lensUv = pincushionUv(vUv);
+          vec2 backgroundUv = vec2(
+            lensUv.x * uRepeat.x + uBackgroundOffset,
+            lensUv.y * uRepeat.y + uBackgroundOffset * 0.56
+          );
+          vec4 backgroundColor = texture2D(uBackground, fract(backgroundUv));
+          vec2 leaderboardUv = vec2(
+            lensUv.x * uRepeat.x + uLeaderboardOffset,
+            lensUv.y * uRepeat.y + uLeaderboardOffset * 0.34
+          );
+          vec4 leaderboardColor = texture2D(uLeaderboard, fract(leaderboardUv));
+
+          gl_FragColor = vec4(mix(backgroundColor.rgb, leaderboardColor.rgb, leaderboardColor.a), 1.0);
+        }
+      `;
+
+      function createShader(type, source) {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          throw new Error(gl.getShaderInfoLog(shader) || "Landing background shader failed to compile.");
+        }
+        return shader;
+      }
+
+      const program = gl.createProgram();
+      gl.attachShader(program, createShader(gl.VERTEX_SHADER, vertexSource));
+      gl.attachShader(program, createShader(gl.FRAGMENT_SHADER, fragmentSource));
+      gl.linkProgram(program);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        throw new Error(gl.getProgramInfoLog(program) || "Landing background shader failed to link.");
+      }
+
+      const positionBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        -1, -1,
+        1, -1,
+        -1, 1,
+        -1, 1,
+        1, -1,
+        1, 1
+      ]), gl.STATIC_DRAW);
+
+      const locations = {
+        position: gl.getAttribLocation(program, "aPosition"),
+        background: gl.getUniformLocation(program, "uBackground"),
+        leaderboard: gl.getUniformLocation(program, "uLeaderboard"),
+        resolution: gl.getUniformLocation(program, "uResolution"),
+        repeat: gl.getUniformLocation(program, "uRepeat"),
+        backgroundOffset: gl.getUniformLocation(program, "uBackgroundOffset"),
+        leaderboardOffset: gl.getUniformLocation(program, "uLeaderboardOffset"),
+        effect: gl.getUniformLocation(program, "uEffect"),
+        effectScale: gl.getUniformLocation(program, "uEffectScale")
+      };
+
+      function createTexture(source, filter = gl.NEAREST, wrapT = gl.REPEAT, wrapS = gl.REPEAT) {
+        const texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapS);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+        return texture;
+      }
+
+      const backgroundTexture = createTexture(backgroundCanvas, gl.LINEAR, gl.REPEAT);
+      const leaderboardTexture = createTexture(leaderboardCanvas, gl.LINEAR, gl.REPEAT);
+
+      function resize() {
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, 3);
+        const width = Math.max(1, Math.round(window.innerWidth * pixelRatio));
+        const height = Math.max(1, Math.round(window.innerHeight * pixelRatio));
+
+        if (targetCanvas.width !== width || targetCanvas.height !== height) {
+          targetCanvas.width = width;
+          targetCanvas.height = height;
+        }
+
+        gl.viewport(0, 0, width, height);
+      }
+
+      function render({ backgroundOffset = 0, leaderboardOffset = 0 } = {}) {
+        gl.useProgram(program);
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.enableVertexAttribArray(locations.position);
+        gl.vertexAttribPointer(locations.position, 2, gl.FLOAT, false, 0, 0);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, backgroundTexture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, backgroundCanvas);
+
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, leaderboardTexture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, leaderboardCanvas);
+
+        gl.uniform1i(locations.background, 0);
+        gl.uniform1i(locations.leaderboard, 1);
+        gl.uniform2f(locations.resolution, targetCanvas.width, targetCanvas.height);
+        gl.uniform2f(locations.repeat, 2.4, 1.6333333333);
+        gl.uniform1f(locations.backgroundOffset, backgroundOffset);
+        gl.uniform1f(locations.leaderboardOffset, leaderboardOffset);
+        gl.uniform1f(locations.effect, 0.1);
+        gl.uniform1f(locations.effectScale, 1.0);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+      }
+
+      return {
+        resize,
+        render
+      };
     }
 
-    const skybox = new THREE.Mesh(
-      new THREE.SphereGeometry(500, 96, 64),
-      new THREE.MeshBasicMaterial({
-        map: gridTexture.texture,
-        side: THREE.BackSide
-      })
-    );
-    scene.add(skybox);
+    if (document.fonts?.load) {
+      await document.fonts.load('300 104px "Syne Hudi"');
+    }
 
-    const textRing = createTextRing();
-    scene.add(textRing);
+    const backgroundRenderer = createLandingBackgroundRenderer(canvas, gridTexture.canvas, gridTexture.leaderboardCanvas);
 
-    let rotationSpeed = 0.00008;
+    let rotationSpeed = 0.00065;
     let passiveRotation = 0;
     let ringRotation = 0;
 
     function resize() {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      renderer.setSize(width, height, false);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
+      backgroundRenderer.resize();
       orbGlobe?.resize();
       orbGlobeHighlights?.resize();
     }
@@ -2859,17 +3055,20 @@
 
     function render() {
       requestAnimationFrame(render);
-      gridTexture.update(performance.now(), scrollState.finalOpacity);
-      rotationSpeed += ((0.00008 + scrollState.scrollVelocity * 0.0038) - rotationSpeed) * 0.06;
+      const now = performance.now();
+      gridTexture.update(now, scrollState.finalOpacity);
+      rotationSpeed += ((0.00065 + scrollState.scrollVelocity * 0.016) - rotationSpeed) * 0.1;
       scrollState.scrollVelocity *= 0.92;
       passiveRotation += rotationSpeed;
       ringRotation += 0.00055 * scrollState.firstLevelOpacity;
-      textRing.rotation.y = ringRotation;
-      textRing.material.opacity = scrollState.firstLevelOpacity;
-      skybox.rotation.y = scrollState.skyboxRotation + passiveRotation;
+      landingShell?.style.setProperty("--landing-text-ring-opacity", scrollState.firstLevelOpacity.toFixed(3));
+      landingTextRibbonPath?.setAttribute("startOffset", `${(-ringRotation * 920).toFixed(2)}px`);
+      backgroundRenderer.render({
+        backgroundOffset: passiveRotation * 0.56,
+        leaderboardOffset: passiveRotation * 0.28
+      });
       orbGlobe?.render();
       orbGlobeHighlights?.render();
-      renderer.render(scene, camera);
     }
 
     render();
