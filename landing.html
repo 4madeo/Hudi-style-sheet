@@ -365,9 +365,11 @@
     }
 
     .landing-panel h3 {
+      justify-self: start;
       margin: 0;
       font-size: clamp(17px, 1.45vw, 25px);
       line-height: 1.02;
+      text-align: left;
       white-space: nowrap;
     }
 
@@ -1424,6 +1426,7 @@
     const globeMapCanvas = document.getElementById("landing-orb-world-map-canvas");
     const globeMapHighlightCanvas = document.getElementById("landing-orb-world-map-highlight-canvas");
     const landingShell = document.querySelector(".landing-shell");
+    const landingMarketPanel = document.querySelector(".landing-panel");
     const landingTextRibbonPath = document.querySelector("[data-landing-text-ribbon-path]");
     const marketRevealItems = [
       ...document.querySelectorAll(".market-cards .stock-card"),
@@ -2009,6 +2012,19 @@
       });
     }
 
+    function updateLandingMarketPanelWidth() {
+      const title = landingMarketPanel?.querySelector("h3");
+      if (!landingMarketPanel || !title || window.innerWidth <= 700) return;
+
+      const panelStyle = getComputedStyle(landingMarketPanel);
+      const paddingX = (parseFloat(panelStyle.paddingLeft) || 0) + (parseFloat(panelStyle.paddingRight) || 0);
+      const borderX = (parseFloat(panelStyle.borderLeftWidth) || 0) + (parseFloat(panelStyle.borderRightWidth) || 0);
+      const titleWidth = title.scrollWidth || title.getBoundingClientRect().width;
+      const panelWidth = Math.ceil(titleWidth + paddingX + borderX);
+
+      landingMarketPanel.style.setProperty("--market-panel-width", `${panelWidth}px`);
+    }
+
     function updateScrollState() {
       const maxRawProgress = getMaxRawProgress();
       const viewportHeight = Math.max(1, window.innerHeight);
@@ -2178,7 +2194,11 @@
     }
 
     window.addEventListener("scroll", updateScrollState, { passive: true });
-    window.addEventListener("resize", updateScrollState);
+    window.addEventListener("resize", () => {
+      updateLandingMarketPanelWidth();
+      updateScrollState();
+    });
+    updateLandingMarketPanelWidth();
     updateScrollState();
     updateLandingPillTopContours();
 
@@ -2286,7 +2306,7 @@
       const textureTimeOffset = 46000;
       const onThreshold = 0.56;
       const offThreshold = 0.53;
-      const leaderboardTextureScale = 0.54;
+      const leaderboardTextureScale = 0.6;
       const gridCanvas = document.createElement("canvas");
       gridCanvas.width = size;
       gridCanvas.height = size;
@@ -2904,18 +2924,25 @@
 
         const float PI = 3.141592653589793;
 
-        vec2 pincushionUv(vec2 screenUv) {
-          vec2 uv = screenUv * 2.0 - 1.0;
+        vec2 squareCoverUv(vec2 screenUv) {
+          vec2 coverScale = uResolution.xy / max(uResolution.x, uResolution.y);
+          return (screenUv - 0.5) * coverScale + 0.5;
+        }
+
+        vec2 pincushionUv(vec2 screenUv, vec2 lensCenter) {
+          vec2 uv = (screenUv - lensCenter) * 2.0;
           float d = length(uv);
           float z = sqrt(max(0.0001, 1.0 + d * d * uEffect));
           float r = atan(d, z) / PI;
           r *= uEffectScale;
           float phi = atan(uv.y, uv.x);
-          return vec2(r * cos(phi) + 0.5, r * sin(phi) + 0.5);
+          return vec2(r * cos(phi), r * sin(phi)) + lensCenter;
         }
 
         void main() {
-          vec2 lensUv = pincushionUv(vUv);
+          vec2 squareUv = squareCoverUv(vUv);
+          vec2 lensCenter = squareCoverUv(vec2(0.5, 0.5));
+          vec2 lensUv = pincushionUv(squareUv, lensCenter);
           vec2 backgroundUv = vec2(
             lensUv.x * uRepeat.x + uBackgroundOffset,
             lensUv.y * uRepeat.y + uBackgroundOffset * 0.56
@@ -3036,7 +3063,14 @@
 
     if (document.fonts?.load) {
       await document.fonts.load('300 104px "Syne Hudi"');
+      updateLandingMarketPanelWidth();
+      updateScrollState();
     }
+
+    document.fonts?.ready?.then(() => {
+      updateLandingMarketPanelWidth();
+      updateScrollState();
+    });
 
     const backgroundRenderer = createLandingBackgroundRenderer(canvas, gridTexture.canvas, gridTexture.leaderboardCanvas);
 
@@ -3057,7 +3091,7 @@
       requestAnimationFrame(render);
       const now = performance.now();
       gridTexture.update(now, scrollState.finalOpacity);
-      rotationSpeed += ((0.00065 + scrollState.scrollVelocity * 0.016) - rotationSpeed) * 0.1;
+      rotationSpeed += ((0.00065 + scrollState.scrollVelocity * 0.024) - rotationSpeed) * 0.1;
       scrollState.scrollVelocity *= 0.92;
       passiveRotation += rotationSpeed;
       ringRotation += 0.00055 * scrollState.firstLevelOpacity;
