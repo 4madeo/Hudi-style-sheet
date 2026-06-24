@@ -940,28 +940,6 @@
       }
     }
 
-    .background-graphic-toggle {
-      position: absolute;
-      right: var(--space-24);
-      bottom: var(--space-24);
-      z-index: 2;
-      min-height: 34px;
-      padding: var(--space-4) var(--space-14) var(--space-2);
-      border: 3px solid var(--outline-blue);
-      border-radius: var(--radius-pill);
-      background: var(--panel-fill);
-      color: var(--dark-grey);
-      font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
-      font-size: 11px;
-      cursor: pointer;
-      pointer-events: auto;
-    }
-
-    .background-graphic-toggle[aria-pressed="true"] {
-      border-color: var(--select-blue);
-      color: var(--text-darker-grey);
-    }
-
     .scroll-levels {
       position: relative;
       z-index: 0;
@@ -1060,10 +1038,6 @@
         width: auto;
       }
 
-      .background-graphic-toggle {
-        right: var(--space-16);
-        bottom: var(--space-16);
-      }
     }
   </style>
 </head>
@@ -1447,9 +1421,6 @@
       </button>
     </div>
 
-    <button class="background-graphic-toggle" type="button" aria-pressed="false" data-background-graphic-toggle>
-      squares
-    </button>
   </main>
 
   <div class="scroll-levels" aria-hidden="true">
@@ -1497,7 +1468,6 @@
       const t = clamp(value);
       return (1 - Math.exp(-strength * t)) / (1 - Math.exp(-strength));
     };
-    let backgroundGraphic = "squares";
     const blankOrb = document.getElementById("blank-orb");
     const globeMapCanvas = document.getElementById("landing-orb-world-map-canvas");
     const globeMapHighlightCanvas = document.getElementById("landing-orb-world-map-highlight-canvas");
@@ -1608,17 +1578,11 @@
       skyboxRotation: 0,
       scrollVelocity: 0,
       firstLevelOpacity: 1,
-      finalOpacity: 0
+      finalOpacity: 0,
+      shaderCenterShift: 0
     };
     let lastRawProgress = 0;
     let lastScrollAt = performance.now();
-
-    const backgroundGraphicToggle = document.querySelector("[data-background-graphic-toggle]");
-    backgroundGraphicToggle?.addEventListener("click", () => {
-      backgroundGraphic = backgroundGraphic === "squares" ? "dot-cross" : "squares";
-      backgroundGraphicToggle.setAttribute("aria-pressed", String(backgroundGraphic === "dot-cross"));
-      backgroundGraphicToggle.textContent = backgroundGraphic === "dot-cross" ? "dot matrix" : "squares";
-    });
 
     applyLandingMarketOrbPalettes();
 
@@ -2183,6 +2147,9 @@
       const commentFadeIn = smoothstep((rawProgress - commentRevealStartRaw) / .34);
       const commentFadeOut = 1 - smoothstep((chatProgress - commentFadeOutStart) / commentFadeOutDuration);
       const commentOpacity = commentFadeIn * commentFadeOut;
+      const shaderCenterShiftIn = smoothstep((chatProgress + .34) / 1.12);
+      const shaderCenterShiftOut = 1 - smoothstep((chatProgress - 2.62) / .95);
+      const shaderCenterShift = smoothstep(shaderCenterShiftIn * shaderCenterShiftOut) * (1 - finalMorph);
       const chatSideProgress = clamp((chatProgress - 1.68) / 2.6);
       const chatXTravel = (1 - (chatSideProgress * 2)) * 112;
       const chatParallaxNear = `${(chatXTravel * 1).toFixed(3)}vw`;
@@ -2206,6 +2173,7 @@
       scrollState.skyboxRotation = skyboxProgress * 0.32;
       scrollState.firstLevelOpacity = firstLevelOpacity;
       scrollState.finalOpacity = finalMorph;
+      scrollState.shaderCenterShift = shaderCenterShift;
       document.documentElement.dataset.scrollIndex = String(scrollState.index);
 
       landingShell?.style.setProperty("--landing-market-y", marketY);
@@ -2637,7 +2605,7 @@
         return cell.scale;
       }
 
-      function drawDotCrossCell(cell, centerX, centerY, scale, time) {
+      function drawDotCrossCell(cell, centerX, centerY, scale, time, opacityMultiplier = 1) {
         const cellSize = Math.min(dotCellW, dotCellH);
         const wavePhase = (time * 0.00062 + cell.x * 0.026 + cell.y * 0.074 + hash(cell.x + 17, cell.y + 29) * 0.025) % 1;
         const wave = Math.max(0, 1 - Math.abs(wavePhase - 0.52) / 0.28);
@@ -2651,7 +2619,7 @@
         ctx.save();
         ctx.translate(centerX, centerY);
         ctx.rotate(rotation);
-        ctx.globalAlpha = (0.3 + scale * 0.16) * (0.48 + crossProgress * 0.12);
+        ctx.globalAlpha = (0.3 + scale * 0.16) * (0.48 + crossProgress * 0.12) * opacityMultiplier;
         ctx.beginPath();
         ctx.arc(0, 0, dotRadius * (1 - crossProgress * 0.38), 0, Math.PI * 2);
         ctx.fill();
@@ -2673,28 +2641,31 @@
         ctx.restore();
       }
 
-      function draw(time = 0) {
-        ctx.fillStyle = token("--page-bg-top");
-        ctx.fillRect(0, 0, size, size);
+      function drawDotCrossCells(time, opacity = 1) {
+        if (opacity <= 0.001) return;
 
-        if (backgroundGraphic === "dot-cross") {
-          ctx.fillStyle = token("--light-grey");
-          dotCells.forEach((cell) => {
-            const scale = updateCellScale(cell, time);
-            if (scale <= 0.001) return;
+        ctx.fillStyle = token("--light-grey");
+        dotCells.forEach((cell) => {
+          const scale = updateCellScale(cell, time);
+          if (scale <= 0.001) return;
 
-            drawDotCrossCell(
-              cell,
-              cell.x * dotCellW + dotCellW / 2,
-              cell.y * dotCellH + dotCellH / 2,
-              scale,
-              time
-            );
-          });
-          ctx.globalAlpha = 1;
-          return;
-        }
+          drawDotCrossCell(
+            cell,
+            cell.x * dotCellW + dotCellW / 2,
+            cell.y * dotCellH + dotCellH / 2,
+            scale,
+            time,
+            opacity
+          );
+        });
+        ctx.globalAlpha = 1;
+      }
 
+      function drawSquareCells(time, opacity = 1) {
+        if (opacity <= 0.001) return;
+
+        ctx.save();
+        ctx.globalAlpha = opacity;
         ctx.fillStyle = token("--landing-texture-square");
         cells.forEach((cell) => {
           const scale = updateCellScale(cell, time);
@@ -2712,8 +2683,17 @@
             height
           );
         });
-
+        ctx.restore();
         ctx.globalAlpha = 1;
+      }
+
+      function draw(time = 0, finalOpacity = 0) {
+        ctx.fillStyle = token("--page-bg-top");
+        ctx.fillRect(0, 0, size, size);
+
+        const squareMix = smoothstep(finalOpacity);
+        drawDotCrossCells(time, 1 - squareMix);
+        drawSquareCells(time, squareMix);
       }
 
       function drawMatrixText(text, x, y, options = {}, targetCtx = ctx) {
@@ -3048,7 +3028,7 @@
         canvas: gridCanvas,
         leaderboardCanvas: leaderboardCompositeCanvas,
         update(time, finalOpacity = 0) {
-          draw(time);
+          draw(time, finalOpacity);
           return {
             leaderboardDirty: updateLeaderboardTexture(time, finalOpacity)
           };
@@ -3095,6 +3075,7 @@
         uniform sampler2D uLeaderboard;
         uniform vec2 uResolution;
         uniform vec2 uRepeat;
+        uniform vec2 uLensCenter;
         uniform float uBackgroundOffset;
         uniform float uLeaderboardOffset;
         uniform float uLeaderboardOpacity;
@@ -3122,7 +3103,7 @@
 
         void main() {
           vec2 squareUv = squareCoverUv(vUv);
-          vec2 lensCenter = squareCoverUv(vec2(0.5, 0.58));
+          vec2 lensCenter = squareCoverUv(uLensCenter);
           vec2 lensUv = pincushionUv(squareUv, lensCenter);
           vec2 backgroundUv = vec2(
             lensUv.x * uRepeat.x + uBackgroundOffset,
@@ -3179,6 +3160,7 @@
         leaderboard: gl.getUniformLocation(program, "uLeaderboard"),
         resolution: gl.getUniformLocation(program, "uResolution"),
         repeat: gl.getUniformLocation(program, "uRepeat"),
+        lensCenter: gl.getUniformLocation(program, "uLensCenter"),
         backgroundOffset: gl.getUniformLocation(program, "uBackgroundOffset"),
         leaderboardOffset: gl.getUniformLocation(program, "uLeaderboardOffset"),
         leaderboardOpacity: gl.getUniformLocation(program, "uLeaderboardOpacity"),
@@ -3214,7 +3196,7 @@
         gl.viewport(0, 0, width, height);
       }
 
-      function render({ backgroundOffset = 0, leaderboardOffset = 0, leaderboardOpacity = 0, leaderboardDirty = false } = {}) {
+      function render({ backgroundOffset = 0, leaderboardOffset = 0, leaderboardOpacity = 0, leaderboardDirty = false, lensCenter = [0.5, 0.58] } = {}) {
         gl.useProgram(program);
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         gl.enableVertexAttribArray(locations.position);
@@ -3236,6 +3218,7 @@
         gl.uniform1i(locations.leaderboard, 1);
         gl.uniform2f(locations.resolution, targetCanvas.width, targetCanvas.height);
         gl.uniform2f(locations.repeat, 2.4, 1.6333333333);
+        gl.uniform2f(locations.lensCenter, lensCenter[0], lensCenter[1]);
         gl.uniform1f(locations.backgroundOffset, backgroundOffset);
         gl.uniform1f(locations.leaderboardOffset, leaderboardOffset);
         gl.uniform1f(locations.leaderboardOpacity, leaderboardOpacity);
@@ -3267,6 +3250,7 @@
     let rotationSpeed = 0.00065;
     let passiveRotation = 0;
     let ringRotation = 0;
+    let shaderCenterShiftEased = 0;
 
     function resize() {
       backgroundRenderer.resize();
@@ -3284,6 +3268,7 @@
       rotationSpeed += ((0.00065 + scrollState.scrollVelocity * 0.024) - rotationSpeed) * 0.1;
       scrollState.scrollVelocity *= 0.92;
       passiveRotation += rotationSpeed;
+      shaderCenterShiftEased += (scrollState.shaderCenterShift - shaderCenterShiftEased) * 0.065;
       ringRotation += 0.00055 * scrollState.firstLevelOpacity;
       landingShell?.style.setProperty("--landing-text-ring-opacity", scrollState.firstLevelOpacity.toFixed(3));
       landingTextRibbonPath?.setAttribute("startOffset", `${(-ringRotation * 920).toFixed(2)}px`);
@@ -3291,7 +3276,11 @@
         backgroundOffset: passiveRotation * 0.56,
         leaderboardOffset: passiveRotation * 0.28,
         leaderboardOpacity: smoothstep(scrollState.finalOpacity),
-        leaderboardDirty: textureUpdate.leaderboardDirty
+        leaderboardDirty: textureUpdate.leaderboardDirty,
+        lensCenter: [
+          lerp(0.5, 0.44, shaderCenterShiftEased),
+          0.58
+        ]
       });
       orbGlobe?.render();
       orbGlobeHighlights?.render();
