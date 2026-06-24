@@ -940,7 +940,7 @@
       }
     }
 
-    .shape-toggle {
+    .background-graphic-toggle {
       position: absolute;
       right: var(--space-24);
       bottom: var(--space-24);
@@ -957,7 +957,7 @@
       pointer-events: auto;
     }
 
-    .shape-toggle[aria-pressed="true"] {
+    .background-graphic-toggle[aria-pressed="true"] {
       border-color: var(--select-blue);
       color: var(--text-darker-grey);
     }
@@ -1060,7 +1060,7 @@
         width: auto;
       }
 
-      .shape-toggle {
+      .background-graphic-toggle {
         right: var(--space-16);
         bottom: var(--space-16);
       }
@@ -1447,7 +1447,7 @@
       </button>
     </div>
 
-    <button class="shape-toggle" type="button" aria-pressed="false" data-shape-toggle>
+    <button class="background-graphic-toggle" type="button" aria-pressed="false" data-background-graphic-toggle>
       squares
     </button>
   </main>
@@ -1497,7 +1497,7 @@
       const t = clamp(value);
       return (1 - Math.exp(-strength * t)) / (1 - Math.exp(-strength));
     };
-    let textureShape = "square";
+    let backgroundGraphic = "squares";
     const blankOrb = document.getElementById("blank-orb");
     const globeMapCanvas = document.getElementById("landing-orb-world-map-canvas");
     const globeMapHighlightCanvas = document.getElementById("landing-orb-world-map-highlight-canvas");
@@ -1613,11 +1613,11 @@
     let lastRawProgress = 0;
     let lastScrollAt = performance.now();
 
-    const shapeToggle = document.querySelector("[data-shape-toggle]");
-    shapeToggle?.addEventListener("click", () => {
-      textureShape = textureShape === "square" ? "circle" : "square";
-      shapeToggle.setAttribute("aria-pressed", String(textureShape === "circle"));
-      shapeToggle.textContent = textureShape === "circle" ? "circles" : "squares";
+    const backgroundGraphicToggle = document.querySelector("[data-background-graphic-toggle]");
+    backgroundGraphicToggle?.addEventListener("click", () => {
+      backgroundGraphic = backgroundGraphic === "squares" ? "dot-cross" : "squares";
+      backgroundGraphicToggle.setAttribute("aria-pressed", String(backgroundGraphic === "dot-cross"));
+      backgroundGraphicToggle.textContent = backgroundGraphic === "dot-cross" ? "dot matrix" : "squares";
     });
 
     applyLandingMarketOrbPalettes();
@@ -2375,13 +2375,19 @@
       const leaderboardSectionGap = leaderboardDot;
       const cellsX = 24;
       const cellsY = 24;
+      const dotCellsX = 46;
+      const dotCellsY = 46;
       const gutterRatio = 0.18;
-      const transitionMs = tokenMs("--landing-texture-transition-ms", 2200) * .5;
-      const cycleMs = tokenMs("--landing-texture-cycle-ms", 2800) * .5;
+      const transitionMs = tokenMs("--landing-texture-transition-ms", 2200) * .34;
+      const cycleMs = tokenMs("--landing-texture-cycle-ms", 2800) * .44;
       const driftSpeed = 0.032 / cycleMs;
+      const dotTransitionMs = transitionMs * .72;
+      const dotDriftMultiplier = 1.38;
       const textureTimeOffset = 46000;
       const onThreshold = 0.56;
       const offThreshold = 0.53;
+      const dotOnThreshold = 0.52;
+      const dotOffThreshold = 0.49;
       const leaderboardTextureScale = 0.6;
       const gridCanvas = document.createElement("canvas");
       gridCanvas.width = size;
@@ -2409,7 +2415,10 @@
       const marginY = Math.floor(cellH * gutterRatio);
       const squareW = cellW - marginX * 2;
       const squareH = cellH - marginY * 2;
+      const dotCellW = size / dotCellsX;
+      const dotCellH = size / dotCellsY;
       const cells = [];
+      const dotCells = [];
       const fallbackLeaderboardTextureHeadFills = ["#e8ff1b", "#f2ff7a", "#ffffff", "#f7f4ee", "#ff0075", "#ff8ad8", "#24d0ff", "#01fdf9", "#d9f6ff", "#0a0a0c", "#f2ff00", "#64d2ff"];
       const fallbackLeaderboardTextureStrokes = ["#84b426", "#9ab83d", "#161616", "#ff0075", "#8e0047", "#7a2a61", "#045f86", "#007b92", "#0a84ff", "#f5f5f7", "#6f6f00", "#005d7c"];
       const fallbackLeaderboardTextureEyes = ["#ffffff", "#f8fff2", "#f5f5f7", "#fff6a8", "#64d2ff", "#01fdf9", "#ff0075", "#ffe6f5", "#001a34", "#0a0a0c"];
@@ -2547,10 +2556,10 @@
         "_": ["00000", "00000", "00000", "00000", "00000", "00000", "11111"]
       };
 
-      function sampleCellValue(x, y, time) {
+      function sampleCellValue(x, y, time, driftMultiplier = 1) {
         const offsetTime = time + textureTimeOffset;
-        const driftX = offsetTime * driftSpeed;
-        const driftY = offsetTime * driftSpeed * 0.58;
+        const driftX = offsetTime * driftSpeed * driftMultiplier;
+        const driftY = offsetTime * driftSpeed * 0.58 * driftMultiplier;
         const primaryBroad = valueNoise(x * 0.17 + driftX + 11.3, y * 0.17 + driftY + 4.7);
         const primaryCluster = valueNoise(x * 0.38 + driftX * 1.35 + 5.1, y * 0.38 + driftY * 1.35 + 22.8);
         const secondaryBroad = valueNoise(x * 0.2 - driftX * 0.82 + 31.4, y * 0.2 + driftY * 0.94 + 18.6);
@@ -2561,26 +2570,48 @@
         return Math.max(primary, secondary * 0.97) * 0.82 + edge * 0.18;
       }
 
-      function sampleCellTarget(x, y, time, currentTarget = 0) {
-        const value = sampleCellValue(x, y, time);
-        const threshold = currentTarget > 0.5 ? offThreshold : onThreshold;
+      function sampleCellTarget(x, y, time, currentTarget = 0, options = {}) {
+        const value = sampleCellValue(x, y, time, options.driftMultiplier ?? 1);
+        const threshold = currentTarget > 0.5
+          ? options.offThreshold ?? offThreshold
+          : options.onThreshold ?? onThreshold;
         return Number(value >= threshold);
       }
 
-      for (let y = 0; y < cellsY; y += 1) {
-        for (let x = 0; x < cellsX; x += 1) {
-          const targetScale = sampleCellTarget(x, y, 0);
+      function createTextureCells(countX, countY, options = {}) {
+        const textureCells = [];
+        for (let y = 0; y < countY; y += 1) {
+          for (let x = 0; x < countX; x += 1) {
+            const sampleX = x * cellsX / countX;
+            const sampleY = y * cellsY / countY;
+            const targetScale = sampleCellTarget(sampleX, sampleY, 0, 0, options);
 
-          cells.push({
-            x,
-            y,
-            scale: targetScale,
-            fromScale: targetScale,
-            targetScale,
-            startedAt: 0
-          });
+            textureCells.push({
+              x,
+              y,
+              sampleX,
+              sampleY,
+              onThreshold: options.onThreshold ?? onThreshold,
+              offThreshold: options.offThreshold ?? offThreshold,
+              driftMultiplier: options.driftMultiplier ?? 1,
+              transitionMs: options.transitionMs ?? transitionMs,
+              scale: targetScale,
+              fromScale: targetScale,
+              targetScale,
+              startedAt: 0
+            });
+          }
         }
+        return textureCells;
       }
+
+      cells.push(...createTextureCells(cellsX, cellsY));
+      dotCells.push(...createTextureCells(dotCellsX, dotCellsY, {
+        onThreshold: dotOnThreshold,
+        offThreshold: dotOffThreshold,
+        driftMultiplier: dotDriftMultiplier,
+        transitionMs: dotTransitionMs
+      }));
 
       function startTransition(cell, nextScale, time) {
         if (cell.targetScale === nextScale) return;
@@ -2589,42 +2620,100 @@
         cell.startedAt = time;
       }
 
+      function updateCellScale(cell, time) {
+        startTransition(
+          cell,
+          sampleCellTarget(cell.sampleX ?? cell.x, cell.sampleY ?? cell.y, time, cell.targetScale, {
+            onThreshold: cell.onThreshold,
+            offThreshold: cell.offThreshold,
+            driftMultiplier: cell.driftMultiplier
+          }),
+          time
+        );
+
+        const elapsed = Math.max(0, time - cell.startedAt);
+        const progress = Math.min(1, elapsed / (cell.transitionMs ?? transitionMs));
+        cell.scale = cell.fromScale + (cell.targetScale - cell.fromScale) * progress;
+        return cell.scale;
+      }
+
+      function drawDotCrossCell(cell, centerX, centerY, scale, time) {
+        const cellSize = Math.min(dotCellW, dotCellH);
+        const wavePhase = (time * 0.00062 + cell.x * 0.026 + cell.y * 0.074 + hash(cell.x + 17, cell.y + 29) * 0.025) % 1;
+        const wave = Math.max(0, 1 - Math.abs(wavePhase - 0.52) / 0.28);
+        const crossProgress = smoothstep(wave);
+        const noise = hash(cell.x + 43, cell.y + 71);
+        const dotRadius = Math.max(1.25, cellSize * (0.05 + noise * 0.01) * (0.62 + scale * 0.5));
+        const arm = Math.max(2, cellSize * (0.09 + crossProgress * 0.22) * scale);
+        const starInner = Math.max(1.35, arm * (0.24 + crossProgress * 0.07));
+        const rotation = (wavePhase * Math.PI * 2.4 + noise * Math.PI * 2) * crossProgress;
+
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(rotation);
+        ctx.globalAlpha = (0.3 + scale * 0.16) * (0.48 + crossProgress * 0.12);
+        ctx.beginPath();
+        ctx.arc(0, 0, dotRadius * (1 - crossProgress * 0.38), 0, Math.PI * 2);
+        ctx.fill();
+
+        if (crossProgress > 0.02) {
+          ctx.beginPath();
+          ctx.moveTo(0, -arm);
+          ctx.lineTo(starInner, -starInner);
+          ctx.lineTo(arm, 0);
+          ctx.lineTo(starInner, starInner);
+          ctx.lineTo(0, arm);
+          ctx.lineTo(-starInner, starInner);
+          ctx.lineTo(-arm, 0);
+          ctx.lineTo(-starInner, -starInner);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
       function draw(time = 0) {
         ctx.fillStyle = token("--page-bg-top");
         ctx.fillRect(0, 0, size, size);
+
+        if (backgroundGraphic === "dot-cross") {
+          ctx.fillStyle = token("--light-grey");
+          dotCells.forEach((cell) => {
+            const scale = updateCellScale(cell, time);
+            if (scale <= 0.001) return;
+
+            drawDotCrossCell(
+              cell,
+              cell.x * dotCellW + dotCellW / 2,
+              cell.y * dotCellH + dotCellH / 2,
+              scale,
+              time
+            );
+          });
+          ctx.globalAlpha = 1;
+          return;
+        }
+
         ctx.fillStyle = token("--landing-texture-square");
-
         cells.forEach((cell) => {
-          startTransition(
-            cell,
-            sampleCellTarget(cell.x, cell.y, time, cell.targetScale),
-            time
-          );
+          const scale = updateCellScale(cell, time);
+          if (scale <= 0.001) return;
 
-          const elapsed = Math.max(0, time - cell.startedAt);
-          const progress = Math.min(1, elapsed / transitionMs);
-          cell.scale = cell.fromScale + (cell.targetScale - cell.fromScale) * progress;
-
-          if (cell.scale <= 0.001) return;
-
-          const width = Math.round(squareW * cell.scale);
-          const height = Math.round(squareH * cell.scale);
+          const width = Math.round(squareW * scale);
+          const height = Math.round(squareH * scale);
           const centerX = cell.x * cellW + marginX + squareW / 2;
           const centerY = cell.y * cellH + marginY + squareH / 2;
 
-          if (textureShape === "circle") {
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, Math.min(width, height) / 2, 0, Math.PI * 2);
-            ctx.fill();
-          } else {
-            ctx.fillRect(
-              Math.round(centerX - width / 2),
-              Math.round(centerY - height / 2),
-              width,
-              height
-            );
-          }
+          ctx.fillRect(
+            Math.round(centerX - width / 2),
+            Math.round(centerY - height / 2),
+            width,
+            height
+          );
         });
+
+        ctx.globalAlpha = 1;
       }
 
       function drawMatrixText(text, x, y, options = {}, targetCtx = ctx) {
