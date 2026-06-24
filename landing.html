@@ -650,10 +650,37 @@
       overflow: visible;
     }
 
+    .chat-bubble-card.has-chat-chart {
+      --chat-chart-stroke: var(--big-gain);
+      --chat-chart-fill: color-mix(in srgb, var(--small-gain) 18%, transparent);
+    }
+
+    .chat-bubble-card.has-chat-chart .chat-bubble-pop-shell {
+      aspect-ratio: auto;
+    }
+
+    .chat-bubble-card.has-chat-chart.is-loss-chart {
+      --chat-chart-stroke: var(--big-loss);
+      --chat-chart-fill: color-mix(in srgb, var(--small-loss) 20%, transparent);
+    }
+
+    .chat-bubble-card.has-chat-chart .chat-bubble-pop-shell::before {
+      content: none;
+    }
+
+    .chat-bubble-card.has-chat-chart .chat-bubble-pop-shell::after {
+      content: none;
+    }
+
+    .chat-bubble-card.has-chat-chart .chat-bubble-frame {
+      display: block;
+    }
+
     .chat-bubble-content {
       position: absolute;
       left: 8%;
       right: 8%;
+      z-index: 2;
       display: grid;
       grid-template-columns: auto minmax(0, 1fr) auto;
       align-items: center;
@@ -666,6 +693,39 @@
 
     .chat-bubble-card[data-tail="down"] .chat-bubble-content {
       top: 16%;
+    }
+
+    .chat-bubble-card.has-chat-chart[data-tail="down"] .chat-bubble-content {
+      top: 27%;
+    }
+
+    .chat-bubble-card.has-chat-chart[data-tail="up"] .chat-bubble-content {
+      top: 27%;
+    }
+
+    .chat-bubble-chart {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 4%;
+      z-index: 1;
+      width: 100%;
+      height: 25%;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .chat-bubble-chart path {
+      fill: none;
+      stroke: var(--chat-chart-stroke);
+      stroke-width: 2.1;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .chat-bubble-chart .chat-bubble-chart-fill {
+      fill: var(--chat-chart-fill);
+      stroke: none;
     }
 
     .chat-bubble-card .pfp-avatar {
@@ -1170,32 +1230,40 @@
         </div>
       </article>
 
-      <article class="chat-bubble-card is-mid-right" data-tail="down" aria-label="Rio chat message">
-        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
-          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+      <article class="chat-bubble-card is-mid-right has-chat-chart" data-tail="up" aria-label="Rio chat message">
+        <svg class="chat-bubble-frame" width="275" height="112" viewBox="0 0 275 112" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="18.095" width="271.587" height="91" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="18.095" width="271.587" height="91" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 2.827L23.3486 14.951L21.9424 16.981H43.6816L42.2754 14.951L33.875 2.827L32.8125 1.293L31.749 2.827Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 2.03L20.4931 19.974H45.1332L32.8131 2.03Z" fill="var(--panel-fill)"/>
         </svg>
         <div class="chat-bubble-content">
           <span class="pfp-avatar" style="--pfp-head: var(--acid-lime); --pfp-stroke: var(--pfp-lime-stroke); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
           <span class="chat-bubble-text"><strong class="chat-bubble-name">Rio</strong><span class="chat-bubble-message">This candle is clean.</span></span>
           <time class="chat-bubble-time">31 mins ago</time>
         </div>
+        <svg class="chat-bubble-chart" viewBox="0 0 260 52" preserveAspectRatio="none" aria-hidden="true">
+          <path class="chat-bubble-chart-fill" d="M3 39 L17 25 L31 33 L45 18 L61 29 L78 14 L95 27 L112 10 L128 23 L145 8 L162 20 L178 6 L195 26 L211 12 L226 31 L242 15 L257 9 L257 52 L3 52 Z"/>
+          <path d="M3 39 L17 25 L31 33 L45 18 L61 29 L78 14 L95 27 L112 10 L128 23 L145 8 L162 20 L178 6 L195 26 L211 12 L226 31 L242 15 L257 9"/>
+        </svg>
       </article>
 
-      <article class="chat-bubble-card is-left-low" data-tail="down" aria-label="Alice chat message">
-        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
-          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+      <article class="chat-bubble-card is-left-low has-chat-chart" data-tail="up" aria-label="Alice chat message">
+        <svg class="chat-bubble-frame" width="275" height="112" viewBox="0 0 275 112" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="18.095" width="271.587" height="91" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="18.095" width="271.587" height="91" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 2.827L23.3486 14.951L21.9424 16.981H43.6816L42.2754 14.951L33.875 2.827L32.8125 1.293L31.749 2.827Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 2.03L20.4931 19.974H45.1332L32.8131 2.03Z" fill="var(--panel-fill)"/>
         </svg>
         <div class="chat-bubble-content">
           <span class="pfp-avatar" style="--pfp-head: var(--acid-lime); --pfp-stroke: var(--pfp-lime-stroke); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
           <span class="chat-bubble-text"><strong class="chat-bubble-name">Alice</strong><span class="chat-bubble-message">Watching this level.</span></span>
           <time class="chat-bubble-time">34 mins ago</time>
         </div>
+        <svg class="chat-bubble-chart" viewBox="0 0 260 52" preserveAspectRatio="none" aria-hidden="true">
+          <path class="chat-bubble-chart-fill" d="M3 42 L20 31 L35 37 L50 21 L68 32 L83 17 L100 29 L116 13 L132 25 L149 9 L166 19 L183 7 L201 24 L218 12 L235 28 L257 11 L257 52 L3 52 Z"/>
+          <path d="M3 42 L20 31 L35 37 L50 21 L68 32 L83 17 L100 29 L116 13 L132 25 L149 9 L166 19 L183 7 L201 24 L218 12 L235 28 L257 11"/>
+        </svg>
       </article>
 
       <article class="chat-bubble-card is-center-low" data-tail="down" aria-label="Noah chat message">
@@ -1268,18 +1336,22 @@
         </div>
       </article>
 
-      <article class="chat-bubble-card is-extra-left" data-tail="down" aria-label="Ren chat message">
-        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
-          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+      <article class="chat-bubble-card is-extra-left has-chat-chart is-loss-chart" data-tail="up" aria-label="Ren chat message">
+        <svg class="chat-bubble-frame" width="275" height="112" viewBox="0 0 275 112" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="18.095" width="271.587" height="91" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="18.095" width="271.587" height="91" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 2.827L23.3486 14.951L21.9424 16.981H43.6816L42.2754 14.951L33.875 2.827L32.8125 1.293L31.749 2.827Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 2.03L20.4931 19.974H45.1332L32.8131 2.03Z" fill="var(--panel-fill)"/>
         </svg>
         <div class="chat-bubble-content">
           <span class="pfp-avatar" style="--pfp-head: var(--color-61caff); --pfp-stroke: var(--color-2395ce); --pfp-eye: var(--white); --pfp-pupil: var(--ink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
           <span class="chat-bubble-text"><strong class="chat-bubble-name">Ren</strong><span class="chat-bubble-message">Adding small here.</span></span>
           <time class="chat-bubble-time">44 mins ago</time>
         </div>
+        <svg class="chat-bubble-chart" viewBox="0 0 260 52" preserveAspectRatio="none" aria-hidden="true">
+          <path class="chat-bubble-chart-fill" d="M3 10 L20 24 L36 15 L52 29 L70 21 L88 36 L104 27 L122 42 L140 33 L158 45 L176 37 L194 49 L212 40 L231 47 L257 43 L257 52 L3 52 Z"/>
+          <path d="M3 10 L20 24 L36 15 L52 29 L70 21 L88 36 L104 27 L122 42 L140 33 L158 45 L176 37 L194 49 L212 40 L231 47 L257 43"/>
+        </svg>
       </article>
 
       <article class="chat-bubble-card is-extra-mid" data-tail="down" aria-label="Mika chat message">
@@ -1296,18 +1368,22 @@
         </div>
       </article>
 
-      <article class="chat-bubble-card is-extra-right" data-tail="down" aria-label="Ada chat message">
-        <svg class="chat-bubble-frame" width="275" height="77" viewBox="0 0 275 77" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" fill="var(--panel-fill)"/>
-          <rect x="1.29267" y="1.29364" width="271.587" height="55.6106" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M31.749 72.7295L23.3486 60.6055L21.9424 58.5752L43.6816 58.5752L42.2754 60.6055L33.875 72.7295L32.8125 74.2637L31.749 72.7295Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
-          <path d="M32.8131 71.9932L20.4931 54.049L45.1332 54.0491L32.8131 71.9932Z" fill="var(--panel-fill)"/>
+      <article class="chat-bubble-card is-extra-right has-chat-chart is-loss-chart" data-tail="up" aria-label="Ada chat message">
+        <svg class="chat-bubble-frame" width="275" height="112" viewBox="0 0 275 112" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1.29267" y="18.095" width="271.587" height="91" rx="7.77229" fill="var(--panel-fill)"/>
+          <rect x="1.29267" y="18.095" width="271.587" height="91" rx="7.77229" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M31.749 2.827L23.3486 14.951L21.9424 16.981H43.6816L42.2754 14.951L33.875 2.827L32.8125 1.293L31.749 2.827Z" fill="var(--panel-fill)" stroke="var(--outline-blue)" stroke-width="2.58654"/>
+          <path d="M32.8131 2.03L20.4931 19.974H45.1332L32.8131 2.03Z" fill="var(--panel-fill)"/>
         </svg>
         <div class="chat-bubble-content">
           <span class="pfp-avatar" style="--pfp-head: var(--color-ffff86); --pfp-stroke: var(--ink); --pfp-eye: var(--white); --pfp-pupil: var(--hot-pink);"><svg aria-hidden="true" viewBox="-8 -8 207 192"><use href="#landing-hudi-pfp"/></svg></span>
           <span class="chat-bubble-text"><strong class="chat-bubble-name">Ada</strong><span class="chat-bubble-message">Watching Seoul now.</span></span>
           <time class="chat-bubble-time">46 mins ago</time>
         </div>
+        <svg class="chat-bubble-chart" viewBox="0 0 260 52" preserveAspectRatio="none" aria-hidden="true">
+          <path class="chat-bubble-chart-fill" d="M3 8 L18 19 L33 12 L49 27 L66 18 L82 34 L100 26 L118 41 L136 30 L153 46 L171 35 L189 50 L207 39 L225 45 L242 36 L257 44 L257 52 L3 52 Z"/>
+          <path d="M3 8 L18 19 L33 12 L49 27 L66 18 L82 34 L100 26 L118 41 L136 30 L153 46 L171 35 L189 50 L207 39 L225 45 L242 36 L257 44"/>
+        </svg>
       </article>
 
       <article class="chat-bubble-card is-extra-far" data-tail="down" aria-label="Theo chat message">
@@ -2422,6 +2498,7 @@
       const leaderboardLiveInterval = 3600;
       let leaderboardLastLiveAt = 0;
       let leaderboardLayerDirty = true;
+      let leaderboardCompositeDirty = true;
       const glyphs = {
         " ": ["00000", "00000", "00000", "00000", "00000", "00000", "00000"],
         "$": ["01110", "10100", "10100", "01110", "00101", "00101", "11110"],
@@ -2712,7 +2789,11 @@
       }
 
       function updateLeaderboardTextureLive(time, finalOpacity) {
-        if (finalOpacity < 0.45 || time - leaderboardLastLiveAt < leaderboardLiveInterval) return false;
+        if (finalOpacity < 0.45) {
+          leaderboardLastLiveAt = time;
+          return false;
+        }
+        if (time - leaderboardLastLiveAt < leaderboardLiveInterval) return false;
         leaderboardLastLiveAt = time;
 
         const seed = Math.floor(time / leaderboardLiveInterval);
@@ -2846,14 +2927,11 @@
         leaderboardLayerDirty = false;
       }
 
-      function drawLeaderboardTexture(finalOpacity, time = 0) {
-        leaderboardCompositeCtx.clearRect(0, 0, size, size);
-        if (finalOpacity <= 0.001) return;
-        if (updateLeaderboardTextureLive(time, finalOpacity)) leaderboardLayerDirty = true;
+      function renderLeaderboardComposite() {
         if (leaderboardLayerDirty) renderLeaderboardLayer();
 
         leaderboardCompositeCtx.save();
-        leaderboardCompositeCtx.globalAlpha = smoothstep(finalOpacity);
+        leaderboardCompositeCtx.clearRect(0, 0, size, size);
         leaderboardCompositeCtx.imageSmoothingEnabled = true;
         leaderboardCompositeCtx.imageSmoothingQuality = "high";
         const cropSize = Math.round(size * leaderboardTextureScale);
@@ -2862,16 +2940,29 @@
         leaderboardCompositeCtx.drawImage(leaderboardCanvas, cropX, cropY, cropSize, cropSize, 0, 0, size, size);
         leaderboardCompositeCtx.restore();
         leaderboardCompositeCtx.imageSmoothingEnabled = false;
+        leaderboardCompositeDirty = true;
+      }
+
+      function updateLeaderboardTexture(time = 0, finalOpacity = 0) {
+        if (updateLeaderboardTextureLive(time, finalOpacity)) leaderboardLayerDirty = true;
+        if (leaderboardLayerDirty) renderLeaderboardComposite();
+        const didChange = leaderboardCompositeDirty;
+        leaderboardCompositeDirty = false;
+        return didChange;
       }
 
       draw(0);
+      renderLeaderboardComposite();
+      leaderboardCompositeDirty = false;
 
       return {
         canvas: gridCanvas,
         leaderboardCanvas: leaderboardCompositeCanvas,
         update(time, finalOpacity = 0) {
           draw(time);
-          drawLeaderboardTexture(finalOpacity, time);
+          return {
+            leaderboardDirty: updateLeaderboardTexture(time, finalOpacity)
+          };
         }
       };
     }
@@ -2917,6 +3008,7 @@
         uniform vec2 uRepeat;
         uniform float uBackgroundOffset;
         uniform float uLeaderboardOffset;
+        uniform float uLeaderboardOpacity;
         uniform float uEffect;
         uniform float uEffectScale;
 
@@ -2948,13 +3040,18 @@
             lensUv.y * uRepeat.y + uBackgroundOffset * 0.56
           );
           vec4 backgroundColor = texture2D(uBackground, fract(backgroundUv));
-          vec2 leaderboardUv = vec2(
-            lensUv.x * uRepeat.x + uLeaderboardOffset,
-            lensUv.y * uRepeat.y + uLeaderboardOffset * 0.34
-          );
-          vec4 leaderboardColor = texture2D(uLeaderboard, fract(leaderboardUv));
+          vec3 color = backgroundColor.rgb;
 
-          gl_FragColor = vec4(mix(backgroundColor.rgb, leaderboardColor.rgb, leaderboardColor.a), 1.0);
+          if (uLeaderboardOpacity > 0.001) {
+            vec2 leaderboardUv = vec2(
+              lensUv.x * uRepeat.x + uLeaderboardOffset,
+              lensUv.y * uRepeat.y + uLeaderboardOffset * 0.34
+            );
+            vec4 leaderboardColor = texture2D(uLeaderboard, fract(leaderboardUv));
+            color = mix(color, leaderboardColor.rgb, leaderboardColor.a * uLeaderboardOpacity);
+          }
+
+          gl_FragColor = vec4(color, 1.0);
         }
       `;
 
@@ -2995,6 +3092,7 @@
         repeat: gl.getUniformLocation(program, "uRepeat"),
         backgroundOffset: gl.getUniformLocation(program, "uBackgroundOffset"),
         leaderboardOffset: gl.getUniformLocation(program, "uLeaderboardOffset"),
+        leaderboardOpacity: gl.getUniformLocation(program, "uLeaderboardOpacity"),
         effect: gl.getUniformLocation(program, "uEffect"),
         effectScale: gl.getUniformLocation(program, "uEffectScale")
       };
@@ -3027,7 +3125,7 @@
         gl.viewport(0, 0, width, height);
       }
 
-      function render({ backgroundOffset = 0, leaderboardOffset = 0 } = {}) {
+      function render({ backgroundOffset = 0, leaderboardOffset = 0, leaderboardOpacity = 0, leaderboardDirty = false } = {}) {
         gl.useProgram(program);
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         gl.enableVertexAttribArray(locations.position);
@@ -3040,8 +3138,10 @@
 
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, leaderboardTexture);
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, leaderboardCanvas);
+        if (leaderboardDirty) {
+          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+          gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, leaderboardCanvas);
+        }
 
         gl.uniform1i(locations.background, 0);
         gl.uniform1i(locations.leaderboard, 1);
@@ -3049,6 +3149,7 @@
         gl.uniform2f(locations.repeat, 2.4, 1.6333333333);
         gl.uniform1f(locations.backgroundOffset, backgroundOffset);
         gl.uniform1f(locations.leaderboardOffset, leaderboardOffset);
+        gl.uniform1f(locations.leaderboardOpacity, leaderboardOpacity);
         gl.uniform1f(locations.effect, 0.1);
         gl.uniform1f(locations.effectScale, 1.0);
 
@@ -3090,7 +3191,7 @@
     function render() {
       requestAnimationFrame(render);
       const now = performance.now();
-      gridTexture.update(now, scrollState.finalOpacity);
+      const textureUpdate = gridTexture.update(now, scrollState.finalOpacity);
       rotationSpeed += ((0.00065 + scrollState.scrollVelocity * 0.024) - rotationSpeed) * 0.1;
       scrollState.scrollVelocity *= 0.92;
       passiveRotation += rotationSpeed;
@@ -3099,7 +3200,9 @@
       landingTextRibbonPath?.setAttribute("startOffset", `${(-ringRotation * 920).toFixed(2)}px`);
       backgroundRenderer.render({
         backgroundOffset: passiveRotation * 0.56,
-        leaderboardOffset: passiveRotation * 0.28
+        leaderboardOffset: passiveRotation * 0.28,
+        leaderboardOpacity: smoothstep(scrollState.finalOpacity),
+        leaderboardDirty: textureUpdate.leaderboardDirty
       });
       orbGlobe?.render();
       orbGlobeHighlights?.render();
