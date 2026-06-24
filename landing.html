@@ -3122,7 +3122,7 @@
 
         void main() {
           vec2 squareUv = squareCoverUv(vUv);
-          vec2 lensCenter = squareCoverUv(vec2(0.5, 0.5));
+          vec2 lensCenter = squareCoverUv(vec2(0.5, 0.58));
           vec2 lensUv = pincushionUv(squareUv, lensCenter);
           vec2 backgroundUv = vec2(
             lensUv.x * uRepeat.x + uBackgroundOffset,
