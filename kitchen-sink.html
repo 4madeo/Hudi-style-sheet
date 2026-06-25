@@ -45,6 +45,46 @@
       --landing-orb-inner-glow-blur: 25px;
       --landing-texture-transition-ms: 1100ms;
       --landing-texture-cycle-ms: 1400ms;
+      --landing-panel-topbar-height: 43px;
+      --landing-panel-topbar-bg: linear-gradient(180deg, rgba(170,170,170,0) 0%, rgba(217,217,217,.1) 100%);
+      --landing-panel-topbar-filter: drop-shadow(0 .9px .9px rgba(0,0,0,.15)) drop-shadow(0 .9px 0 #ffffff);
+      --landing-panel-topbar-shadow: 0 .75px .75px rgba(0,0,0,.12), 0 .75px 0 #ffffff;
+      --hudi-soft-panel-bg-top: #fcfcfc;
+      --hudi-soft-panel-bg-bottom: #f7f7f7;
+      --hudi-soft-panel-bg-gradient: linear-gradient(360deg, rgba(170,170,170,.1) 0%, rgba(221,221,221,.1) 100%), #ffffff;
+      --hudi-soft-panel-text-gradient: linear-gradient(180deg, #8F9AB0 0%, #525C6F 100%);
+      --landing-chat-avatar-frame-bg: linear-gradient(360deg, rgba(255,167,201,.1) 0%, rgba(255,42,45,.1) 100%);
+      --landing-chat-avatar-frame-bg-violet: linear-gradient(360deg, rgba(170,167,255,.1) 0%, rgba(227,42,255,.1) 100%);
+      --landing-chat-avatar-frame-bg-blue: linear-gradient(360deg, rgba(167,220,255,.1) 0%, rgba(42,177,255,.1) 100%);
+      --landing-chat-avatar-frame-bg-green: linear-gradient(360deg, rgba(171,255,167,.1) 0%, rgba(74,255,42,.1) 100%);
+      --landing-chat-avatar-frame-border-width: .504261px;
+      --landing-chat-avatar-frame-border: rgba(0,0,0,.05);
+      --landing-chat-avatar-frame-shadow: 0 1.26065px 0 #ffffff, inset 0 0 3.22727px rgba(0,0,0,.05), inset 0 1.61364px 1.61364px rgba(0,0,0,.05);
+      --landing-chat-avatar-frame-radius: 6.45455px;
+      --landing-panel-base-bg: var(--hudi-soft-panel-bg-gradient);
+      --landing-panel-exterior-shadow: 3px 7px 10px var(--black-alpha-13);
+      --landing-panel-exterior-drop-shadow: drop-shadow(3px 7px 10px var(--black-alpha-13));
+      --landing-panel-inner-shadow: inset 0 0 0 1.3px rgba(0,0,0,.1);
+      --landing-panel-text-gradient: var(--hudi-soft-panel-text-gradient);
+      --landing-panel-title-font-size: 20px;
+      --landing-panel-title-line-height: 18px;
+      --landing-panel-title-tracking: .15px;
+      --landing-panel-cta-min-width: clamp(98px,7.6vw,142px);
+      --landing-panel-cta-height: clamp(28px,2.25vw,38px);
+      --landing-panel-cta-padding-x: clamp(var(--space-14),1.25vw,var(--space-22));
+      --landing-panel-cta-border: 1px solid color-mix(in srgb, var(--hudi-orb-colour) 18%, transparent);
+      --landing-panel-cta-bg: linear-gradient(180deg, color-mix(in srgb, var(--white) 88%, transparent) 0%, color-mix(in srgb, var(--hudi-orb-colour) 20%, var(--white)) 100%);
+      --landing-panel-cta-shadow: inset 0 calc(var(--space-1) * -1) var(--space-6) color-mix(in srgb, var(--hudi-orb-colour) 16%, transparent);
+      --landing-panel-cta-font-size: clamp(15px,1.08vw,21px);
+      --landing-panel-cta-letter-spacing: .05em;
+      --landing-panel-cta-text-gradient: var(--hudi-soft-panel-text-gradient);
+      --landing-stock-inset-bg: radial-gradient(122.41% 122.41% at 47.88% 0%, rgba(177,239,255,.16) 0%, rgba(177,239,255,.01) 100%);
+      --landing-stock-inset-border: .5px solid rgba(0,0,0,.05);
+      --landing-stock-inset-shadow: 0 1px 0 #ffffff, inset 0 0 4px rgba(0,0,0,.05), inset 0 2px 2px rgba(0,0,0,.05);
+      --landing-stock-inset-radius: 8px;
+      --landing-stock-inset-column-line: linear-gradient(180deg, rgba(0,0,0,.08) 0%, rgba(0,0,0,.04) 100%);
+      --landing-stock-pnl-value-gradient: linear-gradient(180deg, #929292 0%, #414141 100%);
+      --landing-stock-pnl-value-shadow: drop-shadow(0 1px 0 var(--white));
       --select-blue: #99cafa;
       --outline-grey: #e7e9ed;
       --text-green: #5bb67c;
@@ -199,7 +239,7 @@
       --type-big-title: 41.08px;
       --type-sim-market-title: 40px;
       --type-title-tracking: -.05em;
-      --sf-pro: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      --sf-pro: "SF Pro Hudi", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
       --ocr-fixed: "OCRA Fixed", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       --ocr: var(--sf-pro);
       --mono: "Syne Mono Hudi", "Syne Mono", ui-monospace, monospace;
@@ -410,6 +450,8 @@ button { -webkit-tap-highlight-color: transparent; }
 
     /* ---------- derived: base element styles ---------- */
 @font-face { font-family: "OCRA Fixed"; src: url("assets/fonts/OCRAStdFIXED-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "SF Pro Hudi"; src: url("assets/fonts/SFPRODISPLAYREGULAR.OTF") format("opentype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "SF Pro Hudi"; src: url("assets/fonts/SFPRODISPLAYMEDIUM.OTF") format("opentype"); font-weight: 500; font-display: swap; }
 
 @font-face { font-family: "Syne Hudi"; src: url("assets/fonts/Syne-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
 
