@@ -105,10 +105,15 @@
       --orb-size: var(--landing-world-orb-size);
       --orb-base: var(--hudi-orb-colour);
       --orb-sheen: var(--hudi-orb-sheen);
+      --landing-orb-inner-stroke: color-mix(in srgb, var(--white) 20%, transparent);
       position: absolute;
       left: 50%;
       top: 50%;
       z-index: 4;
+      box-shadow:
+        inset 0 0 0 var(--space-6) var(--landing-orb-inner-stroke),
+        inset 0 var(--orb-shadow-y, -6.1625px) var(--orb-shadow-blur, 64.3984px) var(--orb-shadow),
+        inset 0 0 calc(var(--orb-size) * .09) color-mix(in srgb, var(--orb-sheen) 58%, transparent);
       translate: -50% calc(-50% + var(--landing-orb-y, 0px));
       scale: var(--landing-orb-scale, 1);
       opacity: var(--landing-orb-opacity, 1);
@@ -196,12 +201,16 @@
       --pill-bg: var(--hudi-orb-colour);
       --pill-inner-shadow: var(--hudi-orb-shadow);
       --pill-label: var(--white);
+      --landing-start-inner-stroke: color-mix(in srgb, var(--white) 40%, transparent);
       width: var(--landing-start-width, clamp(220px, 19vw, 360px));
       min-width: 0;
       height: var(--landing-start-height, clamp(52px, 5vw, 76px));
       border: 0;
       border-radius: var(--landing-start-radius, var(--radius-pill));
       font-size: clamp(24px, 2.2vw, 38px);
+      box-shadow:
+        inset 0 0 0 var(--space-4) var(--landing-start-inner-stroke),
+        inset 0 -2.83px 29.61px var(--pill-inner-shadow);
       translate: 0 var(--landing-panel-bob-y, 0px);
       scale: var(--landing-start-scale, 1);
       text-transform: lowercase;
@@ -462,10 +471,15 @@
 
     .stock-card .hudi-stock-orb {
       --orb-size: var(--stock-orb-size);
+      --stock-orb-inner-stroke: color-mix(in srgb, var(--white) 40%, transparent);
       position: absolute;
       right: var(--stock-panel-gap);
       top: 50%;
       z-index: 2;
+      box-shadow:
+        inset 0 0 0 var(--space-4) var(--stock-orb-inner-stroke),
+        inset 0 var(--orb-shadow-y) var(--orb-shadow-blur) var(--orb-shadow),
+        inset 0 0 calc(var(--orb-size) * .09) color-mix(in srgb, var(--orb-sheen) 58%, transparent);
       transform: translateY(-50%);
     }
 
@@ -793,6 +807,7 @@
     }
 
     .chat-bubble-card {
+      --chat-global-scale: .7;
       --chat-depth-scale: 1;
       --chat-depth-opacity: 1;
       --chat-parallax-x: 0vw;
@@ -804,7 +819,7 @@
       color: var(--dark-grey);
       opacity: var(--landing-comment-opacity, 1);
       translate: calc(var(--chat-parallax-x) + var(--chat-lane-offset-x)) calc(var(--landing-chat-comments-counter-y, 0vh) + var(--chat-comments-lift));
-      scale: var(--chat-depth-scale);
+      scale: calc(var(--chat-depth-scale) * var(--chat-global-scale));
       transform-origin: center;
       filter: var(--landing-panel-filter-shadow);
       animation: chat-bubble-float 5200ms ease-in-out infinite;
@@ -1286,6 +1301,7 @@
       --pill-bg: var(--hudi-orb-colour);
       --pill-inner-shadow: var(--hudi-orb-shadow);
       --pill-label: var(--white);
+      --landing-final-inner-stroke: color-mix(in srgb, var(--white) 20%, transparent);
       width: var(--landing-final-width, clamp(360px, 33vw, 640px));
       min-width: 0;
       height: var(--landing-final-height, clamp(74px, 7vw, 116px));
@@ -1297,7 +1313,10 @@
       scale: var(--landing-final-button-scale, 0);
       text-transform: lowercase;
       transform-origin: center;
-      box-shadow: inset 0 -2.83px 29.61px var(--pill-inner-shadow), var(--landing-panel-shadow);
+      box-shadow:
+        inset 0 0 0 var(--space-6) var(--landing-final-inner-stroke),
+        inset 0 -2.83px 29.61px var(--pill-inner-shadow),
+        var(--landing-panel-shadow);
       will-change: width, border-radius, translate, scale, opacity;
     }
 
@@ -1340,6 +1359,7 @@
       --orb-sheen: var(--color-cff3ff);
       --orb-shadow: var(--color-rgba-189-228-255-56);
       --orb-size: clamp(90px, 7.8vw, 148px);
+      --final-social-inner-stroke: color-mix(in srgb, var(--white) 20%, transparent);
       --window-image: none;
       position: relative;
       display: grid;
@@ -1353,7 +1373,11 @@
       background-position: center;
       background-size: cover, 54% 54%;
       background-repeat: no-repeat;
-      box-shadow: inset 0 -6.1625px 64.3984px var(--orb-shadow), inset 0 0 calc(var(--orb-size) * .09) color-mix(in srgb, var(--orb-sheen) 58%, transparent), var(--landing-panel-shadow);
+      box-shadow:
+        inset 0 0 0 var(--space-4) var(--final-social-inner-stroke),
+        inset 0 -6.1625px 64.3984px var(--orb-shadow),
+        inset 0 0 calc(var(--orb-size) * .09) color-mix(in srgb, var(--orb-sheen) 58%, transparent),
+        var(--landing-panel-shadow);
       cursor: pointer;
       overflow: hidden;
       transform-origin: center;
@@ -1656,7 +1680,7 @@
               <span class="stock-inset-value">+4500%</span>
             </span>
           </span>
-          <span class="hudi-stock-orb green" data-orb-base="#006eff">
+          <span class="hudi-stock-orb yellow" data-orb-token="--market-smsg-orb-base">
             <svg class="hudi-stock-orb__number" viewBox="0 0 100 32" aria-hidden="true"><path id="landing-baba-number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none"/><text text-anchor="middle"><textPath href="#landing-baba-number-curve" startOffset="50%">6873</textPath></text></svg>
             <svg class="hudi-stock-orb__ticker" viewBox="0 0 100 38" role="img" aria-label="BABA"><defs><linearGradient id="landing-baba-ticker-fill" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse"><stop class="hudi-orb-ticker-light-stop"/><stop class="hudi-orb-ticker-dark-stop" offset="1"/></linearGradient></defs><text x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="url(#landing-baba-ticker-fill)">BABA</text></svg>
           </span>
@@ -2669,8 +2693,9 @@
     }
 
     function applyLandingMarketOrbPalettes(root = document) {
-      root.querySelectorAll(".market-cards .hudi-stock-orb[data-orb-base]").forEach((orb) => {
-        const palette = deriveLandingOrbPalette(orb.dataset.orbBase);
+      root.querySelectorAll(".market-cards .hudi-stock-orb[data-orb-base], .market-cards .hudi-stock-orb[data-orb-token]").forEach((orb) => {
+        const base = token(orb.dataset.orbToken || "") || orb.dataset.orbBase;
+        const palette = deriveLandingOrbPalette(base);
         const ticker = orb.querySelector(".hudi-stock-orb__ticker");
         const text = ticker?.querySelector("text");
         const label = text?.textContent?.trim() || "";
@@ -4260,7 +4285,10 @@
       scrollState.scrollVelocity *= 0.92;
       passiveRotation += rotationSpeed;
       shaderCenterShiftEased += (scrollState.shaderCenterShift - shaderCenterShiftEased) * 0.065;
-      ringRotation += 0.00068 * scrollState.firstLevelOpacity;
+      const ringFadeOutProgress = 1 - scrollState.firstLevelOpacity;
+      const ringFadeOutBoost = 1 - Math.pow(1 - ringFadeOutProgress, 3);
+      const ringSpeed = scrollState.firstLevelOpacity > .001 ? 0.00068 * (1 + ringFadeOutBoost * 7.5) : 0;
+      ringRotation += ringSpeed;
       landingShell?.style.setProperty("--landing-text-ring-opacity", scrollState.firstLevelOpacity.toFixed(3));
       landingTextRibbonPath?.setAttribute("startOffset", `${(-ringRotation * 920).toFixed(2)}px`);
       backgroundRenderer.render({
