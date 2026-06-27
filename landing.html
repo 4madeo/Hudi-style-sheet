@@ -1681,16 +1681,18 @@
 
       html:not([data-mobile-market-active="true"]):not([data-mobile-market-warm="true"]) .market-cards,
       html:not([data-mobile-market-active="true"]):not([data-mobile-market-warm="true"]) .landing-panel,
-      html:not([data-mobile-chat-active="true"]):not([data-mobile-chat-warm="true"]) .chat-showcase,
       html:not([data-mobile-final-active="true"]):not([data-mobile-final-warm="true"]) .final-showcase {
         content-visibility: hidden;
       }
 
       .market-cards .stock-card:not(.is-market-visible):not(.is-market-hiding),
-      .landing-panel:not(.is-market-visible):not(.is-market-hiding),
-      .chat-bubble-card:not(.is-comment-visible):not(.is-comment-hiding) {
+      .landing-panel:not(.is-market-visible):not(.is-market-hiding) {
         visibility: hidden;
         content-visibility: hidden;
+      }
+
+      .chat-bubble-card:not(.is-comment-visible):not(.is-comment-hiding) {
+        visibility: hidden;
       }
 
       .market-cards {
@@ -1768,7 +1770,6 @@
       .chat-bubble-card[data-mobile-comment-hidden="true"],
       .chat-bubble-card[data-mobile-comment-offscreen="true"] {
         visibility: hidden;
-        content-visibility: hidden;
         pointer-events: none;
       }
 
@@ -2537,6 +2538,12 @@
       ".chat-bubble-card.is-left-low",
       ".chat-bubble-card.is-mid-right"
     ]);
+    const mobileCommentOffscreenProfiles = new Map([
+      [".chat-bubble-card.is-top-right", { leftToken: "--space-14", widthVw: 78, maxWidth: 330, laneVw: -86, parallax: "near" }],
+      [".chat-bubble-card.is-upper-mid", { leftVw: 10, widthVw: 74, maxWidth: 315, laneVw: 14, parallax: "mid" }],
+      [".chat-bubble-card.is-left-low", { leftToken: "--space-12", widthVw: 80, maxWidth: 340, laneVw: 38, parallax: "near" }],
+      [".chat-bubble-card.is-mid-right", { leftVw: 12, widthVw: 72, maxWidth: 310, laneVw: 46, parallax: "deep" }]
+    ]);
     const commentRevealItems = [
       [".chat-bubble-card.is-top-right", 0],
       [".chat-bubble-card.is-left-low", .045],
@@ -2551,7 +2558,8 @@
     ].map(([selector, delayRaw]) => ({
       selector,
       element: document.querySelector(selector),
-      delayRaw
+      delayRaw,
+      mobileOffscreenProfile: mobileCommentOffscreenProfiles.get(selector) || null
     })).filter(({ selector, element }) => element && (!isLandingMobile || mobileCommentSelectors.has(selector)));
     const commentHideTimers = new WeakMap();
     const activeCommentRevealItems = new Set();
@@ -3433,26 +3441,39 @@
       });
     }
 
-    function updateMobileCommentOffscreen(rawProgress = 0, force = false) {
+    function getMobileCommentBaseLeft(profile, viewportWidth) {
+      if (profile.leftVw != null) return viewportWidth * (profile.leftVw / 100);
+      if (profile.leftToken) return Number.parseFloat(token(profile.leftToken)) || 0;
+      return 0;
+    }
+
+    function updateMobileCommentOffscreen(rawProgress = 0, chatMotionVars = null, force = false) {
       if (!isLandingMobile) return;
       if (!force && Math.abs(rawProgress - mobileCommentOffscreenLastRaw) < .035) return;
       mobileCommentOffscreenLastRaw = rawProgress;
 
       const viewportWidth = Math.max(1, landingStableViewportWidth || window.innerWidth || 1);
-      const viewportHeight = getLandingViewportHeight();
-      const margin = 12;
+      const margin = Math.max(48, viewportWidth * .12);
 
-      commentRevealItems.forEach(({ element }) => {
+      commentRevealItems.forEach(({ element, mobileOffscreenProfile }) => {
         if (!element.classList.contains("is-comment-visible") && !element.classList.contains("is-comment-hiding")) {
           setDatasetValue(element, "mobileCommentOffscreen", "false");
           return;
         }
 
-        const rect = element.getBoundingClientRect();
-        const isOffscreen = rect.right < -margin
-          || rect.left > viewportWidth + margin
-          || rect.bottom < -margin
-          || rect.top > viewportHeight + margin;
+        if (!mobileOffscreenProfile) {
+          setDatasetValue(element, "mobileCommentOffscreen", "false");
+          activeCommentRevealItems.add(element);
+          return;
+        }
+
+        const parallaxX = Number.parseFloat(chatMotionVars?.[mobileOffscreenProfile.parallax]) || 0;
+        const laneX = viewportWidth * (mobileOffscreenProfile.laneVw / 100);
+        const baseLeft = getMobileCommentBaseLeft(mobileOffscreenProfile, viewportWidth);
+        const width = Math.min(viewportWidth * (mobileOffscreenProfile.widthVw / 100), mobileOffscreenProfile.maxWidth);
+        const left = baseLeft + laneX + parallaxX;
+        const right = left + width;
+        const isOffscreen = right < -margin || left > viewportWidth + margin;
 
         setDatasetValue(element, "mobileCommentOffscreen", isOffscreen ? "true" : "false");
         if (isOffscreen || element.dataset.mobileCommentHidden === "true") {
@@ -4361,7 +4382,7 @@
           setStyleProp(landingShell, "--landing-chat-parallax-mid", chatMotionVars.mid);
           setStyleProp(landingShell, "--landing-chat-parallax-deep", chatMotionVars.deep);
           updateMobileCommentRevealItems(commentRevealStartRaw, rawProgress, chatProgress, commentFadeOutStart);
-          updateMobileCommentOffscreen(rawProgress);
+          updateMobileCommentOffscreen(rawProgress, chatMotionVars);
         }
         setStyleProp(landingShell, "--landing-chat-events", chatDistance < 0.62 && chatOpacity > .1 ? "auto" : "none");
       }
