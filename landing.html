@@ -878,8 +878,8 @@
       scale: calc(var(--chat-depth-scale) * var(--chat-global-scale));
       transform-origin: center;
       filter: var(--landing-panel-filter-shadow);
-      animation: chat-bubble-float 5200ms ease-in-out infinite;
-      will-change: transform, translate, scale, opacity;
+      animation: none;
+      will-change: translate, scale, opacity;
     }
 
     .chat-particle {
@@ -3042,9 +3042,9 @@
       final: false
     };
     const mobileSectionWarmDurations = {
-      market: 700,
-      chat: 1600,
-      final: 1400
+      market: 2200,
+      chat: 3600,
+      final: 2800
     };
     const mobileSectionWarmTimers = {
       market: 0,
@@ -4154,11 +4154,11 @@
       const hasMarketRevealState = isLandingMobile ? hasActiveMarketRevealItems() : true;
       const hasCommentRevealState = isLandingMobile ? hasActiveCommentRevealItems() : true;
       const marketEnterActive = rawProgress >= mapSlideTiming.startRaw - .16 && rawProgress <= marketOrbExitTiming.endRaw + .16;
-      const marketStayActive = rawProgress >= mapSlideTiming.startRaw - .42 && rawProgress <= marketOrbExitTiming.endRaw + .42;
+      const marketStayActive = rawProgress >= mapSlideTiming.startRaw - .7 && rawProgress <= marketOrbExitTiming.endRaw + .78;
       const chatEnterActive = rawProgress >= chatParticleRevealStartRaw - .1 && chatProgress <= chatPanelExitStart + chatPanelExitDuration + .55;
-      const chatStayActive = rawProgress >= chatParticleRevealStartRaw - .36 && chatProgress <= chatPanelExitStart + chatPanelExitDuration + .9;
+      const chatStayActive = rawProgress >= chatParticleRevealStartRaw - .72 && chatProgress <= chatPanelExitStart + chatPanelExitDuration + 1.28;
       const finalEnterActive = rawProgress >= finalSequenceStartRaw - .12;
-      const finalStayActive = rawProgress >= finalSequenceStartRaw - .42;
+      const finalStayActive = rawProgress >= finalSequenceStartRaw - .8;
       const mobileMarketActive = !isLandingMobile
         || (mobileSectionGateState.market ? marketStayActive : marketEnterActive)
         || hasMarketRevealState;
@@ -4446,7 +4446,6 @@
       const startedAt = landingPerf.start();
       updateScrollState();
       landingPerf.end("scrollState", startedAt);
-      scheduleMobileBobbing();
       requestLandingFrame();
     }
 
@@ -5824,7 +5823,6 @@
     let shaderCenterShiftEased = 0;
     let renderFrame = 0;
     let mobileAmbientTimer = 0;
-    let mobileBobFrame = 0;
 
     function resize() {
       if (isLandingMobile) {
@@ -5858,30 +5856,6 @@
       }, 180);
     }
 
-    function shouldRunMobileBobbing() {
-      if (!isLandingMobile || document.hidden) return false;
-      const rootState = document.documentElement.dataset;
-      return scrollState.firstLevelOpacity > .001
-        || rootState.mobileMarketActive === "true"
-        || rootState.mobileMarketWarm === "true"
-        || rootState.mobileChatActive === "true"
-        || rootState.mobileChatWarm === "true"
-        || rootState.mobileFinalActive === "true"
-        || rootState.mobileFinalWarm === "true";
-    }
-
-    function scheduleMobileBobbing() {
-      if (mobileBobFrame || !shouldRunMobileBobbing()) return;
-      mobileBobFrame = requestAnimationFrame(runMobileBobbing);
-    }
-
-    function runMobileBobbing(time) {
-      mobileBobFrame = 0;
-      if (!shouldRunMobileBobbing()) return;
-      updateFloatingPanels(time);
-      scheduleMobileBobbing();
-    }
-
     requestLandingFrame = scheduleRender;
     mobileScrollCoalesceEnabled = true;
 
@@ -5891,7 +5865,7 @@
       if (!isLandingMobile) scheduleRender();
       const now = performance.now();
       const floatingStartedAt = landingPerf.start();
-      if (!isLandingMobile) updateFloatingPanels(now);
+      updateFloatingPanels(now);
       landingPerf.end("floatingPanels", floatingStartedAt);
       let textureUpdate = { backgroundDirty: true, leaderboardDirty: false };
       if (gridTexture) {
@@ -5939,7 +5913,6 @@
       if (document.hidden) {
         if (mobileScrollUpdateFrame) cancelAnimationFrame(mobileScrollUpdateFrame);
         if (renderFrame) cancelAnimationFrame(renderFrame);
-        if (mobileBobFrame) cancelAnimationFrame(mobileBobFrame);
         if (mobileAmbientTimer) clearTimeout(mobileAmbientTimer);
         Object.keys(mobileSectionWarmTimers).forEach((section) => {
           if (!mobileSectionWarmTimers[section]) return;
@@ -5948,7 +5921,6 @@
         });
         mobileScrollUpdateFrame = 0;
         renderFrame = 0;
-        mobileBobFrame = 0;
         mobileAmbientTimer = 0;
         return;
       }
@@ -5957,12 +5929,10 @@
       updateScrollStateMeasured();
       scheduleRender();
       scheduleMobileAmbientRender();
-      scheduleMobileBobbing();
     });
 
     scheduleRender();
     scheduleMobileAmbientRender();
-    scheduleMobileBobbing();
   </script>
 </body>
 </html>
