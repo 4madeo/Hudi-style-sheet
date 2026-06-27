@@ -4234,7 +4234,7 @@
         const finalTaglineStartRaw = finalSequenceStartRaw + (finalTiming.buttonTotalRaw * .5);
         finalTaglineProgress = smoothstep((rawProgress - finalTaglineStartRaw) / finalTiming.taglineDurationRaw);
         const finalSocialStartRaw = finalTaglineStartRaw + finalTiming.taglineDurationRaw * (isLandingMobile ? 1 : .5);
-        const finalSocialGapRaw = isLandingMobile ? finalTiming.socialDurationRaw + .04 : finalTiming.socialGapRaw;
+        const finalSocialGapRaw = isLandingMobile ? finalTiming.socialDurationRaw * .72 : finalTiming.socialGapRaw;
         finalXProgress = smoothstep((rawProgress - finalSocialStartRaw) / finalTiming.socialDurationRaw);
         finalTelegramProgress = smoothstep((rawProgress - (finalSocialStartRaw + finalSocialGapRaw)) / finalTiming.socialDurationRaw);
         const finalContentProgress = Math.max(finalButtonScaleProgress, finalTaglineProgress, finalXProgress, finalTelegramProgress);
