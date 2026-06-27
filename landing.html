@@ -3042,9 +3042,9 @@
       final: false
     };
     const mobileSectionWarmDurations = {
-      market: 700,
-      chat: 1600,
-      final: 1400
+      market: 300,
+      chat: 300,
+      final: 300
     };
     const mobileSectionWarmTimers = {
       market: 0,
@@ -4154,11 +4154,11 @@
       const hasMarketRevealState = isLandingMobile ? hasActiveMarketRevealItems() : true;
       const hasCommentRevealState = isLandingMobile ? hasActiveCommentRevealItems() : true;
       const marketEnterActive = rawProgress >= mapSlideTiming.startRaw - .16 && rawProgress <= marketOrbExitTiming.endRaw + .16;
-      const marketStayActive = rawProgress >= mapSlideTiming.startRaw - .7 && rawProgress <= marketOrbExitTiming.endRaw + .78;
+      const marketStayActive = rawProgress >= mapSlideTiming.startRaw - .18 && rawProgress <= marketOrbExitTiming.endRaw + .2;
       const chatEnterActive = rawProgress >= chatParticleRevealStartRaw - .1 && chatProgress <= chatPanelExitStart + chatPanelExitDuration + .55;
-      const chatStayActive = rawProgress >= chatParticleRevealStartRaw - .72 && chatProgress <= chatPanelExitStart + chatPanelExitDuration + 1.28;
+      const chatStayActive = rawProgress >= chatParticleRevealStartRaw - .18 && chatProgress <= chatPanelExitStart + chatPanelExitDuration + .45;
       const finalEnterActive = rawProgress >= finalSequenceStartRaw - .12;
-      const finalStayActive = rawProgress >= finalSequenceStartRaw - .8;
+      const finalStayActive = rawProgress >= finalSequenceStartRaw - .22;
       const mobileMarketActive = !isLandingMobile
         || (mobileSectionGateState.market ? marketStayActive : marketEnterActive)
         || hasMarketRevealState;
