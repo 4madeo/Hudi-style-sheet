@@ -11,6 +11,12 @@
       }
     }
   </script>
+  <link rel="preload" href="assets/fonts/OCRAStdFIXED-Regular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="assets/Black_on_white_dotted_world_map_vector.svg?white-transparent-map=1" as="image" type="image/svg+xml">
+  <link rel="preload" href="assets/landing-map-highlight-dots.svg?highlight-dots=1" as="image" type="image/svg+xml" media="(min-width: 701px)">
+  <link rel="preload" href="assets/cross.svg" as="image" type="image/svg+xml" media="(min-width: 701px)">
+  <link rel="preload" href="assets/cross1.svg" as="image" type="image/svg+xml" media="(min-width: 701px)">
+  <link rel="preload" href="assets/cross2.svg" as="image" type="image/svg+xml" media="(min-width: 701px)">
   <style id="landing-style">
     @font-face { font-family: "OCRA Fixed"; src: url("assets/fonts/OCRAStdFIXED-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
 
@@ -105,11 +111,19 @@
       --orb-size: var(--landing-world-orb-size);
       --orb-base: var(--hudi-orb-colour);
       --orb-sheen: var(--hudi-orb-sheen);
+      --orb-shadow: var(--hudi-orb-shadow);
       --landing-orb-inner-stroke: color-mix(in srgb, var(--white) 20%, transparent);
       position: absolute;
       left: 50%;
       top: 50%;
       z-index: 4;
+      display: grid;
+      place-items: center;
+      width: var(--orb-size);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background-color: var(--orb-base);
+      background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255, 255, 255, 0) 100%);
       box-shadow:
         inset 0 0 0 var(--space-6) var(--landing-orb-inner-stroke),
         inset 0 var(--orb-shadow-y, -6.1625px) var(--orb-shadow-blur, 64.3984px) var(--orb-shadow),
@@ -117,6 +131,10 @@
       translate: -50% calc(-50% + var(--landing-orb-y, 0px));
       scale: var(--landing-orb-scale, 1);
       opacity: var(--landing-orb-opacity, 1);
+      overflow: hidden;
+      isolation: isolate;
+      contain: paint;
+      clip-path: circle(50% at 50% 50%);
     }
 
     .landing-orb-inner-glow {
@@ -151,6 +169,41 @@
       opacity: var(--landing-map-highlight-opacity, 0);
       pointer-events: none;
       transform: translateZ(0);
+    }
+
+    .landing-orb-world-map-mobile {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: none;
+      width: 100%;
+      height: 100%;
+      opacity: var(--landing-map-opacity, 0);
+      overflow: hidden;
+      border-radius: inherit;
+      clip-path: circle(50% at 50% 50%);
+      pointer-events: none;
+      will-change: opacity;
+    }
+
+    .landing-orb-world-map-mobile__strip {
+      position: absolute;
+      left: -92%;
+      top: -11%;
+      width: 284%;
+      height: 122%;
+      object-fit: fill;
+      transform: translateX(calc(var(--landing-mobile-map-offset, 0) * -33.333%));
+      will-change: transform;
+    }
+
+    #blank-orb.is-map-fallback-active .landing-orb-world-map-canvas {
+      display: none;
+    }
+
+    #blank-orb.is-map-fallback-active .landing-orb-world-map-mobile {
+      display: block;
+      mix-blend-mode: screen;
     }
 
     .landing-orb-world-map-gloss {
@@ -207,7 +260,10 @@
       height: var(--landing-start-height, clamp(52px, 5vw, 76px));
       border: 0;
       border-radius: var(--landing-start-radius, var(--radius-pill));
+      font-family: var(--sf-pro, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
       font-size: clamp(24px, 2.2vw, 38px);
+      font-weight: 400;
+      letter-spacing: .06em;
       box-shadow:
         inset 0 0 0 var(--space-4) var(--landing-start-inner-stroke),
         inset 0 -2.83px 29.61px var(--pill-inner-shadow);
@@ -367,8 +423,8 @@
       --stock-orb-size: clamp(88px, 7.2vw, 124px);
       --stock-inset-height: calc(var(--stock-orb-size) * 1.04);
       --stock-title-gap: var(--space-12);
-      --stock-inset-label-size: clamp(11px, .98vw, 17px);
-      --stock-inset-value-size: clamp(12px, 1.08vw, 18px);
+      --stock-inset-label-size: clamp(14.3px, 1.27vw, 22.1px);
+      --stock-inset-value-size: clamp(15.6px, 1.4vw, 23.4px);
       --stock-inset-readout-top: clamp(6px, .55vw, 10px);
       --stock-inset-readout-right: clamp(7px, .65vw, 12px);
       width: clamp(336px, 25vw, 500px);
@@ -477,7 +533,7 @@
       top: 50%;
       z-index: 2;
       box-shadow:
-        inset 0 0 0 var(--space-4) var(--stock-orb-inner-stroke),
+        inset 0 0 0 calc(var(--space-4) * .8) var(--stock-orb-inner-stroke),
         inset 0 var(--orb-shadow-y) var(--orb-shadow-blur) var(--orb-shadow),
         inset 0 0 calc(var(--orb-size) * .09) color-mix(in srgb, var(--orb-sheen) 58%, transparent);
       transform: translateY(-50%);
@@ -1307,7 +1363,10 @@
       height: var(--landing-final-height, clamp(74px, 7vw, 116px));
       border: 0;
       border-radius: var(--landing-final-radius, var(--radius-pill));
+      font-family: var(--sf-pro, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
       font-size: clamp(42px, 4vw, 72px);
+      font-weight: 400;
+      letter-spacing: .06em;
       opacity: var(--landing-final-button-opacity, 0);
       translate: 0 var(--landing-panel-bob-y, 0px);
       scale: var(--landing-final-button-scale, 0);
@@ -1496,57 +1555,248 @@
     }
 
     @media (max-width: 700px) {
+      html,
+      body {
+        scroll-behavior: auto;
+        scroll-snap-type: none;
+      }
+
+      #landing-canvas,
+      .landing-shell {
+        bottom: auto;
+        height: var(--landing-stable-vh, 100lvh);
+      }
+
       .landing-shell {
         --landing-world-orb-size: clamp(190px, 58vw, 300px);
+        --landing-mobile-center-y: 50%;
+      }
+
+      .landing-text-ribbon {
+        display: none;
+      }
+
+      .scroll-level {
+        min-height: var(--landing-stable-vh, 100lvh);
+      }
+
+      .scroll-level--market-extension {
+        min-height: calc(var(--landing-stable-vh, 100lvh) * 1.05);
+      }
+
+      .scroll-level--chat-final-gap {
+        min-height: calc(var(--landing-stable-vh, 100lvh) * 1.45);
+        height: calc(var(--landing-stable-vh, 100lvh) * 1.45);
+      }
+
+      .landing-orb-world-map-canvas {
+        display: block;
+        mix-blend-mode: normal;
+      }
+
+      .landing-orb-world-map-mobile {
+        display: none;
+      }
+
+      .landing-orb-world-map-gloss {
+        display: none;
+      }
+
+      #blank-orb {
+        top: var(--landing-mobile-center-y);
+        border-radius: 50%;
+        clip-path: none;
+        box-shadow:
+          inset 0 0 0 var(--space-4) var(--landing-orb-inner-stroke),
+          inset 0 -10px 34px color-mix(in srgb, var(--orb-shadow) 42%, transparent);
+        will-change: transform, opacity;
+      }
+
+      #blank-orb .landing-orb-inner-glow {
+        display: none;
       }
 
       .landing-hero-actions {
-        top: calc(50% + (var(--landing-world-orb-size) * .62));
+        top: calc(var(--landing-mobile-center-y) + (var(--landing-world-orb-size) * .62));
         gap: var(--space-18);
       }
 
+      .landing-start-button.hudi-trade-button {
+        width: var(--landing-start-width, clamp(190px, 58vw, 260px));
+        height: var(--landing-start-height, 56px);
+        border-radius: var(--landing-start-radius, var(--radius-pill));
+        will-change: width, border-radius, translate, scale, opacity;
+      }
+
+      .landing-final-button.hudi-trade-button {
+        width: var(--landing-final-width, min(76vw, 340px));
+        height: var(--landing-final-height, 64px);
+        border-radius: var(--landing-final-radius, var(--radius-pill));
+        will-change: width, border-radius, translate, scale, opacity;
+      }
+
       .landing-panel {
-        left: var(--space-16);
-        right: var(--space-16);
-        bottom: var(--space-24);
-        top: auto;
-        width: auto;
-        min-height: 126px;
-        translate: 0 calc(var(--landing-market-y, 100vh) + var(--landing-panel-bob-y, 0px));
+        --market-copy-x-padding: clamp(var(--space-14), 4.2vw, var(--space-18));
+        --landing-panel-topbar-height: 32px;
+        --landing-panel-title-font-size: clamp(13.5px, 3.35vw, 15.5px);
+        --landing-panel-title-line-height: 14px;
+        --landing-panel-cta-min-width: clamp(84px, 28vw, 106px);
+        --landing-panel-cta-height: clamp(24px, 7.2vw, 29px);
+        --landing-panel-cta-padding-x: clamp(var(--space-8), 2.7vw, var(--space-12));
+        --landing-panel-cta-font-size: clamp(12px, 3.15vw, 14px);
+        left: 50%;
+        right: auto;
+        bottom: auto;
+        top: calc(var(--landing-mobile-center-y) + (var(--landing-world-orb-size) * .58));
+        width: min(84vw, 326px);
+        min-height: 88px;
+        translate: -50% var(--landing-panel-bob-y, 0px);
         transform: none;
       }
 
+      .landing-panel p {
+        padding-top: clamp(var(--space-10), 3.5vw, var(--space-14));
+        font-size: clamp(9.5px, 2.55vw, 11.5px);
+        line-height: 1.38;
+      }
+
+      .market-copy-button.hudi-trade-button {
+        margin-bottom: clamp(var(--space-8), 2.6vw, var(--space-12));
+      }
+
+      .market-cards,
+      .landing-panel,
+      .chat-showcase,
+      .final-showcase {
+        contain: layout paint style;
+      }
+
+      html:not([data-mobile-market-active="true"]) .market-cards,
+      html:not([data-mobile-market-active="true"]) .landing-panel,
+      html:not([data-mobile-chat-active="true"]) .chat-showcase,
+      html:not([data-mobile-final-active="true"]) .final-showcase {
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      html:not([data-mobile-market-active="true"]):not([data-mobile-market-warm="true"]) .market-cards,
+      html:not([data-mobile-market-active="true"]):not([data-mobile-market-warm="true"]) .landing-panel,
+      html:not([data-mobile-chat-active="true"]):not([data-mobile-chat-warm="true"]) .chat-showcase,
+      html:not([data-mobile-final-active="true"]):not([data-mobile-final-warm="true"]) .final-showcase {
+        content-visibility: hidden;
+      }
+
+      .market-cards .stock-card:not(.is-market-visible):not(.is-market-hiding),
+      .landing-panel:not(.is-market-visible):not(.is-market-hiding),
+      .chat-bubble-card:not(.is-comment-visible):not(.is-comment-hiding) {
+        visibility: hidden;
+        content-visibility: hidden;
+      }
+
       .market-cards {
-        left: 50%;
-        top: 7%;
-        gap: var(--space-16);
-        translate: 0;
-        transform: translateX(-50%) scale(.78);
+        left: 0;
+        right: 0;
+        top: calc(var(--landing-mobile-center-y) - (var(--landing-world-orb-size) * 1.3));
+        width: 100%;
+        height: calc(var(--landing-world-orb-size) * .82);
+        display: block;
+        gap: 0;
+        translate: 0 calc(var(--landing-market-y, 0vh) * -1);
+        transform: none;
         transform-origin: top center;
+      }
+
+      .market-cards .stock-card {
+        --stock-panel-gap: clamp(5px, 1.45vw, var(--space-8));
+        --stock-orb-size: clamp(38px, 11.8vw, 56px);
+        --stock-inset-height: calc(100% - var(--space-10));
+        --stock-inset-label-size: clamp(7px, 1.9vw, 10px);
+        --stock-inset-value-size: clamp(8.4px, 2.2vw, 11.2px);
+        --stock-inset-readout-top: var(--space-3);
+        --stock-inset-readout-right: var(--space-3);
+        position: absolute;
+        width: min(48vw, 184px);
+        height: clamp(58px, 15.8vw, 76px);
+      }
+
+      .market-cards .stock-card:nth-child(1) {
+        left: 25%;
+        top: calc(var(--landing-world-orb-size) * .45);
+        --market-card-x: -50%;
+      }
+
+      .market-cards .stock-card:nth-child(2) {
+        --stock-orb-size: clamp(46px, 14.5vw, 66px);
+        --stock-inset-height: calc(100% - var(--space-12));
+        --stock-inset-label-size: clamp(10.9px, 2.86vw, 14.6px);
+        --stock-inset-value-size: clamp(12.7px, 3.25vw, 18.2px);
+        left: 50%;
+        top: 0;
+        width: min(62vw, 238px);
+        height: clamp(72px, 18.6vw, 92px);
+        --market-card-x: -50%;
+      }
+
+      .market-cards .stock-card:nth-child(3) {
+        left: 75%;
+        top: calc(var(--landing-world-orb-size) * .45);
+        --market-card-x: -50%;
       }
 
       .chat-copy-panel {
         left: var(--space-16);
         right: var(--space-16);
-        top: 50%;
+        top: var(--landing-mobile-center-y);
         width: auto;
         min-height: 132px;
       }
 
+      .chat-showcase {
+        translate: 0;
+      }
+
+      .chat-bubble-card {
+        animation: none;
+        opacity: 1;
+        will-change: translate;
+      }
+
+      .chat-bubble-card.is-comment-hiding .chat-bubble-pop-shell {
+        animation: landing-market-pop-out 300ms cubic-bezier(.45, 0, .55, 1) both;
+      }
+
+      .chat-bubble-card[data-mobile-comment-hidden="true"],
+      .chat-bubble-card[data-mobile-comment-offscreen="true"] {
+        visibility: hidden;
+        content-visibility: hidden;
+        pointer-events: none;
+      }
+
       .chat-bubble-card.is-top-right {
-        --chat-lane-offset-x: 0vw;
-        left: var(--space-16);
-        right: var(--space-16);
-        top: 72%;
-        width: auto;
+        --chat-parallax-x: var(--landing-chat-parallax-near, 0vw);
+        --chat-lane-offset-x: -86vw;
+        left: var(--space-14);
+        right: auto;
+        top: 10%;
+        width: min(78vw, 330px);
+      }
+
+      .chat-bubble-card.is-upper-mid {
+        --chat-parallax-x: var(--landing-chat-parallax-mid, 0vw);
+        --chat-lane-offset-x: 14vw;
+        left: 10%;
+        right: auto;
+        top: 23%;
+        width: min(74vw, 315px);
       }
 
       .chat-bubble-card.is-mid-right {
-        --chat-lane-offset-x: 0vw;
-        left: 28%;
-        right: var(--space-16);
-        top: 88%;
-        width: auto;
+        --chat-parallax-x: var(--landing-chat-parallax-deep, 0vw);
+        --chat-lane-offset-x: 46vw;
+        left: 12%;
+        right: auto;
+        top: 56%;
+        width: min(72vw, 310px);
       }
 
       .market-particle,
@@ -1554,10 +1804,26 @@
         display: none;
       }
 
-      .chat-bubble-card.is-left-low,
+      .landing-orb-world-map-highlight-canvas,
       .chat-bubble-card.is-lower-right,
-      .chat-bubble-card.is-upper-mid,
       .chat-bubble-card.is-left-mid,
+      .chat-bubble-card.is-far-mid,
+      .chat-bubble-card.is-extra-left,
+      .chat-bubble-card.is-extra-right,
+      .chat-bubble-card.is-extra-far {
+        display: none;
+      }
+
+      .chat-bubble-card.is-left-low {
+        --chat-parallax-x: var(--landing-chat-parallax-near, 0vw);
+        --chat-lane-offset-x: 38vw;
+        left: var(--space-12);
+        right: auto;
+        top: 67%;
+        bottom: auto;
+        width: min(80vw, 340px);
+      }
+
       .chat-bubble-card.is-far-mid,
       .chat-bubble-card.is-extra-left,
       .chat-bubble-card.is-extra-right,
@@ -1632,6 +1898,9 @@
     <div class="hudi-blank-orb" id="blank-orb" aria-hidden="true">
       <span class="landing-orb-inner-glow"></span>
       <canvas class="landing-orb-world-map-canvas" id="landing-orb-world-map-canvas" width="1024" height="1024" aria-hidden="true"></canvas>
+      <span class="landing-orb-world-map-mobile" id="landing-orb-world-map-mobile" aria-hidden="true">
+        <img class="landing-orb-world-map-mobile__strip" src="assets/Black_on_white_dotted_world_map_vector.svg?white-transparent-map=1" alt="" decoding="async">
+      </span>
       <canvas class="landing-orb-world-map-highlight-canvas" id="landing-orb-world-map-highlight-canvas" width="1024" height="1024" aria-hidden="true"></canvas>
       <span class="landing-orb-world-map-gloss" aria-hidden="true"></span>
       <svg class="hudi-logo-mark landing-hudi-mark" width="47" height="49" viewBox="0 0 47 49" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -2031,20 +2300,104 @@
   </div>
 
   <script type="module">
-    import * as THREE from "three";
+    const landingMobileQuery = window.matchMedia?.("(max-width: 700px)");
+    const isLandingMobile = landingMobileQuery?.matches ?? window.innerWidth <= 700;
+    let THREE = null;
+    if (!isLandingMobile) {
+      try {
+        THREE = await import("three");
+      } catch (error) {
+        console.warn("Landing globe renderer could not load Three.js; falling back to SVG map.", error);
+      }
+    }
+
+    function installLandingTokenFallbacks() {
+      const root = document.documentElement;
+      const rootStyle = getComputedStyle(root);
+      const tokens = {
+        "--page-bg-top": "#ffffff",
+        "--page-bg-bottom": "#f8fcff",
+        "--ink": "#171717",
+        "--black": "#000000",
+        "--white": "#ffffff",
+        "--white-alpha-38": "rgba(255, 255, 255, 0.38)",
+        "--light-grey": "#a9a9a9",
+        "--dark-grey": "#74809b",
+        "--text-darker-grey": "#5b677e",
+        "--info-blue": "#8bccff",
+        "--color-ff4a22": "#ff4a22",
+        "--outline-blue": "#e6f4ff",
+        "--outline-blue-2": "#e2f2ff",
+        "--landing-texture-square": "#f6fcff",
+        "--landing-texture-transition-ms": "1100ms",
+        "--landing-texture-cycle-ms": "1400ms",
+        "--hudi-orb-colour": "#24d0ff",
+        "--hudi-orb-sheen": "#00ffbf",
+        "--hudi-orb-shadow": "#00329d",
+        "--hudi-orb-inner": "#95afff",
+        "--radius-pill": "999px",
+        "--radius-card": "8px",
+        "--radius-panel": "4px",
+        "--stroke-panel": "2px",
+        "--mono": "\"Syne Mono Hudi\", \"Syne Mono\", ui-monospace, monospace",
+        "--sans": "\"Syne Hudi\", Syne, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "--sf-pro": "-apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"Helvetica Neue\", Arial, sans-serif",
+        "--ocr": "-apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"Helvetica Neue\", Arial, sans-serif",
+        "--ocr-fixed": "\"OCRA Fixed\", ui-monospace, monospace",
+        "--landing-panel-base-bg": "linear-gradient(360deg, rgba(170, 170, 170, 0.1) 0%, rgba(221, 221, 221, 0.1) 100%), #ffffff",
+        "--landing-panel-text-gradient": "linear-gradient(180deg, #8f9ab0 1.93%, #525c6f 78.85%)",
+        "--landing-panel-header-bg": "linear-gradient(180deg, rgba(170, 170, 170, 0) 0%, rgba(217, 217, 217, 0.12) 100%)",
+        "--landing-panel-inner-shadow": "inset 0 0 1.3px rgba(0, 0, 0, 0.1)",
+        "--landing-panel-exterior-shadow": "0px 0px 6px rgba(0, 0, 0, 0.25), 3px 6px 6px rgba(0, 0, 0, 0.15)",
+        "--landing-panel-exterior-drop-shadow": "drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.25)) drop-shadow(3px 6px 6px rgba(0, 0, 0, 0.15))"
+      };
+
+      Object.entries(tokens).forEach(([name, value]) => {
+        if (!rootStyle.getPropertyValue(name).trim()) {
+          root.style.setProperty(name, value);
+        }
+      });
+
+      [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+        20, 22, 23, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 43, 44, 48,
+        50, 54, 55, 56, 58, 62, 64, 72, 74, 78, 82, 84, 92, 104, 118,
+        120, 124, 136, 148, 160, 180, 188, 220, 224, 296
+      ].forEach((space) => {
+        const name = `--space-${space}`;
+        if (!rootStyle.getPropertyValue(name).trim()) {
+          root.style.setProperty(name, `${space}px`);
+        }
+      });
+    }
 
     async function loadHudiStyles() {
-      const response = await fetch("kitchen-sink.html");
-      const html = await response.text();
+      let html = "";
+      try {
+        const response = await fetch("kitchen-sink.html");
+        if (!response.ok) {
+          throw new Error(`kitchen-sink.html returned ${response.status}`);
+        }
+        html = await response.text();
+      } catch (error) {
+        console.warn("Landing could not load kitchen-sink.html; continuing with embedded token fallbacks.", error);
+        installLandingTokenFallbacks();
+        return { doc: document, html };
+      }
+
       const doc = new DOMParser().parseFromString(html, "text/html");
       const sourceStyle = doc.querySelector("style");
       const landingStyle = document.getElementById("landing-style");
 
-      if (!sourceStyle || !landingStyle) return { doc, html };
+      if (!sourceStyle || !landingStyle) {
+        installLandingTokenFallbacks();
+        return { doc, html };
+      }
 
       const style = document.createElement("style");
       style.textContent = sourceStyle.textContent;
       document.head.insertBefore(style, landingStyle);
+      installLandingTokenFallbacks();
       return { doc, html };
     }
 
@@ -2057,6 +2410,75 @@
       const value = token(name);
       return value.endsWith("ms") ? Number.parseFloat(value) : fallback;
     };
+    const landingPerf = (() => {
+      let enabled = false;
+      try {
+        const params = new URLSearchParams(window.location.search);
+        enabled = params.has("landingPerf") || window.localStorage?.getItem("hudiLandingPerf") === "1";
+      } catch {
+        enabled = false;
+      }
+
+      const samples = new Map();
+      let frame = 0;
+      return {
+        enabled,
+        start() {
+          return enabled ? performance.now() : 0;
+        },
+        end(label, startedAt) {
+          if (!enabled) return;
+          const sample = samples.get(label) || { total: 0, count: 0, max: 0 };
+          const duration = performance.now() - startedAt;
+          sample.total += duration;
+          sample.count += 1;
+          sample.max = Math.max(sample.max, duration);
+          samples.set(label, sample);
+        },
+        frame() {
+          if (!enabled) return;
+          frame += 1;
+          if (frame % 180 !== 0) return;
+          const report = {};
+          samples.forEach((sample, label) => {
+            report[label] = {
+              avg: Number((sample.total / Math.max(1, sample.count)).toFixed(3)),
+              max: Number(sample.max.toFixed(3)),
+              count: sample.count
+            };
+          });
+          console.table(report);
+          samples.clear();
+        }
+      };
+    })();
+    const setStyleProp = (element, name, value) => {
+      if (!element) return false;
+      const next = String(value);
+      if (element.style.getPropertyValue(name) === next) return false;
+      element.style.setProperty(name, next);
+      return true;
+    };
+    const setAttr = (element, name, value) => {
+      if (!element) return false;
+      const next = String(value);
+      if (element.getAttribute(name) === next) return false;
+      element.setAttribute(name, next);
+      return true;
+    };
+    const setDatasetValue = (element, name, value) => {
+      if (!element) return false;
+      const next = String(value);
+      if (element.dataset[name] === next) return false;
+      element.dataset[name] = next;
+      return true;
+    };
+    const warmLandingAsset = (src) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = src;
+      image.decode?.().catch(() => {});
+    };
     const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
     const smoothstep = (value) => {
       const t = clamp(value);
@@ -2068,17 +2490,32 @@
     };
     const blankOrb = document.getElementById("blank-orb");
     const globeMapCanvas = document.getElementById("landing-orb-world-map-canvas");
+    const globeMapMobile = document.getElementById("landing-orb-world-map-mobile");
     const globeMapHighlightCanvas = document.getElementById("landing-orb-world-map-highlight-canvas");
+    const activateOrbMapFallback = () => {
+      if (!blankOrb || !globeMapMobile || blankOrb.classList.contains("is-map-fallback-active")) return;
+      blankOrb.classList.add("is-map-fallback-active");
+    };
     const landingShell = document.querySelector(".landing-shell");
     const landingStartButton = document.querySelector(".landing-start-button");
     const landingFinalButton = document.querySelector(".landing-final-button");
     const landingMarketPanel = document.querySelector(".landing-panel");
     const chatCopyPanel = document.querySelector(".chat-copy-panel");
     const landingTextRibbonPath = document.querySelector("[data-landing-text-ribbon-path]");
+    [
+      "assets/Black_on_white_dotted_world_map_vector.svg?white-transparent-map=1",
+      ...(!isLandingMobile ? [
+        "assets/landing-map-highlight-dots.svg?highlight-dots=1",
+        "assets/cross.svg",
+        "assets/cross1.svg",
+        "assets/cross2.svg"
+      ] : [])
+    ].forEach(warmLandingAsset);
     const marketRevealItems = [
       ...document.querySelectorAll(".market-cards .stock-card"),
       document.querySelector(".landing-panel")
     ].filter(Boolean);
+    const activeMarketRevealItems = new Set();
     const floatingPanelItems = [
       { element: document.querySelector(".market-cards .stock-card:nth-child(1)"), amplitude: 3.4, duration: 5200, phase: .15 },
       { element: document.querySelector(".market-cards .stock-card:nth-child(2)"), amplitude: 4.2, duration: 6100, phase: 2.25 },
@@ -2094,6 +2531,12 @@
       over: document.querySelector('[data-market-particle-layer="over"]')
     };
     const marketParticles = [];
+    const mobileCommentSelectors = new Set([
+      ".chat-bubble-card.is-top-right",
+      ".chat-bubble-card.is-upper-mid",
+      ".chat-bubble-card.is-left-low",
+      ".chat-bubble-card.is-mid-right"
+    ]);
     const commentRevealItems = [
       [".chat-bubble-card.is-top-right", 0],
       [".chat-bubble-card.is-left-low", .045],
@@ -2106,13 +2549,20 @@
       [".chat-bubble-card.is-far-mid", .485],
       [".chat-bubble-card.is-extra-far", .57]
     ].map(([selector, delayRaw]) => ({
+      selector,
       element: document.querySelector(selector),
       delayRaw
-    })).filter(({ element }) => element);
+    })).filter(({ selector, element }) => element && (!isLandingMobile || mobileCommentSelectors.has(selector)));
     const commentHideTimers = new WeakMap();
+    const activeCommentRevealItems = new Set();
+    const mobileCommentExitDelayRaw = .13;
+    const mobileCommentExitDurationRaw = .16;
+    const mobileCommentPopOutMs = 300;
+    let mobileCommentOffscreenLastRaw = -Infinity;
     const chatParticleLayer = document.querySelector("[data-chat-particle-layer]");
 
     function setupMarketParticles() {
+      if (isLandingMobile) return;
       if (!marketParticleLayers.under || !marketParticleLayers.over) return;
 
       const createSeededRandom = (seed) => () => {
@@ -2202,6 +2652,7 @@
     }
 
     function updateMarketParticles(rawProgress) {
+      if (isLandingMobile) return;
       marketParticles.forEach(({ element, revealIndex, opacity, scale }) => {
         const revealStart = marketItemRevealRaw[revealIndex] ?? marketItemRevealRaw[0] ?? 0;
         const hideStart = Number.isFinite(marketItemHideRaw[revealIndex]) ? marketItemHideRaw[revealIndex] + marketParticleExitDelayRaw : Infinity;
@@ -2211,9 +2662,9 @@
         const activeScale = .72 + ((scale - .72) * progress);
         const popY = (1 - progress) * 18;
 
-        element.style.setProperty("--world-particle-alpha", (progress * opacity).toFixed(3));
-        element.style.setProperty("--world-particle-scale", activeScale.toFixed(3));
-        element.style.setProperty("--world-particle-pop-y", `${popY.toFixed(2)}px`);
+        setStyleProp(element, "--world-particle-alpha", (progress * opacity).toFixed(3));
+        setStyleProp(element, "--world-particle-scale", activeScale.toFixed(3));
+        setStyleProp(element, "--world-particle-pop-y", `${popY.toFixed(2)}px`);
       });
     }
 
@@ -2257,6 +2708,7 @@
     ];
 
     function setupChatParticles() {
+      if (isLandingMobile) return;
       if (!chatParticleLayer) return;
 
       document.querySelectorAll(".chat-showcase > .chat-particle").forEach((particle) => {
@@ -2472,6 +2924,37 @@
     const finalScrollLevel = document.querySelector('[data-scroll-level="4"]');
     const maxScrollIndex = Math.max(1, scrollLevels.length - 1);
     const svgNamespace = "http://www.w3.org/2000/svg";
+    const landingContourSignatures = new WeakMap();
+    let landingContourDirty = true;
+    let landingScrollMetricsDirty = true;
+    let landingScrollMetrics = {
+      viewportHeight: 1,
+      maxRawProgress: maxScrollIndex,
+      finalLevelStartRaw: maxScrollIndex
+    };
+
+    function markLandingContoursDirty() {
+      landingContourDirty = true;
+    }
+
+    function markLandingScrollMetricsDirty() {
+      landingScrollMetricsDirty = true;
+    }
+
+    function getLandingScrollMetrics() {
+      if (!landingScrollMetricsDirty) return landingScrollMetrics;
+
+      const viewportHeight = getLandingViewportHeight();
+      const pageHeight = document.documentElement.scrollHeight;
+      const maxRawProgress = Math.max(maxScrollIndex, (pageHeight - viewportHeight) / viewportHeight);
+      landingScrollMetrics = {
+        viewportHeight,
+        maxRawProgress,
+        finalLevelStartRaw: finalScrollLevel ? finalScrollLevel.offsetTop / viewportHeight : maxRawProgress
+      };
+      landingScrollMetricsDirty = false;
+      return landingScrollMetrics;
+    }
 
     function setupLandingTextRibbon() {
       if (!landingTextRibbonPath) return;
@@ -2553,8 +3036,77 @@
       finalOpacity: 0,
       shaderCenterShift: 0
     };
+    const mobileSectionGateState = {
+      market: false,
+      chat: false,
+      final: false
+    };
+    const mobileSectionWarmDurations = {
+      market: 700,
+      chat: 1600,
+      final: 1400
+    };
+    const mobileSectionWarmTimers = {
+      market: 0,
+      chat: 0,
+      final: 0
+    };
+    let requestLandingFrame = () => {};
+    let landingViewportRevision = 0;
+    let landingResizeAppliedRevision = -1;
+    let landingStableViewportWidth = 0;
+    let landingStableViewportHeight = 0;
+    let mobileScrollUpdateFrame = 0;
+    let mobileScrollCoalesceEnabled = false;
     let lastRawProgress = 0;
     let lastScrollAt = performance.now();
+
+    function measureLandingLargeViewportHeight() {
+      if (!isLandingMobile) return Math.max(1, window.innerHeight || 1);
+
+      const probe = document.createElement("div");
+      probe.style.cssText = [
+        "position:fixed",
+        "left:0",
+        "top:0",
+        "width:1px",
+        "height:100lvh",
+        "visibility:hidden",
+        "pointer-events:none",
+        "z-index:-1"
+      ].join(";");
+      document.body.append(probe);
+      const height = probe.getBoundingClientRect().height;
+      probe.remove();
+
+      return Math.max(
+        1,
+        Math.round(height || 0),
+        Math.round(document.documentElement.clientHeight || 0),
+        Math.round(window.innerHeight || 0)
+      );
+    }
+
+    function updateLandingStableViewport(force = false) {
+      if (!isLandingMobile) return false;
+
+      const width = Math.max(1, Math.round(document.documentElement.clientWidth || window.innerWidth || 1));
+      if (!force && landingStableViewportWidth === width && landingStableViewportHeight) return false;
+
+      landingStableViewportWidth = width;
+      landingStableViewportHeight = measureLandingLargeViewportHeight();
+      landingViewportRevision += 1;
+      markLandingScrollMetricsDirty();
+      setStyleProp(document.documentElement, "--landing-stable-vh", `${landingStableViewportHeight}px`);
+      return true;
+    }
+
+    function getLandingViewportHeight() {
+      if (!isLandingMobile) return Math.max(1, window.innerHeight || 1);
+      return Math.max(1, landingStableViewportHeight || measureLandingLargeViewportHeight());
+    }
+
+    updateLandingStableViewport(true);
 
     applyLandingMarketOrbPalettes();
 
@@ -2699,11 +3251,11 @@
         const ticker = orb.querySelector(".hudi-stock-orb__ticker");
         const text = ticker?.querySelector("text");
         const label = text?.textContent?.trim() || "";
-        orb.style.setProperty("--orb-base", palette.base);
-        orb.style.setProperty("--orb-sheen", palette.sheen);
-        orb.style.setProperty("--orb-shadow", hexToRgbaValue(palette.shadowHex, .4));
-        orb.style.setProperty("--orb-ticker-inner", rgbToHexValue(mixRgbValue(hexToRgbValue(palette.base), { r: 255, g: 255, b: 255 }, .61)));
-        orb.style.setProperty("--orb-ticker-scale", Math.max(.72, Math.min(1.68, 5 / Math.max(1, label.length))).toFixed(3));
+        setStyleProp(orb, "--orb-base", palette.base);
+        setStyleProp(orb, "--orb-sheen", palette.sheen);
+        setStyleProp(orb, "--orb-shadow", hexToRgbaValue(palette.shadowHex, .4));
+        setStyleProp(orb, "--orb-ticker-inner", rgbToHexValue(mixRgbValue(hexToRgbValue(palette.base), { r: 255, g: 255, b: 255 }, .61)));
+        setStyleProp(orb, "--orb-ticker-scale", Math.max(.72, Math.min(1.68, 5 / Math.max(1, label.length))).toFixed(3));
         orb.classList.toggle("is-auto-white", Math.min(contrastRatioValue(palette.base, "#506868"), contrastRatioValue(palette.sheen, "#506868")) < 3);
       });
     }
@@ -2718,8 +3270,13 @@
       innerTo: token("--hudi-orb-inner")
     };
 
+    function stableViewportOffset(valueVh) {
+      if (!isLandingMobile) return `${valueVh.toFixed(3)}vh`;
+      return `${((valueVh / 100) * getLandingViewportHeight()).toFixed(2)}px`;
+    }
+
     function levelOffset(level, progress, speed = 100) {
-      return `${((level - progress) * speed).toFixed(3)}vh`;
+      return stableViewportOffset((level - progress) * speed);
     }
 
     const reducedMotionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
@@ -2727,8 +3284,9 @@
     function updateFloatingPanels(time) {
       const reduceMotion = reducedMotionQuery?.matches;
       floatingPanelItems.forEach(({ element, amplitude, duration, phase }) => {
-        const bobY = reduceMotion ? 0 : Math.sin((time / duration) * Math.PI * 2 + phase) * amplitude;
-        element.style.setProperty("--landing-panel-bob-y", `${bobY.toFixed(2)}px`);
+        const mobileScale = isLandingMobile ? 1.12 : 1;
+        const bobY = reduceMotion ? 0 : Math.sin((time / duration) * Math.PI * 2 + phase) * amplitude * mobileScale;
+        setStyleProp(element, "--landing-panel-bob-y", `${bobY.toFixed(2)}px`);
       });
     }
 
@@ -2745,9 +3303,7 @@
     }
 
     function getMaxRawProgress() {
-      const pageHeight = document.documentElement.scrollHeight;
-      const viewportHeight = Math.max(1, window.innerHeight);
-      return Math.max(maxScrollIndex, (pageHeight - viewportHeight) / viewportHeight);
+      return getLandingScrollMetrics().maxRawProgress;
     }
 
     function updateMarketRevealItems(rawProgress) {
@@ -2757,8 +3313,11 @@
           const hideTimer = marketHideTimers.get(item);
           if (hideTimer) window.clearTimeout(hideTimer);
           marketHideTimers.delete(item);
-          item.classList.remove("is-market-hiding");
-          item.classList.add("is-market-visible");
+          activeMarketRevealItems.add(item);
+          if (!item.classList.contains("is-market-visible")) {
+            item.classList.remove("is-market-hiding");
+            item.classList.add("is-market-visible");
+          }
           return;
         }
 
@@ -2769,11 +3328,16 @@
         const hideTimer = window.setTimeout(() => {
           if (!item.classList.contains("is-market-visible")) {
             item.classList.remove("is-market-hiding");
+            activeMarketRevealItems.delete(item);
           }
           marketHideTimers.delete(item);
         }, 280);
         marketHideTimers.set(item, hideTimer);
       });
+    }
+
+    function hasActiveMarketRevealItems() {
+      return activeMarketRevealItems.size > 0;
     }
 
     commentRevealItems.forEach(({ element }) => {
@@ -2790,8 +3354,13 @@
           const hideTimer = commentHideTimers.get(element);
           if (hideTimer) window.clearTimeout(hideTimer);
           commentHideTimers.delete(element);
-          element.classList.remove("is-comment-hiding");
-          element.classList.add("is-comment-visible");
+          if (!isLandingMobile || (element.dataset.mobileCommentOffscreen !== "true" && element.dataset.mobileCommentHidden !== "true")) {
+            activeCommentRevealItems.add(element);
+          }
+          if (!element.classList.contains("is-comment-visible")) {
+            element.classList.remove("is-comment-hiding");
+            element.classList.add("is-comment-visible");
+          }
           return;
         }
 
@@ -2802,6 +3371,7 @@
         const hideTimer = window.setTimeout(() => {
           if (!element.classList.contains("is-comment-visible")) {
             element.classList.remove("is-comment-hiding");
+            activeCommentRevealItems.delete(element);
           }
           commentHideTimers.delete(element);
         }, 380);
@@ -2809,8 +3379,125 @@
       });
     }
 
+    function hasActiveCommentRevealItems() {
+      return activeCommentRevealItems.size > 0;
+    }
+
+    function updateMobileCommentRevealItems(startRaw, rawProgress, chatProgress, fadeOutStart) {
+      if (!isLandingMobile) return;
+
+      const exitDelayRaw = mobileCommentExitDelayRaw;
+      commentRevealItems.forEach(({ element, delayRaw }, index) => {
+        const shouldShow = rawProgress >= startRaw + delayRaw
+          && chatProgress < fadeOutStart + index * exitDelayRaw;
+
+        if (shouldShow) {
+          const hideTimer = commentHideTimers.get(element);
+          if (hideTimer) window.clearTimeout(hideTimer);
+          commentHideTimers.delete(element);
+          setDatasetValue(element, "mobileCommentHidden", "false");
+          if (element.dataset.mobileCommentOffscreen !== "true") {
+            activeCommentRevealItems.add(element);
+          }
+          if (!element.classList.contains("is-comment-visible")) {
+            element.classList.remove("is-comment-hiding");
+            element.classList.add("is-comment-visible");
+          }
+          return;
+        }
+
+        if (!element.classList.contains("is-comment-visible") && !element.classList.contains("is-comment-hiding")) {
+          setDatasetValue(element, "mobileCommentHidden", "true");
+          activeCommentRevealItems.delete(element);
+          return;
+        }
+
+        if (element.classList.contains("is-comment-hiding")) return;
+
+        element.classList.add("is-comment-hiding");
+        element.classList.remove("is-comment-visible");
+        setDatasetValue(element, "mobileCommentHidden", "false");
+        if (element.dataset.mobileCommentOffscreen !== "true") {
+          activeCommentRevealItems.add(element);
+        }
+
+        const hideTimer = window.setTimeout(() => {
+          if (!element.classList.contains("is-comment-visible")) {
+            element.classList.remove("is-comment-hiding");
+            setDatasetValue(element, "mobileCommentHidden", "true");
+            activeCommentRevealItems.delete(element);
+          }
+          commentHideTimers.delete(element);
+        }, mobileCommentPopOutMs);
+        commentHideTimers.set(element, hideTimer);
+      });
+    }
+
+    function updateMobileCommentOffscreen(rawProgress = 0, force = false) {
+      if (!isLandingMobile) return;
+      if (!force && Math.abs(rawProgress - mobileCommentOffscreenLastRaw) < .035) return;
+      mobileCommentOffscreenLastRaw = rawProgress;
+
+      const viewportWidth = Math.max(1, landingStableViewportWidth || window.innerWidth || 1);
+      const viewportHeight = getLandingViewportHeight();
+      const margin = 12;
+
+      commentRevealItems.forEach(({ element }) => {
+        if (!element.classList.contains("is-comment-visible") && !element.classList.contains("is-comment-hiding")) {
+          setDatasetValue(element, "mobileCommentOffscreen", "false");
+          return;
+        }
+
+        const rect = element.getBoundingClientRect();
+        const isOffscreen = rect.right < -margin
+          || rect.left > viewportWidth + margin
+          || rect.bottom < -margin
+          || rect.top > viewportHeight + margin;
+
+        setDatasetValue(element, "mobileCommentOffscreen", isOffscreen ? "true" : "false");
+        if (isOffscreen || element.dataset.mobileCommentHidden === "true") {
+          activeCommentRevealItems.delete(element);
+        } else {
+          activeCommentRevealItems.add(element);
+        }
+      });
+    }
+
+    function setMobileSectionWarm(section, active) {
+      if (!isLandingMobile) return;
+      const attr = `mobile${section[0].toUpperCase()}${section.slice(1)}Warm`;
+      if (mobileSectionWarmTimers[section]) {
+        window.clearTimeout(mobileSectionWarmTimers[section]);
+        mobileSectionWarmTimers[section] = 0;
+      }
+
+      if (active) {
+        setDatasetValue(document.documentElement, attr, "true");
+        return;
+      }
+
+      if (document.documentElement.dataset[attr] !== "true") return;
+      mobileSectionWarmTimers[section] = window.setTimeout(() => {
+        setDatasetValue(document.documentElement, attr, "false");
+        mobileSectionWarmTimers[section] = 0;
+      }, mobileSectionWarmDurations[section] || 1400);
+    }
+
+    function setMobileSectionActivity({ market = false, chat = false, final = false } = {}) {
+      if (!isLandingMobile) return;
+      if (mobileSectionGateState.market !== market) setMobileSectionWarm("market", market);
+      if (mobileSectionGateState.chat !== chat) setMobileSectionWarm("chat", chat);
+      if (mobileSectionGateState.final !== final) setMobileSectionWarm("final", final);
+      mobileSectionGateState.market = market;
+      mobileSectionGateState.chat = chat;
+      mobileSectionGateState.final = final;
+      setDatasetValue(document.documentElement, "mobileMarketActive", market ? "true" : "false");
+      setDatasetValue(document.documentElement, "mobileChatActive", chat ? "true" : "false");
+      setDatasetValue(document.documentElement, "mobileFinalActive", final ? "true" : "false");
+    }
+
     function createOrbGlobeRenderer(mapCanvas, options = {}) {
-      if (!mapCanvas) return null;
+      if (!mapCanvas || !THREE) return null;
 
       const {
         src = "assets/Black_on_white_dotted_world_map_vector.svg?white-transparent-map=1",
@@ -2839,13 +3526,20 @@
         uHighlightColor: { value: new THREE.Vector3(highlightColor[0] / 255, highlightColor[1] / 255, highlightColor[2] / 255) },
         uOpacity: { value: 0 }
       };
-      const globeRenderer = new THREE.WebGLRenderer({
-        canvas: mapCanvas,
-        alpha: true,
-        antialias: true,
-        premultipliedAlpha: false,
-        powerPreference: "high-performance"
-      });
+      let globeRenderer = null;
+      try {
+        globeRenderer = new THREE.WebGLRenderer({
+          canvas: mapCanvas,
+          alpha: true,
+          antialias: true,
+          premultipliedAlpha: false,
+          powerPreference: "high-performance"
+        });
+      } catch (error) {
+        console.warn("Landing globe WebGL renderer could not start; falling back to SVG map.", error);
+        if (!highlight) activateOrbMapFallback();
+        return null;
+      }
       const material = new THREE.ShaderMaterial({
         uniforms,
         transparent: true,
@@ -2908,6 +3602,13 @@
       });
       const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
       let needsRender = true;
+      const lastProgress = {
+        opacity: null,
+        offset: null,
+        samsung: null,
+        alibaba: null,
+        toyota: null
+      };
 
       globeRenderer.setClearColor(0x000000, 0);
       globeRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
@@ -2928,11 +3629,31 @@
 
       function setProgress(mapReveal, mapOffset = 0, highlights = {}) {
         const reveal = clamp(mapReveal);
-        uniforms.uOpacity.value = reveal > .001 ? 1 : 0;
+        const opacity = reveal > .001 ? 1 : 0;
+        const samsung = highlights.samsung || 0;
+        const alibaba = highlights.alibaba || 0;
+        const toyota = highlights.toyota || 0;
+
+        if (
+          lastProgress.opacity === opacity &&
+          lastProgress.offset === mapOffset &&
+          lastProgress.samsung === samsung &&
+          lastProgress.alibaba === alibaba &&
+          lastProgress.toyota === toyota
+        ) {
+          return;
+        }
+
+        uniforms.uOpacity.value = opacity;
         uniforms.uMapOffset.value.x = mapOffset;
-        uniforms.uHighlightSamsung.value = highlights.samsung || 0;
-        uniforms.uHighlightAlibaba.value = highlights.alibaba || 0;
-        uniforms.uHighlightToyota.value = highlights.toyota || 0;
+        uniforms.uHighlightSamsung.value = samsung;
+        uniforms.uHighlightAlibaba.value = alibaba;
+        uniforms.uHighlightToyota.value = toyota;
+        lastProgress.opacity = opacity;
+        lastProgress.offset = mapOffset;
+        lastProgress.samsung = samsung;
+        lastProgress.alibaba = alibaba;
+        lastProgress.toyota = toyota;
         markDirty();
       }
 
@@ -2971,6 +3692,9 @@
         uniforms.uMap.value = texture;
         markDirty();
       };
+      sourceMap.onerror = () => {
+        if (!highlight) activateOrbMapFallback();
+      };
       sourceMap.src = src;
 
       resize();
@@ -2982,14 +3706,337 @@
       };
     }
 
-    const orbGlobe = createOrbGlobeRenderer(globeMapCanvas);
-    const orbGlobeHighlights = createOrbGlobeRenderer(globeMapHighlightCanvas, {
+    function createMobileOrbGlobeRenderer(mapCanvas) {
+      if (!mapCanvas) return null;
+      const gl = mapCanvas.getContext("webgl", {
+        alpha: true,
+        antialias: true,
+        depth: false,
+        stencil: false,
+        premultipliedAlpha: false,
+        preserveDrawingBuffer: false,
+        powerPreference: "high-performance"
+      });
+
+      if (!gl) {
+        activateOrbMapFallback();
+        return {
+          resize() {},
+          render() {},
+          setProgress() {}
+        };
+      }
+
+      const vertexShaderSource = `
+        attribute vec2 aPosition;
+        varying vec2 vUv;
+
+        void main() {
+          vUv = aPosition * 0.5 + 0.5;
+          gl_Position = vec4(aPosition, 0.0, 1.0);
+        }
+      `;
+      const fragmentShaderSource = `
+        precision mediump float;
+
+        uniform sampler2D uMap;
+        uniform sampler2D uHighlightMap;
+        uniform vec2 uResolution;
+        uniform vec2 uMapOffset;
+        uniform float uMapAspect;
+        uniform float uMapCopies;
+        uniform float uMapZoom;
+        uniform float uOpacity;
+        uniform float uHighlightSamsung;
+        uniform float uHighlightAlibaba;
+        uniform float uHighlightToyota;
+        uniform vec3 uHighlightColor;
+        varying vec2 vUv;
+
+        const float PI = 3.141592653589793;
+
+        void main() {
+          vec2 fragCoord = vUv * uResolution.xy;
+          vec2 uv = fragCoord.xy * 2.0 / uResolution.xy - vec2(1.0);
+          float d = length(uv);
+
+          if (d > 1.0 || uOpacity <= 0.001) {
+            discard;
+          }
+
+          float z = sqrt(max(0.0, 1.0 - d * d));
+          float r = atan(d, z) / PI;
+          float phi = atan(uv.y, uv.x);
+          vec2 globeUv = vec2(r * cos(phi) + .5, r * sin(phi) + .5);
+          vec2 coverUv = vec2(
+            (globeUv.x - .5) / (uMapAspect * uMapZoom) + .5,
+            (globeUv.y - .5) / uMapZoom + .5
+          );
+          vec2 mapUv = vec2(
+            fract((coverUv.x + uMapOffset.x) / uMapCopies),
+            clamp(coverUv.y + uMapOffset.y, 0.0, 1.0)
+          );
+          vec4 baseTexel = texture2D(uMap, mapUv);
+          vec4 highlightTexel = texture2D(uHighlightMap, mapUv);
+          float highlightAlpha = max(
+            highlightTexel.r * uHighlightSamsung,
+            max(highlightTexel.g * uHighlightAlibaba, highlightTexel.b * uHighlightToyota)
+          ) * highlightTexel.a * 0.6;
+          float edgeAlpha = smoothstep(1.0, .78, d);
+          float alpha = max(baseTexel.a, highlightAlpha) * uOpacity * edgeAlpha;
+          vec3 color = mix(baseTexel.rgb, uHighlightColor, clamp(highlightAlpha, 0.0, 1.0));
+
+          gl_FragColor = vec4(color, alpha);
+        }
+      `;
+
+      function createShader(type, source) {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          console.warn(gl.getShaderInfoLog(shader));
+          gl.deleteShader(shader);
+          return null;
+        }
+        return shader;
+      }
+
+      function createProgram() {
+        const vertexShader = createShader(gl.VERTEX_SHADER, vertexShaderSource);
+        const fragmentShader = createShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
+        if (!vertexShader || !fragmentShader) return null;
+        const program = gl.createProgram();
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        gl.linkProgram(program);
+        gl.deleteShader(vertexShader);
+        gl.deleteShader(fragmentShader);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+          console.warn(gl.getProgramInfoLog(program));
+          gl.deleteProgram(program);
+          return null;
+        }
+        return program;
+      }
+
+      const program = createProgram();
+      if (!program) {
+        activateOrbMapFallback();
+        return {
+          resize() {},
+          render() {},
+          setProgress() {}
+        };
+      }
+
+      const locations = {
+        position: gl.getAttribLocation(program, "aPosition"),
+        map: gl.getUniformLocation(program, "uMap"),
+        highlightMap: gl.getUniformLocation(program, "uHighlightMap"),
+        resolution: gl.getUniformLocation(program, "uResolution"),
+        mapOffset: gl.getUniformLocation(program, "uMapOffset"),
+        mapAspect: gl.getUniformLocation(program, "uMapAspect"),
+        mapCopies: gl.getUniformLocation(program, "uMapCopies"),
+        mapZoom: gl.getUniformLocation(program, "uMapZoom"),
+        opacity: gl.getUniformLocation(program, "uOpacity"),
+        highlightSamsung: gl.getUniformLocation(program, "uHighlightSamsung"),
+        highlightAlibaba: gl.getUniformLocation(program, "uHighlightAlibaba"),
+        highlightToyota: gl.getUniformLocation(program, "uHighlightToyota"),
+        highlightColor: gl.getUniformLocation(program, "uHighlightColor")
+      };
+      const positionBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        -1, -1,
+         1, -1,
+        -1,  1,
+        -1,  1,
+         1, -1,
+         1,  1
+      ]), gl.STATIC_DRAW);
+
+      const highlightColor = parseColor(token("--color-ff4a22"));
+      const textureState = {
+        base: null,
+        highlight: null,
+        aspect: 2,
+        copies: 2
+      };
+      const lastProgress = {
+        opacity: null,
+        offset: null,
+        samsung: null,
+        alibaba: null,
+        toyota: null
+      };
+      let needsRender = true;
+      let staticUniformsSet = false;
+
+      function createBlankTexture() {
+        const texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+        return texture;
+      }
+
+      function loadTexture(src, assignTexture, rasterWidth = 1536, onError = null) {
+        const image = new Image();
+        image.onload = () => {
+          const textureWidth = image.naturalWidth || image.width || 2;
+          const textureHeight = image.naturalHeight || image.height || 1;
+          const mapCopies = 2;
+          const rasterHeight = Math.max(1, Math.round(rasterWidth / (textureWidth / Math.max(1, textureHeight))));
+          const textureCanvas = document.createElement("canvas");
+          textureCanvas.width = rasterWidth * mapCopies;
+          textureCanvas.height = rasterHeight;
+          const textureContext = textureCanvas.getContext("2d");
+          textureContext.imageSmoothingEnabled = true;
+          textureContext.imageSmoothingQuality = "high";
+          for (let index = 0; index < mapCopies; index += 1) {
+            textureContext.drawImage(image, index * rasterWidth, 0, rasterWidth, rasterHeight);
+          }
+
+          const texture = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, texture);
+          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+          gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureCanvas);
+          textureState.aspect = textureWidth / Math.max(1, textureHeight);
+          textureState.copies = mapCopies;
+          assignTexture(texture);
+          needsRender = true;
+          requestLandingFrame();
+        };
+        image.onerror = () => {
+          onError?.();
+        };
+        image.src = src;
+      }
+
+      textureState.base = createBlankTexture();
+      textureState.highlight = createBlankTexture();
+      loadTexture("assets/Black_on_white_dotted_world_map_vector.svg?white-transparent-map=1", (texture) => {
+        textureState.base = texture;
+      }, 1536, activateOrbMapFallback);
+      loadTexture("assets/landing-map-highlight-dots.svg?highlight-dots=1", (texture) => {
+        textureState.highlight = texture;
+      }, 1536);
+
+      gl.clearColor(0, 0, 0, 0);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+      function resize() {
+        const rect = mapCanvas.getBoundingClientRect();
+        const cssSize = Math.max(1, Math.round(Math.max(rect.width, rect.height)));
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        const size = Math.max(1, Math.round(cssSize * pixelRatio));
+        if (mapCanvas.width !== size || mapCanvas.height !== size) {
+          mapCanvas.width = size;
+          mapCanvas.height = size;
+          gl.viewport(0, 0, size, size);
+          needsRender = true;
+        }
+      }
+
+      function setProgress(mapReveal, mapOffset = 0, highlights = {}) {
+        const reveal = clamp(mapReveal);
+        const opacity = reveal > .001 ? 1 : 0;
+        const samsung = highlights.samsung || 0;
+        const alibaba = highlights.alibaba || 0;
+        const toyota = highlights.toyota || 0;
+        if (
+          lastProgress.opacity === opacity &&
+          lastProgress.offset === mapOffset &&
+          lastProgress.samsung === samsung &&
+          lastProgress.alibaba === alibaba &&
+          lastProgress.toyota === toyota
+        ) {
+          return;
+        }
+
+        lastProgress.opacity = opacity;
+        lastProgress.offset = mapOffset;
+        lastProgress.samsung = samsung;
+        lastProgress.alibaba = alibaba;
+        lastProgress.toyota = toyota;
+        needsRender = true;
+      }
+
+      function render() {
+        if (!needsRender) return;
+        gl.useProgram(program);
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.enableVertexAttribArray(locations.position);
+        gl.vertexAttribPointer(locations.position, 2, gl.FLOAT, false, 0, 0);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, textureState.base);
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, textureState.highlight);
+
+        if (!staticUniformsSet) {
+          gl.uniform1i(locations.map, 0);
+          gl.uniform1i(locations.highlightMap, 1);
+          gl.uniform1f(locations.mapZoom, 1.18);
+          gl.uniform3f(locations.highlightColor, highlightColor[0] / 255, highlightColor[1] / 255, highlightColor[2] / 255);
+          staticUniformsSet = true;
+        }
+        gl.uniform2f(locations.resolution, mapCanvas.width, mapCanvas.height);
+        gl.uniform2f(locations.mapOffset, lastProgress.offset || 0, 0);
+        gl.uniform1f(locations.mapAspect, textureState.aspect);
+        gl.uniform1f(locations.mapCopies, textureState.copies);
+        gl.uniform1f(locations.opacity, lastProgress.opacity || 0);
+        gl.uniform1f(locations.highlightSamsung, lastProgress.samsung || 0);
+        gl.uniform1f(locations.highlightAlibaba, lastProgress.alibaba || 0);
+        gl.uniform1f(locations.highlightToyota, lastProgress.toyota || 0);
+
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        needsRender = false;
+      }
+
+      resize();
+
+      return {
+        resize,
+        render,
+        setProgress
+      };
+    }
+
+    if (isLandingMobile && globeMapHighlightCanvas) {
+      globeMapHighlightCanvas.width = 1;
+      globeMapHighlightCanvas.height = 1;
+    }
+
+    const orbGlobe = isLandingMobile ? createMobileOrbGlobeRenderer(globeMapCanvas) : createOrbGlobeRenderer(globeMapCanvas);
+    const orbGlobeHighlights = isLandingMobile ? null : createOrbGlobeRenderer(globeMapHighlightCanvas, {
       src: "assets/landing-map-highlight-dots.svg?highlight-dots=1",
       highlight: true,
       rasterWidth: 4096
     });
+    if (!orbGlobe) {
+      activateOrbMapFallback();
+    }
 
     function getLandingStartMetrics() {
+      if (isLandingMobile) {
+        return {
+          width: clamp(window.innerWidth * .58, 190, 260),
+          height: 56
+        };
+      }
+
       return {
         width: clamp(window.innerWidth * .19, 220, 360),
         height: clamp(window.innerWidth * .05, 52, 76)
@@ -2997,6 +4044,13 @@
     }
 
     function getLandingFinalMetrics() {
+      if (isLandingMobile) {
+        return {
+          width: Math.min(window.innerWidth * .76, 340),
+          height: 64
+        };
+      }
+
       return {
         width: clamp(window.innerWidth * .33, 360, 640),
         height: clamp(window.innerWidth * .07, 74, 116)
@@ -3025,14 +4079,19 @@
       const cssHeight = parseFloat(getComputedStyle(svg).height) || 0;
       const renderedHeight = svg.getBoundingClientRect().height || 0;
       const scale = Math.max(.2, Math.min(2, (cssHeight || renderedHeight || 35) / 35));
-      svg.setAttribute("viewBox", `0 0 ${formatPathNumber(width)} 35`);
-      svg.querySelector("path")?.setAttribute("d", buildPillTopContourPath(width, scale));
+      const signature = `${formatPathNumber(width)}|${scale.toFixed(4)}`;
+      if (landingContourSignatures.get(svg) === signature) return;
+      landingContourSignatures.set(svg, signature);
+      setAttr(svg, "viewBox", `0 0 ${formatPathNumber(width)} 35`);
+      setAttr(svg.querySelector("path"), "d", buildPillTopContourPath(width, scale));
     }
 
-    function updateLandingPillTopContours() {
+    function updateLandingPillTopContours(force = false) {
+      if (!force && !landingContourDirty) return;
       landingContourRoots.forEach((root) => {
         updateLandingPillTopContour(root.querySelector(".pill-top-contour"));
       });
+      landingContourDirty = false;
     }
 
     function updateLandingMarketPanelWidth() {
@@ -3045,17 +4104,19 @@
       const titleWidth = title.scrollWidth || title.getBoundingClientRect().width;
       const panelWidth = Math.ceil(titleWidth + paddingX + borderX);
 
-      landingMarketPanel.style.setProperty("--market-panel-width", `${panelWidth}px`);
+      if (setStyleProp(landingMarketPanel, "--market-panel-width", `${panelWidth}px`)) {
+        markLandingContoursDirty();
+      }
     }
 
     function updateScrollState() {
-      const maxRawProgress = getMaxRawProgress();
-      const viewportHeight = Math.max(1, window.innerHeight);
+      const { maxRawProgress, viewportHeight, finalLevelStartRaw } = getLandingScrollMetrics();
       const rawProgress = clamp(window.scrollY / viewportHeight, 0, maxRawProgress);
       const now = performance.now();
       const elapsed = Math.max(16, now - lastScrollAt);
       const scrollDelta = rawProgress - lastRawProgress;
-      scrollState.scrollVelocity = clamp(Math.abs(scrollDelta) / (elapsed / 16.667), 0, 1);
+      const maxScrollVelocity = isLandingMobile ? .55 : 1;
+      scrollState.scrollVelocity = clamp(Math.abs(scrollDelta) / (elapsed / 16.667), 0, maxScrollVelocity);
       lastRawProgress = rawProgress;
       lastScrollAt = now;
       const mappedProgress = mapScrollProgress(rawProgress);
@@ -3063,34 +4124,122 @@
       const segmentIndex = Math.min(maxScrollIndex - 1, Math.floor(progress));
       const ramp = clamp(progress - segmentIndex);
       const morph = smoothstep(clamp(progress));
-      const finalLevelStartRaw = finalScrollLevel ? finalScrollLevel.offsetTop / viewportHeight : maxRawProgress;
-      const finalSequenceStartRaw = Math.max(marketTiming.endRaw, finalLevelStartRaw - finalTiming.enterLeadRaw);
+      const finalMobileEnterLeadRaw = .72;
+      const finalSequenceStartRaw = Math.max(
+        marketTiming.endRaw,
+        finalLevelStartRaw - (isLandingMobile ? finalMobileEnterLeadRaw : finalTiming.enterLeadRaw)
+      );
       const finalRevealStartRaw = finalSequenceStartRaw;
-      const finalButtonReverseRaw = clamp(finalTiming.buttonTotalRaw - (rawProgress - finalSequenceStartRaw), 0, finalTiming.buttonTotalRaw);
-      const finalButtonContract = smoothstep(finalButtonReverseRaw / finalTiming.buttonContractRaw);
-      const finalButtonVanish = smoothstep((finalButtonReverseRaw - finalTiming.buttonVanishStartRaw) / finalTiming.buttonVanishDurationRaw);
-      const finalButtonScaleProgress = 1 - finalButtonVanish;
-      const finalButtonFadeProgress = smoothstep((rawProgress - (finalSequenceStartRaw + finalTiming.buttonFadeDelayRaw)) / finalTiming.buttonFadeRaw);
-      const finalButtonLabelOpacity = 1 - smoothstep(finalButtonReverseRaw / finalTiming.buttonLabelRaw);
-      const finalTaglineStartRaw = finalSequenceStartRaw + (finalTiming.buttonTotalRaw * .5);
-      const finalTaglineProgress = smoothstep((rawProgress - finalTaglineStartRaw) / finalTiming.taglineDurationRaw);
-      const finalSocialStartRaw = finalTaglineStartRaw + (finalTiming.taglineDurationRaw * .5);
-      const finalXProgress = smoothstep((rawProgress - finalSocialStartRaw) / finalTiming.socialDurationRaw);
-      const finalTelegramProgress = smoothstep((rawProgress - (finalSocialStartRaw + finalTiming.socialGapRaw)) / finalTiming.socialDurationRaw);
-      const finalContentProgress = Math.max(finalButtonScaleProgress, finalTaglineProgress, finalXProgress, finalTelegramProgress);
-      const finalMorph = smoothstep((rawProgress - finalRevealStartRaw) / finalTiming.revealDurationRaw);
       const skyboxProgress = smoothstep(progress / maxScrollIndex);
       const firstLevelOpacity = 1 - smoothstep(progress);
-      const startContract = smoothstep(progress / .46);
-      const startVanish = smoothstep((progress - .48) / .38);
-      const tagRetype = 1 - smoothstep(progress / .5);
-      const startMetrics = getLandingStartMetrics();
-      const startWidth = lerp(startMetrics.width, startMetrics.height, startContract);
-      const startScale = Math.max(0, 1 - startVanish);
-      const mapReveal = smoothstep((progress - .72) / .36);
-      const mapSlideProgress = clamp((rawProgress - mapSlideTiming.startRaw) / (mapSlideTiming.endRaw - mapSlideTiming.startRaw));
       const orbExitRawProgress = clamp((rawProgress - marketOrbExitTiming.startRaw) / (marketOrbExitTiming.endRaw - marketOrbExitTiming.startRaw));
       const orbExitProgress = smoothstep(orbExitRawProgress);
+      const commentRevealStartRaw = marketOrbExitTiming.endRaw + .04;
+      const chatPanelRevealStartRaw = commentRevealStartRaw - .05;
+      const commentRevealBaseRaw = marketExitStartRaw;
+      const chatProgressOffset = mapScrollProgress(commentRevealStartRaw) - mapScrollProgress(commentRevealBaseRaw);
+      const chatProgress = Math.max(0, mappedProgress - chatProgressOffset);
+      const commentFadeOutStart = 3.28;
+      const commentFadeOutDuration = .36;
+      const mobileCommentFadeSpan = mobileCommentExitDurationRaw + mobileCommentExitDelayRaw * Math.max(0, commentRevealItems.length - 1);
+      const chatPanelExitStart = isLandingMobile
+        ? commentFadeOutStart + mobileCommentFadeSpan + .08
+        : commentFadeOutStart + (commentFadeOutDuration * .55);
+      const chatPanelExitDuration = isLandingMobile ? .18 : .2;
+      const chatParticleRevealStartRaw = commentRevealStartRaw - .3;
+      // Temporarily keep the shader lens centered while comparing the end-section motion.
+      const shaderCenterShift = 0;
+      const finalButtonOpacityStyle = landingShell?.style.getPropertyValue("--landing-final-button-opacity");
+      const commentOpacityStyle = landingShell?.style.getPropertyValue("--landing-comment-opacity");
+      const hasMarketRevealState = isLandingMobile ? hasActiveMarketRevealItems() : true;
+      const hasCommentRevealState = isLandingMobile ? hasActiveCommentRevealItems() : true;
+      const marketEnterActive = rawProgress >= mapSlideTiming.startRaw - .16 && rawProgress <= marketOrbExitTiming.endRaw + .16;
+      const marketStayActive = rawProgress >= mapSlideTiming.startRaw - .42 && rawProgress <= marketOrbExitTiming.endRaw + .42;
+      const chatEnterActive = rawProgress >= chatParticleRevealStartRaw - .1 && chatProgress <= chatPanelExitStart + chatPanelExitDuration + .55;
+      const chatStayActive = rawProgress >= chatParticleRevealStartRaw - .36 && chatProgress <= chatPanelExitStart + chatPanelExitDuration + .9;
+      const finalEnterActive = rawProgress >= finalSequenceStartRaw - .12;
+      const finalStayActive = rawProgress >= finalSequenceStartRaw - .42;
+      const mobileMarketActive = !isLandingMobile
+        || (mobileSectionGateState.market ? marketStayActive : marketEnterActive)
+        || hasMarketRevealState;
+      const mobileChatActive = !isLandingMobile
+        || (mobileSectionGateState.chat ? chatStayActive : chatEnterActive)
+        || hasCommentRevealState;
+      const mobileFinalActive = !isLandingMobile
+        || (mobileSectionGateState.final ? finalStayActive : finalEnterActive)
+        || (finalButtonOpacityStyle && finalButtonOpacityStyle !== "0.000");
+      setMobileSectionActivity({
+        market: mobileMarketActive,
+        chat: mobileChatActive,
+        final: mobileFinalActive
+      });
+      const shouldWriteStartState = !isLandingMobile || progress <= 1.08 || !landingShell?.style.getPropertyValue("--landing-start-scale");
+      const shouldWriteFinalState = !isLandingMobile
+        || mobileFinalActive
+        || (finalButtonOpacityStyle && finalButtonOpacityStyle !== "0.000");
+      const shouldWriteOrbState = !isLandingMobile || rawProgress <= marketOrbExitTiming.endRaw + .08 || !blankOrb?.style.getPropertyValue("--landing-orb-opacity");
+      const shouldWriteMarketState = !isLandingMobile
+        || mobileMarketActive
+        || !landingShell?.style.getPropertyValue("--landing-market-y");
+      const shouldWriteChatState = !isLandingMobile
+        || mobileChatActive
+        || (rawProgress < commentRevealStartRaw && commentOpacityStyle && commentOpacityStyle !== "0.000")
+        || !landingShell?.style.getPropertyValue("--landing-chat-y");
+      const shouldWriteFinalShellState = !isLandingMobile
+        || mobileFinalActive
+        || !landingShell?.style.getPropertyValue("--landing-final-y");
+
+      let finalButtonContract = 0;
+      let finalButtonScaleProgress = 0;
+      let finalButtonFadeProgress = 0;
+      let finalButtonLabelOpacity = 0;
+      let finalTaglineProgress = 0;
+      let finalXProgress = 0;
+      let finalTelegramProgress = 0;
+      let finalMorph = rawProgress >= finalRevealStartRaw + finalTiming.revealDurationRaw ? 1 : 0;
+      let finalDistance = 999;
+      let finalButtonWidth = 0;
+      let finalMetrics = null;
+      let finalXScale = .84;
+      let finalTelegramScale = .84;
+
+      if (shouldWriteFinalState || shouldWriteFinalShellState) {
+        const finalButtonReverseRaw = clamp(finalTiming.buttonTotalRaw - (rawProgress - finalSequenceStartRaw), 0, finalTiming.buttonTotalRaw);
+        finalButtonContract = smoothstep(finalButtonReverseRaw / finalTiming.buttonContractRaw);
+        const finalButtonVanish = smoothstep((finalButtonReverseRaw - finalTiming.buttonVanishStartRaw) / finalTiming.buttonVanishDurationRaw);
+        finalButtonScaleProgress = 1 - finalButtonVanish;
+        finalButtonFadeProgress = smoothstep((rawProgress - (finalSequenceStartRaw + finalTiming.buttonFadeDelayRaw)) / finalTiming.buttonFadeRaw);
+        finalButtonLabelOpacity = 1 - smoothstep(finalButtonReverseRaw / finalTiming.buttonLabelRaw);
+        const finalTaglineStartRaw = finalSequenceStartRaw + (finalTiming.buttonTotalRaw * .5);
+        finalTaglineProgress = smoothstep((rawProgress - finalTaglineStartRaw) / finalTiming.taglineDurationRaw);
+        const finalSocialStartRaw = finalTaglineStartRaw + (finalTiming.taglineDurationRaw * .5);
+        finalXProgress = smoothstep((rawProgress - finalSocialStartRaw) / finalTiming.socialDurationRaw);
+        finalTelegramProgress = smoothstep((rawProgress - (finalSocialStartRaw + finalTiming.socialGapRaw)) / finalTiming.socialDurationRaw);
+        const finalContentProgress = Math.max(finalButtonScaleProgress, finalTaglineProgress, finalXProgress, finalTelegramProgress);
+        finalMorph = smoothstep((rawProgress - finalRevealStartRaw) / finalTiming.revealDurationRaw);
+        finalDistance = Math.abs(finalContentProgress - 1);
+        finalXScale = .84 + (.16 * finalXProgress);
+        finalTelegramScale = .84 + (.16 * finalTelegramProgress);
+        finalMetrics = getLandingFinalMetrics();
+        finalButtonWidth = lerp(finalMetrics.width, finalMetrics.height, finalButtonContract);
+      }
+
+      let startVanish = 0;
+      let tagRetype = 1;
+      let startScale = 1;
+      let startWidth = 0;
+      let startMetrics = null;
+      if (shouldWriteStartState) {
+        const startContract = smoothstep(progress / .46);
+        startVanish = smoothstep((progress - .48) / .38);
+        tagRetype = 1 - smoothstep(progress / .5);
+        startScale = Math.max(0, 1 - startVanish);
+        startMetrics = getLandingStartMetrics();
+        startWidth = lerp(startMetrics.width, startMetrics.height, startContract);
+      }
+
+      const mapReveal = smoothstep((progress - .72) / .36);
+      const mapSlideProgress = clamp((rawProgress - mapSlideTiming.startRaw) / (mapSlideTiming.endRaw - mapSlideTiming.startRaw));
       const mapExitSpinOffset = orbExitRawProgress * orbExitRawProgress * .32;
       const mapSlideOffset = mapSlideTiming.startOffset + (exponentialEaseOut(mapSlideProgress, mapSlideTiming.easeStrength) * mapSlideEndTravel) + mapExitSpinOffset;
       const mapDotLeadRaw = .12;
@@ -3104,56 +4253,66 @@
         alibaba: mapDotValue(1),
         toyota: mapDotValue(2)
       };
-      const commentRevealStartRaw = marketOrbExitTiming.endRaw + .04;
-      const chatPanelRevealStartRaw = commentRevealStartRaw - .05;
-      const commentRevealBaseRaw = marketExitStartRaw;
-      const chatProgressOffset = mapScrollProgress(commentRevealStartRaw) - mapScrollProgress(commentRevealBaseRaw);
-      const chatProgress = Math.max(0, mappedProgress - chatProgressOffset);
-      const commentFadeOutStart = 3.28;
-      const commentFadeOutDuration = .36;
-      const chatPanelExitStart = commentFadeOutStart + (commentFadeOutDuration * .55);
-      const chatPanelExitDuration = .2;
-      const chatPanelEnterProgress = smoothstep((rawProgress - chatPanelRevealStartRaw) / .1);
-      const chatPanelExitProgress = smoothstep((chatProgress - chatPanelExitStart) / chatPanelExitDuration);
-      const chatPanelOpacity = chatPanelEnterProgress * (1 - chatPanelExitProgress);
-      const chatPanelScale = .84 + (.16 * chatPanelEnterProgress * (1 - chatPanelExitProgress));
-      const chatPanelPopDistance = Number.parseFloat(token("--space-18")) || 18;
-      const chatPanelPopY = `${(((1 - chatPanelEnterProgress) + chatPanelExitProgress) * chatPanelPopDistance).toFixed(2)}px`;
-      const chatOpacity = 1 - smoothstep((chatProgress - (chatPanelExitStart + chatPanelExitDuration + .08)) / .22);
-      const chatDistance = Math.abs(chatProgress - 2);
-      const finalDistance = Math.abs(finalContentProgress - 1);
-      const marketY = levelOffset(1, progress);
-      const chatY = levelOffset(2, chatProgress);
+
+      let chatPanelOpacity = 0;
+      let chatPanelScale = .84;
+      let chatPanelPopY = "0px";
+      let chatOpacity = 0;
+      let commentOpacity = 0;
+      let chatParticleOpacity = 0;
+      let chatDistance = 999;
+      let chatY = "0vh";
+      let chatPanelCounterY = "0px";
+      let chatMotionVars = null;
+      if (shouldWriteChatState) {
+        const chatPanelEnterProgress = smoothstep((rawProgress - chatPanelRevealStartRaw) / .1);
+        const chatPanelExitProgress = smoothstep((chatProgress - chatPanelExitStart) / chatPanelExitDuration);
+        chatPanelOpacity = chatPanelEnterProgress * (1 - chatPanelExitProgress);
+        chatPanelScale = .84 + (.16 * chatPanelEnterProgress * (1 - chatPanelExitProgress));
+        const chatPanelPopDistance = Number.parseFloat(token("--space-18")) || 18;
+        chatPanelPopY = `${(((1 - chatPanelEnterProgress) + chatPanelExitProgress) * chatPanelPopDistance).toFixed(2)}px`;
+        chatOpacity = 1 - smoothstep((chatProgress - (chatPanelExitStart + chatPanelExitDuration + .08)) / .22);
+        chatDistance = Math.abs(chatProgress - 2);
+        if (isLandingMobile) {
+          chatY = "0vh";
+          chatPanelCounterY = "0px";
+        } else {
+          chatY = levelOffset(2, chatProgress);
+          const chatYValue = (2 - chatProgress) * 100;
+          chatPanelCounterY = stableViewportOffset(-chatYValue);
+        }
+        const commentFadeIn = smoothstep((rawProgress - commentRevealStartRaw) / .34);
+        const commentFadeOut = 1 - smoothstep((chatProgress - commentFadeOutStart) / commentFadeOutDuration);
+        commentOpacity = commentFadeIn * commentFadeOut;
+        if (!isLandingMobile) {
+          const chatParticleFadeIn = smoothstep((rawProgress - chatParticleRevealStartRaw) / .3);
+          chatParticleOpacity = chatParticleFadeIn * commentFadeOut;
+        }
+        chatMotionVars = (() => {
+        const chatSideProgress = clamp((chatProgress - 1.68) / 2.6);
+        const chatXTravel = (1 - (chatSideProgress * 2)) * 112;
+        const stableWidth = Math.max(1, landingStableViewportWidth || window.innerWidth || 1);
+        const formatChatOffset = (multiplier) => isLandingMobile
+          ? `${((chatXTravel * multiplier * stableWidth) / 100).toFixed(2)}px`
+          : `${(chatXTravel * multiplier).toFixed(3)}vw`;
+        return {
+          front: formatChatOffset(1.55),
+          glass: formatChatOffset(1.34),
+          fast: formatChatOffset(1.18),
+          near: formatChatOffset(1),
+          soft: formatChatOffset(.86),
+          mid: formatChatOffset(.72),
+          softDeep: formatChatOffset(.6),
+          deep: formatChatOffset(.48),
+          far: formatChatOffset(.28),
+          drift: formatChatOffset(.16),
+          haze: formatChatOffset(.06)
+        };
+      })();
+      }
+
+      const marketY = shouldWriteMarketState ? levelOffset(1, progress) : "0vh";
       const finalY = "0vh";
-      const chatYValue = (2 - chatProgress) * 100;
-      const chatPanelCounterY = `${(-chatYValue).toFixed(3)}vh`;
-      const chatParticleRevealStartRaw = commentRevealStartRaw - .3;
-      const chatParticleFadeIn = smoothstep((rawProgress - chatParticleRevealStartRaw) / .3);
-      const commentFadeIn = smoothstep((rawProgress - commentRevealStartRaw) / .34);
-      const commentFadeOut = 1 - smoothstep((chatProgress - commentFadeOutStart) / commentFadeOutDuration);
-      const commentOpacity = commentFadeIn * commentFadeOut;
-      const chatParticleOpacity = chatParticleFadeIn * commentFadeOut;
-      const shaderCenterShiftStart = mapScrollProgress(chatParticleRevealStartRaw) - chatProgressOffset;
-      const shaderCenterShiftIn = clamp((chatProgress - shaderCenterShiftStart) / (commentFadeOutStart - shaderCenterShiftStart));
-      const shaderCenterShiftOut = 1 - smoothstep((chatProgress - commentFadeOutStart) / (commentFadeOutDuration + .24));
-      const shaderCenterShift = shaderCenterShiftIn * shaderCenterShiftOut * (1 - finalMorph);
-      const chatSideProgress = clamp((chatProgress - 1.68) / 2.6);
-      const chatXTravel = (1 - (chatSideProgress * 2)) * 112;
-      const chatParallaxFront = `${(chatXTravel * 1.55).toFixed(3)}vw`;
-      const chatParallaxGlass = `${(chatXTravel * 1.34).toFixed(3)}vw`;
-      const chatParallaxFast = `${(chatXTravel * 1.18).toFixed(3)}vw`;
-      const chatParallaxNear = `${(chatXTravel * 1).toFixed(3)}vw`;
-      const chatParallaxSoft = `${(chatXTravel * .86).toFixed(3)}vw`;
-      const chatParallaxMid = `${(chatXTravel * .72).toFixed(3)}vw`;
-      const chatParallaxSoftDeep = `${(chatXTravel * .6).toFixed(3)}vw`;
-      const chatParallaxDeep = `${(chatXTravel * .48).toFixed(3)}vw`;
-      const chatParallaxFar = `${(chatXTravel * .28).toFixed(3)}vw`;
-      const chatParallaxDrift = `${(chatXTravel * .16).toFixed(3)}vw`;
-      const chatParallaxHaze = `${(chatXTravel * .06).toFixed(3)}vw`;
-      const finalMetrics = getLandingFinalMetrics();
-      const finalButtonWidth = lerp(finalMetrics.width, finalMetrics.height, finalButtonContract);
-      const finalXScale = .84 + (.16 * finalXProgress);
-      const finalTelegramScale = .84 + (.16 * finalTelegramProgress);
       const orbY = "0vh";
       const orbScale = (1 - morph * 0.22) * (1 - orbExitProgress * .22);
       const orbOpacity = 1 - Math.pow(orbExitProgress, 1.45);
@@ -3168,85 +4327,165 @@
       scrollState.firstLevelOpacity = firstLevelOpacity;
       scrollState.finalOpacity = finalMorph;
       scrollState.shaderCenterShift = shaderCenterShift;
-      document.documentElement.dataset.scrollIndex = String(scrollState.index);
+      setDatasetValue(document.documentElement, "scrollIndex", scrollState.index);
 
-      landingShell?.style.setProperty("--landing-market-y", marketY);
-      landingShell?.style.setProperty("--landing-chat-y", chatY);
-      landingShell?.style.setProperty("--landing-chat-panel-counter-y", chatPanelCounterY);
-      landingShell?.style.setProperty("--landing-chat-comments-counter-y", chatPanelCounterY);
-      landingShell?.style.setProperty("--landing-chat-panel-opacity", chatPanelOpacity.toFixed(3));
-      landingShell?.style.setProperty("--landing-chat-panel-scale", chatPanelScale.toFixed(3));
-      landingShell?.style.setProperty("--landing-chat-panel-y-pop", chatPanelPopY);
-      landingShell?.style.setProperty("--landing-chat-opacity", chatOpacity.toFixed(3));
-      landingShell?.style.setProperty("--landing-comment-opacity", commentOpacity.toFixed(3));
-      landingShell?.style.setProperty("--landing-chat-particle-opacity", chatParticleOpacity.toFixed(3));
-      landingShell?.style.setProperty("--landing-chat-parallax-front", chatParallaxFront);
-      landingShell?.style.setProperty("--landing-chat-parallax-glass", chatParallaxGlass);
-      landingShell?.style.setProperty("--landing-chat-parallax-fast", chatParallaxFast);
-      landingShell?.style.setProperty("--landing-chat-parallax-near", chatParallaxNear);
-      landingShell?.style.setProperty("--landing-chat-parallax-soft", chatParallaxSoft);
-      landingShell?.style.setProperty("--landing-chat-parallax-mid", chatParallaxMid);
-      landingShell?.style.setProperty("--landing-chat-parallax-soft-deep", chatParallaxSoftDeep);
-      landingShell?.style.setProperty("--landing-chat-parallax-deep", chatParallaxDeep);
-      landingShell?.style.setProperty("--landing-chat-parallax-far", chatParallaxFar);
-      landingShell?.style.setProperty("--landing-chat-parallax-drift", chatParallaxDrift);
-      landingShell?.style.setProperty("--landing-chat-parallax-haze", chatParallaxHaze);
-      landingShell?.style.setProperty("--landing-final-y", finalY);
-      landingShell?.style.setProperty("--landing-final-width", `${finalButtonWidth.toFixed(2)}px`);
-      landingShell?.style.setProperty("--landing-final-height", `${finalMetrics.height.toFixed(2)}px`);
-      landingShell?.style.setProperty("--landing-final-radius", `${(finalMetrics.height / 2).toFixed(2)}px`);
-      landingShell?.style.setProperty("--landing-final-button-opacity", finalButtonFadeProgress.toFixed(3));
-      landingShell?.style.setProperty("--landing-final-button-scale", finalButtonScaleProgress.toFixed(3));
-      landingShell?.style.setProperty("--landing-final-label-opacity", finalButtonLabelOpacity.toFixed(3));
-      landingShell?.style.setProperty("--landing-final-contour-opacity", finalButtonScaleProgress.toFixed(3));
-      landingShell?.style.setProperty("--landing-final-tagline-opacity", finalTaglineProgress.toFixed(3));
-      landingShell?.style.setProperty("--landing-final-tagline-reveal", finalTaglineProgress.toFixed(3));
-      landingShell?.style.setProperty("--landing-final-x-opacity", finalXProgress.toFixed(3));
-      landingShell?.style.setProperty("--landing-final-x-scale", finalXScale.toFixed(3));
-      landingShell?.style.setProperty("--landing-final-telegram-opacity", finalTelegramProgress.toFixed(3));
-      landingShell?.style.setProperty("--landing-final-telegram-scale", finalTelegramScale.toFixed(3));
-      landingShell?.style.setProperty("--landing-orb-anchor-y", orbY);
-      landingShell?.style.setProperty("--landing-first-events", progress < .42 ? "auto" : "none");
-      landingShell?.style.setProperty("--landing-world-tag-reveal", tagRetype.toFixed(3));
-      landingShell?.style.setProperty("--landing-start-width", `${startWidth.toFixed(2)}px`);
-      landingShell?.style.setProperty("--landing-start-height", `${startMetrics.height.toFixed(2)}px`);
-      landingShell?.style.setProperty("--landing-start-radius", `${(startMetrics.height / 2).toFixed(2)}px`);
-      landingShell?.style.setProperty("--landing-start-scale", startScale.toFixed(3));
-      landingShell?.style.setProperty("--landing-start-label-opacity", (1 - smoothstep(progress / .28)).toFixed(3));
-      landingShell?.style.setProperty("--landing-start-contour-opacity", (1 - startVanish).toFixed(3));
-      landingShell?.style.setProperty("--landing-panel-events", rawProgress >= marketItemRevealRaw[0] && rawProgress < marketItemHideRaw[marketItemHideRaw.length - 1] ? "auto" : "none");
-      landingShell?.style.setProperty("--landing-chat-events", chatDistance < 0.62 && chatOpacity > .1 ? "auto" : "none");
-      landingShell?.style.setProperty("--landing-final-events", finalDistance < 0.62 ? "auto" : "none");
+      let contourChanged = false;
+      if (shouldWriteMarketState) {
+        setStyleProp(landingShell, "--landing-market-y", marketY);
+        setStyleProp(landingShell, "--landing-panel-events", rawProgress >= marketItemRevealRaw[0] && rawProgress < marketItemHideRaw[marketItemHideRaw.length - 1] ? "auto" : "none");
+      }
+      if (shouldWriteChatState) {
+        setStyleProp(landingShell, "--landing-chat-y", chatY);
+        setStyleProp(landingShell, "--landing-chat-panel-counter-y", chatPanelCounterY);
+        setStyleProp(landingShell, "--landing-chat-comments-counter-y", chatPanelCounterY);
+        setStyleProp(landingShell, "--landing-chat-panel-opacity", chatPanelOpacity.toFixed(3));
+        setStyleProp(landingShell, "--landing-chat-panel-scale", chatPanelScale.toFixed(3));
+        setStyleProp(landingShell, "--landing-chat-panel-y-pop", chatPanelPopY);
+        setStyleProp(landingShell, "--landing-chat-opacity", isLandingMobile ? "1.000" : chatOpacity.toFixed(3));
+        setStyleProp(landingShell, "--landing-comment-opacity", isLandingMobile ? "1.000" : commentOpacity.toFixed(3));
+        if (!isLandingMobile) {
+          setStyleProp(landingShell, "--landing-chat-particle-opacity", chatParticleOpacity.toFixed(3));
+          setStyleProp(landingShell, "--landing-chat-parallax-front", chatMotionVars.front);
+          setStyleProp(landingShell, "--landing-chat-parallax-glass", chatMotionVars.glass);
+          setStyleProp(landingShell, "--landing-chat-parallax-fast", chatMotionVars.fast);
+          setStyleProp(landingShell, "--landing-chat-parallax-near", chatMotionVars.near);
+          setStyleProp(landingShell, "--landing-chat-parallax-soft", chatMotionVars.soft);
+          setStyleProp(landingShell, "--landing-chat-parallax-mid", chatMotionVars.mid);
+          setStyleProp(landingShell, "--landing-chat-parallax-soft-deep", chatMotionVars.softDeep);
+          setStyleProp(landingShell, "--landing-chat-parallax-deep", chatMotionVars.deep);
+          setStyleProp(landingShell, "--landing-chat-parallax-far", chatMotionVars.far);
+          setStyleProp(landingShell, "--landing-chat-parallax-drift", chatMotionVars.drift);
+          setStyleProp(landingShell, "--landing-chat-parallax-haze", chatMotionVars.haze);
+        } else {
+          setStyleProp(landingShell, "--landing-chat-parallax-near", chatMotionVars.near);
+          setStyleProp(landingShell, "--landing-chat-parallax-mid", chatMotionVars.mid);
+          setStyleProp(landingShell, "--landing-chat-parallax-deep", chatMotionVars.deep);
+          updateMobileCommentRevealItems(commentRevealStartRaw, rawProgress, chatProgress, commentFadeOutStart);
+          updateMobileCommentOffscreen(rawProgress);
+        }
+        setStyleProp(landingShell, "--landing-chat-events", chatDistance < 0.62 && chatOpacity > .1 ? "auto" : "none");
+      }
+      if (shouldWriteFinalShellState) {
+        setStyleProp(landingShell, "--landing-final-y", finalY);
+      }
+      if (shouldWriteFinalState && finalMetrics) {
+        contourChanged = setStyleProp(landingShell, "--landing-final-width", `${finalButtonWidth.toFixed(2)}px`) || contourChanged;
+        contourChanged = setStyleProp(landingShell, "--landing-final-height", `${finalMetrics.height.toFixed(2)}px`) || contourChanged;
+        contourChanged = setStyleProp(landingShell, "--landing-final-radius", `${(finalMetrics.height / 2).toFixed(2)}px`) || contourChanged;
+      }
+      if (shouldWriteFinalState) {
+        setStyleProp(landingShell, "--landing-final-button-opacity", finalButtonFadeProgress.toFixed(3));
+        setStyleProp(landingShell, "--landing-final-button-scale", finalButtonScaleProgress.toFixed(3));
+        setStyleProp(landingShell, "--landing-final-label-opacity", finalButtonLabelOpacity.toFixed(3));
+        setStyleProp(landingShell, "--landing-final-contour-opacity", finalButtonScaleProgress.toFixed(3));
+        setStyleProp(landingShell, "--landing-final-tagline-opacity", finalTaglineProgress.toFixed(3));
+        setStyleProp(landingShell, "--landing-final-tagline-reveal", finalTaglineProgress.toFixed(3));
+        setStyleProp(landingShell, "--landing-final-x-opacity", finalXProgress.toFixed(3));
+        setStyleProp(landingShell, "--landing-final-x-scale", finalXScale.toFixed(3));
+        setStyleProp(landingShell, "--landing-final-telegram-opacity", finalTelegramProgress.toFixed(3));
+        setStyleProp(landingShell, "--landing-final-telegram-scale", finalTelegramScale.toFixed(3));
+        setStyleProp(landingShell, "--landing-final-events", finalDistance < 0.62 ? "auto" : "none");
+      }
+      if (shouldWriteOrbState) {
+        setStyleProp(landingShell, "--landing-orb-anchor-y", orbY);
+      }
+      if (shouldWriteStartState) {
+        setStyleProp(landingShell, "--landing-first-events", progress < .42 ? "auto" : "none");
+        setStyleProp(landingShell, "--landing-world-tag-reveal", tagRetype.toFixed(3));
+      }
+      if (shouldWriteStartState && startMetrics) {
+        contourChanged = setStyleProp(landingShell, "--landing-start-width", `${startWidth.toFixed(2)}px`) || contourChanged;
+        contourChanged = setStyleProp(landingShell, "--landing-start-height", `${startMetrics.height.toFixed(2)}px`) || contourChanged;
+        contourChanged = setStyleProp(landingShell, "--landing-start-radius", `${(startMetrics.height / 2).toFixed(2)}px`) || contourChanged;
+      }
+      if (shouldWriteStartState) {
+        setStyleProp(landingShell, "--landing-start-scale", startScale.toFixed(3));
+        setStyleProp(landingShell, "--landing-start-label-opacity", (1 - smoothstep(progress / .28)).toFixed(3));
+        setStyleProp(landingShell, "--landing-start-contour-opacity", (1 - startVanish).toFixed(3));
+      }
 
-      updateMarketRevealItems(rawProgress);
-      updateMarketParticles(rawProgress);
-      updateCommentRevealItems(rawProgress, commentRevealStartRaw);
+      if (!isLandingMobile || shouldWriteMarketState || hasMarketRevealState) {
+        updateMarketRevealItems(rawProgress);
+      }
+      if (!isLandingMobile) {
+        updateMarketParticles(rawProgress);
+      }
+      if (!isLandingMobile) {
+        updateCommentRevealItems(rawProgress, commentRevealStartRaw);
+      }
 
       if (!blankOrb) return;
 
-      blankOrb.style.setProperty("--orb-base", mixColor(orbMorphTokens.baseFrom, orbMorphTokens.baseTo, morph));
-      blankOrb.style.setProperty("--orb-sheen", mixColor(orbMorphTokens.sheenFrom, orbMorphTokens.sheenTo, morph));
-      blankOrb.style.setProperty("--orb-shadow", mixColor(orbMorphTokens.shadowFrom, orbMorphTokens.shadowTo, morph));
-      blankOrb.style.setProperty("--logo-inner", orbMorphTokens.innerTo);
-      blankOrb.style.setProperty("--landing-orb-y", orbY);
-      blankOrb.style.setProperty("--landing-orb-scale", orbScale.toFixed(3));
-      blankOrb.style.setProperty("--landing-orb-opacity", orbOpacity.toFixed(3));
-      blankOrb.style.setProperty("--landing-logo-opacity", (1 - morph).toFixed(3));
-      blankOrb.style.setProperty("--landing-logo-scale", (1 - morph * 0.18).toFixed(3));
-      blankOrb.style.setProperty("--landing-map-opacity", mapReveal.toFixed(3));
-      blankOrb.style.setProperty("--landing-map-highlight-opacity", (mapReveal * .6).toFixed(3));
-      orbGlobe?.setProgress(mapReveal, mapSlideOffset);
-      orbGlobeHighlights?.setProgress(mapReveal, mapSlideOffset, mapDotHighlights);
+      if (shouldWriteOrbState) {
+        if (!isLandingMobile) {
+          setStyleProp(blankOrb, "--orb-base", mixColor(orbMorphTokens.baseFrom, orbMorphTokens.baseTo, morph));
+          setStyleProp(blankOrb, "--orb-sheen", mixColor(orbMorphTokens.sheenFrom, orbMorphTokens.sheenTo, morph));
+          setStyleProp(blankOrb, "--orb-shadow", mixColor(orbMorphTokens.shadowFrom, orbMorphTokens.shadowTo, morph));
+          setStyleProp(blankOrb, "--logo-inner", orbMorphTokens.innerTo);
+        }
+        setStyleProp(blankOrb, "--landing-orb-y", orbY);
+        setStyleProp(blankOrb, "--landing-orb-scale", orbScale.toFixed(3));
+        setStyleProp(blankOrb, "--landing-orb-opacity", orbOpacity.toFixed(3));
+        setStyleProp(blankOrb, "--landing-logo-opacity", (1 - morph).toFixed(3));
+        setStyleProp(blankOrb, "--landing-logo-scale", (1 - morph * 0.18).toFixed(3));
+        setStyleProp(blankOrb, "--landing-map-opacity", mapReveal.toFixed(3));
+        if (isLandingMobile) {
+          setStyleProp(blankOrb, "--landing-mobile-map-offset", mapSlideOffset.toFixed(4));
+        }
+        orbGlobe?.setProgress(mapReveal, mapSlideOffset, isLandingMobile ? mapDotHighlights : {});
+        if (!isLandingMobile) {
+          setStyleProp(blankOrb, "--landing-map-highlight-opacity", (mapReveal * .6).toFixed(3));
+          orbGlobeHighlights?.setProgress(mapReveal, mapSlideOffset, mapDotHighlights);
+        }
+      }
+      if (contourChanged) markLandingContoursDirty();
       updateLandingPillTopContours();
     }
 
-    window.addEventListener("scroll", updateScrollState, { passive: true });
-    window.addEventListener("resize", () => {
-      updateLandingMarketPanelWidth();
+    function applyScrollStateMeasured() {
+      const startedAt = landingPerf.start();
       updateScrollState();
+      landingPerf.end("scrollState", startedAt);
+      scheduleMobileBobbing();
+      requestLandingFrame();
+    }
+
+    function updateScrollStateMeasured() {
+      if (isLandingMobile && mobileScrollCoalesceEnabled) {
+        if (mobileScrollUpdateFrame || document.hidden) return;
+        mobileScrollUpdateFrame = requestAnimationFrame(() => {
+          mobileScrollUpdateFrame = 0;
+          applyScrollStateMeasured();
+        });
+        return;
+      }
+
+      applyScrollStateMeasured();
+    }
+
+    window.addEventListener("scroll", updateScrollStateMeasured, { passive: true });
+    window.addEventListener("resize", () => {
+      const viewportChanged = updateLandingStableViewport();
+      if (isLandingMobile && !viewportChanged) {
+        requestLandingFrame();
+        return;
+      }
+
+      markLandingContoursDirty();
+      markLandingScrollMetricsDirty();
+      updateLandingMarketPanelWidth();
+      updateScrollStateMeasured();
+    });
+    window.addEventListener("orientationchange", () => {
+      updateLandingStableViewport(true);
+      markLandingContoursDirty();
+      markLandingScrollMetricsDirty();
+      updateLandingMarketPanelWidth();
+      updateScrollStateMeasured();
+      resize();
     });
     updateLandingMarketPanelWidth();
-    updateScrollState();
+    updateScrollStateMeasured();
     updateLandingPillTopContours();
 
     function fade(t) {
@@ -3323,19 +4562,29 @@
     }
 
     const hudiSourceHtml = hudiSource?.html || "";
-    const hudiSourceArrays = {
-      pfpHeadFills: evaluateSourceArray(hudiSourceHtml, "pfpHeadFills", []),
-      pfpStrokes: evaluateSourceArray(hudiSourceHtml, "pfpStrokes", []),
-      pfpEyeBases: evaluateSourceArray(hudiSourceHtml, "pfpEyeBases", []),
-      pfpPupils: evaluateSourceArray(hudiSourceHtml, "pfpPupils", []),
-      pfpPalettes: evaluateSourceArray(hudiSourceHtml, "pfpPalettes", []),
-      leaderboardEntries: evaluateSourceArray(hudiSourceHtml, "leaderboardEntries", [])
-    };
+    const hudiSourceArrays = isLandingMobile
+      ? {
+        pfpHeadFills: [],
+        pfpStrokes: [],
+        pfpEyeBases: [],
+        pfpPupils: [],
+        pfpPalettes: [],
+        leaderboardEntries: []
+      }
+      : {
+        pfpHeadFills: evaluateSourceArray(hudiSourceHtml, "pfpHeadFills", []),
+        pfpStrokes: evaluateSourceArray(hudiSourceHtml, "pfpStrokes", []),
+        pfpEyeBases: evaluateSourceArray(hudiSourceHtml, "pfpEyeBases", []),
+        pfpPupils: evaluateSourceArray(hudiSourceHtml, "pfpPupils", []),
+        pfpPalettes: evaluateSourceArray(hudiSourceHtml, "pfpPalettes", []),
+        leaderboardEntries: evaluateSourceArray(hudiSourceHtml, "leaderboardEntries", [])
+      };
 
-    function createGridTextureAnimator() {
+    function createGridTextureAnimator({ includeLeaderboard = true } = {}) {
       const screenMax = Math.max(window.innerWidth || 0, window.innerHeight || 0);
-      const screenTextureTarget = Math.max(1024, screenMax * Math.min(window.devicePixelRatio || 1, 3));
-      const size = Math.min(4096, 2 ** Math.ceil(Math.log2(screenTextureTarget)));
+      const texturePixelRatio = Math.min(window.devicePixelRatio || 1, isLandingMobile ? 1 : 3);
+      const screenTextureTarget = Math.max(isLandingMobile ? 512 : 1024, screenMax * texturePixelRatio);
+      const size = Math.min(isLandingMobile ? 1024 : 4096, 2 ** Math.ceil(Math.log2(screenTextureTarget)));
       const leaderboardZoom = 1.75;
       const leaderboardSize = Math.round(size * leaderboardZoom);
       const leaderboardDot = 2;
@@ -3344,22 +4593,25 @@
       const leaderboardAvatarSize = 26;
       const leaderboardAvatarGap = leaderboardDot * 3;
       const leaderboardSectionGap = leaderboardDot;
-      const cellsX = 24;
-      const cellsY = 24;
-      const dotCellsX = 46;
-      const dotCellsY = 46;
+      const cellsX = isLandingMobile ? 18 : 24;
+      const cellsY = isLandingMobile ? 18 : 24;
+      const dotCellsX = isLandingMobile ? 11 : 58;
+      const dotCellsY = isLandingMobile ? 11 : 58;
       const gutterRatio = 0.18;
-      const transitionMs = tokenMs("--landing-texture-transition-ms", 2200) * .34;
-      const cycleMs = tokenMs("--landing-texture-cycle-ms", 2800) * .44;
-      const driftSpeed = 0.032 / cycleMs;
-      const dotTransitionMs = transitionMs * .72;
-      const dotDriftMultiplier = 1.38;
+      const transitionMs = tokenMs("--landing-texture-transition-ms", 2200) * (isLandingMobile ? .9 : .58);
+      const cycleMs = tokenMs("--landing-texture-cycle-ms", 2800) * (isLandingMobile ? 2.1 : .82);
+      const driftSpeed = (isLandingMobile ? 0.012 : 0.016) / cycleMs;
+      const dotTransitionMs = transitionMs * (isLandingMobile ? 1.55 : 1.05);
+      const dotDriftMultiplier = isLandingMobile ? .48 : .86;
       const textureTimeOffset = 46000;
       const onThreshold = 0.56;
       const offThreshold = 0.53;
       const dotOnThreshold = 0.52;
       const dotOffThreshold = 0.49;
       const leaderboardTextureScale = 0.6;
+      const leaderboardCropSize = Math.round(size * leaderboardTextureScale);
+      const leaderboardCropX = Math.round((leaderboardSize - leaderboardCropSize) / 2);
+      const leaderboardCropY = Math.round(((leaderboardSize - leaderboardCropSize) / 2) / leaderboardRowAdvance) * leaderboardRowAdvance;
       const gridCanvas = document.createElement("canvas");
       gridCanvas.width = size;
       gridCanvas.height = size;
@@ -3372,8 +4624,8 @@
       const leaderboardCompositeCtx = leaderboardCompositeCanvas.getContext("2d", { alpha: true });
       leaderboardCompositeCtx.imageSmoothingEnabled = false;
       const leaderboardCanvas = document.createElement("canvas");
-      leaderboardCanvas.width = leaderboardSize;
-      leaderboardCanvas.height = leaderboardSize;
+      leaderboardCanvas.width = leaderboardCropSize;
+      leaderboardCanvas.height = leaderboardCropSize;
       const leaderboardCtx = leaderboardCanvas.getContext("2d");
       leaderboardCtx.imageSmoothingEnabled = false;
       ctx.fillStyle = token("--page-bg-top");
@@ -3576,7 +4828,7 @@
         return textureCells;
       }
 
-      cells.push(...createTextureCells(cellsX, cellsY));
+      if (!isLandingMobile) cells.push(...createTextureCells(cellsX, cellsY));
       dotCells.push(...createTextureCells(dotCellsX, dotCellsY, {
         onThreshold: dotOnThreshold,
         offThreshold: dotOffThreshold,
@@ -3613,28 +4865,28 @@
         const noise = hash(cell.x + 43, cell.y + 71);
         const jitter = hash(cell.x + 17, cell.y + 29);
         const widthJitter = hash(cell.x + 61, cell.y + 83);
-        const patchNoise = valueNoise(cell.x * 0.11 + time * 0.00004 + 7.2, cell.y * 0.11 - time * 0.00003 + 13.8);
-        const warpNoiseX = valueNoise(cell.x * 0.065 + time * 0.000025 + 31.2, cell.y * 0.065 - time * 0.000018 + 8.5);
-        const warpNoiseY = valueNoise(cell.x * 0.07 - time * 0.00002 + 2.8, cell.y * 0.07 + time * 0.000026 + 27.4);
+        const patchNoise = valueNoise(cell.x * 0.11 + time * 0.000024 + 7.2, cell.y * 0.11 - time * 0.000018 + 13.8);
+        const warpNoiseX = valueNoise(cell.x * 0.065 + time * 0.000015 + 31.2, cell.y * 0.065 - time * 0.000011 + 8.5);
+        const warpNoiseY = valueNoise(cell.x * 0.07 - time * 0.000012 + 2.8, cell.y * 0.07 + time * 0.000016 + 27.4);
         const warpedX = cell.x + (warpNoiseX - 0.5) * 8.5 + Math.sin(cell.y * 0.17 + patchNoise * Math.PI * 2) * 1.7;
         const warpedY = cell.y + (warpNoiseY - 0.5) * 6.5 + Math.cos(cell.x * 0.13 + patchNoise * Math.PI * 2) * 1.35;
         const directionalWarp = Math.sin(warpedX * 0.23 + warpedY * 0.11 + patchNoise * Math.PI * 2) * 0.035;
-        const phaseBase = time * 0.00058 + warpedX * 0.019 + warpedY * 0.068;
+        const phaseBase = time * (isLandingMobile ? 0.00032 : 0.00022) + warpedX * 0.019 + warpedY * 0.068;
         const phaseWobble = (patchNoise - 0.5) * 0.22 + (jitter - 0.5) * 0.07 + directionalWarp;
         const wavePhase = ((phaseBase + phaseWobble) % 1 + 1) % 1;
         const waveCenter = 0.5 + (patchNoise - 0.5) * 0.09;
         const waveWidth = 0.24 + widthJitter * 0.12;
         const wave = Math.max(0, 1 - Math.abs(wavePhase - waveCenter) / waveWidth);
         const crossProgress = smoothstep(wave);
-        const dotRadius = Math.max(1.25, cellSize * (0.05 + noise * 0.01) * (0.62 + scale * 0.5));
-        const arm = Math.max(2, cellSize * (0.09 + crossProgress * 0.22) * scale);
-        const starInner = Math.max(1.35, arm * (0.24 + crossProgress * 0.07));
+        const dotRadius = Math.max(.95, cellSize * (0.05 + noise * 0.01) * (0.62 + scale * 0.5));
+        const arm = Math.max(1.55, cellSize * (0.09 + crossProgress * 0.22) * scale);
+        const starInner = Math.max(1, arm * (0.24 + crossProgress * 0.07));
         const rotation = (wavePhase * Math.PI * 2.4 + noise * Math.PI * 2) * crossProgress;
 
         ctx.save();
         ctx.translate(centerX, centerY);
         ctx.rotate(rotation);
-        ctx.globalAlpha = (0.3 + scale * 0.16) * (0.48 + crossProgress * 0.12) * opacityMultiplier;
+        ctx.globalAlpha = (0.48 + scale * 0.24) * (0.64 + crossProgress * 0.18) * opacityMultiplier;
         ctx.beginPath();
         ctx.arc(0, 0, dotRadius * (1 - crossProgress * 0.38), 0, Math.PI * 2);
         ctx.fill();
@@ -3659,7 +4911,7 @@
       function drawDotCrossCells(time, opacity = 1) {
         if (opacity <= 0.001) return;
 
-        ctx.fillStyle = token("--light-grey");
+        ctx.fillStyle = token("--outline-blue-2") || token("--landing-texture-square");
         dotCells.forEach((cell) => {
           const scale = updateCellScale(cell, time);
           if (scale <= 0.001) return;
@@ -3705,6 +4957,11 @@
       function draw(time = 0, finalOpacity = 0) {
         ctx.fillStyle = token("--page-bg-top");
         ctx.fillRect(0, 0, size, size);
+
+        if (isLandingMobile) {
+          drawDotCrossCells(time, 1);
+          return;
+        }
 
         const squareMix = smoothstep(finalOpacity);
         drawDotCrossCells(time, 1 - squareMix);
@@ -3931,6 +5188,14 @@
         targetCtx.restore();
       }
 
+      function getLeaderboardCompositeCrop() {
+        return {
+          cropSize: leaderboardCropSize,
+          cropX: leaderboardCropX,
+          cropY: leaderboardCropY
+        };
+      }
+
       function renderLeaderboardLayer() {
         const rowHeight = leaderboardRowAdvance;
         const dot = leaderboardDot;
@@ -3940,18 +5205,18 @@
         const avatarColumn = leaderboardAvatarSize + leaderboardAvatarGap;
         const cellWidth = (minCells) => charStep * minCells - dot;
         const fullRowWidth = avatarColumn + sectionGap + [5, 16, 10, 10, 10, 10].reduce((sum, minCells) => sum + cellWidth(minCells) + sectionGap, 0);
-        const cropX = Math.round((leaderboardSize - size) / 2);
+        const { cropSize, cropY } = getLeaderboardCompositeCrop();
         const sectionInset = 24;
-        const horizontalSections = [cropX + sectionInset];
-        if (size >= fullRowWidth * 2 + sectionInset * 3) {
-          horizontalSections.push(cropX + size - fullRowWidth - sectionInset);
+        const horizontalSections = [sectionInset];
+        if (cropSize >= fullRowWidth * 2 + sectionInset * 3) {
+          horizontalSections.push(cropSize - fullRowWidth - sectionInset);
         }
 
-        leaderboardCtx.clearRect(0, 0, leaderboardSize, leaderboardSize);
+        leaderboardCtx.clearRect(0, 0, cropSize, cropSize);
         leaderboardCtx.save();
         leaderboardCtx.fillStyle = token("--leaderboard-dot-off");
 
-        for (let y = 0; y < leaderboardSize; y += rowHeight) {
+        for (let y = cropY; y < cropY + cropSize + rowHeight; y += rowHeight) {
           const sourceIndex = Math.round(y / rowHeight);
           const entryIndex = sourceIndex % leaderboardTextureEntries.length;
           const entry = leaderboardTextureEntries[entryIndex];
@@ -3960,7 +5225,7 @@
 
           horizontalSections.forEach((sectionX, sectionIndex) => {
             const jitter = ((entryIndex + sectionIndex) % 3) * 2;
-            const rowY = y + jitter;
+            const rowY = y + jitter - cropY;
             const rowAlpha = 0.3 + ((entryIndex + sectionIndex) % 5) * 0.07;
             const dimmer = .92;
             const textAlpha = rowAlpha * dimmer;
@@ -4018,10 +5283,8 @@
         leaderboardCompositeCtx.clearRect(0, 0, size, size);
         leaderboardCompositeCtx.imageSmoothingEnabled = true;
         leaderboardCompositeCtx.imageSmoothingQuality = "high";
-        const cropSize = Math.round(size * leaderboardTextureScale);
-        const cropX = Math.round((leaderboardSize - cropSize) / 2);
-        const cropY = Math.round(((leaderboardSize - cropSize) / 2) / leaderboardRowAdvance) * leaderboardRowAdvance;
-        leaderboardCompositeCtx.drawImage(leaderboardCanvas, cropX, cropY, cropSize, cropSize, 0, 0, size, size);
+        const { cropSize } = getLeaderboardCompositeCrop();
+        leaderboardCompositeCtx.drawImage(leaderboardCanvas, 0, 0, cropSize, cropSize, 0, 0, size, size);
         leaderboardCompositeCtx.restore();
         leaderboardCompositeCtx.imageSmoothingEnabled = false;
         leaderboardCompositeDirty = true;
@@ -4036,7 +5299,7 @@
       }
 
       draw(0);
-      renderLeaderboardComposite();
+      if (includeLeaderboard) renderLeaderboardComposite();
       leaderboardCompositeDirty = false;
 
       return {
@@ -4045,13 +5308,14 @@
         update(time, finalOpacity = 0) {
           draw(time, finalOpacity);
           return {
-            leaderboardDirty: updateLeaderboardTexture(time, finalOpacity)
+            backgroundDirty: true,
+            leaderboardDirty: includeLeaderboard ? updateLeaderboardTexture(time, finalOpacity) : false
           };
         }
       };
     }
 
-    const gridTexture = createGridTextureAnimator();
+    const gridTexture = createGridTextureAnimator({ includeLeaderboard: !isLandingMobile });
 
     function createLandingBackgroundRenderer(targetCanvas, backgroundCanvas, leaderboardCanvas) {
       const contextOptions = {
@@ -4197,6 +5461,16 @@
 
       const backgroundTexture = createTexture(backgroundCanvas, gl.LINEAR, gl.REPEAT);
       const leaderboardTexture = createTexture(leaderboardCanvas, gl.LINEAR, gl.REPEAT);
+      let staticUniformsSet = false;
+      const uniformState = {
+        width: null,
+        height: null,
+        lensX: null,
+        lensY: null,
+        backgroundOffset: null,
+        leaderboardOffset: null,
+        leaderboardOpacity: null
+      };
 
       function resize() {
         const pixelRatio = Math.min(window.devicePixelRatio || 1, 3);
@@ -4211,7 +5485,7 @@
         gl.viewport(0, 0, width, height);
       }
 
-      function render({ backgroundOffset = 0, leaderboardOffset = 0, leaderboardOpacity = 0, leaderboardDirty = false, lensCenter = [0.5, 0.58] } = {}) {
+      function render({ backgroundOffset = 0, leaderboardOffset = 0, leaderboardOpacity = 0, backgroundDirty = true, leaderboardDirty = false, lensCenter = [0.5, 0.58] } = {}) {
         gl.useProgram(program);
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         gl.enableVertexAttribArray(locations.position);
@@ -4219,8 +5493,10 @@
 
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, backgroundTexture);
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, backgroundCanvas);
+        if (backgroundDirty) {
+          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+          gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, backgroundCanvas);
+        }
 
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, leaderboardTexture);
@@ -4229,16 +5505,36 @@
           gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, leaderboardCanvas);
         }
 
-        gl.uniform1i(locations.background, 0);
-        gl.uniform1i(locations.leaderboard, 1);
-        gl.uniform2f(locations.resolution, targetCanvas.width, targetCanvas.height);
-        gl.uniform2f(locations.repeat, 2.4, 1.6333333333);
-        gl.uniform2f(locations.lensCenter, lensCenter[0], lensCenter[1]);
-        gl.uniform1f(locations.backgroundOffset, backgroundOffset);
-        gl.uniform1f(locations.leaderboardOffset, leaderboardOffset);
-        gl.uniform1f(locations.leaderboardOpacity, leaderboardOpacity);
-        gl.uniform1f(locations.effect, 0.1);
-        gl.uniform1f(locations.effectScale, 1.0);
+        if (!staticUniformsSet) {
+          gl.uniform1i(locations.background, 0);
+          gl.uniform1i(locations.leaderboard, 1);
+          gl.uniform2f(locations.repeat, 2.4, 1.6333333333);
+          gl.uniform1f(locations.effect, 0.1);
+          gl.uniform1f(locations.effectScale, 1.0);
+          staticUniformsSet = true;
+        }
+        if (uniformState.width !== targetCanvas.width || uniformState.height !== targetCanvas.height) {
+          gl.uniform2f(locations.resolution, targetCanvas.width, targetCanvas.height);
+          uniformState.width = targetCanvas.width;
+          uniformState.height = targetCanvas.height;
+        }
+        if (uniformState.lensX !== lensCenter[0] || uniformState.lensY !== lensCenter[1]) {
+          gl.uniform2f(locations.lensCenter, lensCenter[0], lensCenter[1]);
+          uniformState.lensX = lensCenter[0];
+          uniformState.lensY = lensCenter[1];
+        }
+        if (uniformState.backgroundOffset !== backgroundOffset) {
+          gl.uniform1f(locations.backgroundOffset, backgroundOffset);
+          uniformState.backgroundOffset = backgroundOffset;
+        }
+        if (uniformState.leaderboardOffset !== leaderboardOffset) {
+          gl.uniform1f(locations.leaderboardOffset, leaderboardOffset);
+          uniformState.leaderboardOffset = leaderboardOffset;
+        }
+        if (uniformState.leaderboardOpacity !== leaderboardOpacity) {
+          gl.uniform1f(locations.leaderboardOpacity, leaderboardOpacity);
+          uniformState.leaderboardOpacity = leaderboardOpacity;
+        }
 
         gl.drawArrays(gl.TRIANGLES, 0, 6);
       }
@@ -4249,63 +5545,424 @@
       };
     }
 
+    function createLandingMobileBackgroundRenderer(targetCanvas) {
+      const ctx = targetCanvas.getContext("2d", { alpha: false });
+      if (!ctx) {
+        return {
+          resize() {},
+          render() {}
+        };
+      }
+
+      let width = 1;
+      let height = 1;
+      let needsDraw = true;
+      let lastFrameIndex = -1;
+      let lastFinalOpacity = null;
+      let gridSpacing = 12;
+      let gridPointXs = [];
+      let gridPointYs = [];
+      let gridPointCount = 0;
+      let lensX = 0;
+      let lensY = 0;
+      let maxDistance = 1;
+      let frameCache = [];
+      const frameCount = 16;
+      const framePhaseScale = 18;
+      const backgroundColor = token("--page-bg-top") || "#ffffff";
+      const matrixColor = parseColor(token("--outline-blue-2") || token("--landing-texture-square") || "#E2F2FF");
+      const finalTintColor = parseColor(token("--info-blue") || "#6EC8FF");
+      const matrixFill = `rgb(${Math.round(matrixColor[0])}, ${Math.round(matrixColor[1])}, ${Math.round(matrixColor[2])})`;
+      const rgba = (channels, alpha) => `rgba(${Math.round(channels[0])}, ${Math.round(channels[1])}, ${Math.round(channels[2])}, ${alpha.toFixed(3)})`;
+
+      function rebuildGrid() {
+        gridSpacing = Math.max(17, Math.min(28, width / 17));
+        lensX = width * .5;
+        lensY = height * .58;
+        maxDistance = Math.hypot(width * .5, height * .58);
+
+        const xs = [];
+        const ys = [];
+        for (let y = -gridSpacing * 2; y < height + gridSpacing * 2; y += gridSpacing) {
+          for (let x = -gridSpacing * 2; x < width + gridSpacing * 2; x += gridSpacing) {
+            xs.push(x);
+            ys.push(y);
+          }
+        }
+
+        gridPointXs = xs;
+        gridPointYs = ys;
+        gridPointCount = xs.length;
+      }
+
+      function drawStar(targetCtx, x, y, radius, rotation, alpha) {
+        const waist = radius * .28;
+        targetCtx.save();
+        targetCtx.globalAlpha = alpha;
+        targetCtx.translate(x, y);
+        targetCtx.rotate(rotation);
+        targetCtx.fillStyle = matrixFill;
+        targetCtx.beginPath();
+        targetCtx.moveTo(0, -radius);
+        targetCtx.lineTo(waist, -waist);
+        targetCtx.lineTo(radius, 0);
+        targetCtx.lineTo(waist, waist);
+        targetCtx.lineTo(0, radius);
+        targetCtx.lineTo(-waist, waist);
+        targetCtx.lineTo(-radius, 0);
+        targetCtx.lineTo(-waist, -waist);
+        targetCtx.closePath();
+        targetCtx.fill();
+        targetCtx.restore();
+      }
+
+      function drawMatrixFrame(targetCtx, backgroundOffset) {
+        targetCtx.globalAlpha = 1;
+        targetCtx.fillStyle = backgroundColor;
+        targetCtx.fillRect(0, 0, width, height);
+
+        const driftX = ((backgroundOffset * width * .18) % gridSpacing + gridSpacing) % gridSpacing;
+        const driftY = ((backgroundOffset * height * .09) % gridSpacing + gridSpacing) % gridSpacing;
+        const dotRadius = Math.max(1.15, gridSpacing * .075);
+        targetCtx.fillStyle = matrixFill;
+
+        for (let index = 0; index < gridPointCount; index += 1) {
+          const px = gridPointXs[index] + driftX;
+          const py = gridPointYs[index] + driftY;
+          const noise = valueNoise((px * .032) + backgroundOffset * 28, (py * .032) - backgroundOffset * 18);
+          const sweep = Math.sin((px * .018) + (py * .012) + backgroundOffset * 44);
+          const distance = Math.hypot(px - lensX, py - lensY) / maxDistance;
+          const alphaBoost = .44 + distance * .28;
+          const starAmount = smoothstep((noise + sweep * .16 - .57) / .22);
+
+          if (starAmount > .12) {
+            const radius = gridSpacing * (.2 + starAmount * .34);
+            drawStar(targetCtx, px, py, radius, noise * Math.PI * 2 + backgroundOffset * 4, (.28 + starAmount * .42) * alphaBoost);
+          } else {
+            targetCtx.globalAlpha = (.34 + noise * .2) * alphaBoost;
+            targetCtx.beginPath();
+            targetCtx.arc(px, py, dotRadius, 0, Math.PI * 2);
+            targetCtx.fill();
+          }
+        }
+
+        targetCtx.globalAlpha = 1;
+      }
+
+      function rebuildFrameCache() {
+        frameCache = Array.from({ length: frameCount }, (_, index) => {
+          const frame = document.createElement("canvas");
+          frame.width = width;
+          frame.height = height;
+          const frameCtx = frame.getContext("2d", { alpha: false });
+          if (frameCtx) {
+            drawMatrixFrame(frameCtx, index / frameCount);
+          }
+          return frame;
+        });
+        lastFrameIndex = -1;
+      }
+
+      function resize() {
+        const nextWidth = Math.max(1, Math.round(window.innerWidth || 1));
+        const nextHeight = getLandingViewportHeight();
+        if (targetCanvas.width !== nextWidth || targetCanvas.height !== nextHeight) {
+          targetCanvas.width = nextWidth;
+          targetCanvas.height = nextHeight;
+          width = nextWidth;
+          height = nextHeight;
+          needsDraw = true;
+          rebuildGrid();
+          rebuildFrameCache();
+        } else if (frameCache.length !== frameCount) {
+          needsDraw = true;
+          rebuildFrameCache();
+        }
+      }
+
+      function render({ backgroundOffset = 0, finalOpacity = 0 } = {}) {
+        const framePhase = ((backgroundOffset * framePhaseScale) % 1 + 1) % 1;
+        const frameIndex = Math.floor(framePhase * frameCount) % frameCount;
+        const roundedFinalOpacity = Number(finalOpacity.toFixed(3));
+        if (!needsDraw && lastFrameIndex === frameIndex && lastFinalOpacity === roundedFinalOpacity) {
+          return;
+        }
+
+        lastFrameIndex = frameIndex;
+        lastFinalOpacity = roundedFinalOpacity;
+        needsDraw = false;
+
+        const frame = frameCache[frameIndex];
+        if (frame) {
+          ctx.drawImage(frame, 0, 0);
+        } else {
+          drawMatrixFrame(ctx, backgroundOffset);
+        }
+
+        if (roundedFinalOpacity > .001) {
+          const overlay = ctx.createRadialGradient(width * .5, height * .5, 0, width * .5, height * .5, Math.max(width, height) * .68);
+          overlay.addColorStop(0, rgba(finalTintColor, roundedFinalOpacity * .035));
+          overlay.addColorStop(1, rgba(finalTintColor, 0));
+          ctx.fillStyle = overlay;
+          ctx.fillRect(0, 0, width, height);
+        }
+      }
+
+      resize();
+
+      return {
+        resize,
+        render
+      };
+    }
+
+    function createLandingMobileTextureRenderer(targetCanvas, backgroundCanvas) {
+      const ctx = targetCanvas.getContext("2d", { alpha: false });
+      if (!ctx || !backgroundCanvas) {
+        return {
+          resize() {},
+          render() {}
+        };
+      }
+
+      let width = 1;
+      let height = 1;
+      let lastOffset = null;
+      let lastFinalOpacity = null;
+      let lastSourceRevision = "";
+      const repeatX = 2.4;
+      const backgroundColor = token("--page-bg-top") || "#ffffff";
+      const finalTintColor = parseColor(token("--info-blue") || "#6EC8FF");
+      const rgba = (channels, alpha) => `rgba(${Math.round(channels[0])}, ${Math.round(channels[1])}, ${Math.round(channels[2])}, ${alpha.toFixed(3)})`;
+
+      function resize() {
+        const nextWidth = Math.max(1, Math.round(window.innerWidth || 1));
+        const nextHeight = getLandingViewportHeight();
+        if (targetCanvas.width !== nextWidth || targetCanvas.height !== nextHeight) {
+          targetCanvas.width = nextWidth;
+          targetCanvas.height = nextHeight;
+          width = nextWidth;
+          height = nextHeight;
+          lastOffset = null;
+          lastFinalOpacity = null;
+          lastSourceRevision = "";
+        }
+      }
+
+      function render({ backgroundOffset = 0, finalOpacity = 0, backgroundDirty = true } = {}) {
+        const roundedOffset = Number(backgroundOffset.toFixed(4));
+        const roundedFinalOpacity = Number(finalOpacity.toFixed(3));
+        const sourceRevision = `${backgroundCanvas.width}x${backgroundCanvas.height}`;
+        if (
+          !backgroundDirty
+          && lastOffset === roundedOffset
+          && lastFinalOpacity === roundedFinalOpacity
+          && lastSourceRevision === sourceRevision
+        ) {
+          return;
+        }
+
+        lastOffset = roundedOffset;
+        lastFinalOpacity = roundedFinalOpacity;
+        lastSourceRevision = sourceRevision;
+
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, width, height);
+
+        const sourceAspect = backgroundCanvas.width / Math.max(1, backgroundCanvas.height);
+        const tileW = width / repeatX;
+        const tileH = tileW / Math.max(0.001, sourceAspect);
+        const offsetY = (height - tileH) / 2;
+        const wrappedOffset = ((roundedOffset % 1) + 1) % 1;
+        const offsetX = -wrappedOffset * tileW;
+
+        for (let x = offsetX - tileW; x < width + tileW; x += tileW) {
+          for (let y = offsetY - tileH; y < height + tileH; y += tileH) {
+            ctx.drawImage(backgroundCanvas, x, y, tileW, tileH);
+          }
+        }
+
+        if (roundedFinalOpacity > .001) {
+          const overlay = ctx.createRadialGradient(width * .5, height * .5, 0, width * .5, height * .5, Math.max(width, height) * .68);
+          overlay.addColorStop(0, rgba(finalTintColor, roundedFinalOpacity * .035));
+          overlay.addColorStop(1, rgba(finalTintColor, 0));
+          ctx.fillStyle = overlay;
+          ctx.fillRect(0, 0, width, height);
+        }
+      }
+
+      resize();
+
+      return {
+        resize,
+        render
+      };
+    }
+
     if (document.fonts?.load) {
       await document.fonts.load('300 104px "Syne Hudi"');
+      markLandingContoursDirty();
+      markLandingScrollMetricsDirty();
       updateLandingMarketPanelWidth();
-      updateScrollState();
+      updateScrollStateMeasured();
     }
 
     document.fonts?.ready?.then(() => {
+      markLandingContoursDirty();
+      markLandingScrollMetricsDirty();
       updateLandingMarketPanelWidth();
-      updateScrollState();
+      updateScrollStateMeasured();
     });
 
-    const backgroundRenderer = createLandingBackgroundRenderer(canvas, gridTexture.canvas, gridTexture.leaderboardCanvas);
+    const backgroundRenderer = isLandingMobile
+      ? createLandingMobileTextureRenderer(canvas, gridTexture.canvas)
+      : createLandingBackgroundRenderer(canvas, gridTexture.canvas, gridTexture.leaderboardCanvas);
 
     let rotationSpeed = 0.00065;
     let passiveRotation = 0;
     let ringRotation = 0;
     let shaderCenterShiftEased = 0;
+    let renderFrame = 0;
+    let mobileAmbientTimer = 0;
+    let mobileBobFrame = 0;
 
     function resize() {
+      if (isLandingMobile) {
+        updateLandingStableViewport();
+        if (landingResizeAppliedRevision === landingViewportRevision) return;
+        landingResizeAppliedRevision = landingViewportRevision;
+      }
+
+      markLandingContoursDirty();
+      markLandingScrollMetricsDirty();
       backgroundRenderer.resize();
       orbGlobe?.resize();
       orbGlobeHighlights?.resize();
+      requestLandingFrame();
     }
 
     window.addEventListener("resize", resize);
     resize();
 
+    function scheduleRender() {
+      if (renderFrame || document.hidden) return;
+      renderFrame = requestAnimationFrame(render);
+    }
+
+    function scheduleMobileAmbientRender() {
+      if (!isLandingMobile || mobileAmbientTimer || document.hidden) return;
+      mobileAmbientTimer = window.setTimeout(() => {
+        mobileAmbientTimer = 0;
+        scheduleRender();
+        scheduleMobileAmbientRender();
+      }, 180);
+    }
+
+    function shouldRunMobileBobbing() {
+      if (!isLandingMobile || document.hidden) return false;
+      const rootState = document.documentElement.dataset;
+      return scrollState.firstLevelOpacity > .001
+        || rootState.mobileMarketActive === "true"
+        || rootState.mobileMarketWarm === "true"
+        || rootState.mobileChatActive === "true"
+        || rootState.mobileChatWarm === "true"
+        || rootState.mobileFinalActive === "true"
+        || rootState.mobileFinalWarm === "true";
+    }
+
+    function scheduleMobileBobbing() {
+      if (mobileBobFrame || !shouldRunMobileBobbing()) return;
+      mobileBobFrame = requestAnimationFrame(runMobileBobbing);
+    }
+
+    function runMobileBobbing(time) {
+      mobileBobFrame = 0;
+      if (!shouldRunMobileBobbing()) return;
+      updateFloatingPanels(time);
+      scheduleMobileBobbing();
+    }
+
+    requestLandingFrame = scheduleRender;
+    mobileScrollCoalesceEnabled = true;
+
     function render() {
-      requestAnimationFrame(render);
+      renderFrame = 0;
+      if (document.hidden) return;
+      if (!isLandingMobile) scheduleRender();
       const now = performance.now();
-      updateFloatingPanels(now);
-      const textureUpdate = gridTexture.update(now, scrollState.finalOpacity);
-      rotationSpeed += ((0.00065 + scrollState.scrollVelocity * 0.024) - rotationSpeed) * 0.1;
-      scrollState.scrollVelocity *= 0.92;
+      const floatingStartedAt = landingPerf.start();
+      if (!isLandingMobile) updateFloatingPanels(now);
+      landingPerf.end("floatingPanels", floatingStartedAt);
+      let textureUpdate = { backgroundDirty: true, leaderboardDirty: false };
+      if (gridTexture) {
+        const textureStartedAt = landingPerf.start();
+        textureUpdate = gridTexture.update(now, scrollState.finalOpacity);
+        landingPerf.end("gridTexture", textureStartedAt);
+      }
+      const rotationBaseSpeed = isLandingMobile ? 0.00022 : 0.00046;
+      const rotationVelocityBoost = isLandingMobile ? 0 : 0.016;
+      const rotationEase = isLandingMobile ? 0.14 : 0.1;
+      rotationSpeed += ((rotationBaseSpeed + scrollState.scrollVelocity * rotationVelocityBoost) - rotationSpeed) * rotationEase;
+      scrollState.scrollVelocity *= isLandingMobile ? 0.72 : 0.92;
       passiveRotation += rotationSpeed;
       shaderCenterShiftEased += (scrollState.shaderCenterShift - shaderCenterShiftEased) * 0.065;
       const ringFadeOutProgress = 1 - scrollState.firstLevelOpacity;
-      const ringFadeOutBoost = 1 - Math.pow(1 - ringFadeOutProgress, 3);
+      const ringFadeOutBoost = isLandingMobile ? 0 : 1 - Math.pow(1 - ringFadeOutProgress, 3);
       const ringSpeed = scrollState.firstLevelOpacity > .001 ? 0.00068 * (1 + ringFadeOutBoost * 7.5) : 0;
       ringRotation += ringSpeed;
-      landingShell?.style.setProperty("--landing-text-ring-opacity", scrollState.firstLevelOpacity.toFixed(3));
-      landingTextRibbonPath?.setAttribute("startOffset", `${(-ringRotation * 920).toFixed(2)}px`);
+      setStyleProp(landingShell, "--landing-text-ring-opacity", scrollState.firstLevelOpacity.toFixed(3));
+      const ribbonOffset = -ringRotation * 920;
+      setAttr(landingTextRibbonPath, "startOffset", isLandingMobile ? `${Math.round(ribbonOffset)}px` : `${ribbonOffset.toFixed(2)}px`);
+      const backgroundStartedAt = landingPerf.start();
+      const backgroundOffsetMultiplier = isLandingMobile ? 0.12 : 0.46;
       backgroundRenderer.render({
-        backgroundOffset: passiveRotation * 0.56,
+        backgroundOffset: passiveRotation * backgroundOffsetMultiplier,
         leaderboardOffset: passiveRotation * 0.28,
-        leaderboardOpacity: smoothstep(scrollState.finalOpacity),
+        leaderboardOpacity: isLandingMobile ? 0 : smoothstep(scrollState.finalOpacity),
+        finalOpacity: scrollState.finalOpacity,
+        backgroundDirty: textureUpdate.backgroundDirty,
         leaderboardDirty: textureUpdate.leaderboardDirty,
         lensCenter: [
           lerp(0.5, 0.56, shaderCenterShiftEased),
           0.58
         ]
       });
+      landingPerf.end("backgroundRender", backgroundStartedAt);
+      const globeStartedAt = landingPerf.start();
       orbGlobe?.render();
       orbGlobeHighlights?.render();
+      landingPerf.end("globeRender", globeStartedAt);
+      landingPerf.frame();
     }
 
-    render();
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        if (mobileScrollUpdateFrame) cancelAnimationFrame(mobileScrollUpdateFrame);
+        if (renderFrame) cancelAnimationFrame(renderFrame);
+        if (mobileBobFrame) cancelAnimationFrame(mobileBobFrame);
+        if (mobileAmbientTimer) clearTimeout(mobileAmbientTimer);
+        Object.keys(mobileSectionWarmTimers).forEach((section) => {
+          if (!mobileSectionWarmTimers[section]) return;
+          window.clearTimeout(mobileSectionWarmTimers[section]);
+          mobileSectionWarmTimers[section] = 0;
+        });
+        mobileScrollUpdateFrame = 0;
+        renderFrame = 0;
+        mobileBobFrame = 0;
+        mobileAmbientTimer = 0;
+        return;
+      }
+
+      lastScrollAt = performance.now();
+      updateScrollStateMeasured();
+      scheduleRender();
+      scheduleMobileAmbientRender();
+      scheduleMobileBobbing();
+    });
+
+    scheduleRender();
+    scheduleMobileAmbientRender();
+    scheduleMobileBobbing();
   </script>
 </body>
 </html>
