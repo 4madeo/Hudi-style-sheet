@@ -11,12 +11,13 @@
       }
     }
   </script>
-  <link rel="preload" href="assets/fonts/OCRAStdFIXED-Regular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="assets/fonts/OCRAStdFIXED-Regular.otf" as="font" type="font/otf">
   <link rel="preload" href="assets/Black_on_white_dotted_world_map_vector.svg?white-transparent-map=1" as="image" type="image/svg+xml">
   <link rel="preload" href="assets/landing-map-highlight-dots.svg?highlight-dots=1" as="image" type="image/svg+xml" media="(min-width: 701px)">
   <link rel="preload" href="assets/cross.svg" as="image" type="image/svg+xml" media="(min-width: 701px)">
   <link rel="preload" href="assets/cross1.svg" as="image" type="image/svg+xml" media="(min-width: 701px)">
   <link rel="preload" href="assets/cross2.svg" as="image" type="image/svg+xml" media="(min-width: 701px)">
+  <link rel="stylesheet" href="landing-kitchen-sink.css">
   <style id="landing-style">
     @font-face { font-family: "OCRA Fixed"; src: url("assets/fonts/OCRAStdFIXED-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
 
@@ -82,17 +83,18 @@
     }
 
     .landing-text-ribbon__text {
-      fill: var(--light-grey);
-      font-family: "Syne Hudi", Syne, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: clamp(42px, 4.8vw, 82px);
-      font-weight: 200;
-      letter-spacing: .12em;
+      fill: url(#landing-text-ribbon-gradient);
+      filter: drop-shadow(0 .904215px 0 var(--white)) drop-shadow(0 .904215px 0 var(--white));
+      font-family: "SF Pro Display Ultralight", "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      font-size: 32px;
+      font-weight: 100;
+      letter-spacing: 6.3px;
       text-rendering: geometricPrecision;
       -webkit-font-smoothing: antialiased;
     }
 
     .landing-text-ribbon__text .is-city {
-      fill: var(--info-blue);
+      fill: url(#landing-text-ribbon-city-gradient);
     }
 
     .hudi-svg-defs {
@@ -125,7 +127,7 @@
       background-color: var(--orb-base);
       background-image: linear-gradient(180deg, var(--orb-sheen) 0%, rgba(255, 255, 255, 0) 100%);
       box-shadow:
-        inset 0 0 0 var(--space-6) var(--landing-orb-inner-stroke),
+        inset 0 0 0 calc(var(--space-6) / 3) var(--landing-orb-inner-stroke),
         inset 0 var(--orb-shadow-y, -6.1625px) var(--orb-shadow-blur, 64.3984px) var(--orb-shadow),
         inset 0 0 calc(var(--orb-size) * .09) color-mix(in srgb, var(--orb-sheen) 58%, transparent);
       translate: -50% calc(-50% + var(--landing-orb-y, 0px));
@@ -219,10 +221,22 @@
     }
 
     .landing-hudi-mark {
+      --logo-inner: var(--hudi-orb-inner);
       z-index: 3;
       opacity: var(--landing-logo-opacity, 0);
       transform: scale(var(--landing-logo-scale, .82));
+      filter:
+        drop-shadow(0 1px 2px color-mix(in srgb, var(--logo-inner) 20%, transparent))
+        drop-shadow(0 0 2px color-mix(in srgb, var(--logo-inner) 14%, transparent));
       transition: none;
+    }
+
+    .landing-hudi-mark stop:nth-child(-n+2) {
+      stop-color: var(--hudi-logo-fill-top);
+    }
+
+    .landing-hudi-mark stop:last-child {
+      stop-color: var(--hudi-logo-fill-bottom);
     }
 
     .landing-hero-actions {
@@ -250,23 +264,68 @@
       white-space: nowrap;
     }
 
+    .hudi-trade-button {
+      --pill-label-y: 0px;
+      align-items: center;
+      color: var(--pill-label);
+      cursor: pointer;
+      display: inline-flex;
+      justify-content: center;
+      line-height: 1;
+      overflow: hidden;
+      padding: 0 var(--space-28);
+      position: relative;
+      transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+    }
+
+    .hudi-trade-button .pill-label {
+      color: var(--pill-label);
+      position: relative;
+      text-shadow: none;
+      top: var(--pill-label-y);
+      z-index: 4;
+      -webkit-text-fill-color: var(--pill-label);
+    }
+
+    .hudi-trade-button .pill-shine {
+      background: linear-gradient(105deg, transparent 0%, color-mix(in srgb, var(--white) 0%, transparent) 34%, color-mix(in srgb, var(--white) 72%, transparent) 48%, color-mix(in srgb, var(--white) 0%, transparent) 64%, transparent 100%);
+      height: 150%;
+      left: -80%;
+      pointer-events: none;
+      position: absolute;
+      top: -25%;
+      transform: skewX(-18deg);
+      width: 52%;
+      z-index: 5;
+    }
+
+    .hudi-trade-button:hover .pill-shine {
+      animation: hudi-pill-shine 760ms ease-out;
+    }
+
+    @keyframes hudi-pill-shine {
+      from { left: -80%; }
+      to { left: 130%; }
+    }
+
     .landing-start-button.hudi-trade-button {
-      --pill-bg: var(--hudi-orb-colour);
-      --pill-inner-shadow: var(--hudi-orb-shadow);
+      --pill-bg: var(--landing-cta-pink);
+      --pill-inner-shadow: var(--landing-cta-pink-shadow);
       --pill-label: var(--white);
-      --landing-start-inner-stroke: color-mix(in srgb, var(--white) 40%, transparent);
-      width: var(--landing-start-width, clamp(220px, 19vw, 360px));
+      width: var(--landing-start-width, 214.2px);
+      max-width: calc(100vw - var(--space-48));
       min-width: 0;
-      height: var(--landing-start-height, clamp(52px, 5vw, 76px));
-      border: 0;
-      border-radius: var(--landing-start-radius, var(--radius-pill));
+      height: var(--landing-start-height, 50px);
+      border: .5px solid color-mix(in srgb, var(--black) 22%, transparent);
+      border-radius: var(--landing-start-radius, 25px);
+      background: var(--pill-bg);
       font-family: var(--sf-pro, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
-      font-size: clamp(24px, 2.2vw, 38px);
-      font-weight: 400;
-      letter-spacing: .06em;
+      font-size: 27px;
+      font-weight: 300;
+      letter-spacing: -1.5px;
       box-shadow:
-        inset 0 0 0 var(--space-4) var(--landing-start-inner-stroke),
-        inset 0 -2.83px 29.61px var(--pill-inner-shadow);
+        inset 0 -3.0801px 32.187px var(--pill-inner-shadow),
+        var(--landing-panel-shadow);
       translate: 0 var(--landing-panel-bob-y, 0px);
       scale: var(--landing-start-scale, 1);
       text-transform: lowercase;
@@ -274,18 +333,64 @@
       will-change: width, border-radius, translate, scale;
     }
 
+    .landing-start-button.hudi-trade-button::before,
+    .landing-final-button.hudi-trade-button::before {
+      content: "";
+      position: absolute;
+      left: var(--landing-cta-highlight-x, 12px);
+      right: var(--landing-cta-highlight-right, 12.2px);
+      top: var(--landing-cta-highlight-top, 4px);
+      z-index: 2;
+      height: var(--landing-cta-highlight-height, 24px);
+      border-radius: var(--radius-pill);
+      background: linear-gradient(180deg, var(--white) 0%, color-mix(in srgb, var(--white) 6%, transparent) 100%);
+      pointer-events: none;
+    }
+
+    .landing-start-button.hudi-trade-button::after,
+    .landing-final-button.hudi-trade-button::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: var(--landing-cta-edge-right, 2.2px);
+      top: 0;
+      z-index: 3;
+      height: var(--landing-cta-edge-height, 14px);
+      border-radius: inherit;
+      background: radial-gradient(91.39% 71.43% at 50% 14.29%, color-mix(in srgb, var(--white) 71%, transparent) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .landing-start-button .pill-bottom-highlight,
+    .landing-final-button .pill-bottom-highlight {
+      position: absolute;
+      left: 0;
+      right: var(--landing-cta-edge-right, 2.2px);
+      top: var(--landing-cta-bottom-top, 36px);
+      z-index: 2;
+      height: var(--landing-cta-edge-height, 14px);
+      border-radius: 0 0 var(--landing-cta-bottom-radius, 25px) var(--landing-cta-bottom-radius, 25px);
+      background: radial-gradient(91.39% 71.43% at 50% 85.71%, color-mix(in srgb, var(--white) 30%, transparent) 0%, transparent 100%);
+      filter: none;
+      pointer-events: none;
+    }
+
+    .landing-start-button .pill-shine,
+    .landing-final-button .pill-shine {
+      display: block;
+    }
+
     .landing-start-button .pill-label {
+      display: inline-block;
+      color: var(--pill-label);
       opacity: var(--landing-start-label-opacity, 1);
       min-width: max-content;
       white-space: nowrap;
+      -webkit-text-fill-color: var(--pill-label);
     }
 
     .landing-start-button .pill-top-contour {
-      opacity: var(--landing-start-contour-opacity, 1);
-    }
-
-    .landing-start-button .pill-top-contour path {
-      fill: url(#landing-start-pill-top-gradient);
+      display: none;
     }
 
     .market-showcase {
@@ -1354,56 +1459,85 @@
     }
 
     .landing-final-button.hudi-trade-button {
-      --pill-bg: var(--hudi-orb-colour);
-      --pill-inner-shadow: var(--hudi-orb-shadow);
+      --landing-cta-highlight-x: 24px;
+      --landing-cta-highlight-right: 24.4px;
+      --landing-cta-highlight-top: 8px;
+      --landing-cta-highlight-height: 48px;
+      --landing-cta-edge-right: 4.4px;
+      --landing-cta-edge-height: 28px;
+      --landing-cta-bottom-top: 72px;
+      --landing-cta-bottom-radius: 50px;
+      --pill-bg: var(--landing-cta-pink);
+      --pill-inner-shadow: var(--landing-cta-pink-shadow);
       --pill-label: var(--white);
-      --landing-final-inner-stroke: color-mix(in srgb, var(--white) 20%, transparent);
-      width: var(--landing-final-width, clamp(360px, 33vw, 640px));
+      width: var(--landing-final-width, 428.4px);
+      max-width: calc(100vw - var(--space-48));
       min-width: 0;
-      height: var(--landing-final-height, clamp(74px, 7vw, 116px));
-      border: 0;
-      border-radius: var(--landing-final-radius, var(--radius-pill));
+      height: var(--landing-final-height, 100px);
+      border: .5px solid color-mix(in srgb, var(--black) 22%, transparent);
+      border-radius: var(--landing-final-radius, 50px);
+      background: var(--pill-bg);
       font-family: var(--sf-pro, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
-      font-size: clamp(42px, 4vw, 72px);
-      font-weight: 400;
-      letter-spacing: .06em;
+      font-size: 54px;
+      font-weight: 300;
+      letter-spacing: -3px;
       opacity: var(--landing-final-button-opacity, 0);
       translate: 0 var(--landing-panel-bob-y, 0px);
       scale: var(--landing-final-button-scale, 0);
       text-transform: lowercase;
       transform-origin: center;
       box-shadow:
-        inset 0 0 0 var(--space-6) var(--landing-final-inner-stroke),
-        inset 0 -2.83px 29.61px var(--pill-inner-shadow),
+        inset 0 -3.0801px 32.187px var(--pill-inner-shadow),
         var(--landing-panel-shadow);
       will-change: width, border-radius, translate, scale, opacity;
     }
 
     .landing-final-button .pill-label {
+      display: inline-block;
+      color: var(--pill-label);
       opacity: var(--landing-final-label-opacity, 0);
       white-space: nowrap;
+      -webkit-text-fill-color: var(--pill-label);
     }
 
     .landing-final-button .pill-top-contour {
-      opacity: var(--landing-final-contour-opacity, 0);
-    }
-
-    .landing-final-button .pill-top-contour path {
-      fill: url(#landing-final-pill-top-gradient);
+      display: none;
     }
 
     .final-tagline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .48em;
       color: var(--dark-grey);
       font-family: var(--ocr, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
       font-size: clamp(17px, 1.45vw, 30px);
       letter-spacing: .16em;
       line-height: 1;
       text-align: center;
-      text-shadow: 0 0 4px var(--white), 0 0 11px var(--white), 0 0 18px var(--white);
+      text-shadow:
+        0 0 3px var(--white),
+        0 0 10px var(--white),
+        0 0 22px var(--white),
+        0 0 42px color-mix(in srgb, var(--white) 86%, transparent),
+        0 0 64px color-mix(in srgb, var(--color-cff3ff) 54%, transparent);
       white-space: nowrap;
       opacity: var(--landing-final-tagline-opacity, 0);
       clip-path: inset(0 calc((1 - var(--landing-final-tagline-reveal, 0)) * 100%) 0 0);
       will-change: clip-path, opacity;
+    }
+
+    .final-tagline__wordmark {
+      display: block;
+      width: auto;
+      height: 1.08em;
+      flex: 0 0 auto;
+      filter:
+        drop-shadow(0 0 3px var(--white))
+        drop-shadow(0 0 10px var(--white))
+        drop-shadow(0 0 22px color-mix(in srgb, var(--white) 86%, transparent))
+        drop-shadow(0 0 38px color-mix(in srgb, var(--color-cff3ff) 54%, transparent));
+      transform: translateY(.03em);
     }
 
     .final-socials {
@@ -1428,9 +1562,12 @@
       border: 0;
       border-radius: 50%;
       background-color: var(--orb-base);
-      background-image: linear-gradient(180deg, var(--orb-sheen) 0%, var(--highlight-white-zero) 58%), var(--window-image);
-      background-position: center;
-      background-size: cover, 54% 54%;
+      background-image:
+        linear-gradient(105deg, transparent 0%, var(--highlight-white-zero) 34%, var(--highlight-white-strong) 48%, var(--highlight-white-zero) 64%, transparent 100%),
+        linear-gradient(180deg, var(--orb-sheen) 0%, var(--highlight-white-zero) 58%),
+        var(--window-image);
+      background-position: -90% 50%, center, center;
+      background-size: 52% 150%, cover, 54% 54%;
       background-repeat: no-repeat;
       box-shadow:
         inset 0 0 0 var(--space-4) var(--final-social-inner-stroke),
@@ -1440,7 +1577,19 @@
       cursor: pointer;
       overflow: hidden;
       transform-origin: center;
+      transition: filter 160ms ease, box-shadow 160ms ease;
       will-change: scale, opacity;
+    }
+
+    .final-social-orb.hudi-window-orb:hover {
+      animation: final-social-orb-shine 760ms ease-out;
+      filter: brightness(1.08) saturate(1.06);
+      box-shadow:
+        inset 0 0 0 var(--space-4) color-mix(in srgb, var(--white) 30%, transparent),
+        inset 0 -6.1625px 64.3984px var(--orb-shadow),
+        inset 0 0 calc(var(--orb-size) * .12) color-mix(in srgb, var(--orb-sheen) 72%, transparent),
+        0 13px 25px color-mix(in srgb, var(--orb-base) 24%, transparent),
+        var(--landing-panel-shadow);
     }
 
     .final-social-orb.hudi-window-orb::before {
@@ -1476,18 +1625,52 @@
       --orb-base: var(--color-dbe7f3);
       --orb-sheen: var(--white);
       --orb-shadow: var(--color-rgba-139-204-255-22);
-      --window-image: url("data:image/svg+xml,%3Csvg width='128' height='128' viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M23 22h21.7l25.1 33.4L99 22h12L75.4 62.8 113 112H91.4L64.3 76 32.8 112H20.7l38-43.5L23 22Zm16.1 8.8 56.8 72.4h7L46.1 30.8h-7Z' fill='%23525c6f'/%3E%3C/svg%3E");
       opacity: var(--landing-final-x-opacity, 0);
       scale: var(--landing-final-x-scale, .84);
     }
 
+    .final-social-orb.is-twitter::before {
+      opacity: .72;
+    }
+
+    .final-social-orb.is-twitter .final-social-orb__x-logo {
+      opacity: var(--landing-final-x-logo-opacity, 0);
+    }
+
+    .final-social-orb__x-logo {
+      position: relative;
+      z-index: 2;
+      width: 67.5%;
+      height: 67.5%;
+      background: var(--text-darker-grey);
+      filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--white) 28%, transparent));
+      -webkit-mask: url("data:image/svg+xml,%3Csvg width='128' height='128' viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M23 22h21.7l25.1 33.4L99 22h12L75.4 62.8 113 112H91.4L64.3 76 32.8 112H20.7l38-43.5L23 22Zm16.1 8.8 56.8 72.4h7L46.1 30.8h-7Z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg width='128' height='128' viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M23 22h21.7l25.1 33.4L99 22h12L75.4 62.8 113 112H91.4L64.3 76 32.8 112H20.7l38-43.5L23 22Zm16.1 8.8 56.8 72.4h7L46.1 30.8h-7Z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
+      transition: opacity 180ms ease;
+    }
+
     .final-social-orb.is-telegram {
-      --orb-base: var(--hudi-orb-colour);
+      --orb-base: var(--color-61caff);
       --orb-sheen: var(--color-cff3ff);
-      --orb-shadow: var(--hudi-orb-shadow);
-      --window-image: url("data:image/svg+xml,%3Csvg width='128' height='128' viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M108.8 24.8 91.5 105c-1.3 5.7-4.7 7.1-9.5 4.4L55.6 89.9 42.9 102.1c-1.4 1.4-2.6 2.6-5.3 2.6l1.9-26.9 49-44.3c2.1-1.9-.5-3-3.3-1.1L24.6 70.6-1.5 62.4c-5.7-1.8-5.8-5.7 1.2-8.4l102-39.3c4.7-1.7 8.8 1.1 7.1 10.1Z' fill='%23f5fbff'/%3E%3C/svg%3E");
+      --orb-shadow: var(--color-rgba-189-228-255-56);
       opacity: var(--landing-final-telegram-opacity, 0);
       scale: var(--landing-final-telegram-scale, .84);
+    }
+
+    .final-social-orb__telegram-logo {
+      position: relative;
+      z-index: 2;
+      width: 54%;
+      height: auto;
+      opacity: var(--landing-final-telegram-logo-opacity, 0);
+      filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--hudi-orb-inner) 28%, transparent));
+      transform: translate(-4%, -2%);
+      transition: opacity 180ms ease;
+    }
+
+    @keyframes final-social-orb-shine {
+      0% { background-position: -90% 50%, center, center; }
+      100% { background-position: 190% 50%, center, center; }
     }
 
     @keyframes market-particle-bob {
@@ -1607,7 +1790,7 @@
         border-radius: 50%;
         clip-path: none;
         box-shadow:
-          inset 0 0 0 var(--space-4) var(--landing-orb-inner-stroke),
+          inset 0 0 0 calc(var(--space-4) / 3) var(--landing-orb-inner-stroke),
           inset 0 -10px 34px color-mix(in srgb, var(--orb-shadow) 42%, transparent);
         will-change: transform, opacity;
       }
@@ -1622,16 +1805,16 @@
       }
 
       .landing-start-button.hudi-trade-button {
-        width: var(--landing-start-width, clamp(190px, 58vw, 260px));
-        height: var(--landing-start-height, 56px);
-        border-radius: var(--landing-start-radius, var(--radius-pill));
+        width: var(--landing-start-width, 214.2px);
+        height: var(--landing-start-height, 50px);
+        border-radius: var(--landing-start-radius, 25px);
         will-change: width, border-radius, translate, scale, opacity;
       }
 
       .landing-final-button.hudi-trade-button {
-        width: var(--landing-final-width, min(76vw, 340px));
-        height: var(--landing-final-height, 64px);
-        border-radius: var(--landing-final-radius, var(--radius-pill));
+        width: var(--landing-final-width, 214.2px);
+        height: var(--landing-final-height, 50px);
+        border-radius: var(--landing-final-radius, 25px);
         will-change: width, border-radius, translate, scale, opacity;
       }
 
@@ -1888,7 +2071,15 @@
     <section class="landing-text-ribbon" aria-hidden="true" data-landing-text-ribbon>
       <svg class="landing-text-ribbon__svg" viewBox="0 0 1600 220" preserveAspectRatio="none" focusable="false">
         <defs>
-          <path id="landing-text-ribbon-curve" d="M -300 198 C 260 64 1340 64 1900 198"/>
+          <linearGradient id="landing-text-ribbon-gradient" x1="0" y1="78" x2="0" y2="118" gradientUnits="userSpaceOnUse">
+            <stop offset="1.93%" stop-color="var(--hudi-soft-panel-text-top)"/>
+            <stop offset="78.85%" stop-color="var(--hudi-soft-panel-text-bottom)"/>
+          </linearGradient>
+          <linearGradient id="landing-text-ribbon-city-gradient" x1="0" y1="78" x2="0" y2="118" gradientUnits="userSpaceOnUse">
+            <stop offset="1.93%" stop-color="var(--landing-ribbon-city-top)"/>
+            <stop offset="78.85%" stop-color="var(--landing-ribbon-city-bottom)"/>
+          </linearGradient>
+          <path id="landing-text-ribbon-curve" d="M -900 214 C -120 38 1720 38 2500 214"/>
         </defs>
         <text class="landing-text-ribbon__text">
           <textPath href="#landing-text-ribbon-curve" data-landing-text-ribbon-path></textPath>
@@ -2268,10 +2459,19 @@
           <span class="pill-label">start trading</span>
           <span class="pill-shine"></span>
         </button>
-        <div class="final-tagline">on chain. 24/7. only on hudi</div>
+        <div class="final-tagline">
+          <span>on chain. 24/7. only on</span>
+          <img class="final-tagline__wordmark" src="assets/hudi-wordmark-tagline.svg" alt="hudi" decoding="async">
+        </div>
         <div class="final-socials" aria-label="Social links">
-          <button class="hudi-window-orb final-social-orb is-twitter" type="button" aria-label="X"></button>
-          <button class="hudi-window-orb final-social-orb is-telegram" type="button" aria-label="Telegram"></button>
+          <button class="hudi-window-orb final-social-orb is-twitter" type="button" aria-label="X">
+            <span class="final-social-orb__x-logo" aria-hidden="true"></span>
+          </button>
+          <button class="hudi-window-orb final-social-orb is-telegram" type="button" aria-label="Telegram">
+            <svg class="final-social-orb__telegram-logo" width="131" height="109" viewBox="0 0 131 109" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M8.92914 46.6C43.9291 31.4 67.2291 21.3 78.9291 16.4C112.229 2.5 119.229 0.1 123.729 0C124.729 0 126.929 0.200001 128.429 1.4C129.629 2.4 129.929 3.7 130.129 4.7C130.329 5.7 130.529 7.8 130.329 9.4C128.529 28.4 120.729 74.5 116.729 95.7C115.029 104.7 111.729 107.7 108.529 108C101.529 108.6 96.2291 103.4 89.5291 99C78.9291 92.1 73.0291 87.8 62.7291 81C50.8291 73.2 58.5291 68.9 65.3291 61.9C67.1291 60.1 97.8291 32.1 98.4291 29.6C98.5291 29.3 98.5291 28.1 97.8291 27.5C97.1291 26.9 96.1291 27.1 95.3291 27.3C94.2291 27.5 77.4291 38.7 44.7291 60.8C39.9291 64.1 35.6291 65.7 31.7291 65.6C27.4291 65.5 19.2291 63.2 13.0291 61.2C5.52914 58.8 -0.470863 57.5 0.0291371 53.3C0.329137 51.1 3.32914 48.9 8.92914 46.6Z" fill="white"/>
+            </svg>
+          </button>
         </div>
       </div>
     </section>
@@ -2325,6 +2525,10 @@
         "--light-grey": "#a9a9a9",
         "--dark-grey": "#74809b",
         "--text-darker-grey": "#5b677e",
+        "--hudi-soft-panel-text-top": "#8f9ab0",
+        "--hudi-soft-panel-text-bottom": "#525c6f",
+        "--landing-ribbon-city-top": "#bde9ff",
+        "--landing-ribbon-city-bottom": "#57afff",
         "--info-blue": "#8bccff",
         "--color-ff4a22": "#ff4a22",
         "--outline-blue": "#e6f4ff",
@@ -2333,9 +2537,16 @@
         "--landing-texture-transition-ms": "1100ms",
         "--landing-texture-cycle-ms": "1400ms",
         "--hudi-orb-colour": "#24d0ff",
-        "--hudi-orb-sheen": "#00ffbf",
-        "--hudi-orb-shadow": "#00329d",
-        "--hudi-orb-inner": "#95afff",
+        "--hudi-orb-sheen": "#00bfff",
+        "--hudi-orb-shadow": "rgba(0, 50, 157, 0.4)",
+        "--hudi-orb-inner": "#93c0ff",
+        "--hudi-logo-fill-top": "#ffffff",
+        "--hudi-logo-fill-bottom": "#f2fbff",
+        "--market-smsg-orb-base": "#ffe100",
+        "--market-smsg-orb-sheen": "#ffff86",
+        "--market-smsg-orb-shadow": "rgba(158, 118, 0, 0.42)",
+        "--landing-cta-pink": "#ff66c7",
+        "--landing-cta-pink-shadow": "rgba(0, 19, 62, 0.24)",
         "--radius-pill": "999px",
         "--radius-card": "8px",
         "--radius-panel": "4px",
@@ -2374,6 +2585,11 @@
 
     async function loadHudiStyles() {
       let html = "";
+      if (window.location.protocol === "file:") {
+        installLandingTokenFallbacks();
+        return { doc: document, html };
+      }
+
       try {
         const response = await fetch("kitchen-sink.html");
         if (!response.ok) {
@@ -2503,6 +2719,7 @@
     const landingMarketPanel = document.querySelector(".landing-panel");
     const chatCopyPanel = document.querySelector(".chat-copy-panel");
     const landingTextRibbonPath = document.querySelector("[data-landing-text-ribbon-path]");
+    let landingTextRibbonLoopDistance = isLandingMobile ? 2800 : 4200;
     [
       "assets/Black_on_white_dotted_world_map_vector.svg?white-transparent-map=1",
       ...(!isLandingMobile ? [
@@ -2967,23 +3184,40 @@
     function setupLandingTextRibbon() {
       if (!landingTextRibbonPath) return;
 
-      const cities = ["seoul", "tokyo", "hong kong"];
+      const cities = ["tokyo", "hong kong", "seoul"];
+      const repeatCount = 16;
       landingTextRibbonPath.replaceChildren();
 
-      for (let index = 0; index < 18; index += 1) {
-        const city = cities[index % cities.length];
-        const trade = document.createElementNS(svgNamespace, "tspan");
-        const cityName = document.createElementNS(svgNamespace, "tspan");
+      for (let index = 0; index < repeatCount; index += 1) {
+        cities.forEach((city, cityIndex) => {
+          const trade = document.createElementNS(svgNamespace, "tspan");
+          const cityName = document.createElementNS(svgNamespace, "tspan");
 
-        trade.textContent = "trade";
-        trade.classList.add("is-trade");
-        trade.setAttribute("dx", index === 0 ? "0" : "132");
-        cityName.textContent = city;
-        cityName.classList.add("is-city");
-        cityName.setAttribute("dx", "28");
+          trade.textContent = "trade";
+          trade.classList.add("is-trade");
+          trade.setAttribute("dx", index === 0 && cityIndex === 0 ? "0" : "188");
+          cityName.textContent = city;
+          cityName.classList.add("is-city");
+          cityName.setAttribute("dx", "42");
 
-        landingTextRibbonPath.append(trade, cityName);
+          landingTextRibbonPath.append(trade, cityName);
+        });
+
+        const rate = document.createElementNS(svgNamespace, "tspan");
+        rate.textContent = "24/7";
+        rate.classList.add("is-rate");
+        rate.setAttribute("dx", "188");
+        landingTextRibbonPath.append(rate);
       }
+
+      updateLandingTextRibbonLoopDistance(repeatCount);
+    }
+
+    function updateLandingTextRibbonLoopDistance(repeatCount = 16) {
+      if (!landingTextRibbonPath?.getComputedTextLength) return;
+      const textLength = landingTextRibbonPath.getComputedTextLength();
+      if (!Number.isFinite(textLength) || textLength <= 0) return;
+      landingTextRibbonLoopDistance = textLength / repeatCount;
     }
 
     setupLandingTextRibbon();
@@ -3151,7 +3385,13 @@
     }
 
     function hexToRgbValue(hex) {
+      if (!hex || typeof hex !== "string") {
+        return { r: 36, g: 208, b: 255 };
+      }
       const clean = hex.replace("#", "");
+      if (!/^[\da-f]{6}$/i.test(clean)) {
+        return { r: 36, g: 208, b: 255 };
+      }
       return {
         r: parseInt(clean.slice(0, 2), 16),
         g: parseInt(clean.slice(2, 4), 16),
@@ -3236,7 +3476,8 @@
     }
 
     function deriveLandingOrbPalette(base) {
-      const hsl = rgbToHslValue(hexToRgbValue(base));
+      const safeBase = base && /^#[\da-f]{6}$/i.test(base) ? base : "#24d0ff";
+      const hsl = rgbToHslValue(hexToRgbValue(safeBase));
       const sourceHue = hsl.s > .03 ? hsl.h : 196;
       const sourceSaturation = Math.max(hsl.s, hsl.s > .03 ? hsl.s : .48);
       const sheen = hslToRgbValue({
@@ -3249,7 +3490,7 @@
         s: Math.min(1, sourceSaturation * 1.36 + .14),
         l: Math.max(.2, Math.min(.48, hsl.l * .66))
       });
-      return { base, sheen: rgbToHexValue(sheen), shadowHex: rgbToHexValue(shadow) };
+      return { base: safeBase, sheen: rgbToHexValue(sheen), shadowHex: rgbToHexValue(shadow) };
     }
 
     function applyLandingMarketOrbPalettes(root = document) {
@@ -3525,6 +3766,7 @@
         highlight = false,
         rasterWidth = 2048
       } = options;
+
       const highlightColor = parseColor(token("--color-ff4a22"));
       const emptyCanvas = document.createElement("canvas");
       emptyCanvas.width = 1;
@@ -3729,6 +3971,7 @@
 
     function createMobileOrbGlobeRenderer(mapCanvas) {
       if (!mapCanvas) return null;
+
       const gl = mapCanvas.getContext("webgl", {
         alpha: true,
         antialias: true,
@@ -4051,30 +4294,16 @@
     }
 
     function getLandingStartMetrics() {
-      if (isLandingMobile) {
-        return {
-          width: clamp(window.innerWidth * .58, 190, 260),
-          height: 56
-        };
-      }
-
       return {
-        width: clamp(window.innerWidth * .19, 220, 360),
-        height: clamp(window.innerWidth * .05, 52, 76)
+        width: clamp(window.innerWidth - 48, 160, 214.2),
+        height: 50
       };
     }
 
     function getLandingFinalMetrics() {
-      if (isLandingMobile) {
-        return {
-          width: Math.min(window.innerWidth * .76, 340),
-          height: 64
-        };
-      }
-
       return {
-        width: clamp(window.innerWidth * .33, 360, 640),
-        height: clamp(window.innerWidth * .07, 74, 116)
+        width: clamp(window.innerWidth - 48, 320, 428.4),
+        height: 100
       };
     }
 
@@ -4217,6 +4446,8 @@
       let finalTaglineProgress = 0;
       let finalXProgress = 0;
       let finalTelegramProgress = 0;
+      let finalXLogoProgress = 0;
+      let finalTelegramLogoProgress = 0;
       let finalMorph = rawProgress >= finalRevealStartRaw + finalTiming.revealDurationRaw ? 1 : 0;
       let finalDistance = 999;
       let finalButtonWidth = 0;
@@ -4237,6 +4468,8 @@
         const finalSocialGapRaw = isLandingMobile ? finalTiming.socialDurationRaw * .72 : finalTiming.socialGapRaw;
         finalXProgress = smoothstep((rawProgress - finalSocialStartRaw) / finalTiming.socialDurationRaw);
         finalTelegramProgress = smoothstep((rawProgress - (finalSocialStartRaw + finalSocialGapRaw)) / finalTiming.socialDurationRaw);
+        finalXLogoProgress = smoothstep((rawProgress - (finalSocialStartRaw + finalTiming.socialDurationRaw * .36)) / (finalTiming.socialDurationRaw * 1.44));
+        finalTelegramLogoProgress = smoothstep((rawProgress - (finalSocialStartRaw + finalSocialGapRaw + finalTiming.socialDurationRaw * .36)) / (finalTiming.socialDurationRaw * 1.44));
         const finalContentProgress = Math.max(finalButtonScaleProgress, finalTaglineProgress, finalXProgress, finalTelegramProgress);
         finalMorph = smoothstep((rawProgress - finalRevealStartRaw) / finalTiming.revealDurationRaw);
         finalDistance = Math.abs(finalContentProgress - 1);
@@ -4404,8 +4637,10 @@
         setStyleProp(landingShell, "--landing-final-tagline-reveal", finalTaglineProgress.toFixed(3));
         setStyleProp(landingShell, "--landing-final-x-opacity", finalXProgress.toFixed(3));
         setStyleProp(landingShell, "--landing-final-x-scale", finalXScale.toFixed(3));
+        setStyleProp(landingShell, "--landing-final-x-logo-opacity", finalXLogoProgress.toFixed(3));
         setStyleProp(landingShell, "--landing-final-telegram-opacity", finalTelegramProgress.toFixed(3));
         setStyleProp(landingShell, "--landing-final-telegram-scale", finalTelegramScale.toFixed(3));
+        setStyleProp(landingShell, "--landing-final-telegram-logo-opacity", finalTelegramLogoProgress.toFixed(3));
         setStyleProp(landingShell, "--landing-final-events", finalDistance < 0.62 ? "auto" : "none");
       }
       if (shouldWriteOrbState) {
@@ -5825,6 +6060,7 @@
       markLandingContoursDirty();
       markLandingScrollMetricsDirty();
       updateLandingMarketPanelWidth();
+      updateLandingTextRibbonLoopDistance();
       updateScrollStateMeasured();
     }
 
@@ -5904,10 +6140,10 @@
       shaderCenterShiftEased += (scrollState.shaderCenterShift - shaderCenterShiftEased) * 0.065;
       const ringFadeOutProgress = 1 - scrollState.firstLevelOpacity;
       const ringFadeOutBoost = isLandingMobile ? 0 : 1 - Math.pow(1 - ringFadeOutProgress, 3);
-      const ringSpeed = scrollState.firstLevelOpacity > .001 ? 0.00068 * (1 + ringFadeOutBoost * 7.5) : 0;
+      const ringSpeed = scrollState.firstLevelOpacity > .001 ? 0.000765 * (1 + ringFadeOutBoost * 7.5) : 0;
       ringRotation += ringSpeed;
       setStyleProp(landingShell, "--landing-text-ring-opacity", scrollState.firstLevelOpacity.toFixed(3));
-      const ribbonOffset = -ringRotation * 920;
+      const ribbonOffset = -((ringRotation * 920) % landingTextRibbonLoopDistance);
       setAttr(landingTextRibbonPath, "startOffset", isLandingMobile ? `${Math.round(ribbonOffset)}px` : `${ribbonOffset.toFixed(2)}px`);
       const backgroundStartedAt = landingPerf.start();
       const backgroundOffsetMultiplier = isLandingMobile ? 0.12 : 0.46;
@@ -5928,6 +6164,9 @@
       orbGlobe?.render();
       orbGlobeHighlights?.render();
       landingPerf.end("globeRender", globeStartedAt);
+      if (isLandingMobile && scrollState.firstLevelOpacity > .001) {
+        scheduleRender();
+      }
       landingPerf.frame();
     }
 
