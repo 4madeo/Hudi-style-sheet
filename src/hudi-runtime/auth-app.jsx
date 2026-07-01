@@ -3,7 +3,7 @@ import { DAppKitProvider, useCurrentAccount, useDAppKit } from "@mysten/dapp-kit
 import { createDAppKit } from "@mysten/dapp-kit-core";
 import { registerSlushWallet } from "@mysten/slush-wallet";
 import { SuiJsonRpcClient, getJsonRpcFullnodeUrl } from "@mysten/sui/jsonRpc";
-import { ArrowUp, TelegramLogo, Users, X, XLogo } from "@phosphor-icons/react";
+import { ArrowUp, SignOut, TelegramLogo, Users, X, XLogo } from "@phosphor-icons/react";
 import { PrivyProvider, useLogin, usePrivy } from "@privy-io/react-auth";
 import { useCreateWallet as useCreatePrivyWallet } from "@privy-io/react-auth/extended-chains";
 
@@ -110,7 +110,7 @@ function getWaitlistErrorMessage(err) {
   return "We could not check your waitlist spot yet. Please try again.";
 }
 
-function ModalFrame({ open, title = "Hudi", onClose, children, className = "" }) {
+function ModalFrame({ open, title = "Hudi", onClose, topbarAction = null, children, className = "" }) {
   const [shouldRender, setShouldRender] = useState(open);
   const [closing, setClosing] = useState(false);
   const [entered, setEntered] = useState(open);
@@ -157,7 +157,10 @@ function ModalFrame({ open, title = "Hudi", onClose, children, className = "" })
       >
         <div className="hudi-flow-topbar">
           <h2 className="hudi-flow-kicker">{title}</h2>
-          <button className="hudi-flow-close" type="button" onClick={onClose} aria-label="Close" />
+          <div className="hudi-flow-topbar-actions">
+            {topbarAction}
+            <button className="hudi-flow-close" type="button" onClick={onClose} aria-label="Close" />
+          </div>
         </div>
         <div className="hudi-flow-body">{children}</div>
       </section>
@@ -231,7 +234,7 @@ function ReferralBox({ link, copied, onCopy }) {
   );
 }
 
-function WaitlistModal({ open, onClose, signupResult, resolveSignup, authReady }) {
+function WaitlistModal({ open, onClose, onLogout, signupResult, resolveSignup, authReady }) {
   const [step, setStep] = useState("loading");
   const [signup, setSignup] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -307,9 +310,19 @@ function WaitlistModal({ open, onClose, signupResult, resolveSignup, authReady }
     const text = `Just claimed my spot for @tradeonhudi - Asian equities perps, 24/7. Get in: ${referralLink}`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
   };
+  const isWelcomeBack = step === "already-signed-up" || step === "loading";
 
   return (
-    <ModalFrame open={open} onClose={onClose} title={(step === "already-signed-up" || step === "loading") ? "Welcome back" : "Waitlist"}>
+    <ModalFrame
+      open={open}
+      onClose={onClose}
+      title={isWelcomeBack ? "Welcome back" : "Waitlist"}
+      topbarAction={isWelcomeBack && onLogout ? (
+        <button className="hudi-flow-logout" type="button" onClick={onLogout} aria-label="Log out" title="Log out">
+          <SignOut size={16} weight="bold" />
+        </button>
+      ) : null}
+    >
       {step === "loading" && (
         <div className="hudi-flow-stack hudi-flow-centered">
           <WaitlistLoadingMatrix />
@@ -612,6 +625,7 @@ function HudiLandingRuntime() {
   const incomingRef = useMemo(readIncomingRefCode, []);
   const referralCheckedRef = useRef(false);
   const lastPrivySuiAddressRef = useRef(null);
+  const userRequestedWaitlistRef = useRef(false);
   const dAppKitApi = useDAppKit();
   const currentAccount = useCurrentAccount();
   const { ready: privyReady, authenticated: privyAuthed, user: privyUser, logout: privyLogout } = usePrivy();
@@ -631,6 +645,7 @@ function HudiLandingRuntime() {
 
   const { login: privyLogin } = useLogin({
     onComplete: async ({ user: completedUser }) => {
+      if (!userRequestedWaitlistRef.current) return;
       try {
         let suiAddress = findSuiAddressInPrivyUser(completedUser);
         if (!suiAddress) {
@@ -644,6 +659,8 @@ function HudiLandingRuntime() {
         console.error("[privy] signup failed", err);
         setSignupResult(null);
         setWaitlistOpen(true);
+      } finally {
+        userRequestedWaitlistRef.current = false;
       }
     },
     onError: (errorCode) => {
@@ -652,17 +669,58 @@ function HudiLandingRuntime() {
   });
 
   const openWaitlist = useCallback(() => {
+    userRequestedWaitlistRef.current = true;
     setSignupResult(null);
     setWaitlistOpen(true);
   }, []);
   const openAccess = useCallback(() => setAccessOpen(true), []);
   const requestWaitlistAuth = useCallback(() => {
+    userRequestedWaitlistRef.current = true;
     if (isConnected) {
       openWaitlist();
       return;
     }
     privyLogin({ loginMethods: ["email", "google"] });
   }, [isConnected, openWaitlist, privyLogin]);
+  const handleDisconnect = useCallback(async () => {
+    userRequestedWaitlistRef.current = false;
+    lastPrivySuiAddressRef.current = null;
+    setWaitlistOpen(false);
+    setAccessOpen(false);
+    setReferralOpen(false);
+    setSignupResult(null);
+
+    if (currentAccount) {
+      try {
+        await dAppKitApi.disconnectWallet();
+      } catch (err) {
+        console.error("[disconnect] dapp-kit failed", err);
+      }
+    }
+    if (privyAuthed) {
+      try {
+        await privyLogout();
+      } catch (err) {
+        console.error("[disconnect] privy logout failed", err);
+      }
+    }
+  }, [currentAccount, dAppKitApi, privyAuthed, privyLogout]);
+
+  useEffect(() => {
+    const resetTransientModals = () => {
+      userRequestedWaitlistRef.current = false;
+      setWaitlistOpen(false);
+      setAccessOpen(false);
+      setSignupResult(null);
+    };
+
+    resetTransientModals();
+    const handlePageShow = (event) => {
+      if (event.persisted) resetTransientModals();
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, []);
 
   useEffect(() => {
     const label = document.querySelector(".landing-start-button .pill-label");
@@ -721,15 +779,12 @@ function HudiLandingRuntime() {
     window.hudiLandingAuth = {
       openAccess,
       openWaitlist: requestWaitlistAuth,
-      disconnect: async () => {
-        if (currentAccount) await dAppKitApi.disconnectWallet().catch((err) => console.error("[disconnect] dapp-kit failed", err));
-        if (privyAuthed) await privyLogout().catch((err) => console.error("[disconnect] privy failed", err));
-      }
+      disconnect: handleDisconnect
     };
     return () => {
       delete window.hudiLandingAuth;
     };
-  }, [currentAccount, dAppKitApi, openAccess, privyAuthed, privyLogout, requestWaitlistAuth]);
+  }, [handleDisconnect, openAccess, requestWaitlistAuth]);
 
   return (
     <>
@@ -749,6 +804,7 @@ function HudiLandingRuntime() {
           setWaitlistOpen(false);
           setSignupResult(null);
         }}
+        onLogout={handleDisconnect}
         signupResult={signupResult}
         resolveSignup={resolveSignup}
         authReady={privyReady}

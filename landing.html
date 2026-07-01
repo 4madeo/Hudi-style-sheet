@@ -4,6 +4,37 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Hudi Landing</title>
+  <script>
+    (() => {
+      try {
+        if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+      } catch {}
+
+      const resetScrollToTop = () => {
+        const root = document.documentElement;
+        const previousBehavior = root.style.scrollBehavior;
+        root.style.scrollBehavior = "auto";
+        window.scrollTo({ left: 0, top: 0, behavior: "auto" });
+        root.scrollTop = 0;
+        if (document.body) document.body.scrollTop = 0;
+        window.requestAnimationFrame(() => {
+          window.scrollTo({ left: 0, top: 0, behavior: "auto" });
+          root.scrollTop = 0;
+          if (document.body) document.body.scrollTop = 0;
+          if (previousBehavior) root.style.scrollBehavior = previousBehavior;
+          else root.style.removeProperty("scroll-behavior");
+        });
+      };
+
+      window.__hudiLandingResetScrollToTop = resetScrollToTop;
+      resetScrollToTop();
+      window.addEventListener("beforeunload", resetScrollToTop, { capture: true });
+      window.addEventListener("pageshow", () => {
+        resetScrollToTop();
+        window.setTimeout(resetScrollToTop, 0);
+      });
+    })();
+  </script>
   <script type="importmap">
     {
       "imports": {
@@ -221,6 +252,36 @@
         radial-gradient(circle at 36% 24%, var(--white-alpha-38) 0 9%, transparent 28%);
       mix-blend-mode: screen;
       pointer-events: none;
+    }
+
+    .orb-export-control {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 10000;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 124px;
+      min-height: 38px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: var(--radius-pill, 999px);
+      color: var(--text-darker-grey, #5b677e);
+      font-family: var(--sf-pro, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
+      font-size: 14px;
+      letter-spacing: .04em;
+      background: var(--landing-panel-base-bg, #fff);
+      box-shadow: var(--landing-panel-exterior-shadow, 0 0 6px rgba(0, 0, 0, .25), 3px 6px 6px rgba(0, 0, 0, .15));
+      cursor: pointer;
+    }
+
+    .orb-export-control:hover {
+      transform: translateY(-1px);
+    }
+
+    .orb-export-control + .orb-export-control {
+      bottom: 64px;
     }
 
     .landing-hudi-mark {
@@ -815,6 +876,7 @@
     .market-copy-button.hudi-trade-button,
     .chat-copy-button,
     .hudi-flow-button,
+    .hudi-flow-logout,
     .hudi-flow-close {
       cursor: pointer !important;
       touch-action: manipulation;
@@ -827,6 +889,7 @@
     .market-copy-button.hudi-trade-button:hover,
     .chat-copy-button:hover,
     .hudi-flow-button:hover,
+    .hudi-flow-logout:hover,
     .hudi-flow-close:hover {
       filter: brightness(1.035) saturate(1.04);
     }
@@ -834,6 +897,7 @@
     .market-copy-button.hudi-trade-button:active,
     .chat-copy-button:active,
     .hudi-flow-button:active,
+    .hudi-flow-logout:active,
     .hudi-flow-close:active {
       box-shadow:
         var(--landing-panel-cta-shadow),
@@ -844,6 +908,7 @@
     .market-copy-button.hudi-trade-button *,
     .chat-copy-button *,
     .hudi-flow-button *,
+    .hudi-flow-logout *,
     .hudi-flow-close *,
     .market-copy-button.hudi-trade-button::before,
     .market-copy-button.hudi-trade-button::after,
@@ -851,6 +916,8 @@
     .chat-copy-button::after,
     .hudi-flow-button::before,
     .hudi-flow-button::after,
+    .hudi-flow-logout::before,
+    .hudi-flow-logout::after,
     .hudi-flow-close::before,
     .hudi-flow-close::after {
       cursor: inherit !important;
@@ -2174,6 +2241,34 @@
       line-height: 1;
     }
 
+    .hudi-flow-topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+      margin-left: auto;
+    }
+
+    .hudi-flow-logout {
+      display: grid;
+      place-items: center;
+      position: relative;
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border: var(--landing-panel-cta-border);
+      border-radius: var(--radius-pill);
+      background: var(--landing-panel-cta-bg);
+      box-shadow: var(--landing-panel-cta-shadow);
+      overflow: hidden;
+    }
+
+    .hudi-flow-logout svg {
+      position: relative;
+      z-index: 2;
+      color: var(--hudi-soft-panel-text-bottom);
+      opacity: .72;
+    }
+
     .hudi-flow-close {
       display: grid;
       place-items: center;
@@ -2196,7 +2291,10 @@
       background: var(--landing-panel-cta-text-gradient);
       background-clip: text;
       color: transparent;
+      font-size: 20px;
+      font-weight: 400;
       line-height: 1;
+      transform: translateY(-1px);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -3150,6 +3248,8 @@
 
   <script type="module">
     (async () => {
+    window.__hudiLandingResetScrollToTop?.();
+
     function stabilizeLandingStylesheetOrder() {
       const landingStyle = document.getElementById("landing-style");
       if (!landingStyle) return;
@@ -3167,6 +3267,11 @@
 
     const landingMobileQuery = window.matchMedia?.("(max-width: 700px)");
     const isLandingMobile = landingMobileQuery?.matches ?? window.innerWidth <= 700;
+    const landingQueryParams = new URLSearchParams(window.location.search);
+    const hudiOrbExportMode = landingQueryParams.has("orbExport");
+    if (hudiOrbExportMode) {
+      document.documentElement.dataset.orbExport = "true";
+    }
     let THREE = null;
     if (!isLandingMobile) {
       try {
@@ -3383,7 +3488,9 @@
     const landingMarketPanel = document.querySelector(".landing-panel");
     const chatCopyPanel = document.querySelector(".chat-copy-panel");
     const landingTextRibbonPath = document.querySelector("[data-landing-text-ribbon-path]");
+    const landingTextRibbonCurve = document.getElementById("landing-text-ribbon-curve");
     let landingTextRibbonLoopDistance = isLandingMobile ? 2800 : 4200;
+    let landingTextRibbonCycleChars = 0;
     [
       "assets/Black_on_white_dotted_world_map_vector.svg?white-transparent-map=1",
       ...(!isLandingMobile ? [
@@ -3869,6 +3976,7 @@
 
       const cities = ["tokyo", "hong kong", "seoul"];
       const repeatCount = 16;
+      landingTextRibbonCycleChars = [...cities.flatMap((city) => ["trade", city]), "24/7"].join("").length;
       landingTextRibbonPath.replaceChildren();
 
       for (let index = 0; index < repeatCount; index += 1) {
@@ -3896,11 +4004,51 @@
       updateLandingTextRibbonLoopDistance(repeatCount);
     }
 
+    function getLandingTextRibbonPathLengthAtX(x) {
+      if (!landingTextRibbonCurve?.getTotalLength || !Number.isFinite(x)) return NaN;
+      const totalLength = landingTextRibbonCurve.getTotalLength();
+      let low = 0;
+      let high = totalLength;
+
+      for (let index = 0; index < 22; index += 1) {
+        const midpoint = (low + high) / 2;
+        const point = landingTextRibbonCurve.getPointAtLength(midpoint);
+        if (point.x < x) low = midpoint;
+        else high = midpoint;
+      }
+
+      return (low + high) / 2;
+    }
+
     function updateLandingTextRibbonLoopDistance(repeatCount = 16) {
       if (!landingTextRibbonPath?.getComputedTextLength) return;
       const textLength = landingTextRibbonPath.getComputedTextLength();
       if (!Number.isFinite(textLength) || textLength <= 0) return;
-      landingTextRibbonLoopDistance = textLength / repeatCount;
+      const fallbackLoopDistance = textLength / repeatCount;
+      const previousStartOffset = landingTextRibbonPath.getAttribute("startOffset");
+
+      try {
+        landingTextRibbonPath.setAttribute("startOffset", "0");
+        if (landingTextRibbonPath.getStartPositionOfChar && landingTextRibbonCycleChars > 0) {
+          const firstCycleStart = landingTextRibbonPath.getStartPositionOfChar(0);
+          const secondCycleStart = landingTextRibbonPath.getStartPositionOfChar(landingTextRibbonCycleChars);
+          const firstLength = getLandingTextRibbonPathLengthAtX(firstCycleStart.x);
+          const secondLength = getLandingTextRibbonPathLengthAtX(secondCycleStart.x);
+          const measuredLoopDistance = secondLength - firstLength;
+
+          if (Number.isFinite(measuredLoopDistance) && measuredLoopDistance > 0) {
+            landingTextRibbonLoopDistance = measuredLoopDistance;
+            return;
+          }
+        }
+      } catch {
+        // Fall through to the averaged text length below.
+      } finally {
+        if (previousStartOffset == null) landingTextRibbonPath.removeAttribute("startOffset");
+        else landingTextRibbonPath.setAttribute("startOffset", previousStartOffset);
+      }
+
+      landingTextRibbonLoopDistance = fallbackLoopDistance;
     }
 
     setupLandingTextRibbon();
@@ -4495,6 +4643,7 @@
           alpha: true,
           antialias: true,
           premultipliedAlpha: false,
+          preserveDrawingBuffer: hudiOrbExportMode,
           powerPreference: "high-performance"
         });
       } catch (error) {
@@ -4677,7 +4826,7 @@
         depth: false,
         stencil: false,
         premultipliedAlpha: false,
-        preserveDrawingBuffer: false,
+        preserveDrawingBuffer: hudiOrbExportMode,
         powerPreference: "high-performance"
       });
 
@@ -4991,6 +5140,357 @@
     if (!orbGlobe) {
       activateOrbMapFallback();
     }
+
+    function hudiOrbExportNextFrame() {
+      return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+    }
+
+    function hudiOrbExportResolvedColor(value, fallback) {
+      const probe = hudiOrbExportResolvedColor.probe || document.createElement("span");
+      hudiOrbExportResolvedColor.probe = probe;
+      probe.style.color = "";
+      probe.style.color = value || fallback;
+      if (!probe.parentNode) document.body.appendChild(probe);
+      const resolved = getComputedStyle(probe).color;
+      return resolved && resolved !== "rgba(0, 0, 0, 0)" ? resolved : fallback;
+    }
+
+    function hudiDownloadBlob(blob, filename) {
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function hudiCanvasToBlob(canvas, type = "image/png") {
+      return new Promise((resolve, reject) => {
+        try {
+          canvas.toBlob((blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error("Orb export failed: the canvas could not be converted to a PNG."));
+          }, type);
+        } catch (error) {
+          reject(new Error("Orb export failed because a canvas layer is not readable. Reload with ?orbExport=1 and try again."));
+        }
+      });
+    }
+
+    function hudiLoadOrbExportImage(url) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error("Orb export failed: an SVG overlay could not be rasterized."));
+        image.src = url;
+      });
+    }
+
+    function hudiCloneSvgForOrbExport(sourceSvg, width, height) {
+      const clone = sourceSvg.cloneNode(true);
+      clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      clone.setAttribute("width", width.toString());
+      clone.setAttribute("height", height.toString());
+
+      const sourceNodes = [sourceSvg, ...sourceSvg.querySelectorAll("*")];
+      const cloneNodes = [clone, ...clone.querySelectorAll("*")];
+      sourceNodes.forEach((sourceNode, index) => {
+        const cloneNode = cloneNodes[index];
+        if (!cloneNode || !sourceNode.ownerDocument) return;
+        const styles = getComputedStyle(sourceNode);
+        [
+          "color",
+          "fill",
+          "fill-opacity",
+          "stroke",
+          "stroke-width",
+          "stroke-linecap",
+          "stroke-linejoin",
+          "stroke-opacity",
+          "stop-color",
+          "stop-opacity",
+          "filter",
+          "mix-blend-mode"
+        ].forEach((property) => {
+          const value = styles.getPropertyValue(property);
+          if (value) cloneNode.style.setProperty(property, value);
+        });
+        if (sourceNode !== sourceSvg) {
+          const opacity = styles.getPropertyValue("opacity");
+          if (opacity) cloneNode.style.setProperty("opacity", opacity);
+        }
+      });
+
+      return clone;
+    }
+
+    async function hudiDrawOrbSvgOverlays(outputContext, orbElement, orbRect, cssSize) {
+      const overlaySvgs = Array.from(orbElement.children).filter((child) => child.tagName?.toLowerCase() === "svg");
+      for (const svg of overlaySvgs) {
+        const styles = getComputedStyle(svg);
+        const opacity = Number.parseFloat(styles.opacity) || 0;
+        if (styles.display === "none" || styles.visibility === "hidden" || opacity <= .001) continue;
+
+        const rect = svg.getBoundingClientRect();
+        const width = Math.max(1, rect.width);
+        const height = Math.max(1, rect.height);
+        const x = rect.left - orbRect.left;
+        const y = rect.top - orbRect.top;
+        if (x > cssSize || y > cssSize || x + width < 0 || y + height < 0) continue;
+
+        const clone = hudiCloneSvgForOrbExport(svg, width, height);
+        const blob = new Blob([new XMLSerializer().serializeToString(clone)], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+        try {
+          const image = await hudiLoadOrbExportImage(url);
+          outputContext.save();
+          outputContext.globalAlpha = opacity;
+          outputContext.drawImage(image, x, y, width, height);
+          outputContext.restore();
+        } finally {
+          URL.revokeObjectURL(url);
+        }
+      }
+    }
+
+    function hudiGetVisibleOrbSvgOverlays(orbElement) {
+      return Array.from(orbElement.children).filter((child) => {
+        if (child.tagName?.toLowerCase() !== "svg") return false;
+        const styles = getComputedStyle(child);
+        const opacity = Number.parseFloat(styles.opacity) || 0;
+        return styles.display !== "none" && styles.visibility !== "hidden" && opacity > .001;
+      });
+    }
+
+    async function hudiExportOrbSvgFromFrontend(options = {}) {
+      const filename = options.filename || "hudi-orb-overlay.svg";
+
+      if (!hudiOrbExportMode) {
+        const exportUrl = new URL(window.location.href);
+        exportUrl.searchParams.set("orbExport", "1");
+        console.warn(`Reload with ${exportUrl.href} for reliable orb SVG export.`);
+        if (options.reload !== false && window.confirm("Reload in orb export mode?")) {
+          window.location.href = exportUrl.href;
+        }
+        return null;
+      }
+
+      if (!blankOrb) throw new Error("Orb SVG export failed: #blank-orb was not found.");
+      updateScrollStateMeasured();
+      await hudiOrbExportNextFrame();
+
+      const overlaySvgs = hudiGetVisibleOrbSvgOverlays(blankOrb);
+      if (!overlaySvgs.length) {
+        throw new Error("Orb SVG export failed: no visible SVG overlays were found inside the orb at this scroll position.");
+      }
+
+      const orbRect = blankOrb.getBoundingClientRect();
+      let exportSvg;
+
+      if (overlaySvgs.length === 1 && options.keepOrbCanvas !== true) {
+        const rect = overlaySvgs[0].getBoundingClientRect();
+        exportSvg = hudiCloneSvgForOrbExport(overlaySvgs[0], Math.max(1, rect.width), Math.max(1, rect.height));
+      } else {
+        const cssSize = Math.max(1, Math.round(Math.max(orbRect.width, orbRect.height)));
+        exportSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        exportSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        exportSvg.setAttribute("width", cssSize.toString());
+        exportSvg.setAttribute("height", cssSize.toString());
+        exportSvg.setAttribute("viewBox", `0 0 ${cssSize} ${cssSize}`);
+
+        overlaySvgs.forEach((sourceSvg) => {
+          const rect = sourceSvg.getBoundingClientRect();
+          const width = Math.max(1, rect.width);
+          const height = Math.max(1, rect.height);
+          const clone = hudiCloneSvgForOrbExport(sourceSvg, width, height);
+          clone.setAttribute("x", (rect.left - orbRect.left).toString());
+          clone.setAttribute("y", (rect.top - orbRect.top).toString());
+          exportSvg.appendChild(clone);
+        });
+      }
+
+      const serialized = new XMLSerializer().serializeToString(exportSvg);
+      const blob = new Blob([serialized], { type: "image/svg+xml" });
+      hudiDownloadBlob(blob, filename);
+      return { blob };
+    }
+
+    async function hudiExportOrbFromFrontend(options = {}) {
+      const scale = Number(options.scale || 12);
+      const filename = options.filename || "hudi-orb.png";
+
+      if (!hudiOrbExportMode) {
+        const exportUrl = new URL(window.location.href);
+        exportUrl.searchParams.set("orbExport", "1");
+        console.warn(`Reload with ${exportUrl.href} for reliable orb export.`);
+        if (options.reload !== false && window.confirm("Reload in orb export mode?")) {
+          window.location.href = exportUrl.href;
+        }
+        return null;
+      }
+
+      if (!blankOrb) throw new Error("Orb export failed: #blank-orb was not found.");
+      updateScrollStateMeasured();
+      orbGlobe?.resize();
+      orbGlobeHighlights?.resize();
+      await hudiOrbExportNextFrame();
+      orbGlobe?.render();
+      orbGlobeHighlights?.render();
+      await hudiOrbExportNextFrame();
+      orbGlobe?.render();
+      orbGlobeHighlights?.render();
+
+      const rect = blankOrb.getBoundingClientRect();
+      const cssSize = Math.max(1, Math.round(Math.max(rect.width, rect.height)));
+      const outputSize = Math.max(1, Math.round(cssSize * scale));
+      const outputCanvas = document.createElement("canvas");
+      outputCanvas.width = outputSize;
+      outputCanvas.height = outputSize;
+      const outputContext = outputCanvas.getContext("2d");
+      const orbStyles = getComputedStyle(blankOrb);
+      const baseColor = hudiOrbExportResolvedColor(orbStyles.getPropertyValue("--orb-base"), token("--hudi-orb-colour") || "#24d0ff");
+      const sheenColor = hudiOrbExportResolvedColor(orbStyles.getPropertyValue("--orb-sheen"), token("--hudi-orb-sheen") || "#00bfff");
+      const shadowColor = hudiOrbExportResolvedColor(orbStyles.getPropertyValue("--orb-shadow"), token("--hudi-orb-shadow") || "rgba(0, 50, 157, 0.4)");
+      const innerStrokeColor = "rgba(255, 255, 255, 0.2)";
+      const mapOpacity = Number.parseFloat(orbStyles.getPropertyValue("--landing-map-opacity")) || 0;
+      const highlightOpacity = Number.parseFloat(orbStyles.getPropertyValue("--landing-map-highlight-opacity")) || 0;
+      const center = cssSize / 2;
+      const radius = cssSize / 2;
+
+      outputContext.clearRect(0, 0, outputSize, outputSize);
+      outputContext.save();
+      outputContext.scale(scale, scale);
+      outputContext.beginPath();
+      outputContext.arc(center, center, radius, 0, Math.PI * 2);
+      outputContext.clip();
+
+      outputContext.fillStyle = baseColor;
+      outputContext.fillRect(0, 0, cssSize, cssSize);
+
+      const sheenGradient = outputContext.createLinearGradient(0, 0, 0, cssSize);
+      sheenGradient.addColorStop(0, sheenColor);
+      sheenGradient.addColorStop(.58, "rgba(255, 255, 255, 0)");
+      outputContext.fillStyle = sheenGradient;
+      outputContext.fillRect(0, 0, cssSize, cssSize);
+
+      const innerShadowGradient = outputContext.createRadialGradient(center, center - cssSize * .08, cssSize * .24, center, center - cssSize * .08, cssSize * .68);
+      innerShadowGradient.addColorStop(.56, "rgba(0, 0, 0, 0)");
+      innerShadowGradient.addColorStop(1, shadowColor);
+      outputContext.fillStyle = innerShadowGradient;
+      outputContext.fillRect(0, 0, cssSize, cssSize);
+
+      const innerGlowGradient = outputContext.createRadialGradient(center, center, cssSize * .28, center, center, cssSize * .5);
+      innerGlowGradient.addColorStop(.45, "rgba(255, 255, 255, 0)");
+      innerGlowGradient.addColorStop(1, "rgba(255, 255, 255, 0.2)");
+      outputContext.fillStyle = innerGlowGradient;
+      outputContext.fillRect(0, 0, cssSize, cssSize);
+
+      if (globeMapCanvas && mapOpacity > .001) {
+        try {
+          outputContext.save();
+          outputContext.globalAlpha = mapOpacity;
+          outputContext.globalCompositeOperation = "screen";
+          outputContext.drawImage(globeMapCanvas, 0, 0, cssSize, cssSize);
+          outputContext.restore();
+        } catch (error) {
+          throw new Error("Orb export failed: the globe map canvas is not readable. Reload with ?orbExport=1 and try again.");
+        }
+      }
+
+      if (globeMapHighlightCanvas && highlightOpacity > .001) {
+        try {
+          outputContext.save();
+          outputContext.globalAlpha = highlightOpacity;
+          outputContext.globalCompositeOperation = "source-over";
+          outputContext.drawImage(globeMapHighlightCanvas, 0, 0, cssSize, cssSize);
+          outputContext.restore();
+        } catch (error) {
+          throw new Error("Orb export failed: the globe highlight canvas is not readable. Reload with ?orbExport=1 and try again.");
+        }
+      }
+
+      const glossGradient = outputContext.createRadialGradient(cssSize * .36, cssSize * .24, 0, cssSize * .36, cssSize * .24, cssSize * .26);
+      glossGradient.addColorStop(0, "rgba(255, 255, 255, 0.38)");
+      glossGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+      outputContext.globalCompositeOperation = "screen";
+      outputContext.fillStyle = glossGradient;
+      outputContext.fillRect(0, 0, cssSize, cssSize);
+
+      outputContext.globalCompositeOperation = "source-over";
+      await hudiDrawOrbSvgOverlays(outputContext, blankOrb, rect, cssSize);
+
+      outputContext.globalCompositeOperation = "source-over";
+      outputContext.lineWidth = Math.max(1.25, cssSize * .007);
+      outputContext.strokeStyle = innerStrokeColor;
+      outputContext.beginPath();
+      outputContext.arc(center, center, radius - outputContext.lineWidth / 2, 0, Math.PI * 2);
+      outputContext.stroke();
+      outputContext.restore();
+
+      outputContext.globalCompositeOperation = "destination-in";
+      outputContext.beginPath();
+      outputContext.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2);
+      outputContext.fillStyle = "#fff";
+      outputContext.fill();
+
+      const blob = await hudiCanvasToBlob(outputCanvas);
+      hudiDownloadBlob(blob, filename);
+      return { blob, width: outputSize, height: outputSize };
+    }
+
+    function installHudiOrbFrontendExporter() {
+      window.hudiExportOrb = hudiExportOrbFromFrontend;
+      window.hudiExportOrbSvg = hudiExportOrbSvgFromFrontend;
+      if (!hudiOrbExportMode) return;
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "orb-export-control";
+      button.textContent = "export orb";
+      button.addEventListener("click", async () => {
+        button.disabled = true;
+        button.textContent = "exporting...";
+        try {
+          await hudiExportOrbFromFrontend();
+          button.textContent = "exported";
+          window.setTimeout(() => {
+            button.disabled = false;
+            button.textContent = "export orb";
+          }, 900);
+        } catch (error) {
+          console.error(error);
+          button.disabled = false;
+          button.textContent = "export failed";
+        }
+      });
+      document.body.appendChild(button);
+
+      const svgButton = document.createElement("button");
+      svgButton.type = "button";
+      svgButton.className = "orb-export-control";
+      svgButton.textContent = "export svg";
+      svgButton.addEventListener("click", async () => {
+        svgButton.disabled = true;
+        svgButton.textContent = "exporting...";
+        try {
+          await hudiExportOrbSvgFromFrontend();
+          svgButton.textContent = "exported";
+          window.setTimeout(() => {
+            svgButton.disabled = false;
+            svgButton.textContent = "export svg";
+          }, 900);
+        } catch (error) {
+          console.error(error);
+          svgButton.disabled = false;
+          svgButton.textContent = "export failed";
+        }
+      });
+      document.body.appendChild(svgButton);
+    }
+
+    installHudiOrbFrontendExporter();
 
     function getLandingStartMetrics() {
       return {
@@ -5446,6 +5946,7 @@
       updateScrollStateMeasured();
       resize();
     });
+    window.__hudiLandingResetScrollToTop?.();
     updateLandingMarketPanelWidth();
     updateScrollStateMeasured();
     updateLandingPillTopContours();
@@ -6666,6 +7167,7 @@
       markLandingContoursDirty();
       markLandingScrollMetricsDirty();
       updateLandingMarketPanelWidth();
+      updateLandingTextRibbonLoopDistance();
       updateScrollStateMeasured();
     });
 
@@ -6880,6 +7382,20 @@
       hudiFlowCloseTimer = window.setTimeout(() => {
         if (!hudiFlowState.isOpen) hudiFlowBackdrop.hidden = true;
       }, 240);
+    }
+
+    function resetHudiFlowTransientState() {
+      window.clearTimeout(hudiFlowCloseTimer);
+      hudiFlowState.view = "access";
+      hudiFlowState.isOpen = false;
+      hudiFlowState.busy = false;
+      hudiFlowState.error = "";
+      hudiFlowState.copied = false;
+      hudiFlowState.accessCode = "";
+      hudiFlowBackdrop?.classList.remove("is-open");
+      hudiFlowPanel?.classList.remove("is-shaking");
+      if (hudiFlowBackdrop) hudiFlowBackdrop.hidden = true;
+      if (hudiFlowBody) hudiFlowBody.innerHTML = "";
     }
 
     function renderHudiFlow() {
@@ -7236,6 +7752,12 @@
     document.querySelector(".final-social-orb.is-twitter")?.addEventListener("click", () => hudiOpenExternal(hudiSocialLinks.x));
     document.querySelector(".final-social-orb.is-telegram")?.addEventListener("click", () => hudiOpenExternal(hudiSocialLinks.telegram));
 
+    resetHudiFlowTransientState();
+    window.addEventListener("pageshow", (event) => {
+      if (!event.persisted) return;
+      resetHudiFlowTransientState();
+    });
+
     if (hudiFlowState.incomingReferralCode) {
       hudiApi.referrer(hudiFlowState.incomingReferralCode)
         .then((referrer) => {
@@ -7292,8 +7814,13 @@
       if (!isLandingMobile) {
         ringRotation += ringSpeed;
         setStyleProp(landingShell, "--landing-text-ring-opacity", scrollState.firstLevelOpacity.toFixed(3));
-        const ribbonOffset = -((ringRotation * 920) % landingTextRibbonLoopDistance);
-        setAttr(landingTextRibbonPath, "startOffset", `${ribbonOffset.toFixed(2)}px`);
+        const ribbonLoopDistance = Number.isFinite(landingTextRibbonLoopDistance) && landingTextRibbonLoopDistance > 0
+          ? landingTextRibbonLoopDistance
+          : 4200;
+        const ribbonOffset = -((ringRotation * 920) % ribbonLoopDistance);
+        if (Number.isFinite(ribbonOffset)) {
+          setAttr(landingTextRibbonPath, "startOffset", `${ribbonOffset.toFixed(2)}px`);
+        }
       }
       const backgroundStartedAt = landingPerf.start();
       const backgroundOffsetMultiplier = isLandingMobile ? 0.12 : 0.46;
@@ -7339,6 +7866,17 @@
       }
 
       lastScrollAt = performance.now();
+      updateScrollStateMeasured();
+      scheduleRender();
+      scheduleMobileAmbientRender();
+    });
+
+    window.addEventListener("pageshow", (event) => {
+      if (!event.persisted) return;
+      window.__hudiLandingResetScrollToTop?.();
+      markLandingContoursDirty();
+      markLandingScrollMetricsDirty();
+      updateLandingMarketPanelWidth();
       updateScrollStateMeasured();
       scheduleRender();
       scheduleMobileAmbientRender();
