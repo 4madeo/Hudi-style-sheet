@@ -1986,6 +1986,25 @@
         contain: layout paint style;
       }
 
+      .landing-panel,
+      #blank-orb,
+      .chat-showcase,
+      .chat-copy-panel,
+      .chat-bubble-card,
+      .final-showcase,
+      .landing-start-button,
+      .landing-final-button {
+        transition:
+          translate 167ms linear,
+          transform 167ms linear,
+          scale 167ms linear,
+          opacity 167ms linear;
+      }
+
+      .landing-orb-world-map-mobile__strip {
+        transition: transform 167ms linear;
+      }
+
       html:not([data-mobile-market-active="true"]) .market-cards,
       html:not([data-mobile-market-active="true"]) .landing-panel,
       html:not([data-mobile-chat-active="true"]) .chat-showcase,
@@ -3554,12 +3573,13 @@
     const mobileCommentExitDelayRaw = .13;
     const mobileCommentExitDurationRaw = .16;
     const mobileCommentPopOutMs = 300;
+    const mobileTemporaryLongWarmMs = 80;
     const mobilePerfConstants = {
       // These are the minimum warm windows needed for the current CSS pop-out timers
       // plus a small compositor handoff margin; larger values keep hidden layers alive.
-      marketWarmMs: 300,
-      chatWarmMs: mobileCommentPopOutMs + 40,
-      finalWarmMs: 280,
+      marketWarmMs: mobileTemporaryLongWarmMs,
+      chatWarmMs: mobileTemporaryLongWarmMs,
+      finalWarmMs: mobileTemporaryLongWarmMs,
       marketGateLeadRaw: .12,
       marketGateTailRaw: .06,
       marketGateStayTailRaw: .1,
@@ -3571,7 +3591,8 @@
       commentOffscreenStepRaw: .055,
       ambientFrameStride: 2,
       backgroundFrameMs: 1000 / 8,
-      backgroundPhaseSpeed: 0.000014
+      backgroundPhaseSpeed: 0.000014,
+      svgMotionFrameMs: 1000 / 6
     };
     let mobileCommentOffscreenLastRaw = -Infinity;
     const chatParticleLayer = document.querySelector("[data-chat-particle-layer]");
@@ -4130,6 +4151,8 @@
     let landingStableViewportWidth = 0;
     let landingStableViewportHeight = 0;
     let mobileScrollUpdateFrame = 0;
+    let mobileSvgMotionTimer = 0;
+    let mobileSvgMotionLastSampleAt = -Infinity;
     let mobileScrollCoalesceEnabled = false;
     let lastRawProgress = 0;
     let lastScrollAt = performance.now();
@@ -5912,13 +5935,52 @@
       requestLandingFrame();
     }
 
-    function updateScrollStateMeasured() {
-      if (isLandingMobile && mobileScrollCoalesceEnabled) {
+    function runMobileSampledScrollState() {
+      mobileScrollUpdateFrame = 0;
+      mobileSvgMotionTimer = 0;
+      mobileSvgMotionLastSampleAt = performance.now();
+      applyScrollStateMeasured();
+    }
+
+    function updateMobileFastMarketPin() {
+      if (!isLandingMobile || !landingShell) return;
+      const { maxRawProgress, viewportHeight } = getLandingScrollMetrics();
+      const rawProgress = clamp(window.scrollY / viewportHeight, 0, maxRawProgress);
+      const progress = clamp(mapScrollProgress(rawProgress), 0, maxScrollIndex);
+      setStyleProp(landingShell, "--landing-market-y", levelOffset(1, progress));
+    }
+
+    function scheduleMobileSampledScrollState(delayMs = 0) {
+      if (mobileScrollUpdateFrame || mobileSvgMotionTimer || document.hidden) return;
+      const scheduleFrame = () => {
+        mobileSvgMotionTimer = 0;
         if (mobileScrollUpdateFrame || document.hidden) return;
-        mobileScrollUpdateFrame = requestAnimationFrame(() => {
-          mobileScrollUpdateFrame = 0;
-          applyScrollStateMeasured();
-        });
+        mobileScrollUpdateFrame = requestAnimationFrame(runMobileSampledScrollState);
+      };
+
+      if (delayMs <= 0) {
+        mobileScrollUpdateFrame = requestAnimationFrame(runMobileSampledScrollState);
+        return;
+      }
+
+      mobileSvgMotionTimer = window.setTimeout(scheduleFrame, delayMs);
+    }
+
+    function updateScrollStateMeasured(force = false) {
+      if (isLandingMobile && mobileScrollCoalesceEnabled) {
+        if (document.hidden) return;
+        updateMobileFastMarketPin();
+        if (force) {
+          if (mobileSvgMotionTimer) window.clearTimeout(mobileSvgMotionTimer);
+          if (mobileScrollUpdateFrame) cancelAnimationFrame(mobileScrollUpdateFrame);
+          mobileSvgMotionTimer = 0;
+          mobileScrollUpdateFrame = requestAnimationFrame(runMobileSampledScrollState);
+          return;
+        }
+
+        const now = performance.now();
+        const remaining = mobilePerfConstants.svgMotionFrameMs - (now - mobileSvgMotionLastSampleAt);
+        scheduleMobileSampledScrollState(Math.max(0, remaining));
         return;
       }
 
@@ -5936,19 +5998,19 @@
       markLandingContoursDirty();
       markLandingScrollMetricsDirty();
       updateLandingMarketPanelWidth();
-      updateScrollStateMeasured();
+      updateScrollStateMeasured(true);
     });
     window.addEventListener("orientationchange", () => {
       updateLandingStableViewport(true);
       markLandingContoursDirty();
       markLandingScrollMetricsDirty();
       updateLandingMarketPanelWidth();
-      updateScrollStateMeasured();
+      updateScrollStateMeasured(true);
       resize();
     });
     window.__hudiLandingResetScrollToTop?.();
     updateLandingMarketPanelWidth();
-    updateScrollStateMeasured();
+    updateScrollStateMeasured(true);
     updateLandingPillTopContours();
 
     function fade(t) {
@@ -7851,6 +7913,7 @@
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         if (mobileScrollUpdateFrame) cancelAnimationFrame(mobileScrollUpdateFrame);
+        if (mobileSvgMotionTimer) window.clearTimeout(mobileSvgMotionTimer);
         if (renderFrame) cancelAnimationFrame(renderFrame);
         if (mobileAmbientFrame) cancelAnimationFrame(mobileAmbientFrame);
         Object.keys(mobileSectionWarmTimers).forEach((section) => {
@@ -7859,6 +7922,7 @@
           mobileSectionWarmTimers[section] = 0;
         });
         mobileScrollUpdateFrame = 0;
+        mobileSvgMotionTimer = 0;
         renderFrame = 0;
         mobileAmbientFrame = 0;
         mobileAmbientTick = 0;
@@ -7866,7 +7930,7 @@
       }
 
       lastScrollAt = performance.now();
-      updateScrollStateMeasured();
+      updateScrollStateMeasured(true);
       scheduleRender();
       scheduleMobileAmbientRender();
     });
@@ -7877,7 +7941,7 @@
       markLandingContoursDirty();
       markLandingScrollMetricsDirty();
       updateLandingMarketPanelWidth();
-      updateScrollStateMeasured();
+      updateScrollStateMeasured(true);
       scheduleRender();
       scheduleMobileAmbientRender();
     });
