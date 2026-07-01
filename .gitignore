@@ -1,7 +1,11 @@
 .DS_Store
 node_modules/
 .vercel/
-
-.vercel
+dist/
+.env*
 
 alakazam-frontend-mock
+
+hudi-landing
+
+.vercel

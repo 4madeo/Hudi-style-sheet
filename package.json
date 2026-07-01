@@ -1,0 +1,26 @@
+{
+  "name": "hudi-style-sheet-landing",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@mysten/dapp-kit-core": "^1.3.0",
+    "@mysten/dapp-kit-react": "^2.0.1",
+    "@mysten/slush-wallet": "^1.0.3",
+    "@mysten/sui": "^2.16.0",
+    "@phosphor-icons/react": "^2.1.10",
+    "@privy-io/react-auth": "^3.29.2",
+    "@supabase/supabase-js": "^2.46.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.165.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.0"
+  }
+}

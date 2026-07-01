@@ -2021,6 +2021,371 @@
       }
 
     }
+
+    .hudi-flow-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      padding: clamp(var(--space-16), 4vw, var(--space-40));
+      background:
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--info-blue) 10%, transparent), transparent 38%),
+        color-mix(in srgb, var(--white) 58%, transparent);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease;
+      backdrop-filter: blur(var(--space-8));
+    }
+
+    .hudi-flow-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .hudi-flow-panel {
+      position: relative;
+      width: min(94vw, 500px);
+      max-height: min(86svh, 720px);
+      overflow: auto;
+      border: 0;
+      border-radius: calc(var(--radius-card) * .45);
+      background: var(--landing-panel-base-bg);
+      box-shadow: var(--landing-panel-shadow), var(--landing-panel-inner-shadow);
+      color: var(--text-darker-grey);
+      font-family: var(--sf-pro, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
+      transform: translateY(var(--space-18)) scale(.96);
+      transition: transform 220ms cubic-bezier(.18, .9, .2, 1.1);
+    }
+
+    .hudi-flow-backdrop.is-open .hudi-flow-panel {
+      transform: translateY(0) scale(1);
+    }
+
+    .hudi-flow-panel.is-shaking {
+      animation: hudi-flow-shake 420ms cubic-bezier(.36, .07, .19, .97);
+    }
+
+    @keyframes hudi-flow-shake {
+      0%, 100% { transform: translateX(0) scale(1); }
+      18% { transform: translateX(-5px) rotate(-.45deg) scale(1); }
+      40% { transform: translateX(5px) rotate(.45deg) scale(1); }
+      62% { transform: translateX(-3px) rotate(-.3deg) scale(1); }
+      84% { transform: translateX(3px) rotate(.3deg) scale(1); }
+    }
+
+    .hudi-flow-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: var(--landing-panel-topbar-height);
+      padding: var(--space-12) var(--space-16) var(--space-10) clamp(var(--space-18), 4vw, var(--space-28));
+      background: var(--landing-panel-topbar-bg);
+      box-shadow: var(--landing-panel-topbar-shadow);
+      filter: var(--landing-panel-topbar-filter);
+    }
+
+    .hudi-flow-kicker,
+    .hudi-flow-title,
+    .hudi-flow-copy {
+      background: var(--landing-panel-text-gradient);
+      background-clip: text;
+      color: transparent;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hudi-flow-kicker {
+      margin: 0;
+      font-size: clamp(18px, 2.5vw, 24px);
+      font-weight: 400;
+      letter-spacing: var(--landing-panel-title-tracking);
+      line-height: 1;
+    }
+
+    .hudi-flow-close {
+      display: grid;
+      place-items: center;
+      position: relative;
+      width: 34px;
+      height: 34px;
+      border: var(--landing-panel-cta-border);
+      border-radius: var(--radius-pill);
+      background: var(--landing-panel-cta-bg);
+      box-shadow: var(--landing-panel-cta-shadow);
+      color: transparent;
+      cursor: pointer;
+    }
+
+    .hudi-flow-close::before {
+      content: "x";
+      color: var(--text-darker-grey);
+      line-height: 1;
+    }
+
+    .hudi-flow-body {
+      display: grid;
+      gap: var(--space-18);
+      padding: clamp(var(--space-20), 4.4vw, var(--space-32));
+    }
+
+    .hudi-flow-title {
+      margin: 0;
+      font-size: clamp(25px, 5vw, 38px);
+      font-weight: 400;
+      letter-spacing: -.035em;
+      line-height: 1.02;
+    }
+
+    .hudi-flow-copy {
+      margin: 0;
+      font-size: clamp(13px, 2.7vw, 16px);
+      line-height: 1.48;
+      letter-spacing: .045em;
+      opacity: .72;
+    }
+
+    .hudi-flow-stack {
+      display: grid;
+      gap: var(--space-12);
+    }
+
+    .hudi-flow-input {
+      width: 100%;
+      min-height: 46px;
+      border: var(--landing-stock-inset-border);
+      border-radius: var(--radius-card);
+      background: var(--landing-stock-inset-bg);
+      box-shadow: var(--landing-stock-inset-shadow);
+      color: var(--text-darker-grey);
+      font: inherit;
+      outline: none;
+      padding: 0 var(--space-16);
+    }
+
+    .hudi-flow-input::placeholder {
+      color: color-mix(in srgb, var(--text-darker-grey) 48%, transparent);
+    }
+
+    .hudi-flow-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-8);
+      min-height: 44px;
+      border: var(--landing-panel-cta-border);
+      border-radius: var(--radius-pill);
+      background: var(--landing-panel-cta-bg);
+      box-shadow: var(--landing-panel-cta-shadow);
+      color: var(--text-darker-grey);
+      cursor: pointer;
+      font-family: var(--sf-pro, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
+      font-size: clamp(14px, 3vw, 17px);
+      letter-spacing: var(--landing-panel-cta-letter-spacing);
+      line-height: 1;
+      padding: 0 var(--space-20);
+      text-transform: lowercase;
+    }
+
+    .hudi-flow-button.is-primary {
+      background: var(--landing-cta-pink);
+      color: var(--white);
+      box-shadow:
+        inset 0 -3.0801px 32.187px var(--landing-cta-pink-shadow),
+        var(--landing-panel-shadow);
+    }
+
+    .hudi-flow-button:disabled {
+      cursor: wait;
+      opacity: .62;
+    }
+
+    .hudi-flow-secondary {
+      border: 0;
+      background: none;
+      color: var(--text-darker-grey);
+      cursor: pointer;
+      font: inherit;
+      opacity: .74;
+      padding: var(--space-4);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .hudi-flow-position {
+      display: grid;
+      place-items: center;
+      min-height: 104px;
+      border-radius: var(--radius-card);
+      background: var(--landing-stock-inset-bg);
+      box-shadow: var(--landing-stock-inset-shadow);
+      color: var(--text-darker-grey);
+      font-size: clamp(20px, 4.7vw, 32px);
+      letter-spacing: -.04em;
+      text-align: center;
+    }
+
+    .hudi-flow-position strong {
+      color: var(--ink);
+      font-size: 1.28em;
+      font-weight: 500;
+    }
+
+    .hudi-flow-steps {
+      display: flex;
+      gap: var(--space-8);
+    }
+
+    .hudi-flow-step-dot {
+      flex: 1;
+      height: 5px;
+      border-radius: var(--radius-pill);
+      background: color-mix(in srgb, var(--info-blue) 20%, transparent);
+    }
+
+    .hudi-flow-step-dot.is-active {
+      background: var(--info-blue);
+    }
+
+    .hudi-flow-referral-box {
+      display: flex;
+      align-items: center;
+      gap: var(--space-10);
+      min-width: 0;
+      border-radius: var(--radius-card);
+      background: var(--landing-stock-inset-bg);
+      box-shadow: var(--landing-stock-inset-shadow);
+      padding: var(--space-10);
+    }
+
+    .hudi-flow-referral-link {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      color: var(--text-darker-grey);
+      font-size: 12px;
+      letter-spacing: .02em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .hudi-flow-code-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(var(--space-4), 1.6vw, var(--space-10));
+    }
+
+    .hudi-flow-code-input {
+      width: clamp(30px, 8.2vw, 44px);
+      height: clamp(40px, 10vw, 52px);
+      border: var(--landing-stock-inset-border);
+      border-radius: calc(var(--radius-card) * .55);
+      background: var(--landing-stock-inset-bg);
+      box-shadow: var(--landing-stock-inset-shadow);
+      color: var(--ink);
+      font: 400 clamp(18px, 5vw, 28px)/1 var(--ocr-fixed, ui-monospace, monospace);
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .hudi-flow-error {
+      min-height: 1.2em;
+      color: var(--hot-pink);
+      font-size: 12px;
+      letter-spacing: .04em;
+    }
+
+    .hudi-flow-backdrop.is-closing {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .hudi-flow-panel a {
+      text-decoration: none;
+    }
+
+    .hudi-flow-centered {
+      justify-items: center;
+      text-align: center;
+    }
+
+    .hudi-flow-spinner {
+      color: var(--info-blue);
+      animation: hudi-flow-spin 900ms linear infinite;
+    }
+
+    @keyframes hudi-flow-spin {
+      to { rotate: 360deg; }
+    }
+
+    .hudi-flow-boost {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-left: var(--space-8);
+      font-size: .8em;
+      opacity: .82;
+    }
+
+    .hudi-flow-divider {
+      height: 1px;
+      background: color-mix(in srgb, var(--text-darker-grey) 12%, transparent);
+      margin: var(--space-4) 0;
+    }
+
+    .hudi-flow-referral-stats {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-8) var(--space-12);
+      color: var(--text-darker-grey);
+      font-size: 12px;
+      letter-spacing: .02em;
+      opacity: .72;
+    }
+
+    .hudi-flow-referral-stats span {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .hudi-flow-referral-avatars {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      flex-basis: 100%;
+    }
+
+    .hudi-flow-mini-avatar,
+    .hudi-flow-avatar-overflow {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 3px solid color-mix(in srgb, var(--info-blue) 12%, var(--white));
+      background: var(--white);
+      box-shadow: var(--landing-panel-shadow);
+    }
+
+    .hudi-flow-avatar-overflow {
+      display: inline-grid;
+      place-items: center;
+      color: var(--text-darker-grey);
+      font-size: 11px;
+    }
+
+    .hudi-flow-avatar {
+      border-radius: 26%;
+      box-shadow: var(--landing-panel-shadow);
+    }
+
+    .hudi-flow-code-input.is-invalid {
+      border-color: color-mix(in srgb, var(--hot-pink) 58%, transparent);
+    }
   </style>
 </head>
 <body>
@@ -2491,6 +2856,19 @@
 
   </main>
 
+  <div class="hudi-flow-backdrop" data-hudi-flow-backdrop-disabled hidden>
+    <section class="hudi-flow-panel" data-hudi-flow-panel role="dialog" aria-modal="true" aria-labelledby="hudi-flow-kicker">
+      <div class="hudi-flow-topbar">
+        <h2 class="hudi-flow-kicker" id="hudi-flow-kicker" data-hudi-flow-kicker>Hudi</h2>
+        <button class="hudi-flow-close" type="button" data-hudi-flow-close aria-label="Close">×</button>
+      </div>
+      <div class="hudi-flow-body" data-hudi-flow-body></div>
+    </section>
+  </div>
+
+  <div id="hudi-auth-root"></div>
+  <script type="module" src="/src/hudi-runtime/main.jsx"></script>
+
   <div class="scroll-levels" aria-hidden="true">
     <section class="scroll-level" data-scroll-level="0"></section>
     <section class="scroll-level" data-scroll-level="1"></section>
@@ -2501,6 +2879,7 @@
   </div>
 
   <script type="module">
+    (async () => {
     const landingMobileQuery = window.matchMedia?.("(max-width: 700px)");
     const isLandingMobile = landingMobileQuery?.matches ?? window.innerWidth <= 700;
     let THREE = null;
@@ -6100,6 +6479,548 @@
     window.addEventListener("resize", resize);
     resize();
 
+    const hudiFlowBackdrop = document.querySelector("[data-hudi-flow-backdrop]");
+    const hudiFlowPanel = document.querySelector("[data-hudi-flow-panel]");
+    const hudiFlowKicker = document.querySelector("[data-hudi-flow-kicker]");
+    const hudiFlowBody = document.querySelector("[data-hudi-flow-body]");
+    const hudiFlowClose = document.querySelector("[data-hudi-flow-close]");
+    const hudiReferralCodePattern = /^[a-f0-9]{4}-[a-f0-9]{4}$/;
+    const hudiSocialLinks = {
+      x: "https://x.com/tradeonhudi",
+      telegram: "https://t.me/+-EGVpid830VjZjJh"
+    };
+    const hudiFlowParams = new URLSearchParams(window.location.search);
+    const hudiIncomingReferral = (hudiFlowParams.get("ref") || "").trim().toLowerCase();
+    const hudiFlowState = {
+      view: "access",
+      isOpen: false,
+      busy: false,
+      error: "",
+      copied: false,
+      email: "",
+      walletAddress: "",
+      referrerWallet: "",
+      incomingReferralCode: hudiReferralCodePattern.test(hudiIncomingReferral) ? hudiIncomingReferral : "",
+      signup: null,
+      accessCode: ""
+    };
+    let hudiFlowCloseTimer = 0;
+    const hudiAuthSetup = {
+      privyAppId: null,
+      configLoaded: false
+    };
+
+    const hudiApi = {
+      signup(payload) {
+        return hudiPostJson("/api/waitlist/signup", payload);
+      },
+      track(payload) {
+        return hudiPostJson("/api/waitlist/track", payload);
+      },
+      referrer(code) {
+        return hudiGetJson(`/api/waitlist/referrer?code=${encodeURIComponent(code)}`);
+      },
+      config() {
+        return hudiGetJson("/api/config");
+      }
+    };
+
+    hudiApi.config()
+      .then((config) => {
+        hudiAuthSetup.privyAppId = config?.privyAppId || null;
+        hudiAuthSetup.configLoaded = true;
+      })
+      .catch(() => {
+        hudiAuthSetup.configLoaded = true;
+      });
+
+    function hudiEscapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function hudiFormatPosition(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return "----";
+      return number.toLocaleString("en-US");
+    }
+
+    function hudiShortAddress(address) {
+      const text = String(address || "");
+      if (text.length <= 12) return text || "a Hudi trader";
+      return `${text.slice(0, 6)}...${text.slice(-4)}`;
+    }
+
+    function hudiFriendlyError(error) {
+      const message = String(error?.message || error || "");
+      if (window.location.protocol === "file:" && /failed to fetch|load failed|request_failed/i.test(message)) {
+        return "The waitlist API needs a local server or Vercel preview. File preview can show the modal, but cannot submit yet.";
+      }
+      const mapped = {
+        email_or_wallet_required: "Add an email or connect a Sui wallet to join.",
+        invalid_email: "That email does not look quite right.",
+        invalid_referral_code: "That referral link is not valid anymore.",
+        invalid_action: "That waitlist action is not available.",
+        not_found: "We could not find that waitlist spot yet.",
+        db_error: "The waitlist is busy. Please try again in a moment.",
+        server_error: "The waitlist is busy. Please try again in a moment."
+      };
+      return mapped[message] || "Something got tangled. Please try again.";
+    }
+
+    async function hudiReadJsonResponse(response) {
+      let data = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
+      if (!response.ok) {
+        throw new Error(data?.error || "request_failed");
+      }
+      return data;
+    }
+
+    async function hudiPostJson(url, payload) {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      return hudiReadJsonResponse(response);
+    }
+
+    async function hudiGetJson(url) {
+      const response = await fetch(url, { headers: { "Accept": "application/json" } });
+      return hudiReadJsonResponse(response);
+    }
+
+    function hudiOpenExternal(url) {
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+
+    function hudiCurrentReferralLink() {
+      const signup = hudiFlowState.signup;
+      if (signup?.referralUrl) return signup.referralUrl;
+      const code = signup?.referralCode;
+      if (!code) return "";
+      if (window.location.protocol === "file:") return `https://hudi.com?ref=${code}`;
+      return `${window.location.origin}${window.location.pathname}?ref=${encodeURIComponent(code)}`;
+    }
+
+    function hudiFlowSteps(activeIndex) {
+      return `<div class="hudi-flow-steps" aria-hidden="true">${[0, 1, 2].map((index) => (
+        `<span class="hudi-flow-step-dot${index <= activeIndex ? " is-active" : ""}"></span>`
+      )).join("")}</div>`;
+    }
+
+    function hudiFlowPositionBlock() {
+      const signup = hudiFlowState.signup;
+      return `
+        <div class="hudi-flow-position">
+          <span>your waitlist spot<br><strong>#${hudiFormatPosition(signup?.position)}</strong></span>
+        </div>
+      `;
+    }
+
+    function hudiFlowErrorBlock() {
+      return `<p class="hudi-flow-error" role="status">${hudiEscapeHtml(hudiFlowState.error)}</p>`;
+    }
+
+    function hudiSetFlowBusy(nextBusy) {
+      hudiFlowState.busy = nextBusy;
+      renderHudiFlow();
+    }
+
+    function openHudiFlow(view = "access") {
+      if (!hudiFlowBackdrop || !hudiFlowBody) return;
+      window.clearTimeout(hudiFlowCloseTimer);
+      hudiFlowState.view = view;
+      hudiFlowState.error = "";
+      hudiFlowState.copied = false;
+      hudiFlowState.isOpen = true;
+      hudiFlowBackdrop.hidden = false;
+      renderHudiFlow();
+      requestAnimationFrame(() => hudiFlowBackdrop.classList.add("is-open"));
+    }
+
+    function closeHudiFlow() {
+      if (!hudiFlowBackdrop) return;
+      hudiFlowState.isOpen = false;
+      hudiFlowBackdrop.classList.remove("is-open");
+      hudiFlowCloseTimer = window.setTimeout(() => {
+        if (!hudiFlowState.isOpen) hudiFlowBackdrop.hidden = true;
+      }, 240);
+    }
+
+    function renderHudiFlow() {
+      if (!hudiFlowBody || !hudiFlowKicker) return;
+      const renderers = {
+        access: renderHudiAccessView,
+        referral: renderHudiReferralView,
+        waitlist: renderHudiWaitlistView,
+        follow: renderHudiFollowView,
+        telegram: renderHudiTelegramView,
+        share: renderHudiShareView,
+        already: renderHudiAlreadyView
+      };
+      const output = (renderers[hudiFlowState.view] || renderHudiAccessView)();
+      hudiFlowKicker.textContent = output.kicker;
+      hudiFlowBody.innerHTML = output.body;
+      if (hudiFlowState.view === "access") {
+        hudiFlowBody.querySelector(".hudi-flow-code-input")?.focus({ preventScroll: true });
+      }
+      if (hudiFlowState.view === "waitlist") {
+        const emailInput = hudiFlowBody.querySelector("[data-flow-email]");
+        if (emailInput) {
+          emailInput.value = hudiFlowState.email;
+          emailInput.focus({ preventScroll: true });
+        }
+      }
+    }
+
+    function renderHudiAccessView() {
+      const disabled = hudiFlowState.busy ? " disabled" : "";
+      const digits = Array.from({ length: 8 }, (_, index) => hudiEscapeHtml(hudiFlowState.accessCode[index] || ""));
+      return {
+        kicker: "Access code",
+        body: `
+          <h3 class="hudi-flow-title">Enter your access code</h3>
+          <p class="hudi-flow-copy">Hudi is opening in waves. Enter your code if you have one, or jump into the waitlist.</p>
+          <form class="hudi-flow-stack" data-flow-form="access">
+            <div class="hudi-flow-code-row">
+              ${digits.map((digit, index) => `<input class="hudi-flow-code-input" data-flow-code-index="${index}" inputmode="text" maxlength="1" value="${digit}" aria-label="Access code character ${index + 1}">`).join("")}
+            </div>
+            ${hudiFlowErrorBlock()}
+            <button class="hudi-flow-button is-primary" type="submit"${disabled}>unlock trading</button>
+            <button class="hudi-flow-secondary" type="button" data-flow-action="open-waitlist">join the waitlist instead</button>
+          </form>
+        `
+      };
+    }
+
+    function renderHudiReferralView() {
+      const referrer = hudiFlowState.referrerWallet ? hudiShortAddress(hudiFlowState.referrerWallet) : "a Hudi trader";
+      return {
+        kicker: "Referral",
+        body: `
+          <h3 class="hudi-flow-title">You have been tapped in</h3>
+          <p class="hudi-flow-copy">${hudiEscapeHtml(referrer)} sent you an invite. Join the waitlist and both sides move up when your spot is claimed.</p>
+          <button class="hudi-flow-button is-primary" type="button" data-flow-action="open-waitlist">claim your spot</button>
+          <button class="hudi-flow-secondary" type="button" data-flow-action="open-access">i have an access code</button>
+        `
+      };
+    }
+
+    function renderHudiWaitlistView() {
+      const disabled = hudiFlowState.busy ? " disabled" : "";
+      return {
+        kicker: "Waitlist",
+        body: `
+          <h3 class="hudi-flow-title">Reserve your Hudi spot</h3>
+          <p class="hudi-flow-copy">Join with email, or connect a Sui wallet if one is available in this browser.</p>
+          <form class="hudi-flow-stack" data-flow-form="waitlist">
+            <input class="hudi-flow-input" data-flow-email type="email" autocomplete="email" placeholder="you@example.com" value="${hudiEscapeHtml(hudiFlowState.email)}">
+            ${hudiFlowErrorBlock()}
+            <button class="hudi-flow-button is-primary" type="submit"${disabled}>continue with email</button>
+            <button class="hudi-flow-button" type="button" data-flow-action="connect-wallet"${disabled}>connect sui wallet</button>
+          </form>
+        `
+      };
+    }
+
+    function renderHudiFollowView() {
+      return {
+        kicker: "Boost 1 of 3",
+        body: `
+          ${hudiFlowSteps(0)}
+          ${hudiFlowPositionBlock()}
+          <h3 class="hudi-flow-title">Follow Hudi on X</h3>
+          <p class="hudi-flow-copy">Follow @tradeonhudi to move up 100 spots. We will mark this step complete when you continue.</p>
+          ${hudiFlowErrorBlock()}
+          <button class="hudi-flow-button is-primary" type="button" data-flow-action="follow-x"${hudiFlowState.busy ? " disabled" : ""}>follow on x</button>
+          <button class="hudi-flow-secondary" type="button" data-flow-action="skip-to-telegram">skip for now</button>
+        `
+      };
+    }
+
+    function renderHudiTelegramView() {
+      return {
+        kicker: "Boost 2 of 3",
+        body: `
+          ${hudiFlowSteps(1)}
+          ${hudiFlowPositionBlock()}
+          <h3 class="hudi-flow-title">Join the Telegram</h3>
+          <p class="hudi-flow-copy">Join the Hudi chat for another 100 spot boost and early launch updates.</p>
+          ${hudiFlowErrorBlock()}
+          <button class="hudi-flow-button is-primary" type="button" data-flow-action="join-telegram"${hudiFlowState.busy ? " disabled" : ""}>join telegram</button>
+          <button class="hudi-flow-secondary" type="button" data-flow-action="skip-to-share">skip for now</button>
+        `
+      };
+    }
+
+    function renderHudiShareView() {
+      const referralLink = hudiCurrentReferralLink();
+      return {
+        kicker: "Boost 3 of 3",
+        body: `
+          ${hudiFlowSteps(2)}
+          ${hudiFlowPositionBlock()}
+          <h3 class="hudi-flow-title">Invite traders in</h3>
+          <p class="hudi-flow-copy">Each successful referral moves you up 500 spots, up to three referral boosts.</p>
+          <div class="hudi-flow-referral-box">
+            <span class="hudi-flow-referral-link">${hudiEscapeHtml(referralLink)}</span>
+            <button class="hudi-flow-button" type="button" data-flow-action="copy-referral">${hudiFlowState.copied ? "copied" : "copy"}</button>
+          </div>
+          ${hudiFlowErrorBlock()}
+          <button class="hudi-flow-button is-primary" type="button" data-flow-action="share-x">share on x</button>
+        `
+      };
+    }
+
+    function renderHudiAlreadyView() {
+      return {
+        kicker: "Welcome back",
+        body: `
+          ${hudiFlowPositionBlock()}
+          <h3 class="hudi-flow-title">You are already on the list</h3>
+          <p class="hudi-flow-copy">Keep sharing your referral link to climb the queue before launch.</p>
+          <button class="hudi-flow-button is-primary" type="button" data-flow-action="open-share">show referral link</button>
+        `
+      };
+    }
+
+    async function hudiRunWaitlistSignup(input) {
+      hudiFlowState.error = "";
+      hudiSetFlowBusy(true);
+      try {
+        const payload = {
+          ...input,
+          referredByCode: hudiFlowState.incomingReferralCode || undefined
+        };
+        const signup = await hudiApi.signup(payload);
+        hudiFlowState.signup = signup;
+        hudiFlowState.view = signup.alreadySignedUp ? "already" : "follow";
+      } catch (error) {
+        hudiFlowState.error = hudiFriendlyError(error);
+      } finally {
+        hudiSetFlowBusy(false);
+      }
+    }
+
+    async function hudiTrackWaitlistAction(action, nextView) {
+      const code = hudiFlowState.signup?.referralCode;
+      if (!code) {
+        hudiFlowState.view = nextView;
+        renderHudiFlow();
+        return;
+      }
+      hudiFlowState.error = "";
+      hudiSetFlowBusy(true);
+      try {
+        const update = await hudiApi.track({ referralCode: code, action });
+        hudiFlowState.signup = {
+          ...hudiFlowState.signup,
+          ...update,
+          referralCode: code,
+          referralUrl: hudiFlowState.signup.referralUrl
+        };
+        hudiFlowState.view = nextView;
+      } catch (error) {
+        hudiFlowState.error = hudiFriendlyError(error);
+      } finally {
+        hudiSetFlowBusy(false);
+      }
+    }
+
+    async function hudiCopyReferralLink() {
+      const referralLink = hudiCurrentReferralLink();
+      if (!referralLink) return;
+      try {
+        await navigator.clipboard.writeText(referralLink);
+      } catch {
+        const field = document.createElement("textarea");
+        field.value = referralLink;
+        field.setAttribute("readonly", "");
+        field.style.position = "fixed";
+        field.style.opacity = "0";
+        document.body.appendChild(field);
+        field.select();
+        document.execCommand("copy");
+        field.remove();
+      }
+      hudiFlowState.copied = true;
+      renderHudiFlow();
+    }
+
+    function hudiShareReferralOnX() {
+      const referralLink = hudiCurrentReferralLink();
+      const text = "I am joining Hudi early. Come trade the world with me.";
+      hudiOpenExternal(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(referralLink)}`);
+    }
+
+    async function hudiConnectSuiWallet() {
+      const providers = [
+        window.slush,
+        window.suiWallet,
+        window.sui,
+        window.suiet,
+        window.martian,
+        window.ethos,
+        window.phantom?.sui,
+        window.backpack?.sui,
+        ...(Array.isArray(window.wallets) ? window.wallets : [])
+      ].filter(Boolean);
+
+      for (const provider of providers) {
+        try {
+          if (typeof provider.connect === "function") await provider.connect();
+          if (typeof provider.requestPermissions === "function") await provider.requestPermissions(["viewAccount"]);
+          let accounts = [];
+          if (typeof provider.getAccounts === "function") {
+            accounts = await provider.getAccounts();
+          } else if (Array.isArray(provider.accounts)) {
+            accounts = provider.accounts;
+          } else if (provider.account) {
+            accounts = [provider.account];
+          }
+          const account = accounts?.[0];
+          const address = typeof account === "string"
+            ? account
+            : account?.address || account?.publicKey?.toSuiAddress?.();
+          if (address) return address;
+        } catch {
+          continue;
+        }
+      }
+
+      throw new Error("sui_wallet_unavailable");
+    }
+
+    async function hudiSubmitAccessCode() {
+      const code = hudiFlowState.accessCode.trim();
+      if (code.length < 8) {
+        hudiFlowState.error = "Enter all 8 characters.";
+        renderHudiFlow();
+        return;
+      }
+      hudiSetFlowBusy(true);
+      await new Promise((resolve) => window.setTimeout(resolve, 340));
+      hudiSetFlowBusy(false);
+      hudiFlowState.error = "That access code is not open yet.";
+      hudiFlowPanel?.classList.remove("is-shaking");
+      void hudiFlowPanel?.offsetWidth;
+      hudiFlowPanel?.classList.add("is-shaking");
+      renderHudiFlow();
+    }
+
+    hudiFlowBackdrop?.addEventListener("click", (event) => {
+      if (event.target === hudiFlowBackdrop) closeHudiFlow();
+    });
+    hudiFlowClose?.addEventListener("click", closeHudiFlow);
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && hudiFlowState.isOpen) closeHudiFlow();
+    });
+
+    hudiFlowBody?.addEventListener("input", (event) => {
+      const codeInput = event.target.closest?.("[data-flow-code-index]");
+      if (codeInput) {
+        const index = Number(codeInput.dataset.flowCodeIndex);
+        const value = codeInput.value.replace(/[^a-z0-9]/gi, "").slice(-1).toUpperCase();
+        codeInput.value = value;
+        const chars = hudiFlowState.accessCode.padEnd(8, " ").split("");
+        chars[index] = value;
+        hudiFlowState.accessCode = chars.join("").replace(/\s/g, "");
+        if (value) hudiFlowBody.querySelector(`[data-flow-code-index="${index + 1}"]`)?.focus();
+        return;
+      }
+      if (event.target.matches?.("[data-flow-email]")) {
+        hudiFlowState.email = event.target.value.trim();
+      }
+    });
+
+    hudiFlowBody?.addEventListener("keydown", (event) => {
+      const codeInput = event.target.closest?.("[data-flow-code-index]");
+      if (codeInput && event.key === "Backspace" && !codeInput.value) {
+        const index = Number(codeInput.dataset.flowCodeIndex);
+        hudiFlowBody.querySelector(`[data-flow-code-index="${index - 1}"]`)?.focus();
+      }
+    });
+
+    hudiFlowBody?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = event.target.closest("[data-flow-form]");
+      if (!form) return;
+      if (form.dataset.flowForm === "access") {
+        hudiSubmitAccessCode();
+        return;
+      }
+      if (form.dataset.flowForm === "waitlist") {
+        const email = hudiFlowBody.querySelector("[data-flow-email]")?.value.trim();
+        hudiFlowState.email = email || "";
+        hudiRunWaitlistSignup({ email });
+      }
+    });
+
+    hudiFlowBody?.addEventListener("click", async (event) => {
+      const actionTarget = event.target.closest?.("[data-flow-action]");
+      if (!actionTarget || hudiFlowState.busy) return;
+      const action = actionTarget.dataset.flowAction;
+      if (action === "open-waitlist") openHudiFlow("waitlist");
+      if (action === "open-access") openHudiFlow("access");
+      if (action === "connect-wallet") {
+        hudiFlowState.error = "";
+        hudiSetFlowBusy(true);
+        try {
+          const walletAddress = await hudiConnectSuiWallet();
+          hudiFlowState.walletAddress = walletAddress;
+          await hudiRunWaitlistSignup({ walletAddress });
+        } catch {
+          hudiFlowState.error = "No Sui wallet was found. Try email for now.";
+          hudiSetFlowBusy(false);
+        }
+      }
+      if (action === "follow-x") {
+        hudiOpenExternal(hudiSocialLinks.x);
+        hudiTrackWaitlistAction("followed_x", "telegram");
+      }
+      if (action === "join-telegram") {
+        hudiOpenExternal(hudiSocialLinks.telegram);
+        hudiTrackWaitlistAction("joined_telegram", "share");
+      }
+      if (action === "skip-to-telegram") {
+        hudiFlowState.view = "telegram";
+        renderHudiFlow();
+      }
+      if (action === "skip-to-share" || action === "open-share") {
+        hudiFlowState.view = "share";
+        renderHudiFlow();
+      }
+      if (action === "copy-referral") hudiCopyReferralLink();
+      if (action === "share-x") hudiShareReferralOnX();
+    });
+
+    [landingStartButton, landingFinalButton, document.querySelector(".market-copy-button")]
+      .filter(Boolean)
+      .forEach((button) => button.addEventListener("click", () => openHudiFlow("access")));
+    document.querySelector(".chat-copy-button")?.addEventListener("click", () => openHudiFlow("waitlist"));
+    document.querySelector(".final-social-orb.is-twitter")?.addEventListener("click", () => hudiOpenExternal(hudiSocialLinks.x));
+    document.querySelector(".final-social-orb.is-telegram")?.addEventListener("click", () => hudiOpenExternal(hudiSocialLinks.telegram));
+
+    if (hudiFlowState.incomingReferralCode) {
+      hudiApi.referrer(hudiFlowState.incomingReferralCode)
+        .then((referrer) => {
+          hudiFlowState.referrerWallet = referrer?.walletAddress || "";
+        })
+        .catch(() => {})
+        .finally(() => openHudiFlow("referral"));
+    }
+
     function scheduleRender() {
       if (renderFrame || document.hidden) return;
       renderFrame = requestAnimationFrame(render);
@@ -6194,6 +7115,7 @@
 
     scheduleRender();
     scheduleMobileAmbientRender();
+    })();
   </script>
 </body>
 </html>
