@@ -32,6 +32,13 @@ async function copyDirectoryContents(sourceDir, targetDir) {
 
 await copyDirectoryContents(sourceAssetsDir, distAssetsDir);
 
+await Promise.all(["kitchen-sink.html", "landing-kitchen-sink.css"].map(async (fileName) => {
+  const sourcePath = path.join(rootDir, fileName);
+  if (existsSync(sourcePath)) {
+    await copyFile(sourcePath, path.join(distDir, fileName));
+  }
+}));
+
 // Keep the legacy root avatar URLs available too, in case an older cached
 // auth bundle asks for them during a deploy rollover.
 await Promise.all([1, 2, 3].map(async (index) => {
