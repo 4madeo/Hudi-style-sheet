@@ -3597,6 +3597,18 @@
     let mobileCommentOffscreenLastRaw = -Infinity;
     const chatParticleLayer = document.querySelector("[data-chat-particle-layer]");
 
+    function removeMobileDecorativeParticles() {
+      if (!isLandingMobile) return;
+      document.querySelectorAll(".chat-showcase > .chat-particle, .market-particle").forEach((particle) => {
+        particle.remove();
+      });
+      chatParticleLayer?.replaceChildren();
+      marketParticleLayers.under?.replaceChildren();
+      marketParticleLayers.over?.replaceChildren();
+    }
+
+    removeMobileDecorativeParticles();
+
     function setupMarketParticles() {
       if (isLandingMobile) return;
       if (!marketParticleLayers.under || !marketParticleLayers.over) return;
@@ -4951,6 +4963,8 @@
 
     function createMobileOrbGlobeRenderer(mapCanvas) {
       if (!mapCanvas) return null;
+      const mobileGlobeRasterWidth = hudiOrbExportMode ? 1536 : 1280;
+      const mobileGlobeResolutionScale = hudiOrbExportMode ? 1 : .85;
 
       const gl = mapCanvas.getContext("webgl", {
         alpha: true,
@@ -5170,10 +5184,10 @@
       textureState.highlight = createBlankTexture();
       loadTexture("assets/Black_on_white_dotted_world_map_vector.svg?white-transparent-map=1", (texture) => {
         textureState.base = texture;
-      }, 1536, activateOrbMapFallback);
+      }, mobileGlobeRasterWidth, activateOrbMapFallback);
       loadTexture("assets/landing-map-highlight-dots.svg?highlight-dots=1", (texture) => {
         textureState.highlight = texture;
-      }, 1536);
+      }, mobileGlobeRasterWidth);
 
       gl.clearColor(0, 0, 0, 0);
       gl.enable(gl.BLEND);
@@ -5182,7 +5196,7 @@
       function resize() {
         const rect = mapCanvas.getBoundingClientRect();
         const cssSize = Math.max(1, Math.round(Math.max(rect.width, rect.height)));
-        const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, 2) * mobileGlobeResolutionScale;
         const size = Math.max(1, Math.round(cssSize * pixelRatio));
         if (mapCanvas.width !== size || mapCanvas.height !== size) {
           mapCanvas.width = size;
