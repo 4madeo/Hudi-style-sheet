@@ -1589,6 +1589,10 @@
       transform: translateY(.03em);
     }
 
+    .final-tagline__mobile-word {
+      display: none;
+    }
+
     .final-socials {
       display: inline-flex;
       align-items: center;
@@ -1821,6 +1825,10 @@
         height: calc(var(--landing-stable-vh, 100lvh) * 1.45);
       }
 
+      .scroll-level[data-scroll-level="4"] {
+        min-height: calc(var(--landing-stable-vh, 100lvh) * 1.24);
+      }
+
       .landing-orb-world-map-canvas {
         display: block;
         mix-blend-mode: normal;
@@ -1832,6 +1840,14 @@
 
       .landing-orb-world-map-gloss {
         display: none;
+      }
+
+      .final-tagline__wordmark {
+        display: none;
+      }
+
+      .final-tagline__mobile-word {
+        display: inline;
       }
 
       #blank-orb {
@@ -1870,8 +1886,8 @@
       .landing-panel {
         --market-copy-x-padding: clamp(var(--space-14), 4.2vw, var(--space-18));
         --landing-panel-topbar-height: 32px;
-        --landing-panel-title-font-size: clamp(13.5px, 3.35vw, 15.5px);
-        --landing-panel-title-line-height: 14px;
+        --landing-panel-title-font-size: clamp(14.5px, 3.6vw, 16.75px);
+        --landing-panel-title-line-height: 15px;
         --landing-panel-cta-min-width: clamp(84px, 28vw, 106px);
         --landing-panel-cta-height: clamp(24px, 7.2vw, 29px);
         --landing-panel-cta-padding-x: clamp(var(--space-8), 2.7vw, var(--space-12));
@@ -1888,7 +1904,7 @@
 
       .landing-panel p {
         padding-top: clamp(var(--space-10), 3.5vw, var(--space-14));
-        font-size: clamp(9.5px, 2.55vw, 11.5px);
+        font-size: clamp(10.25px, 2.75vw, 12.5px);
         line-height: 1.38;
       }
 
@@ -1978,6 +1994,8 @@
       }
 
       .chat-copy-panel {
+        --chat-copy-title-size: clamp(21px, 5.6vw, 24px);
+        --chat-copy-body-size: clamp(14px, 3.85vw, 16px);
         left: var(--space-16);
         right: var(--space-16);
         top: var(--landing-mobile-center-y);
@@ -3078,6 +3096,7 @@
         <div class="final-tagline">
           <span>on chain. 24/7. only on</span>
           <img class="final-tagline__wordmark" src="assets/hudi-wordmark-tagline.svg" alt="hudi" decoding="async">
+          <span class="final-tagline__mobile-word">hudi</span>
         </div>
         <div class="final-socials" aria-label="Social links">
           <button class="hudi-window-orb final-social-orb is-twitter" type="button" aria-label="X">
@@ -3428,6 +3447,25 @@
     const mobileCommentExitDelayRaw = .13;
     const mobileCommentExitDurationRaw = .16;
     const mobileCommentPopOutMs = 300;
+    const mobilePerfConstants = {
+      // These are the minimum warm windows needed for the current CSS pop-out timers
+      // plus a small compositor handoff margin; larger values keep hidden layers alive.
+      marketWarmMs: 300,
+      chatWarmMs: mobileCommentPopOutMs + 40,
+      finalWarmMs: 280,
+      marketGateLeadRaw: .12,
+      marketGateTailRaw: .06,
+      marketGateStayTailRaw: .1,
+      chatGateLeadRaw: .08,
+      chatGateTailRaw: .12,
+      chatGateStayTailRaw: .16,
+      finalGateLeadRaw: .08,
+      finalGateStayLeadRaw: .14,
+      commentOffscreenStepRaw: .055,
+      ambientFrameStride: 2,
+      backgroundFrameMs: 1000 / 8,
+      backgroundPhaseSpeed: 0.000014
+    };
     let mobileCommentOffscreenLastRaw = -Infinity;
     const chatParticleLayer = document.querySelector("[data-chat-particle-layer]");
 
@@ -3929,9 +3967,9 @@
       final: false
     };
     const mobileSectionWarmDurations = {
-      market: 320,
-      chat: 440,
-      final: 440
+      market: mobilePerfConstants.marketWarmMs,
+      chat: mobilePerfConstants.chatWarmMs,
+      final: mobilePerfConstants.finalWarmMs
     };
     const mobileSectionWarmTimers = {
       market: 0,
@@ -4178,6 +4216,22 @@
     function updateFloatingPanels(time) {
       const reduceMotion = reducedMotionQuery?.matches;
       floatingPanelItems.forEach(({ element, amplitude, duration, phase }) => {
+        if (isLandingMobile) {
+          const isStartButton = element === landingStartButton;
+          const isFinalButton = element === landingFinalButton;
+          const isChatPanel = element === chatCopyPanel;
+          const isMarketPanel = element === landingMarketPanel || element.closest?.(".market-cards");
+
+          if (
+            (isStartButton && scrollState.firstLevelOpacity <= .001)
+            || (isFinalButton && !mobileSectionGateState.final)
+            || (isChatPanel && !mobileSectionGateState.chat)
+            || (isMarketPanel && !mobileSectionGateState.market)
+          ) {
+            return;
+          }
+        }
+
         const mobileScale = isLandingMobile ? 1.12 : 1;
         const bobY = reduceMotion ? 0 : Math.sin((time / duration) * Math.PI * 2 + phase) * amplitude * mobileScale;
         setStyleProp(element, "--landing-panel-bob-y", `${bobY.toFixed(2)}px`);
@@ -4335,7 +4389,7 @@
 
     function updateMobileCommentOffscreen(rawProgress = 0, chatMotionVars = null, force = false) {
       if (!isLandingMobile) return;
-      if (!force && Math.abs(rawProgress - mobileCommentOffscreenLastRaw) < .035) return;
+      if (!force && Math.abs(rawProgress - mobileCommentOffscreenLastRaw) < mobilePerfConstants.commentOffscreenStepRaw) return;
       mobileCommentOffscreenLastRaw = rawProgress;
 
       const viewportWidth = Math.max(1, landingStableViewportWidth || window.innerWidth || 1);
@@ -4966,12 +5020,14 @@
 
     function updateLandingPillTopContour(svg) {
       if (!svg) return;
+      const svgStyle = getComputedStyle(svg);
+      if (svgStyle.display === "none" || svgStyle.visibility === "hidden") return;
       const owner = svg.closest(".hudi-trade-button");
       const ownerWidth = owner?.getBoundingClientRect().width || 0;
-      const cssWidth = parseFloat(getComputedStyle(svg).width) || 0;
+      const cssWidth = parseFloat(svgStyle.width) || 0;
       const renderedWidth = svg.getBoundingClientRect().width || 0;
       const width = Math.max(32, cssWidth || renderedWidth || ownerWidth || 151);
-      const cssHeight = parseFloat(getComputedStyle(svg).height) || 0;
+      const cssHeight = parseFloat(svgStyle.height) || 0;
       const renderedHeight = svg.getBoundingClientRect().height || 0;
       const scale = Math.max(.2, Math.min(2, (cssHeight || renderedHeight || 35) / 35));
       const signature = `${formatPathNumber(width)}|${scale.toFixed(4)}`;
@@ -5048,12 +5104,14 @@
       const commentOpacityStyle = landingShell?.style.getPropertyValue("--landing-comment-opacity");
       const hasMarketRevealState = isLandingMobile ? hasActiveMarketRevealItems() : true;
       const hasCommentRevealState = isLandingMobile ? hasActiveCommentRevealItems() : true;
-      const marketEnterActive = rawProgress >= mapSlideTiming.startRaw - .16 && rawProgress <= marketOrbExitTiming.endRaw + .16;
-      const marketStayActive = rawProgress >= mapSlideTiming.startRaw - .16 && rawProgress <= marketOrbExitTiming.endRaw + .2;
-      const chatEnterActive = rawProgress >= chatParticleRevealStartRaw - .1 && chatProgress <= chatPanelExitStart + chatPanelExitDuration + .55;
-      const chatStayActive = rawProgress >= chatParticleRevealStartRaw - .16 && chatProgress <= chatPanelExitStart + chatPanelExitDuration + .42;
-      const finalEnterActive = rawProgress >= finalSequenceStartRaw - .12;
-      const finalStayActive = rawProgress >= finalSequenceStartRaw - .2;
+      const marketActiveStartRaw = (marketItemRevealRaw[0] ?? mapSlideTiming.startRaw) - mobilePerfConstants.marketGateLeadRaw;
+      const chatActiveStartRaw = chatPanelRevealStartRaw - mobilePerfConstants.chatGateLeadRaw;
+      const marketEnterActive = rawProgress >= marketActiveStartRaw && rawProgress <= marketOrbExitTiming.endRaw + mobilePerfConstants.marketGateTailRaw;
+      const marketStayActive = rawProgress >= marketActiveStartRaw && rawProgress <= marketOrbExitTiming.endRaw + mobilePerfConstants.marketGateStayTailRaw;
+      const chatEnterActive = rawProgress >= chatActiveStartRaw && chatProgress <= chatPanelExitStart + chatPanelExitDuration + mobilePerfConstants.chatGateTailRaw;
+      const chatStayActive = rawProgress >= chatActiveStartRaw && chatProgress <= chatPanelExitStart + chatPanelExitDuration + mobilePerfConstants.chatGateStayTailRaw;
+      const finalEnterActive = rawProgress >= finalSequenceStartRaw - mobilePerfConstants.finalGateLeadRaw;
+      const finalStayActive = rawProgress >= finalSequenceStartRaw - mobilePerfConstants.finalGateStayLeadRaw;
       const mobileMarketActive = !isLandingMobile
         || (mobileSectionGateState.market ? marketStayActive : marketEnterActive)
         || hasMarketRevealState;
@@ -5111,10 +5169,13 @@
         finalTaglineProgress = smoothstep((rawProgress - finalTaglineStartRaw) / finalTiming.taglineDurationRaw);
         const finalSocialStartRaw = finalTaglineStartRaw + finalTiming.taglineDurationRaw * (isLandingMobile ? 1 : .5);
         const finalSocialGapRaw = isLandingMobile ? finalTiming.socialDurationRaw * .72 : finalTiming.socialGapRaw;
+        const finalTelegramGapRaw = isLandingMobile ? finalTiming.socialDurationRaw * .46 : finalSocialGapRaw;
+        const finalTelegramLogoLeadRaw = finalTiming.socialDurationRaw * (isLandingMobile ? .24 : .36);
+        const finalTelegramLogoDurationRaw = finalTiming.socialDurationRaw * (isLandingMobile ? 1.16 : 1.44);
         finalXProgress = smoothstep((rawProgress - finalSocialStartRaw) / finalTiming.socialDurationRaw);
-        finalTelegramProgress = smoothstep((rawProgress - (finalSocialStartRaw + finalSocialGapRaw)) / finalTiming.socialDurationRaw);
+        finalTelegramProgress = smoothstep((rawProgress - (finalSocialStartRaw + finalTelegramGapRaw)) / finalTiming.socialDurationRaw);
         finalXLogoProgress = smoothstep((rawProgress - (finalSocialStartRaw + finalTiming.socialDurationRaw * .36)) / (finalTiming.socialDurationRaw * 1.44));
-        finalTelegramLogoProgress = smoothstep((rawProgress - (finalSocialStartRaw + finalSocialGapRaw + finalTiming.socialDurationRaw * .36)) / (finalTiming.socialDurationRaw * 1.44));
+        finalTelegramLogoProgress = smoothstep((rawProgress - (finalSocialStartRaw + finalTelegramGapRaw + finalTelegramLogoLeadRaw)) / finalTelegramLogoDurationRaw);
         const finalContentProgress = Math.max(finalButtonScaleProgress, finalTaglineProgress, finalXProgress, finalTelegramProgress);
         finalMorph = smoothstep((rawProgress - finalRevealStartRaw) / finalTiming.revealDurationRaw);
         finalDistance = Math.abs(finalContentProgress - 1);
@@ -6216,7 +6277,7 @@
       };
     }
 
-    const gridTexture = createGridTextureAnimator({ includeLeaderboard: !isLandingMobile });
+    const gridTexture = isLandingMobile ? null : createGridTextureAnimator({ includeLeaderboard: true });
 
     function createLandingBackgroundRenderer(targetCanvas, backgroundCanvas, leaderboardCanvas) {
       const contextOptions = {
@@ -6458,7 +6519,7 @@
       let width = 1;
       let height = 1;
       let needsDraw = true;
-      let lastFrameIndex = -1;
+      let lastFrameBucket = -1;
       let lastFinalOpacity = null;
       let gridSpacing = 12;
       let gridPointXs = [];
@@ -6467,9 +6528,6 @@
       let lensX = 0;
       let lensY = 0;
       let maxDistance = 1;
-      let frameCache = [];
-      const frameCount = 16;
-      const framePhaseScale = 18;
       const backgroundColor = token("--page-bg-top") || "#ffffff";
       const matrixColor = parseColor(token("--outline-blue-2") || token("--landing-texture-square") || "#E2F2FF");
       const finalTintColor = parseColor(token("--info-blue") || "#6EC8FF");
@@ -6477,7 +6535,7 @@
       const rgba = (channels, alpha) => `rgba(${Math.round(channels[0])}, ${Math.round(channels[1])}, ${Math.round(channels[2])}, ${alpha.toFixed(3)})`;
 
       function rebuildGrid() {
-        gridSpacing = Math.max(17, Math.min(28, width / 17));
+        gridSpacing = Math.max(19, Math.min(27, width / 18.5));
         lensX = width * .5;
         lensY = height * .58;
         maxDistance = Math.hypot(width * .5, height * .58);
@@ -6524,7 +6582,7 @@
 
         const driftX = ((backgroundOffset * width * .18) % gridSpacing + gridSpacing) % gridSpacing;
         const driftY = ((backgroundOffset * height * .09) % gridSpacing + gridSpacing) % gridSpacing;
-        const dotRadius = Math.max(1.15, gridSpacing * .075);
+        const dotRadius = Math.max(.82, Math.min(1.35, gridSpacing * .046));
         targetCtx.fillStyle = matrixFill;
 
         for (let index = 0; index < gridPointCount; index += 1) {
@@ -6537,7 +6595,7 @@
           const starAmount = smoothstep((noise + sweep * .16 - .57) / .22);
 
           if (starAmount > .12) {
-            const radius = gridSpacing * (.2 + starAmount * .34);
+            const radius = gridSpacing * (.18 + starAmount * .29);
             drawStar(targetCtx, px, py, radius, noise * Math.PI * 2 + backgroundOffset * 4, (.28 + starAmount * .42) * alphaBoost);
           } else {
             targetCtx.globalAlpha = (.34 + noise * .2) * alphaBoost;
@@ -6550,20 +6608,6 @@
         targetCtx.globalAlpha = 1;
       }
 
-      function rebuildFrameCache() {
-        frameCache = Array.from({ length: frameCount }, (_, index) => {
-          const frame = document.createElement("canvas");
-          frame.width = width;
-          frame.height = height;
-          const frameCtx = frame.getContext("2d", { alpha: false });
-          if (frameCtx) {
-            drawMatrixFrame(frameCtx, index / frameCount);
-          }
-          return frame;
-        });
-        lastFrameIndex = -1;
-      }
-
       function resize() {
         const nextWidth = Math.max(1, Math.round(window.innerWidth || 1));
         const nextHeight = getLandingViewportHeight();
@@ -6574,114 +6618,23 @@
           height = nextHeight;
           needsDraw = true;
           rebuildGrid();
-          rebuildFrameCache();
-        } else if (frameCache.length !== frameCount) {
-          needsDraw = true;
-          rebuildFrameCache();
+          lastFrameBucket = -1;
         }
       }
 
-      function render({ backgroundOffset = 0, finalOpacity = 0 } = {}) {
-        const framePhase = ((backgroundOffset * framePhaseScale) % 1 + 1) % 1;
-        const frameIndex = Math.floor(framePhase * frameCount) % frameCount;
+      function render({ backgroundOffset = 0, finalOpacity = 0, frameTime = null } = {}) {
+        const frameTimeValue = Number.isFinite(frameTime) ? frameTime : performance.now();
+        const frameBucket = Math.floor(frameTimeValue / mobilePerfConstants.backgroundFrameMs);
         const roundedFinalOpacity = Number(finalOpacity.toFixed(3));
-        if (!needsDraw && lastFrameIndex === frameIndex && lastFinalOpacity === roundedFinalOpacity) {
+        if (!needsDraw && lastFrameBucket === frameBucket && lastFinalOpacity === roundedFinalOpacity) {
           return;
         }
 
-        lastFrameIndex = frameIndex;
+        lastFrameBucket = frameBucket;
         lastFinalOpacity = roundedFinalOpacity;
         needsDraw = false;
 
-        const frame = frameCache[frameIndex];
-        if (frame) {
-          ctx.drawImage(frame, 0, 0);
-        } else {
-          drawMatrixFrame(ctx, backgroundOffset);
-        }
-
-        if (roundedFinalOpacity > .001) {
-          const overlay = ctx.createRadialGradient(width * .5, height * .5, 0, width * .5, height * .5, Math.max(width, height) * .68);
-          overlay.addColorStop(0, rgba(finalTintColor, roundedFinalOpacity * .035));
-          overlay.addColorStop(1, rgba(finalTintColor, 0));
-          ctx.fillStyle = overlay;
-          ctx.fillRect(0, 0, width, height);
-        }
-      }
-
-      resize();
-
-      return {
-        resize,
-        render
-      };
-    }
-
-    function createLandingMobileTextureRenderer(targetCanvas, backgroundCanvas) {
-      const ctx = targetCanvas.getContext("2d", { alpha: false });
-      if (!ctx || !backgroundCanvas) {
-        return {
-          resize() {},
-          render() {}
-        };
-      }
-
-      let width = 1;
-      let height = 1;
-      let lastOffset = null;
-      let lastFinalOpacity = null;
-      let lastSourceRevision = "";
-      const repeatX = 2.4;
-      const backgroundColor = token("--page-bg-top") || "#ffffff";
-      const finalTintColor = parseColor(token("--info-blue") || "#6EC8FF");
-      const rgba = (channels, alpha) => `rgba(${Math.round(channels[0])}, ${Math.round(channels[1])}, ${Math.round(channels[2])}, ${alpha.toFixed(3)})`;
-
-      function resize() {
-        const nextWidth = Math.max(1, Math.round(window.innerWidth || 1));
-        const nextHeight = getLandingViewportHeight();
-        if (targetCanvas.width !== nextWidth || targetCanvas.height !== nextHeight) {
-          targetCanvas.width = nextWidth;
-          targetCanvas.height = nextHeight;
-          width = nextWidth;
-          height = nextHeight;
-          lastOffset = null;
-          lastFinalOpacity = null;
-          lastSourceRevision = "";
-        }
-      }
-
-      function render({ backgroundOffset = 0, finalOpacity = 0, backgroundDirty = true } = {}) {
-        const roundedOffset = Number(backgroundOffset.toFixed(4));
-        const roundedFinalOpacity = Number(finalOpacity.toFixed(3));
-        const sourceRevision = `${backgroundCanvas.width}x${backgroundCanvas.height}`;
-        if (
-          !backgroundDirty
-          && lastOffset === roundedOffset
-          && lastFinalOpacity === roundedFinalOpacity
-          && lastSourceRevision === sourceRevision
-        ) {
-          return;
-        }
-
-        lastOffset = roundedOffset;
-        lastFinalOpacity = roundedFinalOpacity;
-        lastSourceRevision = sourceRevision;
-
-        ctx.fillStyle = backgroundColor;
-        ctx.fillRect(0, 0, width, height);
-
-        const sourceAspect = backgroundCanvas.width / Math.max(1, backgroundCanvas.height);
-        const tileW = width / repeatX;
-        const tileH = tileW / Math.max(0.001, sourceAspect);
-        const offsetY = (height - tileH) / 2;
-        const wrappedOffset = ((roundedOffset % 1) + 1) % 1;
-        const offsetX = -wrappedOffset * tileW;
-
-        for (let x = offsetX - tileW; x < width + tileW; x += tileW) {
-          for (let y = offsetY - tileH; y < height + tileH; y += tileH) {
-            ctx.drawImage(backgroundCanvas, x, y, tileW, tileH);
-          }
-        }
+        drawMatrixFrame(ctx, backgroundOffset);
 
         if (roundedFinalOpacity > .001) {
           const overlay = ctx.createRadialGradient(width * .5, height * .5, 0, width * .5, height * .5, Math.max(width, height) * .68);
@@ -6717,7 +6670,7 @@
     });
 
     const backgroundRenderer = isLandingMobile
-      ? createLandingMobileTextureRenderer(canvas, gridTexture.canvas)
+      ? createLandingMobileBackgroundRenderer(canvas)
       : createLandingBackgroundRenderer(canvas, gridTexture.canvas, gridTexture.leaderboardCanvas);
 
     let rotationSpeed = 0.00065;
@@ -6725,7 +6678,8 @@
     let ringRotation = 0;
     let shaderCenterShiftEased = 0;
     let renderFrame = 0;
-    let mobileAmbientTimer = 0;
+    let mobileAmbientFrame = 0;
+    let mobileAmbientTick = 0;
 
     function resize() {
       if (isLandingMobile) {
@@ -7297,12 +7251,15 @@
     }
 
     function scheduleMobileAmbientRender() {
-      if (!isLandingMobile || mobileAmbientTimer || document.hidden) return;
-      mobileAmbientTimer = window.setTimeout(() => {
-        mobileAmbientTimer = 0;
-        scheduleRender();
+      if (!isLandingMobile || mobileAmbientFrame || document.hidden) return;
+      mobileAmbientFrame = requestAnimationFrame(() => {
+        mobileAmbientFrame = 0;
+        mobileAmbientTick += 1;
+        if (mobileAmbientTick % mobilePerfConstants.ambientFrameStride === 0) {
+          scheduleRender();
+        }
         scheduleMobileAmbientRender();
-      }, 180);
+      });
     }
 
     requestLandingFrame = scheduleRender;
@@ -7332,14 +7289,20 @@
       const ringFadeOutProgress = 1 - scrollState.firstLevelOpacity;
       const ringFadeOutBoost = isLandingMobile ? 0 : 1 - Math.pow(1 - ringFadeOutProgress, 3);
       const ringSpeed = scrollState.firstLevelOpacity > .001 ? 0.000765 * (1 + ringFadeOutBoost * 7.5) : 0;
-      ringRotation += ringSpeed;
-      setStyleProp(landingShell, "--landing-text-ring-opacity", scrollState.firstLevelOpacity.toFixed(3));
-      const ribbonOffset = -((ringRotation * 920) % landingTextRibbonLoopDistance);
-      setAttr(landingTextRibbonPath, "startOffset", isLandingMobile ? `${Math.round(ribbonOffset)}px` : `${ribbonOffset.toFixed(2)}px`);
+      if (!isLandingMobile) {
+        ringRotation += ringSpeed;
+        setStyleProp(landingShell, "--landing-text-ring-opacity", scrollState.firstLevelOpacity.toFixed(3));
+        const ribbonOffset = -((ringRotation * 920) % landingTextRibbonLoopDistance);
+        setAttr(landingTextRibbonPath, "startOffset", `${ribbonOffset.toFixed(2)}px`);
+      }
       const backgroundStartedAt = landingPerf.start();
       const backgroundOffsetMultiplier = isLandingMobile ? 0.12 : 0.46;
+      const backgroundOffset = isLandingMobile
+        ? now * mobilePerfConstants.backgroundPhaseSpeed
+        : passiveRotation * backgroundOffsetMultiplier;
       backgroundRenderer.render({
-        backgroundOffset: passiveRotation * backgroundOffsetMultiplier,
+        backgroundOffset,
+        frameTime: isLandingMobile ? now : null,
         leaderboardOffset: passiveRotation * 0.28,
         leaderboardOpacity: isLandingMobile ? 0 : smoothstep(scrollState.finalOpacity),
         finalOpacity: scrollState.finalOpacity,
@@ -7355,9 +7318,6 @@
       orbGlobe?.render();
       orbGlobeHighlights?.render();
       landingPerf.end("globeRender", globeStartedAt);
-      if (isLandingMobile && scrollState.firstLevelOpacity > .001) {
-        scheduleRender();
-      }
       landingPerf.frame();
     }
 
@@ -7365,7 +7325,7 @@
       if (document.hidden) {
         if (mobileScrollUpdateFrame) cancelAnimationFrame(mobileScrollUpdateFrame);
         if (renderFrame) cancelAnimationFrame(renderFrame);
-        if (mobileAmbientTimer) clearTimeout(mobileAmbientTimer);
+        if (mobileAmbientFrame) cancelAnimationFrame(mobileAmbientFrame);
         Object.keys(mobileSectionWarmTimers).forEach((section) => {
           if (!mobileSectionWarmTimers[section]) return;
           window.clearTimeout(mobileSectionWarmTimers[section]);
@@ -7373,7 +7333,8 @@
         });
         mobileScrollUpdateFrame = 0;
         renderFrame = 0;
-        mobileAmbientTimer = 0;
+        mobileAmbientFrame = 0;
+        mobileAmbientTick = 0;
         return;
       }
 
