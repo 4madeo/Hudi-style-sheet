@@ -1880,20 +1880,20 @@
       }
 
       .scroll-level {
-        min-height: var(--landing-stable-vh, 100lvh);
+        min-height: calc(var(--landing-stable-vh, 100lvh) * .88);
       }
 
       .scroll-level--market-extension {
-        min-height: calc(var(--landing-stable-vh, 100lvh) * 1.05);
+        min-height: calc(var(--landing-stable-vh, 100lvh) * .9);
       }
 
       .scroll-level--chat-final-gap {
-        min-height: calc(var(--landing-stable-vh, 100lvh) * 1.45);
-        height: calc(var(--landing-stable-vh, 100lvh) * 1.45);
+        min-height: calc(var(--landing-stable-vh, 100lvh) * 1.3);
+        height: calc(var(--landing-stable-vh, 100lvh) * 1.3);
       }
 
       .scroll-level[data-scroll-level="4"] {
-        min-height: calc(var(--landing-stable-vh, 100lvh) * 1.24);
+        min-height: calc(var(--landing-stable-vh, 100lvh) * 1.02);
       }
 
       .landing-orb-world-map-canvas {
@@ -2111,7 +2111,7 @@
 
       .chat-bubble-card.is-top-right {
         --chat-parallax-x: var(--landing-chat-parallax-near, 0vw);
-        --chat-lane-offset-x: -86vw;
+        --chat-lane-offset-x: -104vw;
         left: var(--space-14);
         right: auto;
         top: 10%;
@@ -2120,7 +2120,7 @@
 
       .chat-bubble-card.is-upper-mid {
         --chat-parallax-x: var(--landing-chat-parallax-mid, 0vw);
-        --chat-lane-offset-x: 14vw;
+        --chat-lane-offset-x: -6vw;
         left: 10%;
         right: auto;
         top: 23%;
@@ -2129,7 +2129,7 @@
 
       .chat-bubble-card.is-mid-right {
         --chat-parallax-x: var(--landing-chat-parallax-deep, 0vw);
-        --chat-lane-offset-x: 46vw;
+        --chat-lane-offset-x: 22vw;
         left: 12%;
         right: auto;
         top: 56%;
@@ -2153,7 +2153,7 @@
 
       .chat-bubble-card.is-left-low {
         --chat-parallax-x: var(--landing-chat-parallax-near, 0vw);
-        --chat-lane-offset-x: 38vw;
+        --chat-lane-offset-x: 14vw;
         left: var(--space-12);
         right: auto;
         top: 67%;
@@ -3546,10 +3546,10 @@
       ".chat-bubble-card.is-mid-right"
     ]);
     const mobileCommentOffscreenProfiles = new Map([
-      [".chat-bubble-card.is-top-right", { leftToken: "--space-14", widthVw: 78, maxWidth: 330, laneVw: -86, parallax: "near" }],
-      [".chat-bubble-card.is-upper-mid", { leftVw: 10, widthVw: 74, maxWidth: 315, laneVw: 14, parallax: "mid" }],
-      [".chat-bubble-card.is-left-low", { leftToken: "--space-12", widthVw: 80, maxWidth: 340, laneVw: 38, parallax: "near" }],
-      [".chat-bubble-card.is-mid-right", { leftVw: 12, widthVw: 72, maxWidth: 310, laneVw: 46, parallax: "deep" }]
+      [".chat-bubble-card.is-top-right", { leftToken: "--space-14", widthVw: 78, maxWidth: 330, laneVw: -104, parallax: "near" }],
+      [".chat-bubble-card.is-upper-mid", { leftVw: 10, widthVw: 74, maxWidth: 315, laneVw: -6, parallax: "mid" }],
+      [".chat-bubble-card.is-left-low", { leftToken: "--space-12", widthVw: 80, maxWidth: 340, laneVw: 14, parallax: "near" }],
+      [".chat-bubble-card.is-mid-right", { leftVw: 12, widthVw: 72, maxWidth: 310, laneVw: 22, parallax: "deep" }]
     ]);
     const commentRevealItems = [
       [".chat-bubble-card.is-top-right", 0],
@@ -3590,9 +3590,9 @@
       finalGateStayLeadRaw: .14,
       commentOffscreenStepRaw: .055,
       ambientFrameStride: 2,
-      backgroundFrameMs: 1000 / 8,
+      backgroundFrameMs: 1000 / 4,
       backgroundPhaseSpeed: 0.000014,
-      svgMotionFrameMs: 1000 / 6
+      svgMotionFrameMs: 1000 / 1
     };
     let mobileCommentOffscreenLastRaw = -Infinity;
     const chatParticleLayer = document.querySelector("[data-chat-particle-layer]");
@@ -4077,7 +4077,7 @@
     setupChatParticles();
 
     const marketTiming = {
-      startRaw: 1,
+      startRaw: isLandingMobile ? .88 : 1,
       endRaw: 3.45,
       exitDurationRaw: .6,
       liftStartRaw: 2.81
@@ -4099,13 +4099,30 @@
     const marketItemRevealDelayRaw = .14;
     const marketItemRevealRaw = [1.18, 1.5, 1.82, 2.14].map((value) => value + marketItemRevealDelayRaw);
     const marketExitStartRaw = marketTiming.liftStartRaw - .04;
-    const marketExitGapRaw = .11;
-    const marketItemHideRaw = [0, 1, 2, 3].map((index) => marketExitStartRaw + index * marketExitGapRaw);
+    const mobileMarketFocusTrimRaw = .62;
+    const activeMarketExitStartRaw = marketExitStartRaw - (isLandingMobile ? mobileMarketFocusTrimRaw : 0);
+    const marketExitGapRaw = isLandingMobile ? .055 : .09;
+    const marketItemHideRaw = [0, 1, 2, 3].map((index) => activeMarketExitStartRaw + index * marketExitGapRaw);
+    const mobileMarketTimedRevealStartRaw = marketItemRevealRaw[0];
+    const mobileMarketTimedRevealResetRaw = mobileMarketTimedRevealStartRaw - .04;
+    const mobileMarketTimedRevealStaggerMs = 175;
+    const mobileMarketTimedRevealDurationMs = 210;
+    const mobileMarketTimedRevealFrameMs = 1000 / 24;
+    const mobileMarketTimedRevealTotalMs = mobileMarketTimedRevealStaggerMs * Math.max(0, marketRevealItems.length - 1) + mobileMarketTimedRevealDurationMs;
+    const mobileMarketTimedExitStartRaw = activeMarketExitStartRaw;
+    const mobileMarketTimedExitStaggerMs = 95;
+    const mobileMarketTimedExitDurationMs = 170;
+    const mobileMarketTimedExitFrameMs = mobileMarketTimedRevealFrameMs;
+    const mobileMarketTimedExitTotalMs = mobileMarketTimedExitStaggerMs * Math.max(0, marketRevealItems.length - 1) + mobileMarketTimedExitDurationMs;
+    const mobileAnimationRawScale = 1;
     const marketParticleExitDelayRaw = .16;
     const marketParticleExitDurationRaw = .16;
+    const marketOrbExitDurationRaw = isLandingMobile ? .22 : .22;
+    const mapExitSpinDistance = isLandingMobile ? .22 : .32;
+    const marketOrbExitStartOffsetRaw = isLandingMobile ? marketExitGapRaw * .75 : marketExitGapRaw * 1.5;
     const marketOrbExitTiming = {
-      startRaw: marketExitStartRaw + 4 * marketExitGapRaw,
-      endRaw: marketExitStartRaw + 4 * marketExitGapRaw + .24
+      startRaw: activeMarketExitStartRaw + marketOrbExitStartOffsetRaw,
+      endRaw: activeMarketExitStartRaw + marketOrbExitStartOffsetRaw + marketOrbExitDurationRaw
     };
     const mapSlideTiming = {
       startRaw: .72,
@@ -4154,6 +4171,10 @@
     let mobileSvgMotionTimer = 0;
     let mobileSvgMotionLastSampleAt = -Infinity;
     let mobileScrollCoalesceEnabled = false;
+    let mobileMarketTimedRevealStartedAt = 0;
+    let mobileMarketTimedRevealTimer = 0;
+    let mobileMarketTimedExitStartedAt = 0;
+    let mobileMarketTimedExitTimer = 0;
     let lastRawProgress = 0;
     let lastScrollAt = performance.now();
 
@@ -4200,6 +4221,11 @@
     function getLandingViewportHeight() {
       if (!isLandingMobile) return Math.max(1, window.innerHeight || 1);
       return Math.max(1, landingStableViewportHeight || measureLandingLargeViewportHeight());
+    }
+
+    function getLandingAnimationRawProgress(scrollY, viewportHeight, maxRawProgress) {
+      const rawProgress = scrollY / viewportHeight;
+      return clamp(rawProgress * (isLandingMobile ? mobileAnimationRawScale : 1), 0, maxRawProgress);
     }
 
     updateLandingStableViewport(true);
@@ -4410,7 +4436,9 @@
     }
 
     function mapScrollProgress(rawProgress) {
-      if (rawProgress <= marketTiming.startRaw) return rawProgress;
+      if (rawProgress <= marketTiming.startRaw) {
+        return isLandingMobile ? rawProgress / marketTiming.startRaw : rawProgress;
+      }
       if (rawProgress <= marketTiming.endRaw) {
         return 1 + ((rawProgress - marketTiming.startRaw) / (marketTiming.endRaw - marketTiming.startRaw));
       }
@@ -4425,9 +4453,90 @@
       return getLandingScrollMetrics().maxRawProgress;
     }
 
+    function resetMobileMarketTimedReveal() {
+      if (mobileMarketTimedRevealTimer) window.clearTimeout(mobileMarketTimedRevealTimer);
+      mobileMarketTimedRevealTimer = 0;
+      mobileMarketTimedRevealStartedAt = 0;
+    }
+
+    function resetMobileMarketTimedExit() {
+      if (mobileMarketTimedExitTimer) window.clearTimeout(mobileMarketTimedExitTimer);
+      mobileMarketTimedExitTimer = 0;
+      mobileMarketTimedExitStartedAt = 0;
+    }
+
+    function scheduleMobileMarketTimedRevealUpdate() {
+      if (!isLandingMobile || mobileMarketTimedRevealTimer || document.hidden) return;
+      mobileMarketTimedRevealTimer = window.setTimeout(() => {
+        mobileMarketTimedRevealTimer = 0;
+        updateScrollStateMeasured(true);
+      }, mobileMarketTimedRevealFrameMs);
+    }
+
+    function scheduleMobileMarketTimedExitUpdate() {
+      if (!isLandingMobile || mobileMarketTimedExitTimer || document.hidden) return;
+      mobileMarketTimedExitTimer = window.setTimeout(() => {
+        mobileMarketTimedExitTimer = 0;
+        updateScrollStateMeasured(true);
+      }, mobileMarketTimedExitFrameMs);
+    }
+
+    function updateMobileMarketTimedRevealState(rawProgress, now) {
+      if (!isLandingMobile) return;
+      if (rawProgress < mobileMarketTimedRevealResetRaw) {
+        resetMobileMarketTimedReveal();
+        return;
+      }
+
+      if (rawProgress < mobileMarketTimedRevealStartRaw) return;
+
+      if (!mobileMarketTimedRevealStartedAt) {
+        mobileMarketTimedRevealStartedAt = now;
+      }
+
+      if (now - mobileMarketTimedRevealStartedAt < mobileMarketTimedRevealTotalMs) {
+        scheduleMobileMarketTimedRevealUpdate();
+      }
+    }
+
+    function updateMobileMarketTimedExitState(rawProgress, now) {
+      if (!isLandingMobile) return;
+      if (rawProgress < mobileMarketTimedExitStartRaw) {
+        resetMobileMarketTimedExit();
+        return;
+      }
+
+      if (!mobileMarketTimedExitStartedAt) {
+        mobileMarketTimedExitStartedAt = now;
+      }
+
+      if (now - mobileMarketTimedExitStartedAt < mobileMarketTimedExitTotalMs) {
+        scheduleMobileMarketTimedExitUpdate();
+      }
+    }
+
+    function getMobileMarketTimedRevealProgress(index, rawProgress, now) {
+      if (!isLandingMobile || !mobileMarketTimedRevealStartedAt || rawProgress < mobileMarketTimedRevealStartRaw) return null;
+      const delay = index * mobileMarketTimedRevealStaggerMs;
+      return smoothstep((now - mobileMarketTimedRevealStartedAt - delay) / mobileMarketTimedRevealDurationMs);
+    }
+
+    function getMobileMarketTimedExitProgress(index, rawProgress, now) {
+      if (!isLandingMobile || !mobileMarketTimedExitStartedAt || rawProgress < mobileMarketTimedExitStartRaw) return null;
+      const delay = index * mobileMarketTimedExitStaggerMs;
+      return smoothstep((now - mobileMarketTimedExitStartedAt - delay) / mobileMarketTimedExitDurationMs);
+    }
+
     function updateMarketRevealItems(rawProgress) {
+      const now = performance.now();
       marketRevealItems.forEach((item, index) => {
-        const shouldShow = rawProgress >= marketItemRevealRaw[index] && rawProgress < marketItemHideRaw[index];
+        const timedRevealProgress = getMobileMarketTimedRevealProgress(index, rawProgress, now);
+        const hasTimedReveal = timedRevealProgress !== null;
+        const timedExitProgress = getMobileMarketTimedExitProgress(index, rawProgress, now);
+        const hasTimedExit = timedExitProgress !== null;
+        const shouldStayVisible = hasTimedExit ? timedExitProgress <= .001 : rawProgress < marketItemHideRaw[index];
+        const shouldShow = shouldStayVisible
+          && (hasTimedReveal ? timedRevealProgress > .001 : rawProgress >= marketItemRevealRaw[index]);
         if (shouldShow) {
           const hideTimer = marketHideTimers.get(item);
           if (hideTimer) window.clearTimeout(hideTimer);
@@ -5585,8 +5694,10 @@
 
     function updateScrollState() {
       const { maxRawProgress, viewportHeight, finalLevelStartRaw } = getLandingScrollMetrics();
-      const rawProgress = clamp(window.scrollY / viewportHeight, 0, maxRawProgress);
+      const rawProgress = getLandingAnimationRawProgress(window.scrollY, viewportHeight, maxRawProgress);
       const now = performance.now();
+      updateMobileMarketTimedRevealState(rawProgress, now);
+      updateMobileMarketTimedExitState(rawProgress, now);
       const elapsed = Math.max(16, now - lastScrollAt);
       const scrollDelta = rawProgress - lastRawProgress;
       const maxScrollVelocity = isLandingMobile ? .55 : 1;
@@ -5598,7 +5709,7 @@
       const segmentIndex = Math.min(maxScrollIndex - 1, Math.floor(progress));
       const ramp = clamp(progress - segmentIndex);
       const morph = smoothstep(clamp(progress));
-      const finalMobileEnterLeadRaw = .72;
+      const finalMobileEnterLeadRaw = .78;
       const finalSequenceStartRaw = Math.max(
         marketTiming.endRaw,
         finalLevelStartRaw - (isLandingMobile ? finalMobileEnterLeadRaw : finalTiming.enterLeadRaw)
@@ -5608,16 +5719,16 @@
       const firstLevelOpacity = 1 - smoothstep(progress);
       const orbExitRawProgress = clamp((rawProgress - marketOrbExitTiming.startRaw) / (marketOrbExitTiming.endRaw - marketOrbExitTiming.startRaw));
       const orbExitProgress = smoothstep(orbExitRawProgress);
-      const commentRevealStartRaw = marketOrbExitTiming.endRaw + .04;
+      const commentRevealStartRaw = marketOrbExitTiming.endRaw + (isLandingMobile ? .12 : .04);
       const chatPanelRevealStartRaw = commentRevealStartRaw - .05;
-      const commentRevealBaseRaw = marketExitStartRaw;
+      const commentRevealBaseRaw = activeMarketExitStartRaw;
       const chatProgressOffset = mapScrollProgress(commentRevealStartRaw) - mapScrollProgress(commentRevealBaseRaw);
       const chatProgress = Math.max(0, mappedProgress - chatProgressOffset);
-      const commentFadeOutStart = 3.28;
+      const commentFadeOutStart = isLandingMobile ? 2.52 : 3.16;
       const commentFadeOutDuration = .36;
       const mobileCommentFadeSpan = mobileCommentExitDurationRaw + mobileCommentExitDelayRaw * Math.max(0, commentRevealItems.length - 1);
       const chatPanelExitStart = isLandingMobile
-        ? commentFadeOutStart + mobileCommentFadeSpan + .08
+        ? commentFadeOutStart + (mobileCommentFadeSpan * .45)
         : commentFadeOutStart + (commentFadeOutDuration * .55);
       const chatPanelExitDuration = isLandingMobile ? .18 : .2;
       const chatParticleRevealStartRaw = commentRevealStartRaw - .3;
@@ -5724,11 +5835,12 @@
 
       const mapReveal = smoothstep((progress - .72) / .36);
       const mapSlideProgress = clamp((rawProgress - mapSlideTiming.startRaw) / (mapSlideTiming.endRaw - mapSlideTiming.startRaw));
-      const mapExitSpinOffset = orbExitRawProgress * orbExitRawProgress * .32;
+      const mapExitSpinOffset = orbExitRawProgress * orbExitRawProgress * mapExitSpinDistance;
       const mapSlideOffset = mapSlideTiming.startOffset + (exponentialEaseOut(mapSlideProgress, mapSlideTiming.easeStrength) * mapSlideEndTravel) + mapExitSpinOffset;
       const mapDotLeadRaw = .12;
       const mapDotValue = (index) => {
-        const fadeIn = smoothstep((rawProgress - (marketItemRevealRaw[index] - mapDotLeadRaw)) / mapDotLeadRaw);
+        const timedRevealProgress = getMobileMarketTimedRevealProgress(index, rawProgress, now);
+        const fadeIn = timedRevealProgress ?? smoothstep((rawProgress - (marketItemRevealRaw[index] - mapDotLeadRaw)) / mapDotLeadRaw);
         const fadeOut = 1 - orbExitProgress;
         return fadeIn * fadeOut;
       };
@@ -5773,21 +5885,27 @@
           chatParticleOpacity = chatParticleFadeIn * commentFadeOut;
         }
         chatMotionVars = (() => {
-        const chatSideProgress = clamp((chatProgress - 1.68) / 2.6);
-        const chatXTravel = (1 - (chatSideProgress * 2)) * 112;
+        const chatTravelStart = isLandingMobile ? 1.56 : 1.68;
+        const chatTravelDuration = isLandingMobile ? 1.5 : 2.6;
+        const chatTravelRange = isLandingMobile ? 96 : 112;
+        const chatSideProgress = clamp((chatProgress - chatTravelStart) / chatTravelDuration);
+        const chatXTravel = (1 - (chatSideProgress * 2)) * chatTravelRange;
         const stableWidth = Math.max(1, landingStableViewportWidth || window.innerWidth || 1);
         const formatChatOffset = (multiplier) => isLandingMobile
           ? `${((chatXTravel * multiplier * stableWidth) / 100).toFixed(2)}px`
           : `${(chatXTravel * multiplier).toFixed(3)}vw`;
+        const nearMultiplier = isLandingMobile ? .98 : 1;
+        const midMultiplier = isLandingMobile ? .78 : .72;
+        const deepMultiplier = isLandingMobile ? .58 : .48;
         return {
           front: formatChatOffset(1.55),
           glass: formatChatOffset(1.34),
           fast: formatChatOffset(1.18),
-          near: formatChatOffset(1),
+          near: formatChatOffset(nearMultiplier),
           soft: formatChatOffset(.86),
-          mid: formatChatOffset(.72),
+          mid: formatChatOffset(midMultiplier),
           softDeep: formatChatOffset(.6),
-          deep: formatChatOffset(.48),
+          deep: formatChatOffset(deepMultiplier),
           far: formatChatOffset(.28),
           drift: formatChatOffset(.16),
           haze: formatChatOffset(.06)
@@ -5945,7 +6063,7 @@
     function updateMobileFastMarketPin() {
       if (!isLandingMobile || !landingShell) return;
       const { maxRawProgress, viewportHeight } = getLandingScrollMetrics();
-      const rawProgress = clamp(window.scrollY / viewportHeight, 0, maxRawProgress);
+      const rawProgress = getLandingAnimationRawProgress(window.scrollY, viewportHeight, maxRawProgress);
       const progress = clamp(mapScrollProgress(rawProgress), 0, maxScrollIndex);
       setStyleProp(landingShell, "--landing-market-y", levelOffset(1, progress));
     }
