@@ -3,7 +3,7 @@ import { DAppKitProvider, useCurrentAccount, useDAppKit } from "@mysten/dapp-kit
 import { createDAppKit } from "@mysten/dapp-kit-core";
 import { registerSlushWallet } from "@mysten/slush-wallet";
 import { SuiJsonRpcClient, getJsonRpcFullnodeUrl } from "@mysten/sui/jsonRpc";
-import { ArrowUp, CircleNotch, TelegramLogo, Users, X, XLogo } from "@phosphor-icons/react";
+import { ArrowUp, TelegramLogo, Users, X, XLogo } from "@phosphor-icons/react";
 import { PrivyProvider, useLogin, usePrivy } from "@privy-io/react-auth";
 import { useCreateWallet as useCreatePrivyWallet } from "@privy-io/react-auth/extended-chains";
 
@@ -178,7 +178,19 @@ function StepDots({ index }) {
 function QueuePosition({ position }) {
   return (
     <div className="hudi-flow-position">
-      <span>you're <strong>#{formatPosition(position)}</strong> in line</span>
+      <span className="hudi-flow-position-line">
+        <span className="hudi-flow-position-copy">you're</span>
+        <strong>#{formatPosition(position)}</strong>
+        <span className="hudi-flow-position-copy">in line</span>
+      </span>
+    </div>
+  );
+}
+
+function WaitlistLoadingMatrix() {
+  return (
+    <div className="hudi-flow-loading-matrix" role="status" aria-label="Checking your waitlist spot">
+      {Array.from({ length: 9 }, (_, index) => <span key={index} style={{ "--dot-index": index }} />)}
     </div>
   );
 }
@@ -212,7 +224,9 @@ function ReferralBox({ link, copied, onCopy }) {
   return (
     <div className="hudi-flow-referral-box">
       <span className="hudi-flow-referral-link">{link}</span>
-      <button className="hudi-flow-button" type="button" onClick={onCopy}>{copied ? "copied" : "copy"}</button>
+      <button className="hudi-flow-button" type="button" onClick={onCopy}>
+        <span className="hudi-flow-button-label">{copied ? "copied" : "copy"}</span>
+      </button>
     </div>
   );
 }
@@ -295,10 +309,10 @@ function WaitlistModal({ open, onClose, signupResult, resolveSignup, authReady }
   };
 
   return (
-    <ModalFrame open={open} onClose={onClose} title={step === "already-signed-up" ? "Welcome back" : "Waitlist"}>
+    <ModalFrame open={open} onClose={onClose} title={(step === "already-signed-up" || step === "loading") ? "Welcome back" : "Waitlist"}>
       {step === "loading" && (
         <div className="hudi-flow-stack hudi-flow-centered">
-          <CircleNotch className="hudi-flow-spinner" size={36} weight="bold" />
+          <WaitlistLoadingMatrix />
           <h3 className="hudi-flow-title">Checking your spot</h3>
           <p className="hudi-flow-copy">One sec. Looking up your waitlist position.</p>
           {error && <p className="hudi-flow-error">{error}</p>}
@@ -312,7 +326,7 @@ function WaitlistModal({ open, onClose, signupResult, resolveSignup, authReady }
                 setRetryNonce((value) => value + 1);
               }}
             >
-              try again
+              <span className="hudi-flow-button-label">try again</span>
             </button>
           )}
         </div>
@@ -333,7 +347,8 @@ function WaitlistModal({ open, onClose, signupResult, resolveSignup, authReady }
               window.setTimeout(() => setStep("join-tg"), 300);
             }}
           >
-            <XLogo size={18} weight="fill" /> follow @tradeonhudi <span className="hudi-flow-boost"><ArrowUp size={14} weight="bold" />100</span>
+            <span className="hudi-flow-button-shine" aria-hidden="true" />
+            <XLogo size={18} weight="fill" /> <span className="hudi-flow-button-label">follow @tradeonhudi</span> <span className="hudi-flow-boost"><ArrowUp size={14} weight="bold" />100</span>
           </a>
           <button className="hudi-flow-secondary" type="button" onClick={() => setStep("join-tg")}>skip</button>
         </div>
@@ -354,7 +369,8 @@ function WaitlistModal({ open, onClose, signupResult, resolveSignup, authReady }
               window.setTimeout(() => setStep("share"), 300);
             }}
           >
-            <TelegramLogo size={18} weight="fill" /> join telegram <span className="hudi-flow-boost"><ArrowUp size={14} weight="bold" />100</span>
+            <span className="hudi-flow-button-shine" aria-hidden="true" />
+            <TelegramLogo size={18} weight="fill" /> <span className="hudi-flow-button-label">join telegram</span> <span className="hudi-flow-boost"><ArrowUp size={14} weight="bold" />100</span>
           </a>
           <button className="hudi-flow-secondary" type="button" onClick={() => setStep("share")}>skip</button>
         </div>
@@ -367,7 +383,8 @@ function WaitlistModal({ open, onClose, signupResult, resolveSignup, authReady }
           <p className="hudi-flow-copy">Share your link to jump the queue. Up to 3 referrals boost your position.</p>
           <ReferralBox link={referralLink} copied={copied} onCopy={handleCopy} />
           <button className="hudi-flow-button is-primary" type="button" onClick={handleShareX}>
-            <XLogo size={18} weight="fill" /> share on x <span className="hudi-flow-boost"><ArrowUp size={14} weight="bold" />500</span>
+            <span className="hudi-flow-button-shine" aria-hidden="true" />
+            <XLogo size={18} weight="fill" /> <span className="hudi-flow-button-label">share on x</span> <span className="hudi-flow-boost"><ArrowUp size={14} weight="bold" />500</span>
           </button>
           <ReferralStats {...signup} />
         </div>
@@ -380,15 +397,16 @@ function WaitlistModal({ open, onClose, signupResult, resolveSignup, authReady }
           <p className="hudi-flow-copy">Keep sharing your referral link to climb before launch.</p>
           <ReferralBox link={referralLink} copied={copied} onCopy={handleCopy} />
           <button className="hudi-flow-button is-primary" type="button" onClick={handleShareX}>
-            <XLogo size={18} weight="fill" /> share on x <span className="hudi-flow-boost"><ArrowUp size={14} weight="bold" />500</span>
+            <span className="hudi-flow-button-shine" aria-hidden="true" />
+            <XLogo size={18} weight="fill" /> <span className="hudi-flow-button-label">share on x</span> <span className="hudi-flow-boost"><ArrowUp size={14} weight="bold" />500</span>
           </button>
           <ReferralStats {...signup} />
           <div className="hudi-flow-divider" />
           <a className="hudi-flow-button" href={X_URL} target="_blank" rel="noopener noreferrer" onClick={() => void trackAction("followed_x")}>
-            <XLogo size={18} weight="fill" /> follow @tradeonhudi <span className="hudi-flow-boost"><ArrowUp size={14} weight="bold" />100</span>
+            <XLogo size={18} weight="fill" /> <span className="hudi-flow-button-label">follow @tradeonhudi</span> <span className="hudi-flow-boost"><ArrowUp size={14} weight="bold" />100</span>
           </a>
           <a className="hudi-flow-button" href={TG_URL} target="_blank" rel="noopener noreferrer" onClick={() => void trackAction("joined_telegram")}>
-            <TelegramLogo size={18} weight="fill" /> join telegram <span className="hudi-flow-boost"><ArrowUp size={14} weight="bold" />100</span>
+            <TelegramLogo size={18} weight="fill" /> <span className="hudi-flow-button-label">join telegram</span> <span className="hudi-flow-boost"><ArrowUp size={14} weight="bold" />100</span>
           </a>
         </div>
       )}
@@ -415,6 +433,12 @@ function AccessCodeModal({ open, onClose, onWaitlist }) {
     window.setTimeout(() => inputsRef.current[0]?.focus(), 80);
   }, [open]);
 
+  const focusBox = (index) => {
+    const target = inputsRef.current[Math.max(0, Math.min(7, index))];
+    target?.focus();
+    target?.select();
+  };
+
   const writeChars = (start, value) => {
     const clean = value.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
     if (!clean) return start;
@@ -427,6 +451,15 @@ function AccessCodeModal({ open, onClose, onWaitlist }) {
     });
     return Math.min(start + clean.length, 7);
   };
+
+  const clearChar = (index) => {
+    setChars((prev) => {
+      const next = [...prev];
+      next[index] = "";
+      return next;
+    });
+  };
+
   const shake = () => {
     const el = panelRef.current;
     if (!el || typeof el.animate !== "function") return;
@@ -460,8 +493,8 @@ function AccessCodeModal({ open, onClose, onWaitlist }) {
         <p className="hudi-flow-copy">Got an early-access code? Drop it in to start trading.</p>
         <div className="hudi-flow-code-row">
           {chars.map((char, index) => (
+            <span key={index} className={`hudi-flow-code-cell${invalid ? " is-invalid" : ""}`}>
             <input
-              key={index}
               ref={(el) => { inputsRef.current[index] = el; }}
               className={`hudi-flow-code-input${invalid ? " is-invalid" : ""}`}
               value={char}
@@ -473,26 +506,59 @@ function AccessCodeModal({ open, onClose, onWaitlist }) {
               spellCheck={false}
               onChange={(event) => {
                 setInvalid(false);
-                const next = writeChars(index, event.target.value);
-                inputsRef.current[next]?.focus();
+                const raw = event.target.value;
+                if (raw === "") {
+                  clearChar(index);
+                  return;
+                }
+                focusBox(writeChars(index, raw));
               }}
               onPaste={(event) => {
                 event.preventDefault();
                 setInvalid(false);
-                const next = writeChars(index, event.clipboardData.getData("text"));
-                inputsRef.current[next]?.focus();
+                focusBox(writeChars(index, event.clipboardData.getData("text")));
+              }}
+              onFocus={(event) => {
+                event.target.select();
               }}
               onKeyDown={(event) => {
-                if (event.key === "Enter") submit();
-                if (event.key === "Backspace" && !chars[index] && index > 0) inputsRef.current[index - 1]?.focus();
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  submit();
+                  return;
+                }
+                if (event.key === "Backspace") {
+                  if (chars[index]) {
+                    setInvalid(false);
+                    return;
+                  }
+                  event.preventDefault();
+                  if (index > 0) {
+                    setInvalid(false);
+                    clearChar(index - 1);
+                    focusBox(index - 1);
+                  }
+                  return;
+                }
+                if (event.key === "ArrowLeft" && index > 0) {
+                  event.preventDefault();
+                  focusBox(index - 1);
+                  return;
+                }
+                if (event.key === "ArrowRight" && index < 7) {
+                  event.preventDefault();
+                  focusBox(index + 1);
+                }
               }}
               aria-label={`Access code character ${index + 1} of 8`}
             />
+            </span>
           ))}
         </div>
         {invalid && <p className="hudi-flow-error">That access code is not open yet.</p>}
         <button className="hudi-flow-button is-primary" type="button" onClick={submit} disabled={submitting}>
-          {submitting ? "checking" : "continue"}
+          <span className="hudi-flow-button-shine" aria-hidden="true" />
+          <span className="hudi-flow-button-label">{submitting ? "checking" : "continue"}</span>
         </button>
         <button className="hudi-flow-secondary" type="button" onClick={onWaitlist}>join the waitlist instead</button>
       </div>
@@ -510,7 +576,7 @@ function ReferralModal({ open, onClose, onContinue, walletAddress, referralCode 
         <p className="hudi-flow-copy">You've been tapped in by</p>
         <h3 className="hudi-flow-title">{truncateAddress(walletAddress)}</h3>
         <p className="hudi-flow-copy">Hudi is opening 24/7 Asian equities perps. Your friend just bumped you up the line.</p>
-        <button className="hudi-flow-button is-primary" type="button" onClick={onContinue}>claim your spot</button>
+        <button className="hudi-flow-button is-primary" type="button" onClick={onContinue}><span className="hudi-flow-button-shine" aria-hidden="true" /><span className="hudi-flow-button-label">claim your spot</span></button>
       </div>
     </ModalFrame>
   );
@@ -520,7 +586,7 @@ function MissingPrivyRuntime() {
   const [accessOpen, setAccessOpen] = useState(false);
   useEffect(() => {
     const openAccess = () => setAccessOpen(true);
-    const buttons = [".landing-start-button", ".landing-final-button", ".market-copy-button"]
+    const buttons = [".landing-final-button", ".market-copy-button"]
       .flatMap((selector) => Array.from(document.querySelectorAll(selector)));
     buttons.forEach((button) => button.addEventListener("click", openAccess));
     return () => buttons.forEach((button) => button.removeEventListener("click", openAccess));
@@ -598,6 +664,11 @@ function HudiLandingRuntime() {
     privyLogin({ loginMethods: ["email", "google"] });
   }, [isConnected, openWaitlist, privyLogin]);
 
+  useEffect(() => {
+    const label = document.querySelector(".landing-start-button .pill-label");
+    if (label) label.textContent = isConnected ? "check waitlist" : "join waitlist";
+  }, [isConnected]);
+
   const resolveSignup = useCallback(async () => {
     const externalAddress = currentAccount?.address;
     const privySuiAddress = privyAuthed
@@ -611,19 +682,21 @@ function HudiLandingRuntime() {
   }, [currentAccount, privyAuthed, privyUser, runSignup]);
 
   useEffect(() => {
-    const startButtons = [".landing-start-button", ".landing-final-button"]
-      .flatMap((selector) => Array.from(document.querySelectorAll(selector)));
+    const startButton = document.querySelector(".landing-start-button");
+    const finalButtons = Array.from(document.querySelectorAll(".landing-final-button"));
     const marketButtons = Array.from(document.querySelectorAll(".market-copy-button"));
     const chatButtons = Array.from(document.querySelectorAll(".chat-copy-button"));
 
-    startButtons.forEach((button) => button.addEventListener("click", openAccess));
+    startButton?.addEventListener("click", requestWaitlistAuth);
+    finalButtons.forEach((button) => button.addEventListener("click", openAccess));
     marketButtons.forEach((button) => button.addEventListener("click", openAccess));
-    chatButtons.forEach((button) => button.addEventListener("click", requestWaitlistAuth));
+    chatButtons.forEach((button) => button.addEventListener("click", openAccess));
 
     return () => {
-      startButtons.forEach((button) => button.removeEventListener("click", openAccess));
+      startButton?.removeEventListener("click", requestWaitlistAuth);
+      finalButtons.forEach((button) => button.removeEventListener("click", openAccess));
       marketButtons.forEach((button) => button.removeEventListener("click", openAccess));
-      chatButtons.forEach((button) => button.removeEventListener("click", requestWaitlistAuth));
+      chatButtons.forEach((button) => button.removeEventListener("click", openAccess));
     };
   }, [openAccess, requestWaitlistAuth]);
 

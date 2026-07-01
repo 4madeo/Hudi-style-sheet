@@ -28,6 +28,7 @@
       margin: 0;
       min-height: 100%;
       overflow-x: hidden;
+      scrollbar-gutter: stable;
       scroll-behavior: smooth;
       scroll-snap-type: y mandatory;
     }
@@ -809,6 +810,51 @@
       text-transform: lowercase;
     }
 
+    .market-copy-button.hudi-trade-button,
+    .chat-copy-button,
+    .hudi-flow-button,
+    .hudi-flow-close {
+      cursor: pointer !important;
+      touch-action: manipulation;
+      transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+    }
+
+    .market-copy-button.hudi-trade-button:hover,
+    .chat-copy-button:hover,
+    .hudi-flow-button:hover,
+    .hudi-flow-close:hover {
+      filter: brightness(1.035) saturate(1.04);
+    }
+
+    .market-copy-button.hudi-trade-button:active,
+    .chat-copy-button:active,
+    .hudi-flow-button:active,
+    .hudi-flow-close:active {
+      box-shadow:
+        var(--landing-panel-cta-shadow),
+        inset 0 -2px 18px color-mix(in srgb, var(--white) 22%, transparent);
+      filter: brightness(1.08) saturate(1.05);
+    }
+
+    .market-copy-button.hudi-trade-button *,
+    .chat-copy-button *,
+    .hudi-flow-button *,
+    .hudi-flow-close *,
+    .market-copy-button.hudi-trade-button::before,
+    .market-copy-button.hudi-trade-button::after,
+    .chat-copy-button::before,
+    .chat-copy-button::after,
+    .hudi-flow-button::before,
+    .hudi-flow-button::after,
+    .hudi-flow-close::before,
+    .hudi-flow-close::after {
+      cursor: inherit !important;
+      pointer-events: none !important;
+    }
+
     .market-copy-button .pill-top-contour,
     .market-copy-button .pill-bottom-highlight,
     .market-copy-button .pill-shine {
@@ -984,6 +1030,7 @@
       transform-origin: center;
       filter: var(--landing-panel-filter-shadow);
       animation: none;
+      pointer-events: none;
       will-change: translate, scale, opacity;
     }
 
@@ -2023,6 +2070,7 @@
     }
 
     .hudi-flow-backdrop {
+      --landing-panel-shadow: var(--landing-panel-exterior-shadow);
       position: fixed;
       inset: 0;
       z-index: 40;
@@ -2048,7 +2096,7 @@
       width: min(94vw, 500px);
       max-height: min(86svh, 720px);
       overflow: auto;
-      border: 0;
+      border: var(--landing-panel-border);
       border-radius: calc(var(--radius-card) * .45);
       background: var(--landing-panel-base-bg);
       box-shadow: var(--landing-panel-shadow), var(--landing-panel-inner-shadow);
@@ -2118,12 +2166,35 @@
       box-shadow: var(--landing-panel-cta-shadow);
       color: transparent;
       cursor: pointer;
+      overflow: hidden;
     }
 
     .hudi-flow-close::before {
       content: "x";
-      color: var(--text-darker-grey);
+      position: relative;
+      z-index: 2;
+      background: var(--landing-panel-cta-text-gradient);
+      background-clip: text;
+      color: transparent;
       line-height: 1;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hudi-flow-close::after {
+      content: "";
+      position: absolute;
+      top: -25%;
+      left: -80%;
+      z-index: 1;
+      width: 52%;
+      height: 150%;
+      background: linear-gradient(105deg, transparent 0%, color-mix(in srgb, var(--white) 0%, transparent) 34%, color-mix(in srgb, var(--white) 72%, transparent) 48%, color-mix(in srgb, var(--white) 0%, transparent) 64%, transparent 100%);
+      transform: skewX(-18deg);
+    }
+
+    .hudi-flow-close:hover::after {
+      animation: hudi-pill-shine 760ms ease-out;
     }
 
     .hudi-flow-body {
@@ -2176,6 +2247,8 @@
       justify-content: center;
       gap: var(--space-8);
       min-height: 44px;
+      position: relative;
+      overflow: hidden;
       border: var(--landing-panel-cta-border);
       border-radius: var(--radius-pill);
       background: var(--landing-panel-cta-bg);
@@ -2190,29 +2263,100 @@
       text-transform: lowercase;
     }
 
+    .hudi-flow-button svg {
+      position: relative;
+      z-index: 1;
+      color: var(--hudi-soft-panel-text-bottom);
+      opacity: .82;
+    }
+
     .hudi-flow-button.is-primary {
-      background: var(--landing-cta-pink);
-      color: var(--white);
-      box-shadow:
-        inset 0 -3.0801px 32.187px var(--landing-cta-pink-shadow),
-        var(--landing-panel-shadow);
+      background: var(--landing-panel-cta-bg);
+      box-shadow: var(--landing-panel-cta-shadow);
+      color: var(--text-darker-grey);
+    }
+
+    .hudi-flow-button.is-primary::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      top: 4px;
+      z-index: 0;
+      height: min(24px, calc(100% - var(--space-14)));
+      border-radius: var(--radius-pill);
+      background: linear-gradient(180deg, var(--white) 0%, color-mix(in srgb, var(--white) 6%, transparent) 100%);
+      pointer-events: none;
+    }
+
+    .hudi-flow-button.is-primary::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 2.2px;
+      top: 0;
+      z-index: 0;
+      height: 14px;
+      border-radius: inherit;
+      background: radial-gradient(91.39% 71.43% at 50% 14.29%, color-mix(in srgb, var(--white) 71%, transparent) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .hudi-flow-button .hudi-flow-button-label,
+    .hudi-flow-button .hudi-flow-boost {
+      position: relative;
+      z-index: 1;
+      background: var(--landing-panel-cta-text-gradient);
+      background-clip: text;
+      color: transparent;
+      font-family: var(--sf-pro, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
+      font-weight: 400;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hudi-flow-button.is-primary .hudi-flow-button-shine {
+      position: absolute;
+      top: -25%;
+      left: -80%;
+      z-index: 2;
+      width: 52%;
+      height: 150%;
+      background: linear-gradient(105deg, transparent 0%, color-mix(in srgb, var(--white) 0%, transparent) 34%, color-mix(in srgb, var(--white) 72%, transparent) 48%, color-mix(in srgb, var(--white) 0%, transparent) 64%, transparent 100%);
+      transform: skewX(-18deg);
+    }
+
+    .hudi-flow-button.is-primary:hover .hudi-flow-button-shine {
+      animation: hudi-pill-shine 760ms ease-out;
     }
 
     .hudi-flow-button:disabled {
-      cursor: wait;
+      cursor: wait !important;
       opacity: .62;
+    }
+
+    .hudi-flow-button:disabled > * {
+      cursor: wait !important;
     }
 
     .hudi-flow-secondary {
       border: 0;
       background: none;
-      color: var(--text-darker-grey);
+      background: var(--landing-panel-text-gradient);
+      background-clip: text;
+      color: transparent;
       cursor: pointer;
-      font: inherit;
-      opacity: .74;
+      font-family: var(--sf-pro, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
+      font-size: inherit;
+      font-weight: 400;
+      letter-spacing: .045em;
+      line-height: inherit;
+      opacity: .75;
       padding: var(--space-4);
       text-decoration: underline;
       text-underline-offset: 4px;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .hudi-flow-position {
@@ -2222,14 +2366,34 @@
       border-radius: var(--radius-card);
       background: var(--landing-stock-inset-bg);
       box-shadow: var(--landing-stock-inset-shadow);
-      color: var(--text-darker-grey);
       font-size: clamp(20px, 4.7vw, 32px);
       letter-spacing: -.04em;
       text-align: center;
     }
 
+    .hudi-flow-position-line {
+      display: inline-flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: .28em;
+      flex-wrap: wrap;
+      padding: 0 var(--space-12);
+    }
+
+    .hudi-flow-position-copy,
     .hudi-flow-position strong {
-      color: var(--ink);
+      background: var(--landing-panel-text-gradient);
+      background-clip: text;
+      color: transparent;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hudi-flow-position-copy {
+      opacity: .75;
+    }
+
+    .hudi-flow-position strong {
       font-size: 1.28em;
       font-weight: 500;
     }
@@ -2265,11 +2429,17 @@
       flex: 1;
       min-width: 0;
       overflow: hidden;
-      color: var(--text-darker-grey);
-      font-size: 12px;
-      letter-spacing: .02em;
+      background: var(--landing-panel-text-gradient);
+      background-clip: text;
+      color: transparent;
+      font-family: var(--sf-pro, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif);
+      font-size: clamp(13px, 2.8vw, 16px);
+      letter-spacing: .045em;
+      opacity: .75;
       text-overflow: ellipsis;
       white-space: nowrap;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .hudi-flow-code-row {
@@ -2279,17 +2449,66 @@
       gap: clamp(var(--space-4), 1.6vw, var(--space-10));
     }
 
+    .hudi-flow-code-cell {
+      position: relative;
+      display: inline-grid;
+      border-radius: calc(var(--radius-card) * .55);
+    }
+
+    .hudi-flow-code-cell::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      padding: 1px;
+      border-radius: inherit;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--hudi-soft-panel-text-top) 70%, transparent),
+        color-mix(in srgb, var(--hudi-soft-panel-text-bottom) 70%, transparent)
+      );
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 140ms ease;
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      mask-composite: exclude;
+    }
+
+    .hudi-flow-code-cell:focus-within::after {
+      opacity: 1;
+    }
+
+    .hudi-flow-code-cell.is-invalid::after {
+      opacity: 0;
+    }
+
     .hudi-flow-code-input {
       width: clamp(30px, 8.2vw, 44px);
       height: clamp(40px, 10vw, 52px);
       border: var(--landing-stock-inset-border);
       border-radius: calc(var(--radius-card) * .55);
-      background: var(--landing-stock-inset-bg);
+      background:
+        var(--landing-panel-text-gradient),
+        var(--landing-stock-inset-bg);
+      background-clip: text, border-box;
       box-shadow: var(--landing-stock-inset-shadow);
-      color: var(--ink);
+      color: transparent;
+      caret-color: var(--hudi-soft-panel-text-bottom);
       font: 400 clamp(18px, 5vw, 28px)/1 var(--ocr-fixed, ui-monospace, monospace);
       text-align: center;
       text-transform: uppercase;
+      -webkit-background-clip: text, border-box;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hudi-flow-code-input:focus {
+      outline: 0;
     }
 
     .hudi-flow-error {
@@ -2304,6 +2523,12 @@
       pointer-events: none;
     }
 
+    #privy-dialog,
+    #privy-modal-content {
+      box-shadow: none !important;
+      filter: none !important;
+    }
+
     .hudi-flow-panel a {
       text-decoration: none;
     }
@@ -2313,13 +2538,32 @@
       text-align: center;
     }
 
-    .hudi-flow-spinner {
-      color: var(--info-blue);
-      animation: hudi-flow-spin 900ms linear infinite;
+    .hudi-flow-loading-matrix {
+      display: grid;
+      grid-template-columns: repeat(3, 8px);
+      gap: 7px;
+      margin: var(--space-2) 0;
     }
 
-    @keyframes hudi-flow-spin {
-      to { rotate: 360deg; }
+    .hudi-flow-loading-matrix span {
+      width: 8px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--landing-panel-text-gradient);
+      box-shadow: 0 1px 0 var(--white);
+      animation: hudi-flow-dot-pulse 920ms ease-in-out infinite;
+      animation-delay: calc(var(--dot-index) * 70ms);
+    }
+
+    @keyframes hudi-flow-dot-pulse {
+      0%, 100% {
+        opacity: .34;
+        transform: scale(.72);
+      }
+      45% {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
     .hudi-flow-boost {
@@ -2329,6 +2573,11 @@
       margin-left: var(--space-8);
       font-size: .8em;
       opacity: .82;
+    }
+
+    .hudi-flow-boost svg {
+      color: var(--hudi-soft-panel-text-bottom);
+      opacity: .78;
     }
 
     .hudi-flow-divider {
@@ -2849,7 +3098,7 @@
           <path d="M2.13303 11.6167C6.00544 4.56248 10.3926 0 19.1527 0H139.508C145.4 0 150.393 4.02449 150.393 9.5C150.393 15.5 145.4 19.8286 139.508 19.8286C139.508 19.8286 25.5995 19.8286 17.1177 19.8286C8.6358 19.8286 2.13303 27.8401 2.82881 34.7C1.14587 33.999 -2.20684 19.5226 2.13303 11.6167Z" fill="url(#landing-start-pill-top-gradient)"/>
         </svg>
         <span class="pill-bottom-highlight"></span>
-        <span class="pill-label">start trading</span>
+        <span class="pill-label">join waitlist</span>
         <span class="pill-shine"></span>
       </button>
     </div>
@@ -6623,7 +6872,11 @@
       const signup = hudiFlowState.signup;
       return `
         <div class="hudi-flow-position">
-          <span>your waitlist spot<br><strong>#${hudiFormatPosition(signup?.position)}</strong></span>
+          <span class="hudi-flow-position-line">
+            <span class="hudi-flow-position-copy">you're</span>
+            <strong>#${hudiFormatPosition(signup?.position)}</strong>
+            <span class="hudi-flow-position-copy">in line</span>
+          </span>
         </div>
       `;
     }
@@ -6697,7 +6950,7 @@
               ${digits.map((digit, index) => `<input class="hudi-flow-code-input" data-flow-code-index="${index}" inputmode="text" maxlength="1" value="${digit}" aria-label="Access code character ${index + 1}">`).join("")}
             </div>
             ${hudiFlowErrorBlock()}
-            <button class="hudi-flow-button is-primary" type="submit"${disabled}>unlock trading</button>
+            <button class="hudi-flow-button is-primary" type="submit"${disabled}><span class="hudi-flow-button-label">unlock trading</span></button>
             <button class="hudi-flow-secondary" type="button" data-flow-action="open-waitlist">join the waitlist instead</button>
           </form>
         `
@@ -6711,7 +6964,7 @@
         body: `
           <h3 class="hudi-flow-title">You have been tapped in</h3>
           <p class="hudi-flow-copy">${hudiEscapeHtml(referrer)} sent you an invite. Join the waitlist and both sides move up when your spot is claimed.</p>
-          <button class="hudi-flow-button is-primary" type="button" data-flow-action="open-waitlist">claim your spot</button>
+          <button class="hudi-flow-button is-primary" type="button" data-flow-action="open-waitlist"><span class="hudi-flow-button-label">claim your spot</span></button>
           <button class="hudi-flow-secondary" type="button" data-flow-action="open-access">i have an access code</button>
         `
       };
@@ -6727,8 +6980,8 @@
           <form class="hudi-flow-stack" data-flow-form="waitlist">
             <input class="hudi-flow-input" data-flow-email type="email" autocomplete="email" placeholder="you@example.com" value="${hudiEscapeHtml(hudiFlowState.email)}">
             ${hudiFlowErrorBlock()}
-            <button class="hudi-flow-button is-primary" type="submit"${disabled}>continue with email</button>
-            <button class="hudi-flow-button" type="button" data-flow-action="connect-wallet"${disabled}>connect sui wallet</button>
+            <button class="hudi-flow-button is-primary" type="submit"${disabled}><span class="hudi-flow-button-label">continue with email</span></button>
+            <button class="hudi-flow-button" type="button" data-flow-action="connect-wallet"${disabled}><span class="hudi-flow-button-label">connect sui wallet</span></button>
           </form>
         `
       };
@@ -6743,7 +6996,7 @@
           <h3 class="hudi-flow-title">Follow Hudi on X</h3>
           <p class="hudi-flow-copy">Follow @tradeonhudi to move up 100 spots. We will mark this step complete when you continue.</p>
           ${hudiFlowErrorBlock()}
-          <button class="hudi-flow-button is-primary" type="button" data-flow-action="follow-x"${hudiFlowState.busy ? " disabled" : ""}>follow on x</button>
+          <button class="hudi-flow-button is-primary" type="button" data-flow-action="follow-x"${hudiFlowState.busy ? " disabled" : ""}><span class="hudi-flow-button-label">follow on x</span></button>
           <button class="hudi-flow-secondary" type="button" data-flow-action="skip-to-telegram">skip for now</button>
         `
       };
@@ -6758,7 +7011,7 @@
           <h3 class="hudi-flow-title">Join the Telegram</h3>
           <p class="hudi-flow-copy">Join the Hudi chat for another 100 spot boost and early launch updates.</p>
           ${hudiFlowErrorBlock()}
-          <button class="hudi-flow-button is-primary" type="button" data-flow-action="join-telegram"${hudiFlowState.busy ? " disabled" : ""}>join telegram</button>
+          <button class="hudi-flow-button is-primary" type="button" data-flow-action="join-telegram"${hudiFlowState.busy ? " disabled" : ""}><span class="hudi-flow-button-label">join telegram</span></button>
           <button class="hudi-flow-secondary" type="button" data-flow-action="skip-to-share">skip for now</button>
         `
       };
@@ -6775,10 +7028,10 @@
           <p class="hudi-flow-copy">Each successful referral moves you up 500 spots, up to three referral boosts.</p>
           <div class="hudi-flow-referral-box">
             <span class="hudi-flow-referral-link">${hudiEscapeHtml(referralLink)}</span>
-            <button class="hudi-flow-button" type="button" data-flow-action="copy-referral">${hudiFlowState.copied ? "copied" : "copy"}</button>
+            <button class="hudi-flow-button" type="button" data-flow-action="copy-referral"><span class="hudi-flow-button-label">${hudiFlowState.copied ? "copied" : "copy"}</span></button>
           </div>
           ${hudiFlowErrorBlock()}
-          <button class="hudi-flow-button is-primary" type="button" data-flow-action="share-x">share on x</button>
+          <button class="hudi-flow-button is-primary" type="button" data-flow-action="share-x"><span class="hudi-flow-button-label">share on x</span></button>
         `
       };
     }
@@ -6790,7 +7043,7 @@
           ${hudiFlowPositionBlock()}
           <h3 class="hudi-flow-title">You are already on the list</h3>
           <p class="hudi-flow-copy">Keep sharing your referral link to climb the queue before launch.</p>
-          <button class="hudi-flow-button is-primary" type="button" data-flow-action="open-share">show referral link</button>
+          <button class="hudi-flow-button is-primary" type="button" data-flow-action="open-share"><span class="hudi-flow-button-label">show referral link</span></button>
         `
       };
     }
@@ -7008,7 +7261,7 @@
     [landingStartButton, landingFinalButton, document.querySelector(".market-copy-button")]
       .filter(Boolean)
       .forEach((button) => button.addEventListener("click", () => openHudiFlow("access")));
-    document.querySelector(".chat-copy-button")?.addEventListener("click", () => openHudiFlow("waitlist"));
+    document.querySelector(".chat-copy-button")?.addEventListener("click", () => openHudiFlow("access"));
     document.querySelector(".final-social-orb.is-twitter")?.addEventListener("click", () => hudiOpenExternal(hudiSocialLinks.x));
     document.querySelector(".final-social-orb.is-telegram")?.addEventListener("click", () => hudiOpenExternal(hudiSocialLinks.telegram));
 
