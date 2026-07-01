@@ -207,7 +207,7 @@ function ReferralStats({ referrals, referredUsers, followedX, joinedTelegram }) 
             <img
               key={`${user.walletAddress || "anon"}-${index}`}
               className="hudi-flow-mini-avatar"
-              src={`/hudi-pfp-${(index % 3) + 1}.png`}
+              src={`/assets/hudi-pfp-${(index % 3) + 1}.png`}
               alt=""
             />
           ))}

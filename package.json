@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
+    "postbuild": "node scripts/copy-static-assets.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
