@@ -3131,6 +3131,21 @@
 
   <script type="module">
     (async () => {
+    function stabilizeLandingStylesheetOrder() {
+      const landingStyle = document.getElementById("landing-style");
+      if (!landingStyle) return;
+
+      document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+        const href = link.getAttribute("href") || "";
+        const isLandingKitchenSheet = href.includes("landing-kitchen-sink") || /\/assets\/landing-[^/]+\.css(?:$|\?)/.test(href);
+        if (isLandingKitchenSheet && (link.compareDocumentPosition(landingStyle) & Node.DOCUMENT_POSITION_PRECEDING)) {
+          document.head.insertBefore(link, landingStyle);
+        }
+      });
+    }
+
+    stabilizeLandingStylesheetOrder();
+
     const landingMobileQuery = window.matchMedia?.("(max-width: 700px)");
     const isLandingMobile = landingMobileQuery?.matches ?? window.innerWidth <= 700;
     let THREE = null;
