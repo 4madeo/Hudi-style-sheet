@@ -114,6 +114,7 @@ function TickerOrb({ ticker, number, palette }: { ticker: string; number: string
   const tickerScale = Math.max(0.72, Math.min(1.68, 5 / Math.max(1, ticker.trim().length)));
   const shadow = hexToRgb(palette.shadow);
   const tickerInner = rgbToHex(mixRgb(hexToRgb(palette.base), { r: 255, g: 255, b: 255 }, 0.61));
+  const numberColour = rgbToHex(mixRgb(hexToRgb(palette.base), { r: 0, g: 0, b: 0 }, 0.18));
 
   return (
     <div
@@ -123,17 +124,13 @@ function TickerOrb({ ticker, number, palette }: { ticker: string; number: string
         "--orb-sheen": palette.sheen,
         "--orb-shadow": `rgba(${shadow.r}, ${shadow.g}, ${shadow.b}, .4)`,
         "--orb-ticker-inner": tickerInner,
+        "--orb-number-colour": numberColour,
         "--orb-ticker-scale": tickerScale,
       } as React.CSSProperties}
       aria-label={`${ticker} ${number}`}
     >
       <svg className="orb-number" viewBox="0 0 100 32" aria-hidden="true">
         <defs>
-          <radialGradient id="orb-number-gradient" cx="0" cy="0" r="1" gradientTransform="matrix(0 18 -40 0 50 -2)" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#95afff" />
-            <stop offset=".48" stopColor="#000925" />
-            <stop offset="1" stopColor="#000925" />
-          </radialGradient>
           <filter id="orb-text-inner" x="-10%" y="-40%" width="120%" height="180%" colorInterpolationFilters="sRGB">
             <feFlood floodOpacity="0" result="background" />
             <feBlend in="SourceGraphic" in2="background" result="shape" />
@@ -143,10 +140,7 @@ function TickerOrb({ ticker, number, palette }: { ticker: string; number: string
             <feBlend in2="shape" />
           </filter>
         </defs>
-        <path id="number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none" />
-        <text textAnchor="middle">
-          <textPath href="#number-curve" startOffset="50%">{number}</textPath>
-        </text>
+        <text x="50" y="23" textAnchor="middle">{number}</text>
       </svg>
 
       <svg className="orb-ticker" viewBox="0 0 100 38" role="img" aria-label={ticker}>
@@ -156,7 +150,8 @@ function TickerOrb({ ticker, number, palette }: { ticker: string; number: string
             <stop offset="1" stopColor={`color-mix(in srgb, ${palette.base} 8%, #03070e)`} />
           </linearGradient>
         </defs>
-        <text x="50" y="19" textAnchor="middle" dominantBaseline="middle" fill={whiteText ? "#fff" : "url(#orb-ticker-gradient)"}>{ticker}</text>
+        <text className="orb-ticker-chip" x="50" y="19" dy="-.5" textAnchor="middle" dominantBaseline="middle">{ticker}</text>
+        <text className="orb-ticker-face" x="50" y="19" textAnchor="middle" dominantBaseline="middle" fill={whiteText ? "#fff" : "url(#orb-ticker-gradient)"}>{ticker}</text>
       </svg>
     </div>
   );

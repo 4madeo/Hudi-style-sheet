@@ -101,7 +101,7 @@ input { font: inherit; }
 .orb-number {
   position: absolute;
   left: 22%;
-  top: -10px;
+  top: 12px;
   z-index: 2;
   width: 56%;
   height: 28%;
@@ -110,10 +110,11 @@ input { font: inherit; }
 }
 
 .orb-number text {
-  fill: url(#orb-number-gradient);
+  fill: var(--orb-number-colour);
   font-family: "OCRA Fixed", ui-monospace, monospace;
-  font-size: 10.4px;
+  font-size: 20.8px;
   letter-spacing: .06em;
+  filter: drop-shadow(0 -.35px 0 rgba(0, 0, 0, .12));
 }
 
 .orb-ticker {
@@ -134,9 +135,12 @@ input { font: inherit; }
   letter-spacing: -.01em;
 }
 
-.ticker-orb.is-auto-white .orb-number text {
-  fill: color-mix(in srgb, var(--orb-sheen) 35%, #334646);
-  filter: url(#orb-text-inner);
+.orb-ticker-chip {
+  fill: color-mix(in srgb, var(--orb-base) 38%, #000 62%);
+}
+
+.orb-ticker-face {
+  text-shadow: 0 -.5px 0 rgba(0, 0, 0, .25);
 }
 
 .orb-controls {
