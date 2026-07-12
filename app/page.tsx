@@ -131,16 +131,22 @@ function TickerOrb({ ticker, number, palette }: { ticker: string; number: string
     >
       <svg className="orb-number" viewBox="0 0 100 32" aria-hidden="true">
         <defs>
-          <filter id="orb-text-inner" x="-10%" y="-40%" width="120%" height="180%" colorInterpolationFilters="sRGB">
+          <filter id="orb-number-inner" x="-15%" y="-45%" width="130%" height="190%" colorInterpolationFilters="sRGB">
             <feFlood floodOpacity="0" result="background" />
             <feBlend in="SourceGraphic" in2="background" result="shape" />
-            <feOffset dy=".55" />
-            <feGaussianBlur stdDeviation=".7" />
-            <feComposite in2="shape" operator="in" />
-            <feBlend in2="shape" />
+            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+            <feOffset dy=".45" />
+            <feGaussianBlur stdDeviation=".38" />
+            <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" result="innerAlpha" />
+            <feFlood floodColor="#000" floodOpacity=".22" result="innerTint" />
+            <feComposite in="innerTint" in2="innerAlpha" operator="in" result="innerShadow" />
+            <feBlend in="innerShadow" in2="shape" />
           </filter>
         </defs>
-        <text x="50" y="23" textAnchor="middle">{number}</text>
+        <path id="number-curve" d="M 12 26 A 95 95 0 0 1 88 26" fill="none" />
+        <text textAnchor="middle">
+          <textPath href="#number-curve" startOffset="50%">{number}</textPath>
+        </text>
       </svg>
 
       <svg className="orb-ticker" viewBox="0 0 100 38" role="img" aria-label={ticker}>
@@ -150,7 +156,7 @@ function TickerOrb({ ticker, number, palette }: { ticker: string; number: string
             <stop offset="1" stopColor={`color-mix(in srgb, ${palette.base} 8%, #03070e)`} />
           </linearGradient>
         </defs>
-        <text className="orb-ticker-chip" x="50" y="19" dy="-.5" textAnchor="middle" dominantBaseline="middle">{ticker}</text>
+        <text className="orb-ticker-chip" x="50" y="19" dy={whiteText ? "-.5" : ".5"} textAnchor="middle" dominantBaseline="middle">{ticker}</text>
         <text className="orb-ticker-face" x="50" y="19" textAnchor="middle" dominantBaseline="middle" fill={whiteText ? "#fff" : "url(#orb-ticker-gradient)"}>{ticker}</text>
       </svg>
     </div>
