@@ -2,92 +2,228 @@
 
 import { useMemo, useState } from "react";
 
-type Palette = { name: string; base: string; sheen: string; shadow: string };
+type RGB = { r: number; g: number; b: number };
+type HSL = { h: number; s: number; l: number };
+type Palette = { colour: string; base: string; sheen: string; shadow: string };
 
-const presets: Palette[] = [
-  { name: "Blue", base: "#00c8ff", sheen: "#00ffd5", shadow: "#0040b0" },
-  { name: "Pink", base: "#ff00c8", sheen: "#ff7dec", shadow: "#860062" },
-  { name: "Yellow", base: "#ffe100", sheen: "#ffff86", shadow: "#9e7600" },
-  { name: "Green", base: "#00f0b0", sheen: "#9bffdf", shadow: "#00845c" },
-];
-
-const sizes = [
-  { name: "big", px: 240 },
-  { name: "medium", px: 120 },
-  { name: "small", px: 43.2 },
-  { name: "tiny", px: 21.6 },
-];
-
-function hexToRgb(hex: string) {
+function hexToRgb(hex: string): RGB {
   const value = hex.replace("#", "");
-  return { r: parseInt(value.slice(0, 2), 16), g: parseInt(value.slice(2, 4), 16), b: parseInt(value.slice(4, 6), 16) };
+  return {
+    r: parseInt(value.slice(0, 2), 16),
+    g: parseInt(value.slice(2, 4), 16),
+    b: parseInt(value.slice(4, 6), 16),
+  };
 }
 
-function mixWithWhite(hex: string, amount = 0.61) {
-  const { r, g, b } = hexToRgb(hex);
-  return `rgb(${Math.round(r + (255 - r) * amount)}, ${Math.round(g + (255 - g) * amount)}, ${Math.round(b + (255 - b) * amount)})`;
+function rgbToHex({ r, g, b }: RGB) {
+  const channel = (value: number) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, "0");
+  return `#${channel(r)}${channel(g)}${channel(b)}`;
 }
 
-function Orb({ size, ticker, number, palette }: { size: number; ticker: string; number: string; palette: Palette }) {
-  const id = `${size}-${ticker}-${number}`.replace(/[^a-zA-Z0-9-]/g, "");
-  const tickerScale = Math.max(0.72, Math.min(1.68, 5 / Math.max(1, ticker.length)));
+function mixRgb(a: RGB, b: RGB, amount: number): RGB {
+  return {
+    r: a.r + (b.r - a.r) * amount,
+    g: a.g + (b.g - a.g) * amount,
+    b: a.b + (b.b - a.b) * amount,
+  };
+}
+
+function rgbToHsl({ r, g, b }: RGB): HSL {
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  if (max === min) return { h: 0, s: 0, l };
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  const h = max === r
+    ? (g - b) / d + (g < b ? 6 : 0)
+    : max === g
+      ? (b - r) / d + 2
+      : (r - g) / d + 4;
+  return { h: h * 60, s, l };
+}
+
+function hslToRgb({ h, s, l }: HSL): RGB {
+  const hueToRgb = (p: number, q: number, t: number) => {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1 / 6) return p + (q - p) * 6 * t;
+    if (t < 1 / 2) return q;
+    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    return p;
+  };
+  h = ((h % 360) + 360) % 360 / 360;
+  if (s === 0) {
+    const value = l * 255;
+    return { r: value, g: value, b: value };
+  }
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+  return {
+    r: hueToRgb(p, q, h + 1 / 3) * 255,
+    g: hueToRgb(p, q, h) * 255,
+    b: hueToRgb(p, q, h - 1 / 3) * 255,
+  };
+}
+
+function shiftHueToward(hue: number, target: number, amount: number) {
+  const delta = ((((target - hue) % 360) + 540) % 360) - 180;
+  return hue + delta * amount;
+}
+
+function deriveOrbPalette(colour: string): Palette {
+  const hsl = rgbToHsl(hexToRgb(colour));
+  const sourceHue = hsl.s > 0.03 ? hsl.h : 196;
+  const sourceSaturation = Math.max(hsl.s, hsl.s > 0.03 ? hsl.s : 0.48);
+  const sheen = hslToRgb({
+    h: shiftHueToward(sourceHue, 55, 0.21),
+    s: Math.max(0.28, Math.min(0.96, sourceSaturation * 0.9 + 0.1)),
+    l: Math.min(0.88, hsl.l + 0.3),
+  });
+  const shadow = hslToRgb({
+    h: shiftHueToward(sourceHue, 235, 0.12),
+    s: Math.min(1, sourceSaturation * 1.36 + 0.14),
+    l: Math.max(0.2, Math.min(0.48, hsl.l * 0.66)),
+  });
+  return { colour, base: colour, sheen: rgbToHex(sheen), shadow: rgbToHex(shadow) };
+}
+
+function relativeLuminance({ r, g, b }: RGB) {
+  const linear = (value: number) => {
+    value /= 255;
+    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  };
+  return linear(r) * 0.2126 + linear(g) * 0.7152 + linear(b) * 0.0722;
+}
+
+function contrastRatio(a: string, b: string) {
+  const first = relativeLuminance(hexToRgb(a));
+  const second = relativeLuminance(hexToRgb(b));
+  return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+}
+
+function useWhiteText(base: string, sheen: string) {
+  return Math.min(contrastRatio(base, "#506868"), contrastRatio(sheen, "#506868")) < 3;
+}
+
+function TickerOrb({ ticker, number, palette }: { ticker: string; number: string; palette: Palette }) {
+  const whiteText = useWhiteText(palette.base, palette.sheen);
+  const tickerScale = Math.max(0.72, Math.min(1.68, 5 / Math.max(1, ticker.trim().length)));
+  const shadow = hexToRgb(palette.shadow);
+  const tickerInner = rgbToHex(mixRgb(hexToRgb(palette.base), { r: 255, g: 255, b: 255 }, 0.61));
+
   return (
     <div
-      className="orb"
+      className={`ticker-orb${whiteText ? " is-auto-white" : ""}`}
       style={{
-        "--orb-size": `${size}px`,
         "--orb-base": palette.base,
         "--orb-sheen": palette.sheen,
-        "--orb-shadow": palette.shadow,
-        "--orb-inner": mixWithWhite(palette.base),
-        "--ticker-scale": tickerScale,
+        "--orb-shadow": `rgba(${shadow.r}, ${shadow.g}, ${shadow.b}, .4)`,
+        "--orb-ticker-inner": tickerInner,
+        "--orb-ticker-scale": tickerScale,
       } as React.CSSProperties}
+      aria-label={`${ticker} ${number}`}
     >
       <svg className="orb-number" viewBox="0 0 100 32" aria-hidden="true">
-        <path id={`curve-${id}`} d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none" />
-        <text textAnchor="middle"><textPath href={`#curve-${id}`} startOffset="50%">{number}</textPath></text>
+        <defs>
+          <radialGradient id="orb-number-gradient" cx="0" cy="0" r="1" gradientTransform="matrix(0 18 -40 0 50 -2)" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#95afff" />
+            <stop offset=".48" stopColor="#000925" />
+            <stop offset="1" stopColor="#000925" />
+          </radialGradient>
+          <filter id="orb-text-inner" x="-10%" y="-40%" width="120%" height="180%" colorInterpolationFilters="sRGB">
+            <feFlood floodOpacity="0" result="background" />
+            <feBlend in="SourceGraphic" in2="background" result="shape" />
+            <feOffset dy=".55" />
+            <feGaussianBlur stdDeviation=".7" />
+            <feComposite in2="shape" operator="in" />
+            <feBlend in2="shape" />
+          </filter>
+        </defs>
+        <path id="number-curve" d="M 27 24 A 57.5 57.5 0 0 1 73 24" fill="none" />
+        <text textAnchor="middle">
+          <textPath href="#number-curve" startOffset="50%">{number}</textPath>
+        </text>
       </svg>
-      <span className="orb-ticker">{ticker}</span>
+
+      <svg className="orb-ticker" viewBox="0 0 100 38" role="img" aria-label={ticker}>
+        <defs>
+          <linearGradient id="orb-ticker-gradient" x1="50" y1="12" x2="50" y2="28" gradientUnits="userSpaceOnUse">
+            <stop stopColor={`color-mix(in srgb, ${palette.base} 14%, #101722)`} />
+            <stop offset="1" stopColor={`color-mix(in srgb, ${palette.base} 8%, #03070e)`} />
+          </linearGradient>
+        </defs>
+        <text x="50" y="19" textAnchor="middle" dominantBaseline="middle" fill={whiteText ? "#fff" : "url(#orb-ticker-gradient)"}>{ticker}</text>
+      </svg>
     </div>
   );
 }
 
 export default function Home() {
-  const [ticker, setTicker] = useState("ABCDE");
-  const [number, setNumber] = useState("1234");
-  const [palette, setPalette] = useState<Palette>(presets[0]);
-  const [copied, setCopied] = useState(false);
-  const css = useMemo(() => `.hudi-stock-orb {\n  --orb-base: ${palette.base};\n  --orb-sheen: ${palette.sheen};\n  --orb-shadow: rgba(${Object.values(hexToRgb(palette.shadow)).join(", ")}, .4);\n  --orb-size: 120px; /* 240 / 120 / 43.2 / 21.6 */\n}`, [palette]);
+  const [ticker, setTicker] = useState("NTNDO");
+  const [number, setNumber] = useState("3325");
+  const [palette, setPalette] = useState<Palette>(() => deriveOrbPalette("#ec009e"));
+  const swatches = useMemo(() => [
+    { key: "colour" as const, label: "colour" },
+    { key: "base" as const, label: "base" },
+    { key: "sheen" as const, label: "sheen" },
+    { key: "shadow" as const, label: "shadow" },
+  ], []);
 
-  const setColor = (key: "base" | "sheen" | "shadow", value: string) => setPalette((current) => ({ ...current, name: "Custom", [key]: value }));
-  const copyCss = async () => { await navigator.clipboard.writeText(css); setCopied(true); window.setTimeout(() => setCopied(false), 1400); };
+  const updateColour = (colour: string) => setPalette(deriveOrbPalette(colour));
+  const updateToken = (key: "base" | "sheen" | "shadow", value: string) => {
+    setPalette((current) => ({ ...current, [key]: value }));
+  };
 
   return (
-    <main>
-      <header className="site-header"><a className="brand" href="#top">HUDI / ORB</a><span>isolated generator · v1</span></header>
-      <section className="hero" id="top">
-        <div><p className="eyebrow">KITCHEN SINK / TICKER ORBS</p><h1>Orb generator</h1><p className="intro">Create Hudi ticker orbs with the original material, palette logic, typography treatment, and all four canonical sizes.</p></div>
-        <button className="copy-button" onClick={copyCss}>{copied ? "Copied" : "Copy current CSS"}</button>
+    <main className="generator-shell">
+      <section className="orb-stage" aria-label="Ticker orb preview">
+        <TickerOrb ticker={ticker || " "} number={number || " "} palette={palette} />
       </section>
 
-      <section className="workspace" aria-label="Orb generator">
-        <div className="preview-panel">
-          <div className="panel-label"><span>LIVE PREVIEW</span><span>4 SIZES</span></div>
-          <div className="orb-grid">
-            {sizes.map((size) => <div className={`orb-sample ${size.name}`} key={size.name}><span className="size-name">{size.name}</span><Orb size={size.px} ticker={ticker} number={number} palette={palette} /><span className="size-value">{size.px}px</span></div>)}
-          </div>
+      <section className="orb-controls" aria-label="Orb controls">
+        <p className="colours-label">colours</p>
+        <div className="swatch-grid">
+          {swatches.map(({ key, label }) => (
+            <label className="swatch-control" key={key}>
+              <span className="swatch" style={{ backgroundColor: palette[key] }}>
+                <input
+                  type="color"
+                  value={palette[key]}
+                  aria-label={`${label} colour`}
+                  onChange={(event) => key === "colour" ? updateColour(event.target.value) : updateToken(key, event.target.value)}
+                />
+              </span>
+              <span>{label}</span>
+            </label>
+          ))}
         </div>
 
-        <aside className="controls">
-          <div className="control-block"><p className="control-title">PALETTE</p><div className="presets">{presets.map((preset) => <button key={preset.name} className="preset" aria-label={`${preset.name} orb`} aria-pressed={palette.name === preset.name} onClick={() => setPalette(preset)} style={{ "--preset-base": preset.base, "--preset-sheen": preset.sheen } as React.CSSProperties} />)}</div></div>
-          <div className="field-row"><label><span>TICKER</span><input value={ticker} maxLength={7} onChange={(e) => setTicker(e.target.value.toUpperCase().replace(/\s/g, ""))} /></label><label><span>NUMBER</span><input value={number} maxLength={8} onChange={(e) => setNumber(e.target.value.replace(/\s/g, ""))} /></label></div>
-          <div className="control-block"><p className="control-title">MATERIAL TOKENS</p>{(["base", "sheen", "shadow"] as const).map((key) => <label className="color-row" key={key}><span><i style={{ background: palette[key] }} />--orb-{key}</span><code>{palette[key]}</code><input type="color" value={palette[key]} onChange={(e) => setColor(key, e.target.value)} /></label>)}</div>
-          <div className="token-note"><span>SHADOW ALPHA</span><code>40%</code></div>
-          <div className="token-note"><span>TEXT INNER MIX</span><code>base + white 61%</code></div>
-        </aside>
+        <div className="text-controls">
+          <label className="text-control">
+            <span>ticker:</span>
+            <input
+              value={ticker}
+              maxLength={7}
+              aria-label="Ticker"
+              onChange={(event) => setTicker(event.target.value.toUpperCase().replace(/\s/g, ""))}
+            />
+          </label>
+          <label className="text-control">
+            <span>number:</span>
+            <input
+              value={number}
+              maxLength={8}
+              aria-label="Number"
+              inputMode="numeric"
+              onChange={(event) => setNumber(event.target.value.replace(/\s/g, ""))}
+            />
+          </label>
+        </div>
       </section>
-
-      <footer><span>Adapted from 4madeo / Hudi-style-sheet</span><a href="https://github.com/4madeo/Hudi-style-sheet" target="_blank" rel="noreferrer">View source ↗</a></footer>
     </main>
   );
 }

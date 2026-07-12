@@ -40,3 +40,8 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+
+# Diatype Trial is licensed for local evaluation only. Replace with licensed
+# webfont files before a public deployment.
+/public/fonts/diatype-expanded-bold.otf
+/public/fonts/diatype-regular.otf
