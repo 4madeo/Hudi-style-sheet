@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   TickerOrb,
   createMarketOrbDefinition,
   deriveOrbPalette,
   type OrbPalette,
 } from "@/components/orb";
+import { CompanyHeader, type CompanyHeaderStat } from "@/components/header";
 import { hslToHex } from "@/components/orb/color";
 import { listings } from "./listings";
 
-type View = "generator" | "listings" | "blotter";
+type View = "generator" | "listings" | "blotter" | "header";
 type Position = {
   side: "LONG" | "SHORT";
   size: number;
@@ -140,7 +141,42 @@ function marketLabel(market: GalleryOrb["market"]) {
   return "HKEX";
 }
 
+function galleryKey(item: Pick<GalleryOrb, "market" | "exchangeTicker">) {
+  return `${item.market}-${item.exchangeTicker}`;
+}
+
+function formatSignedCurrency(value: number) {
+  const sign = value >= 0 ? "+" : "−";
+  return `${sign}$${Math.abs(value).toFixed(2)}`;
+}
+
+function createHeaderStats(item: GalleryOrb, position: Position): CompanyHeaderStat[] {
+  const hash = listingHash(`${item.market}-${item.exchangeTicker}-header`);
+  const indexOffset = (((hash >>> 3) % 121) - 60) / 10000;
+  const index = position.mark * (1 + indexOffset);
+  const volume = 18 + ((hash >>> 9) % 1250) / 10;
+  const openInterest = 90 + ((hash >>> 16) % 5200) / 10;
+  const funding = (((hash >>> 23) % 61) - 30) / 1000;
+  return [
+    { label: "Mark", value: `$${position.mark.toFixed(2)}` },
+    { label: "Index", value: `$${index.toFixed(2)}` },
+    { label: "24h Vol", value: `$${volume.toFixed(1)}M` },
+    { label: "Open Interest", value: `${openInterest.toFixed(1)}M` },
+    { label: "Funding", value: `${funding >= 0 ? "+" : "−"}${Math.abs(funding).toFixed(3)}%` },
+  ];
+}
+
+function createHeaderChange(item: GalleryOrb, mark: number) {
+  const seed = listingHash(`${item.exchangeTicker}-daily`) % 901;
+  const percent = (seed - 300) / 20;
+  return {
+    amount: mark * (percent / 100),
+    percent,
+  };
+}
+
 type OrbDraft = OrbPalette & { ticker: string; number: string };
+type StoredOrbDraft = Partial<OrbDraft> & { key?: string };
 const galleryStorageKey = "hudi-gallery-orbs-v1";
 const themeStorageKey = "hudi-orb-theme";
 const marketPaletteStorageKey = "hudi-gallery-market-palette-v1";
@@ -149,16 +185,24 @@ function storedColour(value: unknown, fallback: string) {
   return typeof value === "string" && /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
 }
 
-function Blotter({ items, positions }: { items: GalleryOrb[]; positions: Position[] }) {
+type BlotterProps = {
+  items: GalleryOrb[];
+  positions: Position[];
+  selectedKey?: string;
+  onSelect?: (item: GalleryOrb) => void;
+};
+
+function Blotter({ items, positions, selectedKey, onSelect }: BlotterProps) {
+  const isPicker = Boolean(onSelect);
   return (
-    <section className="blotter-page" aria-label="Orb positions blotter">
-      <h1 className="visually-hidden">Orb positions blotter</h1>
+    <section className={`blotter-page${isPicker ? " is-picker" : ""}`} aria-label={isPicker ? "Choose a ticker from the blotter" : "Orb positions blotter"}>
+      <h1 className="visually-hidden">{isPicker ? "Choose a ticker" : "Orb positions blotter"}</h1>
       <div className="blotter-window">
         <div className="blotter-tabs" role="tablist" aria-label="Blotter sections">
           <button type="button" role="tab" aria-selected="true">Positions</button>
-          <button type="button" role="tab" aria-selected="false">Orders</button>
-          <button type="button" role="tab" aria-selected="false">Funding</button>
-          <button type="button" role="tab" aria-selected="false">History</button>
+          <button type="button" role="tab" aria-selected="false" disabled>Orders</button>
+          <button type="button" role="tab" aria-selected="false" disabled>Funding</button>
+          <button type="button" role="tab" aria-selected="false" disabled>History</button>
         </div>
         <div className="blotter-scroll">
           <table className="blotter-table">
@@ -181,16 +225,37 @@ function Blotter({ items, positions }: { items: GalleryOrb[]; positions: Positio
                 const pnl = (position.mark - position.entry) * position.size * direction;
                 const pnlPercent = ((position.mark - position.entry) / position.entry) * 100 * position.leverage * direction;
                 const pnlClass = pnl >= 0 ? "is-positive" : "is-negative";
+                const itemKey = galleryKey(item);
+                const asset = (
+                  <>
+                    <div className="blotter-asset-orb" aria-hidden="true">
+                      <TickerOrb ticker={item.ticker} number={item.number} palette={item.palette} size={24} compact decorative />
+                    </div>
+                    <span className="blotter-company">{item.company}</span>
+                    <span className="blotter-market">{marketLabel(item.market)}</span>
+                  </>
+                );
                 return (
-                  <tr key={`${item.market}-${item.exchangeTicker}`}>
+                  <tr
+                    className={isPicker ? "is-selectable" : undefined}
+                    data-selected={selectedKey === itemKey || undefined}
+                    key={itemKey}
+                    onClick={isPicker ? () => onSelect?.(item) : undefined}
+                  >
                     <td>
-                      <div className="blotter-asset">
-                        <div className="blotter-asset-orb" aria-hidden="true">
-                          <TickerOrb ticker={item.ticker} number={item.number} palette={item.palette} size={24} compact decorative />
-                        </div>
-                        <span className="blotter-company">{item.company}</span>
-                        <span className="blotter-market">{marketLabel(item.market)}</span>
-                      </div>
+                      {isPicker ? (
+                        <button
+                          className="blotter-asset blotter-asset-select"
+                          type="button"
+                          aria-label={`Use ${item.company}`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onSelect?.(item);
+                          }}
+                        >
+                          {asset}
+                        </button>
+                      ) : <div className="blotter-asset">{asset}</div>}
                     </td>
                     <td><span className={`blotter-pill is-${position.side.toLowerCase()}`}>{position.side}</span></td>
                     <td className="is-number">{position.size.toFixed(2)}</td>
@@ -201,7 +266,18 @@ function Blotter({ items, positions }: { items: GalleryOrb[]; positions: Positio
                       <span>{pnl.toFixed(2)}</span>
                       <span>{pnlPercent.toFixed(1)}%</span>
                     </td>
-                    <td><button className="blotter-close" type="button">Close</button></td>
+                    <td>
+                      <button
+                        className="blotter-close"
+                        type="button"
+                        onClick={isPicker ? (event) => {
+                          event.stopPropagation();
+                          onSelect?.(item);
+                        } : undefined}
+                      >
+                        {isPicker ? "Select" : "Close"}
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -210,6 +286,56 @@ function Blotter({ items, positions }: { items: GalleryOrb[]; positions: Positio
         </div>
       </div>
     </section>
+  );
+}
+
+function HeaderTickerSelector({
+  items,
+  positions,
+  selectedKey,
+  onSelect,
+  onClose,
+}: BlotterProps & { selectedKey: string; onSelect: (item: GalleryOrb) => void; onClose: () => void }) {
+  const dialogRef = useRef<HTMLElement>(null);
+
+  const keepFocusInDialog = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key !== "Tab" || !dialogRef.current) return;
+    const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    )).filter((element) => !element.hidden);
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
+  return (
+    <div className="header-selector-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <section
+        ref={dialogRef}
+        className="header-selector-dialog"
+        id="header-ticker-selector"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="header-selector-title"
+        onKeyDown={keepFocusInDialog}
+      >
+        <header className="header-selector-heading">
+          <div>
+            <p>market universe</p>
+            <h2 id="header-selector-title">select ticker</h2>
+          </div>
+          <button type="button" autoFocus onClick={onClose} aria-label="Close ticker selector">×</button>
+        </header>
+        <Blotter items={items} positions={positions} selectedKey={selectedKey} onSelect={onSelect} />
+      </section>
+    </div>
   );
 }
 
@@ -222,6 +348,9 @@ export default function Home() {
   const [galleryItems, setGalleryItems] = useState(initialGalleryOrbs);
   const [positions, setPositions] = useState<Position[]>(() => initialGalleryOrbs.map(createPosition));
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [selectedHeaderKey, setSelectedHeaderKey] = useState("KR-005930");
+  const [headerPickerOpen, setHeaderPickerOpen] = useState(false);
+  const headerPickerTriggerRef = useRef<HTMLButtonElement>(null);
   const [draft, setDraft] = useState<OrbDraft>({
     ticker: "",
     number: "",
@@ -239,6 +368,14 @@ export default function Home() {
     { key: "sheen" as const, label: "sheen" },
     { key: "shadow" as const, label: "shadow" },
   ], []);
+  const selectedHeaderIndex = Math.max(0, galleryItems.findIndex((item) => galleryKey(item) === selectedHeaderKey));
+  const selectedHeaderItem = galleryItems[selectedHeaderIndex] ?? initialGalleryOrbs[0];
+  const selectedHeaderPosition = positions[selectedHeaderIndex] ?? createPosition(selectedHeaderItem, selectedHeaderIndex);
+  const selectedHeaderChange = createHeaderChange(selectedHeaderItem, selectedHeaderPosition.mark);
+  const selectedHeaderStats = useMemo(
+    () => createHeaderStats(selectedHeaderItem, selectedHeaderPosition),
+    [selectedHeaderItem, selectedHeaderPosition],
+  );
 
   const updateColour = (colour: string) => setPalette(deriveOrbPalette(colour));
   const updateToken = (key: "base" | "sheen" | "shadow", value: string) => {
@@ -246,7 +383,14 @@ export default function Home() {
   };
   const changeView = (nextView: View) => {
     setView(nextView);
-    const hash = nextView === "listings" ? "#tickers" : nextView === "blotter" ? "#blotter" : "#generator";
+    setHeaderPickerOpen(false);
+    const hashes: Record<View, string> = {
+      generator: "#generator",
+      listings: "#tickers",
+      blotter: "#blotter",
+      header: "#header",
+    };
+    const hash = hashes[nextView];
     window.history.replaceState(null, "", hash);
   };
   const toggleTheme = () => {
@@ -261,6 +405,10 @@ export default function Home() {
     setEditingIndex(index);
   };
   const closeEditor = () => setEditingIndex(null);
+  const closeHeaderPicker = () => {
+    setHeaderPickerOpen(false);
+    window.requestAnimationFrame(() => headerPickerTriggerRef.current?.focus());
+  };
   const updateDraftColour = (key: keyof OrbPalette, colour: string) => {
     setDraft((current) => key === "colour"
       ? { ...current, ...deriveOrbPalette(colour) }
@@ -275,6 +423,7 @@ export default function Home() {
       : item);
     setGalleryItems(nextItems);
     window.localStorage.setItem(galleryStorageKey, JSON.stringify(nextItems.map((item) => ({
+      key: galleryKey(item),
       ticker: item.ticker,
       number: item.number,
       colour: item.palette.colour,
@@ -285,19 +434,25 @@ export default function Home() {
     closeEditor();
   };
 
+  /* eslint-disable react-hooks/set-state-in-effect -- this mount pass hydrates browser URL and persisted UI state. */
   useEffect(() => {
     if (window.location.hash === "#tickers") setView("listings");
     if (window.location.hash === "#blotter") setView("blotter");
+    if (window.location.hash === "#header") setView("header");
     const storedTheme = window.localStorage.getItem(themeStorageKey) === "dark" ? "dark" : "light";
     setTheme(storedTheme);
     document.documentElement.dataset.theme = storedTheme;
 
     try {
-      const storedOrbs = JSON.parse(window.localStorage.getItem(galleryStorageKey) || "[]") as Partial<OrbDraft>[];
+      const storedOrbs = JSON.parse(window.localStorage.getItem(galleryStorageKey) || "[]") as StoredOrbDraft[];
       const shouldApplyMarketPalette = window.localStorage.getItem(marketPaletteStorageKey) !== "1";
       if (Array.isArray(storedOrbs)) {
+        const storedByKey = new Map(storedOrbs.flatMap((stored) => (
+          typeof stored.key === "string" ? [[stored.key, stored] as const] : []
+        )));
+        const hasStableKeys = storedByKey.size > 0;
         const restoredItems = initialGalleryOrbs.map((item, index) => {
-          const stored = storedOrbs[index];
+          const stored = storedByKey.get(galleryKey(item)) ?? (!hasStableKeys ? storedOrbs[index] : undefined);
           if (!stored || typeof stored.ticker !== "string" || typeof stored.number !== "string" || typeof stored.colour !== "string") return item;
           const derived = deriveOrbPalette(stored.colour);
           const storedPalette = {
@@ -327,6 +482,7 @@ export default function Home() {
         });
         setGalleryItems(restoredItems);
         window.localStorage.setItem(galleryStorageKey, JSON.stringify(restoredItems.map((item) => ({
+          key: galleryKey(item),
           ticker: item.ticker,
           number: item.number,
           colour: item.palette.colour,
@@ -340,9 +496,10 @@ export default function Home() {
       window.localStorage.removeItem(galleryStorageKey);
     }
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
-    if (view !== "blotter") return;
+    if (view !== "blotter" && view !== "header") return;
     const interval = window.setInterval(() => {
       setPositions((current) => current.map((position) => ({
         ...position,
@@ -353,10 +510,16 @@ export default function Home() {
   }, [view]);
 
   useEffect(() => {
-    if (editingIndex === null) return;
+    if (editingIndex === null && !headerPickerOpen) return;
     const previousOverflow = document.body.style.overflow;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeEditor();
+      if (event.key === "Escape") {
+        setEditingIndex(null);
+        setHeaderPickerOpen(false);
+        if (headerPickerOpen) {
+          window.requestAnimationFrame(() => headerPickerTriggerRef.current?.focus());
+        }
+      }
     };
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", handleKeyDown);
@@ -364,14 +527,15 @@ export default function Home() {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [editingIndex]);
+  }, [editingIndex, headerPickerOpen]);
 
   return (
-    <main className={`generator-shell${view === "listings" ? " is-listings-view" : ""}${view === "blotter" ? " is-blotter-view" : ""}`}>
+    <main className={`generator-shell${view === "listings" ? " is-listings-view" : ""}${view === "blotter" ? " is-blotter-view" : ""}${view === "header" ? " is-header-view" : ""}`}>
       <nav className="view-toggle" aria-label="Orb page">
         <button type="button" aria-pressed={view === "generator"} onClick={() => changeView("generator")}>generator</button>
         <button type="button" aria-pressed={view === "listings"} onClick={() => changeView("listings")}>tickers</button>
         <button type="button" aria-pressed={view === "blotter"} onClick={() => changeView("blotter")}>blotter</button>
+        <button type="button" aria-pressed={view === "header"} onClick={() => changeView("header")}>header</button>
         <button type="button" aria-pressed={theme === "dark"} onClick={toggleTheme}>dark</button>
       </nav>
 
@@ -446,6 +610,39 @@ export default function Home() {
       )}
 
       {view === "blotter" && <Blotter items={galleryItems} positions={positions} />}
+
+      {view === "header" && (
+        <section className="header-page" aria-label="Selected ticker header preview">
+          <CompanyHeader
+            company={selectedHeaderItem.company}
+            market={marketLabel(selectedHeaderItem.market)}
+            ticker={selectedHeaderItem.ticker}
+            number={selectedHeaderItem.number}
+            palette={selectedHeaderItem.palette}
+            price={`$${selectedHeaderPosition.mark.toFixed(2)}`}
+            change={formatSignedCurrency(selectedHeaderChange.amount)}
+            changePercent={`${selectedHeaderChange.percent >= 0 ? "+" : "−"}${Math.abs(selectedHeaderChange.percent).toFixed(1)}%`}
+            changePositive={selectedHeaderChange.percent >= 0}
+            stats={selectedHeaderStats}
+            pickerOpen={headerPickerOpen}
+            pickerButtonRef={headerPickerTriggerRef}
+            onOpenPicker={() => setHeaderPickerOpen(true)}
+          />
+        </section>
+      )}
+
+      {headerPickerOpen && (
+        <HeaderTickerSelector
+          items={galleryItems}
+          positions={positions}
+          selectedKey={galleryKey(selectedHeaderItem)}
+          onClose={closeHeaderPicker}
+          onSelect={(item) => {
+            setSelectedHeaderKey(galleryKey(item));
+            closeHeaderPicker();
+          }}
+        />
+      )}
 
       {editingIndex !== null && (
         <div className="orb-modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && closeEditor()}>

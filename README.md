@@ -3,7 +3,7 @@
 A Next.js reference app and reusable React orb module based on the ticker-orb system from
 [4madeo/Hudi-style-sheet](https://github.com/4madeo/Hudi-style-sheet).
 
-The generator, ticker gallery and blotter all render the same stateless `TickerOrb` component. Palette generation, market colour rules, contrast, light/dark material order and orb geometry live in `components/orb`; persistence and editing remain app concerns.
+The generator, ticker gallery, blotter and market header all render the same stateless `TickerOrb` component. Palette generation, market colour rules, contrast, light/dark material order and orb geometry live in `components/orb`; persistence, selection and editing remain app concerns.
 
 ## Local development
 
@@ -83,3 +83,5 @@ Applications can override all four colour tokens when art direction requires it.
 ```
 
 See [the orb integration reference](components/orb/README.md) for the complete API, token surface, theme contract and font setup.
+
+The `#header` reference view also exports its 784×65 visual shell as `CompanyHeader`. The app-level dropdown demonstrates how to connect it to a scrollable ticker selector without coupling the component to this demo dataset. See [the header integration reference](components/header/README.md).

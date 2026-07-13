@@ -111,6 +111,23 @@ input { font: inherit; }
   padding: 96px 26px 54px;
 }
 
+.generator-shell.is-header-view {
+  width: min(100%, 1120px);
+  min-height: 100vh;
+  padding: 96px 26px 54px;
+}
+
+.header-page {
+  width: 100%;
+  padding-bottom: 14px;
+  overflow-x: auto;
+  scrollbar-color: color-mix(in srgb, var(--interface) 38%, transparent) transparent;
+}
+
+.header-page .company-header {
+  margin-left: auto;
+}
+
 .listings-gallery {
   --gallery-orb-size: 136px;
   width: 100%;
@@ -190,6 +207,10 @@ input { font: inherit; }
   font-size: 12px;
   font-weight: 510;
   letter-spacing: -.02em;
+}
+
+.blotter-tabs button:disabled {
+  cursor: default;
 }
 
 .blotter-tabs button[aria-selected="true"] {
@@ -287,6 +308,18 @@ input { font: inherit; }
   background: color-mix(in srgb, var(--blotter-row) 92%, var(--blotter-copy));
 }
 
+.blotter-page.is-picker .blotter-table tr.is-selectable {
+  cursor: pointer;
+}
+
+.blotter-page.is-picker .blotter-table tr[data-selected="true"] td {
+  background: color-mix(in srgb, var(--blotter-row) 78%, #00c493);
+}
+
+.blotter-page.is-picker .blotter-table tr[data-selected="true"] td:first-child {
+  box-shadow: inset 3px 0 0 #00c493;
+}
+
 .blotter-table .is-number {
   font-family: "Diatype", Arial, sans-serif;
   font-variant-numeric: tabular-nums;
@@ -300,6 +333,24 @@ input { font: inherit; }
   align-items: center;
   gap: 8px;
   min-width: 0;
+}
+
+.blotter-asset-select {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.blotter-asset-select:focus-visible {
+  border-radius: 6px;
+  outline: 2px solid #00c493;
+  outline-offset: 3px;
 }
 
 .blotter-asset-orb {
@@ -462,6 +513,85 @@ input { font: inherit; }
 .blotter-tabs button:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
+}
+
+.blotter-page.is-picker .blotter-close {
+  width: 52px;
+}
+
+.header-selector-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow: auto;
+  background: var(--backdrop);
+  backdrop-filter: blur(10px);
+}
+
+.header-selector-dialog {
+  display: grid;
+  gap: 10px;
+  width: min(100%, 1066px);
+  max-height: calc(100vh - 48px);
+  color: var(--interface);
+}
+
+.header-selector-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 58px;
+  padding: 11px 14px 10px 18px;
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 8px 30px rgba(0, 0, 0, .16);
+  backdrop-filter: blur(16px);
+}
+
+.header-selector-heading p,
+.header-selector-heading h2 {
+  margin: 0;
+  font-weight: 400;
+}
+
+.header-selector-heading p {
+  margin-bottom: 2px;
+  color: color-mix(in srgb, var(--interface) 68%, transparent);
+  font-size: 10px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.header-selector-heading h2 {
+  font-size: 20px;
+  letter-spacing: .08em;
+}
+
+.header-selector-heading > button {
+  width: 32px;
+  height: 32px;
+  padding: 0 0 3px;
+  border: 1px solid var(--panel-border);
+  border-radius: 50%;
+  background: var(--panel);
+  color: inherit;
+  cursor: pointer;
+  font-size: 25px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.header-selector-heading > button:focus-visible {
+  outline: 2px solid #00c493;
+  outline-offset: 3px;
+}
+
+.header-selector-dialog .blotter-scroll {
+  max-height: min(68vh, 610px);
 }
 
 .listing-orb-button {
@@ -753,6 +883,18 @@ input { font: inherit; }
     padding: 76px 16px 38px;
   }
 
+  .generator-shell.is-header-view {
+    padding: 76px 16px 38px;
+  }
+
+  .header-selector-backdrop {
+    padding: 16px;
+  }
+
+  .header-selector-dialog {
+    max-height: calc(100vh - 32px);
+  }
+
   .listings-gallery {
     --gallery-orb-size: min(136px, calc((100vw - 84px) / 4));
   }
@@ -805,8 +947,8 @@ input { font: inherit; }
   .generator-shell { padding-inline: 18px; }
   .ticker-orb { --hudi-orb-size: min(84vw, 360px); }
   .view-toggle { right: 18px; }
-  .view-toggle { gap: 12px; }
-  .view-toggle button { font-size: 12px; }
+  .view-toggle { gap: 9px; }
+  .view-toggle button { font-size: 11px; }
   .generator-shell.is-listings-view { padding-inline: 18px; }
   .listings-gallery { --gallery-orb-size: min(120px, calc((100vw - 52px) / 3)); }
   .listing-grid {
@@ -827,4 +969,7 @@ input { font: inherit; }
   .swatch-grid { gap: 9px; }
   .swatch-control { letter-spacing: .08em; }
   .text-control { letter-spacing: .08em; }
+  .header-selector-backdrop { padding: 10px; }
+  .header-selector-dialog { max-height: calc(100vh - 20px); }
+  .header-selector-heading { min-height: 52px; }
 }
