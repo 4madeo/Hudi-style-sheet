@@ -72,7 +72,10 @@ input { font: inherit; }
   right: 32px;
   z-index: 10;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 20px;
+  max-width: calc(100% - 64px);
 }
 
 .view-toggle button {
@@ -93,6 +96,27 @@ input { font: inherit; }
 .view-toggle button:focus-visible {
   outline: 2px solid #9db5d2;
   outline-offset: 4px;
+}
+
+.view-toggle button:disabled {
+  cursor: wait;
+  opacity: .55;
+}
+
+.export-error {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 150;
+  max-width: min(320px, calc(100vw - 48px));
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid color-mix(in srgb, #b80022 42%, var(--panel-border));
+  border-radius: 10px;
+  background: var(--panel);
+  color: #b80022;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .18);
+  font-size: 14px;
 }
 
 .orb-stage {
@@ -873,6 +897,7 @@ input { font: inherit; }
   .view-toggle {
     top: 20px;
     right: 24px;
+    max-width: calc(100% - 48px);
   }
 
   .generator-shell.is-listings-view {
@@ -947,6 +972,7 @@ input { font: inherit; }
   .generator-shell { padding-inline: 18px; }
   .ticker-orb { --hudi-orb-size: min(84vw, 360px); }
   .view-toggle { right: 18px; }
+  .view-toggle { max-width: calc(100% - 36px); }
   .view-toggle { gap: 9px; }
   .view-toggle button { font-size: 11px; }
   .generator-shell.is-listings-view { padding-inline: 18px; }

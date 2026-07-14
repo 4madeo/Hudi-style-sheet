@@ -9,6 +9,13 @@ import {
 } from "@/components/orb";
 import { CompanyHeader, type CompanyHeaderStat } from "@/components/header";
 import { hslToHex } from "@/components/orb/color";
+import {
+  ORB_EXPORT_SCALES,
+  createOrbSvg,
+  type OrbExportFonts,
+  type OrbExportScaleName,
+} from "@/components/orb/svg";
+import { createZipBlob } from "@/lib/zip";
 import { listings } from "./listings";
 
 type View = "generator" | "listings" | "blotter" | "header";
@@ -120,6 +127,47 @@ const initialGalleryOrbs = listings.map((listing) => ({
 type GalleryOrb = (typeof initialGalleryOrbs)[number];
 
 const leverageOptions = [2, 3, 5, 8, 10, 15, 20, 23];
+const orbExportScaleNames = Object.keys(ORB_EXPORT_SCALES) as OrbExportScaleName[];
+let exportFontsPromise: Promise<OrbExportFonts> | null = null;
+
+function fontDataUri(buffer: ArrayBuffer) {
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 0x8000;
+  let binary = "";
+  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
+  }
+  return `data:font/otf;base64,${window.btoa(binary)}`;
+}
+
+async function fetchExportFont(path: string) {
+  const response = await window.fetch(path);
+  if (!response.ok) throw new Error(`Unable to load export font: ${path}`);
+  return fontDataUri(await response.arrayBuffer());
+}
+
+function loadExportFonts() {
+  if (!exportFontsPromise) {
+    exportFontsPromise = Promise.all([
+      fetchExportFont("/fonts/diatype-expanded-bold.otf"),
+      fetchExportFont("/fonts/ocra-fixed.otf"),
+    ]).then(([displayDataUri, readoutDataUri]) => ({
+      displayDataUri,
+      readoutDataUri,
+    })).catch((error) => {
+      exportFontsPromise = null;
+      throw error;
+    });
+  }
+  return exportFontsPromise;
+}
+
+function exportFilenamePart(value: string) {
+  return value
+    .trim()
+    .replace(/[^a-z0-9_-]+/gi, "-")
+    .replace(/^-+|-+$/g, "") || "orb";
+}
 
 function createPosition(listing: GalleryOrb, index: number): Position {
   const hash = listingHash(`${listing.company}-${listing.exchangeTicker}`);
@@ -350,6 +398,9 @@ export default function Home() {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [selectedHeaderKey, setSelectedHeaderKey] = useState("KR-005930");
   const [headerPickerOpen, setHeaderPickerOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportMessage, setExportMessage] = useState("");
+  const [exportError, setExportError] = useState("");
   const headerPickerTriggerRef = useRef<HTMLButtonElement>(null);
   const [draft, setDraft] = useState<OrbDraft>({
     ticker: "",
@@ -432,6 +483,45 @@ export default function Home() {
       shadow: item.palette.shadow,
     }))));
     closeEditor();
+  };
+  const exportAllOrbs = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    setExportMessage("");
+    setExportError("");
+
+    await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+
+    try {
+      const fonts = await loadExportFonts();
+      const entries = orbExportScaleNames.flatMap((scaleName) => galleryItems.map((item) => {
+        const filename = [item.market, item.exchangeTicker, item.ticker]
+          .map(exportFilenamePart)
+          .join("-");
+        return {
+          name: `${scaleName}/${filename}.svg`,
+          data: createOrbSvg(item.ticker, item.number, item.palette, scaleName, {
+            fonts,
+            title: `${item.company} ${scaleName} orb`,
+          }),
+        };
+      }));
+      const archive = createZipBlob(entries);
+      const archiveUrl = window.URL.createObjectURL(archive);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = archiveUrl;
+      downloadLink.download = "hudi-orbs.zip";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      window.setTimeout(() => window.URL.revokeObjectURL(archiveUrl), 1_000);
+      setExportMessage(`${entries.length} SVGs exported in three scale folders.`);
+    } catch (error) {
+      console.error("Unable to export orb SVGs", error);
+      setExportError("Couldn’t create the SVG ZIP. Please try again.");
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   /* eslint-disable react-hooks/set-state-in-effect -- this mount pass hydrates browser URL and persisted UI state. */
@@ -537,7 +627,19 @@ export default function Home() {
         <button type="button" aria-pressed={view === "blotter"} onClick={() => changeView("blotter")}>blotter</button>
         <button type="button" aria-pressed={view === "header"} onClick={() => changeView("header")}>header</button>
         <button type="button" aria-pressed={theme === "dark"} onClick={toggleTheme}>dark</button>
+        <button
+          type="button"
+          disabled={isExporting}
+          aria-label="Export all orbs as an SVG ZIP"
+          onClick={() => void exportAllOrbs()}
+          title="Export every orb at all three scales as an SVG ZIP"
+        >
+          {isExporting ? "exporting…" : "export"}
+        </button>
       </nav>
+
+      <p className="visually-hidden" aria-live="polite">{exportMessage || (isExporting ? "Creating SVG ZIP." : "")}</p>
+      {exportError && <p className="export-error" role="alert">{exportError}</p>}
 
       {view === "generator" && (
         <>
