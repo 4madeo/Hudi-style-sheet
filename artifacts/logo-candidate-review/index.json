@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-08-20T10:25:17.625Z",
+  "sourceGeneratedAt": "2026-08-20T10:22:53.042Z",
+  "sheets": [
+    {
+      "filename": "candidates-01.png",
+      "first": 1,
+      "last": 24
+    },
+    {
+      "filename": "candidates-02.png",
+      "first": 25,
+      "last": 48
+    },
+    {
+      "filename": "candidates-03.png",
+      "first": 49,
+      "last": 72
+    },
+    {
+      "filename": "candidates-04.png",
+      "first": 73,
+      "last": 96
+    },
+    {
+      "filename": "candidates-05.png",
+      "first": 97,
+      "last": 120
+    },
+    {
+      "filename": "candidates-06.png",
+      "first": 121,
+      "last": 126
+    }
+  ]
+}

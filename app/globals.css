@@ -304,6 +304,17 @@ input { font: inherit; }
   gap: 24px 18px;
 }
 
+.catalog-result-divider {
+  grid-column: 1 / -1;
+  margin: 4px 0 0;
+  padding: 16px 4px 0;
+  border-top: 1px solid var(--panel-border);
+  font-size: 10px;
+  letter-spacing: .08em;
+  opacity: .72;
+  text-transform: uppercase;
+}
+
 .catalog-card {
   display: grid;
   justify-items: center;

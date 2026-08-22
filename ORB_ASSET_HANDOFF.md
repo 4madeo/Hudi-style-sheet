@@ -1,0 +1,77 @@
+# HUDI orb asset handoff
+
+This package contains the exported HUDI company-orb library. Each orb combines a company mark (or a HUDI fallback monogram) with its approved colour, lighting, rim, and logo treatment. The visual treatment is already baked into every file; recipients should use the assets as supplied rather than rebuilding the orb from its individual parts.
+
+## How the package is organised
+
+Assets are grouped first by exchange and then by ticker. This keeps companies with the same ticker on different exchanges separate.
+
+```text
+<release-name>/
+├── export-manifest.json
+├── hkex/
+│   └── <TICKER>/
+│       ├── generator.svg
+│       ├── generator.png
+│       ├── ticker-page.svg
+│       ├── ticker-page.png
+│       ├── blotter.svg
+│       └── blotter.png
+├── krx/
+├── nasdaq/
+├── nyse/
+├── sse/
+├── szse/
+└── tse/
+```
+
+An asset can therefore be identified by `exchange/ticker`. For example, the standard NVIDIA SVG is `nasdaq/NVDA/ticker-page.svg`.
+
+## Sizes and formats
+
+| File name | Intrinsic size | Intended use |
+| --- | ---: | --- |
+| `generator` | 460 × 460 px | Large-format artwork, presentation layouts, and high-resolution source use |
+| `ticker-page` | 136 × 136 px | Standard product and market-page presentation |
+| `blotter` | 24 × 24 px | Dense tables, lists, and compact trading UI |
+
+Every size is supplied as both SVG and PNG. Use SVG in product UI, Figma, and other vector-capable workflows. It is self-contained and has no external logo or font dependency. Use PNG where a fixed-size raster asset is required. PNGs are exported at the exact dimensions shown above.
+
+Use the asset closest to the final display size. In particular, use the purpose-built `blotter` asset at 24 px rather than shrinking the large orb: its rim has been tuned for legibility at that size. Preserve the square aspect ratio and transparent area around the circular orb.
+
+## Theme and appearance
+
+The package is exported in one theme, recorded as `light` or `dark` in `export-manifest.json`. The theme changes the order and contrast of the material rings; it does not change the company identity. Use assets from a package whose theme matches the surface where they will appear.
+
+Logo colour treatment, logo scale, orb colour, highlights, shadows, and rings are final. Do not recolour the logo or orb, crop into the circle, add a second border, remove the highlight, or place the artwork inside another circular mask.
+
+## Fallback orbs
+
+When a verified company mark was unavailable, the export uses a deterministic HUDI monogram so every catalog entry still has a complete asset set. A fallback is a system placeholder, not an official company logo. The corresponding entry in `export-manifest.json` has `"fallback": true`; replace or review these before any use where official brand identification is required.
+
+## Export manifest
+
+`export-manifest.json` is the package index and source of truth. It records the release name, theme, catalog and renderer fingerprints, export sizes, company count, fallback count, and every company’s exchange, ticker, display name, logo status, and relative asset paths. Integrations should key assets by the manifest `id` or by `exchange + symbol`, never by array position.
+
+The export is complete only when the manifest has `"status": "assets-complete"`. Its `assetCount` should equal the number of entries multiplied by three sizes and two formats.
+
+## Implementation example
+
+```html
+<img
+  src="/orbs/nasdaq/NVDA/ticker-page.svg"
+  width="136"
+  height="136"
+  alt="NVIDIA"
+/>
+```
+
+If the surrounding interface already names the company, treat the orb as decorative with an empty `alt`. Otherwise, use the company display name from the manifest rather than exposing the ticker or filename as the accessible label.
+
+## What is not included
+
+The package does not contain live market data, trading state, source component code, or editable layers for the orb material. The orb colour represents company identity, not price movement or position direction. Company names, logos, and trademarks remain the property of their respective owners; this handoff does not grant usage rights beyond the approved HUDI context.
+
+## Recipient check
+
+Before integration, confirm that the manifest reports `assets-complete`, the package theme matches the target surface, the chosen file size matches its display context, and any entries marked as fallbacks have been accepted for that use.

@@ -1,0 +1,12 @@
+{
+  "name": "HUDI Orb Library",
+  "id": "1536997117202600715",
+  "api": "1.0.0",
+  "editorType": ["figma"],
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["https://img.logo.dev"]
+  }
+}

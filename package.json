@@ -20,12 +20,14 @@
     "export:catalog": "node scripts/export-orb-catalog.mjs",
     "finalize:catalog": "node scripts/finalize-logo-catalog.mjs",
     "import:catalog": "node scripts/import-community-logo-catalog.mjs",
+    "import:crypto": "node scripts/import-crypto-logo-catalog.mjs",
     "materialize:open-logos": "npm run import:catalog -- --from-manifest --materialize-open-sources --skip-tradingview && npm run finalize:catalog && npm run report:logo-materialization",
     "process:logos": "node scripts/process-logo-assets.mjs",
     "report:logo-materialization": "node scripts/report-logo-materialization.mjs",
     "search:logo-candidates": "node scripts/search-serpapi-logo-candidates.mjs",
     "start": "next start",
     "test:logo-pipeline": "node scripts/test-logo-pipeline.mjs",
+    "test:crypto-catalog": "node scripts/test-crypto-catalog.mjs",
     "lint": "eslint . --ignore-pattern .next"
   },
   "dependencies": {

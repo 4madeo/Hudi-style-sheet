@@ -65,7 +65,7 @@ if (token && !token.startsWith("pk_")) {
   throw new Error("LOGO_DEV_PUBLISHABLE_KEY must be a Logo.dev publishable pk_ key.");
 }
 if (!csvPath && !fromManifest) {
-  throw new Error("Usage: npm run import:catalog -- /absolute/path/to/listings.csv [--concurrency=12] [--revalidate] [--refresh-tradingview] [--skip-tradingview] [--skip-wikimedia] [--serpapi-decisions=artifacts/serpapi-logo-decisions.json], or pass --from-manifest");
+  throw new Error("Usage: npm run import:catalog -- /absolute/path/to/listings.csv [options], --from-manifest, or --from-manifest /path/to/overlay.csv");
 }
 
 const referenceAliases = {
@@ -173,6 +173,18 @@ function parseCsv(value) {
   return records
     .filter((record) => record.some(Boolean))
     .map((record) => Object.fromEntries(headers.map((header, index) => [header, record[index] ?? ""])));
+}
+
+function mergeListingRows(baseRows, overlayRows) {
+  const overlayIds = new Set();
+  const merged = new Map(baseRows.map((row) => [`${row.exchange}:${row.symbol}`, row]));
+  for (const row of overlayRows) {
+    const id = `${row.exchange}:${row.symbol}`;
+    if (overlayIds.has(id)) throw new Error(`Duplicate overlay listing ${id}`);
+    overlayIds.add(id);
+    merged.set(id, row);
+  }
+  return [...merged.values()];
 }
 
 function fileExists(filename) {
@@ -1030,8 +1042,7 @@ if (fromManifest && !previousManifest) {
   throw new Error(`Cannot use --from-manifest because ${existingManifestPath} does not exist.`);
 }
 
-const csvRows = fromManifest
-  ? previousManifest.entries.map((entry) => ({
+const manifestRows = previousManifest?.entries.map((entry) => ({
     exchange: entry.exchange,
     symbol: entry.symbol,
     name: entry.company,
@@ -1041,12 +1052,20 @@ const csvRows = fromManifest
     supporters: entry.supporters == null ? "" : String(entry.supporters),
     won_at: entry.wonAt ?? "",
     publicly_on_hudi: String(Boolean(entry.publiclyOnHudi)),
-  }))
+  })) ?? [];
+const overlayRows = fromManifest && csvPath
+  ? parseCsv(await readFile(path.resolve(csvPath), "utf8"))
+  : [];
+const csvRows = fromManifest
+  ? mergeListingRows(manifestRows, overlayRows)
   : parseCsv(await readFile(path.resolve(csvPath), "utf8"));
 const rows = limit ? csvRows.slice(0, limit) : csvRows;
 const requiredColumns = ["exchange", "symbol", "name", "sector", "source", "program_status", "supporters", "won_at", "publicly_on_hudi"];
 if (!rows.length || requiredColumns.some((column) => !(column in rows[0]))) {
   throw new Error(`CSV must contain: ${requiredColumns.join(", ")}`);
+}
+if (overlayRows.some((row) => requiredColumns.some((column) => !(column in row)))) {
+  throw new Error(`Overlay CSV must contain: ${requiredColumns.join(", ")}`);
 }
 const ids = new Set();
 for (const row of rows) {
@@ -1367,7 +1386,7 @@ async function importRow(row) {
   if (fromManifest && previous?.logo?.provider === "catalog-alias" && !serpApiCandidates.has(id)) {
     summary.cached += 1;
     completed += 1;
-    return previous;
+    return { ...previous, ...common };
   }
   const manualCandidate = manualLogoCandidates.get(id);
   const tradingViewCandidate = tradingViewCandidates.get(id);
@@ -1424,7 +1443,7 @@ async function importRow(row) {
     && await fileExists(sourcePath)) {
     summary.cached += 1;
     completed += 1;
-    return previous;
+    return { ...previous, ...common };
   }
   if (fromManifest && previous && !previous.logo && !hasExactCandidate) {
     if (previous.logoStatus === "low-resolution") summary.resolutionReview += 1;
@@ -1486,7 +1505,7 @@ async function importRow(row) {
       else if (previous?.logoStatus === "failed") summary.failed += 1;
       else summary.missing += 1;
       completed += 1;
-      return previous ?? { ...common, logo: null, logoStatus: "missing" };
+      return previous ? { ...previous, ...common } : { ...common, logo: null, logoStatus: "missing" };
     }
     if ((!await fileExists(sourcePath) || replaceSource) && !hasCachedReviewedSource && !reuseMaterializedWikimediaSource) {
       try {
@@ -1502,7 +1521,7 @@ async function importRow(row) {
           console.warn(`${id}: retained previous local asset after replacement failed: ${error.message}`);
           summary.cached += 1;
           completed += 1;
-          return previous;
+          return { ...previous, ...common };
         }
         throw error;
       }
@@ -1681,6 +1700,12 @@ await Promise.all(Array.from({ length: Math.min(concurrency, rows.length) }, wor
 const manifest = {
   generatedAt: new Date().toISOString(),
   sourceFile: fromManifest ? previousManifest.sourceFile : path.basename(csvPath),
+  ...(fromManifest && (previousManifest.sourceOverlays?.length || csvPath) ? {
+    sourceOverlays: [...new Set([
+      ...(previousManifest.sourceOverlays ?? []),
+      ...(csvPath ? [path.relative(root, path.resolve(csvPath)).split(path.sep).join("/")] : []),
+    ])],
+  } : {}),
   rowCount: entries.length,
   summary,
   entries,

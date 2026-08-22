@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HUDI Orb Library</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 12px;
+        color: var(--figma-color-text, #1f1f1f);
+        background: var(--figma-color-bg, #ffffff);
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body { height: 100%; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        overflow: hidden;
+        background: var(--figma-color-bg, #ffffff);
+      }
+
+      button, input { font: inherit; }
+
+      .shell {
+        display: grid;
+        grid-template-rows: auto auto 1fr auto;
+        height: 100%;
+        min-height: 0;
+      }
+
+      header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 16px 12px;
+        border-bottom: 1px solid var(--figma-color-border, #e5e5e5);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
+
+      .count { color: var(--figma-color-text-secondary, #777777); }
+
+      .controls {
+        display: grid;
+        gap: 10px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--figma-color-border, #e5e5e5);
+      }
+
+      .scale-picker {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+        padding: 2px;
+        border-radius: 7px;
+        background: var(--figma-color-bg-secondary, #f3f3f3);
+      }
+
+      .scale-picker button {
+        min-height: 30px;
+        padding: 0 8px;
+        border: 0;
+        border-radius: 5px;
+        color: var(--figma-color-text-secondary, #666666);
+        background: transparent;
+        cursor: pointer;
+      }
+
+      .scale-picker button:hover { color: var(--figma-color-text, #1f1f1f); }
+
+      .scale-picker button.is-active {
+        color: var(--figma-color-text, #1f1f1f);
+        background: var(--figma-color-bg, #ffffff);
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.14);
+      }
+
+      .search {
+        width: 100%;
+        height: 32px;
+        padding: 0 10px;
+        border: 1px solid var(--figma-color-border, #d6d6d6);
+        border-radius: 6px;
+        outline: none;
+        color: var(--figma-color-text, #1f1f1f);
+        background: var(--figma-color-bg, #ffffff);
+      }
+
+      .search:focus { border-color: var(--figma-color-border-selected, #0d99ff); }
+
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-content: start;
+        gap: 8px;
+        min-height: 0;
+        padding: 12px 16px 16px;
+        overflow-y: auto;
+      }
+
+      .gallery[data-empty="true"]::after {
+        content: "No matching orbs";
+        grid-column: 1 / -1;
+        padding: 32px 0;
+        text-align: center;
+        color: var(--figma-color-text-secondary, #777777);
+      }
+
+      .orb-card {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid var(--figma-color-border, #e0e0e0);
+        border-radius: 8px;
+        background: var(--figma-color-bg, #ffffff);
+        cursor: grab;
+      }
+
+      .orb-card:active { cursor: grabbing; }
+      .orb-card:hover { border-color: var(--figma-color-border-strong, #b8b8b8); }
+
+      .orb-preview {
+        display: grid;
+        place-items: center;
+        height: 116px;
+        padding: 14px;
+        background:
+          linear-gradient(45deg, var(--figma-color-bg-secondary, #f5f5f5) 25%, transparent 25%),
+          linear-gradient(-45deg, var(--figma-color-bg-secondary, #f5f5f5) 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, var(--figma-color-bg-secondary, #f5f5f5) 75%),
+          linear-gradient(-45deg, transparent 75%, var(--figma-color-bg-secondary, #f5f5f5) 75%);
+        background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+        background-size: 12px 12px;
+      }
+
+      .orb-preview svg {
+        display: block;
+        width: 88px;
+        height: 88px;
+        filter: drop-shadow(0 5px 6px rgb(0 0 0 / 0.16));
+      }
+
+      .orb-details {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-height: 50px;
+        padding: 8px 9px;
+      }
+
+      .orb-label {
+        display: grid;
+        min-width: 0;
+        gap: 2px;
+      }
+
+      .orb-label strong { font-size: 12px; }
+      .orb-label span {
+        overflow: hidden;
+        color: var(--figma-color-text-secondary, #777777);
+        font-size: 10px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .insert-button {
+        flex: 0 0 auto;
+        min-height: 28px;
+        padding: 0 9px;
+        border: 0;
+        border-radius: 5px;
+        color: var(--figma-color-text-onbrand, #ffffff);
+        background: var(--figma-color-bg-brand, #0d99ff);
+        cursor: pointer;
+      }
+
+      .insert-button:hover { background: var(--figma-color-bg-brand-hover, #008be5); }
+
+      footer {
+        padding: 10px 16px;
+        border-top: 1px solid var(--figma-color-border, #e5e5e5);
+        background: var(--figma-color-bg, #ffffff);
+      }
+
+      .status {
+        min-height: 16px;
+        margin: 0;
+        overflow: hidden;
+        color: var(--figma-color-text-secondary, #777777);
+        line-height: 16px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .has-error .gallery { display: none; }
+    </style>
+  </head>
+  <body class="is-loading">
+    <main class="shell">
+      <header>
+        <h1>HUDI Orb Library</h1>
+        <span class="count" id="result-count">Loading…</span>
+      </header>
+      <section class="controls" aria-label="Orb controls">
+        <div class="scale-picker" aria-label="Orb scale">
+          <button type="button" data-scale="generator" aria-pressed="false">Generator</button>
+          <button type="button" class="is-active" data-scale="ticker-page" aria-pressed="true">Gallery</button>
+          <button type="button" data-scale="blotter" aria-pressed="false">Blotter</button>
+        </div>
+        <input class="search" id="search" type="search" placeholder="Search symbol, company, or exchange" autocomplete="off" />
+      </section>
+      <section class="gallery" id="gallery" aria-label="Available orbs"></section>
+      <footer>
+        <p class="status" id="status" aria-live="polite">Preparing company logos…</p>
+      </footer>
+    </main>
+    <!-- APP_SCRIPT -->
+  </body>
+</html>

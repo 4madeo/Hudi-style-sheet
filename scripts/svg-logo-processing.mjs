@@ -69,6 +69,7 @@ function isCanvasPath(tag, viewBox) {
   if (!starts.some((start) => d.startsWith(start))) return false;
   return [
     `m${x}${y}h${right}v${bottom}h${x}z`,
+    `m${x}${y}h${right}v${bottom}h${x}v${y}z`,
     `m${x}${y}h${width}v${height}h-${width}z`,
     `m${x}${y}h${width}v${height}h-${width}v-${height}z`,
     `m${right}${y}h${x}v${height}h${width}v${y}z`,

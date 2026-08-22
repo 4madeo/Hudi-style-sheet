@@ -1,0 +1,22 @@
+{
+  "candidateReport": "artifacts/google-final-logo-candidates.json",
+  "reviewedAt": "2026-08-20T13:20:00.000Z",
+  "policy": "Selected only after exchange/ticker verification and visual corroboration against the issuer website, issuer filing, issuer press release, or official issuer profile. Full wordmarks are preserved when emblem extraction would alter the requested brand mark.",
+  "selections": [
+    { "company": "GREEN LEADER", "candidate": 1, "preserveFullMark": true, "evidence": "company-specific mark corroborated by HKEX issuer reports" },
+    { "company": "ARTGO HOLDINGS", "candidate": 1, "preserveFullMark": true, "evidence": "wordmark matches issuer website and HKEX reports" },
+    { "company": "SENIOR MATERIAL", "candidate": 1, "evidence": "issuer-owned SEMCORP vector asset" },
+    { "company": "비덴트", "candidate": 1, "evidence": "company-specific Vidente wordmark corroborated by issuer identity and ticker coverage" },
+    { "company": "에스디생명공학", "candidate": 1, "preserveFullMark": true, "evidence": "company-specific SD Biotechnologies mark corroborated by issuer site" },
+    { "company": "폴레드", "candidate": 1, "preserveFullMark": true, "evidence": "Poled wordmark corroborated by issuer site and IPO coverage" },
+    { "company": "Artius II Acquisition Inc.", "candidate": 1, "evidence": "issuer-owned Artius vector asset" },
+    { "company": "Antelope Enterprise Holdings Ltd", "candidate": 1, "evidence": "official issuer social profile and issuer website identity" },
+    { "company": "HiTek Global Inc.", "candidate": 1, "evidence": "issuer press-release logo" },
+    { "company": "Lianhe Sowell International Group Ltd", "candidate": 1, "preserveFullMark": true, "evidence": "SOWELL wordmark corroborated by issuer IR site" },
+    { "company": "Galata Acquisition Corp. II", "candidate": 1, "refresh": true, "reuseCachedSource": true, "preserveFullMark": true, "evidence": "issuer-owned Galata SPAC wordmark" },
+    { "company": "Research Alliance Corp IV", "candidate": 1, "evidence": "issuer-owned RA Capital logomark displayed by Research Alliance Corp IV" },
+    { "company": "EPI (HOLDINGS)", "candidate": 1, "refresh": true, "reuseCachedSource": true, "evidence": "exchange-qualified mark corroborated by issuer website and filings" },
+    { "company": "TYSAN HOLDINGS", "candidate": 1, "refresh": true, "reuseCachedSource": true, "evidence": "issuer-owned vector lockup cropped to the standalone red TH mark" },
+    { "company": "TONGCHENGTRAVEL", "candidate": 1, "refresh": true, "reuseCachedSource": true, "preserveFullMark": true, "evidence": "current Tongcheng Travel mark corroborated by issuer IR site" }
+  ]
+}

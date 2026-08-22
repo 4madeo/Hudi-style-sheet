@@ -39,6 +39,23 @@ after creation. Missing company artwork is exported as the same deterministic
 fallback identity used by the catalog UI, so every manifest row has all six
 assets.
 
+## Crypto catalog
+
+Refresh the current CoinMarketCap ranks 1–100, exclude every entry carrying
+CoinMarketCap's `stablecoin` tag, and download the exact base-currency SVG from
+TradingView:
+
+```bash
+npm run import:crypto
+```
+
+The command writes a separate ranked manifest to
+`public/logos/crypto/manifest.json`, preserves the raw TradingView SVGs under
+`public/logos/crypto/source/`, and writes background-free vector marks beside
+the manifest. The app exposes these as the `crypto` view without changing the
+community-equity catalog. Use `-- --refresh-assets` to redownload already
+cached TradingView SVGs.
+
 ## Logo assets
 
 The curated Logo.dev responses are stored in `public/logos/` and recorded in
@@ -105,6 +122,20 @@ Import the complete community listings catalog:
 LOGO_DEV_PUBLISHABLE_KEY=pk_your_publishable_key npm run import:catalog -- /absolute/path/to/community-listings-stocks-staging.csv
 npm run finalize:catalog
 ```
+
+The generated manifest is the canonical catalog after the initial import. Add
+or update a maintained set of listings by overlaying a repository CSV onto the
+current manifest, then finalize it:
+
+```bash
+npm run import:catalog -- --from-manifest data/catalog-priority-listings.csv
+npm run finalize:catalog
+```
+
+An overlay replaces matching exchange-qualified rows and appends new rows, so
+the full source export does not need to be kept outside this repository for
+routine additions. Keep exchange symbols zero-padded and use `false` for
+`publicly_on_hudi` unless the listing is actually live in HUDI.
 
 The importer qualifies tickers for HKEX, KRX, NASDAQ, NYSE, SSE, SZSE, and TSE. Its normal source order is an exchange-qualified Logo.dev ticker, an exact TradingView exchange+ticker match, an exact Wikidata exchange+ticker match whose P154 image is hosted on Wikimedia Commons, and only then a Logo.dev company-name lookup. It requests `fallback=404`, so Logo.dev letter monograms never enter the orb system. Existing unresolved or suspect sources prefer the exact providers during revalidation. Pass `--skip-tradingview` or `--skip-wikimedia` to disable either exact fallback.
 

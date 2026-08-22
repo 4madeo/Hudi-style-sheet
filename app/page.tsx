@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
   LogoOrb,
   createLogoDevUrl,
@@ -19,7 +19,7 @@ import logoAssetManifest from "@/public/logos/manifest.json";
 import brandColourManifest from "@/public/logos/brand-colours.json";
 import { listings } from "./listings";
 
-type View = "generator" | "listings" | "catalog" | "blotter" | "header";
+type View = "generator" | "listings" | "catalog" | "crypto" | "blotter" | "header";
 type Position = {
   side: "LONG" | "SHORT";
   size: number;
@@ -78,6 +78,7 @@ type CatalogEntry = {
   symbol: string;
   company: string;
   sector: string;
+  cmcRank?: number;
   logo: CatalogLogo | null;
   logoStatus?: "missing" | "failed" | "low-resolution" | "duplicate-review" | "source-review";
 };
@@ -145,6 +146,66 @@ function catalogReviewLabel(review: CatalogReviewEntry) {
   if (review.reason === "low-resolution") return "low resolution";
   if (review.reason === "empty-geometric-mark") return "empty geometric mark";
   return "unreadable";
+}
+
+function catalogSearchTokens(value: string) {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase()
+    .match(/[\p{L}\p{N}]+/gu) ?? [];
+}
+
+function isNearbyCatalogToken(query: string, candidate: string) {
+  if (candidate.includes(query)) return true;
+  if (query.length < 4 || Math.abs(query.length - candidate.length) > 1) return false;
+
+  if (query.length === candidate.length) {
+    const mismatches = [];
+    for (let index = 0; index < query.length; index += 1) {
+      if (query[index] !== candidate[index]) mismatches.push(index);
+      if (mismatches.length > 2) return false;
+    }
+    if (mismatches.length === 1) return true;
+    return mismatches.length === 2
+      && mismatches[1] === mismatches[0] + 1
+      && query[mismatches[0]] === candidate[mismatches[1]]
+      && query[mismatches[1]] === candidate[mismatches[0]];
+  }
+
+  const [shorter, longer] = query.length < candidate.length
+    ? [query, candidate]
+    : [candidate, query];
+  let shortIndex = 0;
+  let longIndex = 0;
+  let skipped = false;
+  while (shortIndex < shorter.length && longIndex < longer.length) {
+    if (shorter[shortIndex] === longer[longIndex]) {
+      shortIndex += 1;
+      longIndex += 1;
+    } else if (!skipped) {
+      skipped = true;
+      longIndex += 1;
+    } else {
+      return false;
+    }
+  }
+  return true;
+}
+
+function catalogEntryMatchKind(entry: CatalogEntry, query: string): "exact" | "suggestion" | null {
+  const values = [entry.symbol, entry.company, entry.exchange, entry.sector]
+    .map((value) => value.toLocaleLowerCase());
+  const queryTokens = catalogSearchTokens(query);
+  const candidateTokens = values.flatMap(catalogSearchTokens);
+  if (values.some((value) => value.includes(query)) || (
+    queryTokens.length > 0
+    && queryTokens.every((queryToken) => candidateTokens.some((candidateToken) => candidateToken.includes(queryToken)))
+  )) return "exact";
+  if (queryTokens.length > 0 && queryTokens.every((queryToken) => (
+    candidateTokens.some((candidateToken) => isNearbyCatalogToken(queryToken, candidateToken))
+  ))) return "suggestion";
+  return null;
 }
 
 function blobToDataUrl(blob: Blob) {
@@ -439,8 +500,10 @@ export default function Home() {
   const [exportMessage, setExportMessage] = useState("");
   const [exportError, setExportError] = useState("");
   const [catalog, setCatalog] = useState<CatalogManifest | null>(null);
+  const [cryptoCatalog, setCryptoCatalog] = useState<CatalogManifest | null>(null);
   const [catalogReview, setCatalogReview] = useState<CatalogReviewIndex | null>(null);
   const [catalogError, setCatalogError] = useState("");
+  const [cryptoCatalogError, setCryptoCatalogError] = useState("");
   const [catalogQuery, setCatalogQuery] = useState("");
   const [catalogVisibleCount, setCatalogVisibleCount] = useState(180);
   const [catalogRandomEntries, setCatalogRandomEntries] = useState<CatalogEntry[] | null>(null);
@@ -480,27 +543,36 @@ export default function Home() {
   const catalogReviewRankById = useMemo(() => new Map(
     catalogReview?.entries.map((entry, index) => [entry.id, index]) ?? [],
   ), [catalogReview]);
-  const catalogMatches = useMemo(() => {
-    if (!catalog) return [];
+  const activeCatalog = view === "crypto" ? cryptoCatalog : catalog;
+  const catalogMatchGroups = useMemo(() => {
+    if (!activeCatalog) return { exact: [], suggestions: [], all: [] };
     const query = catalogQuery.trim().toLocaleLowerCase();
-    const matches = catalog.entries.filter((entry) => (
-      (!catalogIssuesOnly || (Boolean(entry.logo) && catalogReviewById.has(entry.id)))
-      && (!query || [
-      entry.symbol,
-      entry.company,
-      entry.exchange,
-      entry.sector,
-      ].some((value) => value.toLocaleLowerCase().includes(query)))
-    ));
-    if (catalogIssuesOnly) {
-      matches.sort((left, right) => (
+    const exact: CatalogEntry[] = [];
+    const suggestions: CatalogEntry[] = [];
+    activeCatalog.entries.forEach((entry) => {
+      if (view === "catalog" && catalogIssuesOnly && (!entry.logo || !catalogReviewById.has(entry.id))) return;
+      const matchKind = query ? catalogEntryMatchKind(entry, query) : "exact";
+      if (matchKind === "exact") exact.push(entry);
+      if (matchKind === "suggestion") suggestions.push(entry);
+    });
+    if (view === "catalog" && catalogIssuesOnly) {
+      const sortByReviewRank = (left: CatalogEntry, right: CatalogEntry) => (
         (catalogReviewRankById.get(left.id) ?? Number.POSITIVE_INFINITY)
         - (catalogReviewRankById.get(right.id) ?? Number.POSITIVE_INFINITY)
-      ));
+      );
+      exact.sort(sortByReviewRank);
+      suggestions.sort(sortByReviewRank);
     }
-    return matches;
-  }, [catalog, catalogIssuesOnly, catalogQuery, catalogReviewById, catalogReviewRankById]);
+    return { exact, suggestions, all: [...exact, ...suggestions] };
+  }, [activeCatalog, catalogIssuesOnly, catalogQuery, catalogReviewById, catalogReviewRankById, view]);
+  const catalogMatches = catalogMatchGroups.all;
   const visibleCatalogEntries = catalogRandomEntries ?? catalogMatches.slice(0, catalogVisibleCount);
+  const catalogSuggestionIds = useMemo(
+    () => new Set(catalogMatchGroups.suggestions.map((entry) => entry.id)),
+    [catalogMatchGroups.suggestions],
+  );
+  const visibleExactCatalogEntries = visibleCatalogEntries.filter((entry) => !catalogSuggestionIds.has(entry.id));
+  const visibleSuggestedCatalogEntries = visibleCatalogEntries.filter((entry) => catalogSuggestionIds.has(entry.id));
 
   const updateColour = (colour: string) => setPalette(deriveOrbPalette(colour));
   const updateToken = (key: "base" | "sheen" | "shadow", value: string) => {
@@ -527,10 +599,15 @@ export default function Home() {
   const changeView = (nextView: View) => {
     setView(nextView);
     setHeaderPickerOpen(false);
+    setCatalogRandomEntries(null);
+    setCatalogVisibleCount(180);
+    setCatalogQuery("");
+    setCatalogIssuesOnly(false);
     const hashes: Record<View, string> = {
       generator: "#generator",
       listings: "#tickers",
       catalog: "#catalog",
+      crypto: "#crypto",
       blotter: "#blotter",
       header: "#header",
     };
@@ -645,6 +722,7 @@ export default function Home() {
   useEffect(() => {
     if (window.location.hash === "#tickers") setView("listings");
     if (window.location.hash === "#catalog") setView("catalog");
+    if (window.location.hash === "#crypto") setView("crypto");
     if (window.location.hash === "#blotter") setView("blotter");
     if (window.location.hash === "#header") setView("header");
     const storedTheme = window.localStorage.getItem(themeStorageKey) === "dark" ? "dark" : "light";
@@ -717,6 +795,22 @@ export default function Home() {
   }, [catalog, catalogError, view]);
 
   useEffect(() => {
+    if (view !== "crypto" || cryptoCatalog || cryptoCatalogError) return;
+    const controller = new AbortController();
+    window.fetch("/logos/crypto/manifest.json", { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`crypto catalog returned ${response.status}`);
+        setCryptoCatalog(await response.json() as CatalogManifest);
+      })
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        console.error("Unable to load the crypto orb catalog", error);
+        setCryptoCatalogError("The crypto orb catalog could not be loaded.");
+      });
+    return () => controller.abort();
+  }, [cryptoCatalog, cryptoCatalogError, view]);
+
+  useEffect(() => {
     if (view !== "blotter" && view !== "header") return;
     const interval = window.setInterval(() => {
       setPositions((current) => current.map((position) => ({
@@ -748,11 +842,12 @@ export default function Home() {
   }, [editingIndex, headerPickerOpen]);
 
   return (
-    <main className={`generator-shell${view === "listings" ? " is-listings-view" : ""}${view === "catalog" ? " is-catalog-view" : ""}${view === "blotter" ? " is-blotter-view" : ""}${view === "header" ? " is-header-view" : ""}`}>
+    <main className={`generator-shell${view === "listings" ? " is-listings-view" : ""}${view === "catalog" || view === "crypto" ? " is-catalog-view" : ""}${view === "blotter" ? " is-blotter-view" : ""}${view === "header" ? " is-header-view" : ""}`}>
       <nav className="view-toggle" aria-label="Orb page">
         <button type="button" aria-pressed={view === "generator"} onClick={() => changeView("generator")}>generator</button>
         <button type="button" aria-pressed={view === "listings"} onClick={() => changeView("listings")}>mvp</button>
         <button type="button" aria-pressed={view === "catalog"} onClick={() => changeView("catalog")}>catalog</button>
+        <button type="button" aria-pressed={view === "crypto"} onClick={() => changeView("crypto")}>crypto</button>
         <button type="button" aria-pressed={view === "blotter"} onClick={() => changeView("blotter")}>blotter</button>
         <button type="button" aria-pressed={view === "header"} onClick={() => changeView("header")}>header</button>
         <button type="button" aria-pressed={theme === "dark"} onClick={toggleTheme}>dark</button>
@@ -850,23 +945,25 @@ export default function Home() {
         </section>
       )}
 
-      {view === "catalog" && (
-        <section className="catalog-gallery" aria-label="HUDI community orb catalog">
+      {(view === "catalog" || view === "crypto") && (
+        <section className="catalog-gallery" aria-label={view === "crypto" ? "CoinMarketCap crypto orb catalog" : "HUDI community orb catalog"}>
           <header className="catalog-toolbar">
             <div>
-              <p>community listings</p>
-              <h1>{catalog ? catalog.rowCount.toLocaleString() : "20,524"} orbs</h1>
+              <p>{view === "crypto" ? "coinmarketcap top 100 · stablecoins removed" : "community listings"}</p>
+              <h1>{activeCatalog ? activeCatalog.rowCount.toLocaleString() : view === "crypto" ? "—" : "20,524"} orbs</h1>
             </div>
             <div className="catalog-actions">
-              <button
-                type="button"
-                aria-pressed={catalogIssuesOnly}
-                disabled={!catalogReview}
-                onClick={toggleCatalogIssues}
-                title="Show current logo assets flagged by visual cross-checks or weaker lookup sources"
-              >
-                likely issues
-              </button>
+              {view === "catalog" && (
+                <button
+                  type="button"
+                  aria-pressed={catalogIssuesOnly}
+                  disabled={!catalogReview}
+                  onClick={toggleCatalogIssues}
+                  title="Show current logo assets flagged by visual cross-checks or weaker lookup sources"
+                >
+                  likely issues
+                </button>
+              )}
               <button type="button" disabled={!catalogMatches.length} onClick={showRandomCatalogEntries}>
                 random 180
               </button>
@@ -885,56 +982,66 @@ export default function Home() {
               </label>
             </div>
           </header>
-          {!catalog && !catalogError && <p className="catalog-status">Loading the community catalog…</p>}
-          {catalogError && <p className="catalog-status is-error" role="alert">{catalogError}</p>}
-          {catalog && (
+          {!activeCatalog && !(view === "crypto" ? cryptoCatalogError : catalogError) && <p className="catalog-status">Loading the {view === "crypto" ? "crypto" : "community"} catalog…</p>}
+          {(view === "crypto" ? cryptoCatalogError : catalogError) && <p className="catalog-status is-error" role="alert">{view === "crypto" ? cryptoCatalogError : catalogError}</p>}
+          {activeCatalog && (
             <>
               <p className="catalog-status">
                 {catalogRandomEntries
                   ? `Showing a random ${catalogRandomEntries.length.toLocaleString()} of ${catalogMatches.length.toLocaleString()} ${catalogIssuesOnly ? "likely issues" : catalogQuery.trim() ? "matches" : "listings"}`
                   : `Showing ${Math.min(catalogVisibleCount, catalogMatches.length).toLocaleString()} of ${catalogMatches.length.toLocaleString()} ${catalogIssuesOnly ? "likely issues" : "matches"}`}
-                {!catalogIssuesOnly && (catalog.summary.sourceReview ?? (catalog.summary.missing + catalog.summary.failed)) > 0 ? ` · ${(catalog.summary.sourceReview ?? (catalog.summary.missing + catalog.summary.failed)).toLocaleString()} need source review` : ""}
+                {view === "catalog" && !catalogIssuesOnly && (activeCatalog.summary.sourceReview ?? (activeCatalog.summary.missing + activeCatalog.summary.failed)) > 0 ? ` · ${(activeCatalog.summary.sourceReview ?? (activeCatalog.summary.missing + activeCatalog.summary.failed)).toLocaleString()} need source review` : ""}
               </p>
               <div className="catalog-grid">
-                {visibleCatalogEntries.map((entry) => (
-                  <article className="catalog-card" key={entry.id} title={`${entry.symbol} · ${entry.company}`}>
-                    {entry.logo ? (
-                      <LogoOrb
-                        company={entry.company}
-                        logoUrl={entry.logo.path}
-                        logoTreatment={entry.logo.logoTreatment}
-                        logoScale={entry.logo.logoScale}
-                        palette={deriveOrbPalette(entry.logo.orbColour)}
-                        size="var(--catalog-orb-size)"
-                        compact
-                      />
-                    ) : (
-                      <a
-                        className="catalog-missing"
-                        href={googleLogoSearchUrl(entry)}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={`Search Google Images for ${entry.company} logo`}
-                        title={`Search Google Images for ${entry.company} logo`}
-                      >
-                        <LogoOrb
-                          company={entry.company}
-                          fallbackKey={entry.id}
-                          colour={fallbackOrbColour(entry.id)}
-                          size="var(--catalog-orb-size)"
-                          compact
-                        />
-                      </a>
+                {[
+                  { kind: "exact", entries: visibleExactCatalogEntries },
+                  { kind: "suggestion", entries: visibleSuggestedCatalogEntries },
+                ].map((group) => (
+                  <Fragment key={group.kind}>
+                    {group.kind === "suggestion" && group.entries.length > 0 && (
+                      <p className="catalog-result-divider">suggestions</p>
                     )}
-                    <strong>{entry.symbol}</strong>
-                    <span>{entry.company}</span>
-                    <small>
-                      {entry.exchange}
-                      {catalogIssuesOnly && catalogReviewById.has(entry.id)
-                        ? ` · ${catalogReviewLabel(catalogReviewById.get(entry.id)!)}`
-                        : entry.logo?.cropMode.includes("emblem") ? " · emblem" : !entry.logo ? " · default" : ""}
-                    </small>
-                  </article>
+                    {group.entries.map((entry) => (
+                      <article className="catalog-card" key={entry.id} title={`${entry.symbol} · ${entry.company}`}>
+                        {entry.logo ? (
+                          <LogoOrb
+                            company={entry.company}
+                            logoUrl={entry.logo.path}
+                            logoTreatment={entry.logo.logoTreatment}
+                            logoScale={entry.logo.logoScale}
+                            palette={deriveOrbPalette(entry.logo.orbColour)}
+                            size="var(--catalog-orb-size)"
+                            compact
+                          />
+                        ) : (
+                          <a
+                            className="catalog-missing"
+                            href={googleLogoSearchUrl(entry)}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={`Search Google Images for ${entry.company} logo`}
+                            title={`Search Google Images for ${entry.company} logo`}
+                          >
+                            <LogoOrb
+                              company={entry.company}
+                              fallbackKey={entry.id}
+                              colour={fallbackOrbColour(entry.id)}
+                              size="var(--catalog-orb-size)"
+                              compact
+                            />
+                          </a>
+                        )}
+                        <strong>{entry.symbol}</strong>
+                        <span>{entry.company}</span>
+                        <small>
+                          {entry.cmcRank ? `#${entry.cmcRank} · ` : ""}{entry.exchange}
+                          {catalogIssuesOnly && catalogReviewById.has(entry.id)
+                            ? ` · ${catalogReviewLabel(catalogReviewById.get(entry.id)!)}`
+                            : entry.logo?.cropMode.includes("emblem") ? " · emblem" : !entry.logo ? " · default" : ""}
+                        </small>
+                      </article>
+                    ))}
+                  </Fragment>
                 ))}
               </div>
               {!catalogRandomEntries && catalogVisibleCount < catalogMatches.length && (
@@ -1068,7 +1175,15 @@ export default function Home() {
       )}
 
       <footer className="logo-dev-attribution">
-        <a href="https://logo.dev">Logos provided by Logo.dev</a>
+        {view === "crypto" ? (
+          <>
+            <a href="https://www.tradingview.com/">Logos via TradingView</a>
+            {" · "}
+            <a href="https://coinmarketcap.com/">ranks via CoinMarketCap</a>
+          </>
+        ) : (
+          <a href="https://logo.dev">Logos provided by Logo.dev</a>
+        )}
       </footer>
     </main>
   );

@@ -1,0 +1,216 @@
+{
+  "generatedAt": "2026-08-20T13:20:00.000Z",
+  "manifestGeneratedAt": "2026-08-20T10:50:46.368Z",
+  "searches": {
+    "green leader": {
+      "company": "GREEN LEADER",
+      "listingIds": ["HKEX:0061"],
+      "statuses": ["low-resolution"],
+      "query": "GREEN LEADER HOLDINGS 0061 logo official",
+      "candidates": [{
+        "title": "Green Leader Holdings Group Limited logo",
+        "source": "Google Images / company profile",
+        "pageUrl": "https://www.phb123.com/bk/qiye/14261.html",
+        "imageUrl": "https://img.phb123.com/uploads/221019/813-22101Z91535X3.jpg",
+        "width": 455,
+        "height": 455
+      }]
+    },
+    "artgo holdings": {
+      "company": "ARTGO HOLDINGS",
+      "listingIds": ["HKEX:3313"],
+      "statuses": ["low-resolution"],
+      "query": "ARTGO HOLDINGS 3313 logo official",
+      "candidates": [{
+        "title": "ArtGo Holdings official wordmark",
+        "source": "Google Images / issuer corroborated",
+        "pageUrl": "https://www.artgo.cn/en/",
+        "imageUrl": "https://img.phb123.com/uploads/allimg/221019/812-2210191536010-L.jpg",
+        "width": 420,
+        "height": 420
+      }]
+    },
+    "senior material": {
+      "company": "SENIOR MATERIAL",
+      "listingIds": ["HKEX:6067"],
+      "statuses": ["low-resolution"],
+      "query": "Shanghai Senior Technology Material 6067 official logo",
+      "candidates": [{
+        "title": "SEMCORP official logo",
+        "source": "Issuer website",
+        "pageUrl": "https://www.semcorp.com/en",
+        "imageUrl": "https://www.semcorp.com/Public/Uploads/uploadfile/images/20221124/dhlogo01-40.svg",
+        "width": 875,
+        "height": 183
+      }]
+    },
+    "vidente": {
+      "company": "비덴트",
+      "listingIds": ["KRX:121800"],
+      "statuses": ["low-resolution"],
+      "query": "비덴트 121800 공식 로고",
+      "candidates": [{
+        "title": "Vidente corporate logo",
+        "source": "Google Images / issuer-specific news",
+        "pageUrl": "https://signalm.sedaily.com/NewsView/2D6QGUY4PI/GZ03",
+        "imageUrl": "https://newsimg.sedaily.com/2024/03/22/2D6QGUY4PI_1.jpg",
+        "width": 640,
+        "height": 425
+      }]
+    },
+    "sd biotechnologies": {
+      "company": "에스디생명공학",
+      "listingIds": ["KRX:217480"],
+      "statuses": ["low-resolution"],
+      "query": "에스디생명공학 217480 공식 로고",
+      "candidates": [{
+        "title": "SD Biotechnologies corporate logo",
+        "source": "Google Images / brand archive",
+        "pageUrl": "https://www.brandb.net/archive/sd-%EC%83%9D%EB%AA%85%EA%B3%B5%ED%95%99-2023-01",
+        "imageUrl": "https://www.brandb.net/_next/image?q=75&url=https%3A%2F%2Fapi.brandb.net%2Fapi%2Fv2%2Fcommon%2Fimage%3FfileId%3D8098&w=1920",
+        "width": 870,
+        "height": 480
+      }]
+    },
+    "poled": {
+      "company": "폴레드",
+      "listingIds": ["KRX:487580"],
+      "statuses": ["low-resolution"],
+      "query": "폴레드 487580 공식 로고",
+      "candidates": [{
+        "title": "Poled official wordmark",
+        "source": "Google Images / issuer corroborated",
+        "pageUrl": "https://www.poled.co.kr/",
+        "imageUrl": "https://framerusercontent.com/images/GvOS6Dc0DCxLEt8yGu4mUp6vI.png?height=450&width=800",
+        "width": 800,
+        "height": 450
+      }]
+    },
+    "artius ii acquisition": {
+      "company": "Artius II Acquisition Inc.",
+      "listingIds": ["NASDAQ:AACB", "NASDAQ:AACBR", "NASDAQ:AACBU"],
+      "statuses": ["low-resolution"],
+      "query": "Artius II Acquisition official logo AACB",
+      "candidates": [{
+        "title": "Artius Capital official logo",
+        "source": "Issuer website",
+        "pageUrl": "https://www.artiuscapital.com/acquisition",
+        "imageUrl": "https://www.artiuscapital.com/i/logo.svg",
+        "width": 1500,
+        "height": 387
+      }]
+    },
+    "antelope enterprise": {
+      "company": "Antelope Enterprise Holdings Ltd",
+      "listingIds": ["NASDAQ:AEHL"],
+      "statuses": ["low-resolution"],
+      "query": "Antelope Enterprise Holdings AEHL official logo",
+      "candidates": [{
+        "title": "Antelope Enterprise Holdings official profile logo",
+        "source": "Issuer social profile",
+        "pageUrl": "https://x.com/AEHL_Official",
+        "imageUrl": "https://pbs.twimg.com/profile_images/1671949673307967488/7E89aA_m.jpg",
+        "width": 400,
+        "height": 400
+      }]
+    },
+    "hitek global": {
+      "company": "HiTek Global Inc.",
+      "listingIds": ["NASDAQ:HKIT"],
+      "statuses": ["low-resolution"],
+      "query": "HiTek Global HKIT official logo",
+      "candidates": [{
+        "title": "HiTek Global corporate logo",
+        "source": "Issuer press release",
+        "pageUrl": "https://www.globenewswire.com/news-release/2023/06/14/2687999/0/en/Hitek-Global-Inc-Receives-Government-Reward-for-Successful-Listing-on-Nasdaq.html",
+        "imageUrl": "https://ml.globenewswire.com/Resource/Download/83fa5922-4691-42fd-80a0-2dd62ac8a29e",
+        "width": 3210,
+        "height": 1003
+      }]
+    },
+    "lianhe sowell": {
+      "company": "Lianhe Sowell International Group Ltd",
+      "listingIds": ["NASDAQ:LHSW"],
+      "statuses": ["low-resolution"],
+      "query": "Lianhe Sowell International LHSW official logo",
+      "candidates": [{
+        "title": "Lianhe Sowell corporate logo",
+        "source": "Google Images / issuer corroborated",
+        "pageUrl": "https://ir.cnsoftwell.com/",
+        "imageUrl": "https://cdn.financialreports.eu/financialreports/media/Lianhe%20Sowell%20International%20Group%20Ltd/other/Lianhe_Sowell_International_Group_Ltd-logo.png",
+        "width": 1000,
+        "height": 1000
+      }]
+    },
+    "galata acquisition ii": {
+      "company": "Galata Acquisition Corp. II",
+      "listingIds": ["NASDAQ:LATAW"],
+      "statuses": ["low-resolution"],
+      "query": "Galata Acquisition Corp II official logo",
+      "candidates": [{
+        "title": "Galata Acquisition Corp official wordmark",
+        "source": "Issuer website",
+        "pageUrl": "https://www.galataspac.com/",
+        "imageUrl": "https://static.wixstatic.com/media/c31887_7368dfc18d464debaf4d573c49474ef0~mv2.png",
+        "width": 2098,
+        "height": 957
+      }]
+    },
+    "research alliance iv": {
+      "company": "Research Alliance Corp IV",
+      "listingIds": ["NASDAQ:RACD"],
+      "statuses": ["low-resolution"],
+      "query": "Research Alliance Corporation IV RACD official logo",
+      "candidates": [{
+        "title": "RA Capital official logomark used by Research Alliance Corp IV",
+        "source": "Issuer website",
+        "pageUrl": "https://www.researchalliancecorpiv.com/",
+        "imageUrl": "https://images.squarespace-cdn.com/content/v1/6a44222c6c1b085ddfcb0901/1782850093670-RPFXE985SLALKR08FJLZ/RACAPITAL_ID_Logomark_300.png",
+        "width": 300,
+        "height": 300
+      }]
+    },
+    "epi holdings": {
+      "company": "EPI (HOLDINGS)",
+      "listingIds": ["HKEX:0689"],
+      "statuses": ["visual-low-resolution"],
+      "query": "EPI Holdings 0689 official logo",
+      "candidates": [{
+        "title": "EPI Holdings logo",
+        "source": "Google Images / exchange-qualified",
+        "pageUrl": "https://www.tradingview.com/symbols/HKEX-689/",
+        "imageUrl": "https://s3-symbol-logo.tradingview.com/epi-ltd--600.png",
+        "width": 600,
+        "height": 600
+      }]
+    },
+    "tysan holdings": {
+      "company": "TYSAN HOLDINGS",
+      "listingIds": ["HKEX:0687"],
+      "statuses": ["user-corrected-mark"],
+      "query": "Tysan Holdings 0687 official logo red wordmark",
+      "candidates": [{
+        "title": "Tysan Holdings official full wordmark",
+        "source": "Issuer website",
+        "pageUrl": "https://tysan.com/",
+        "imageUrl": "https://tysan.com/all_images/Tysan_Holding.svg",
+        "width": 1931,
+        "height": 539
+      }]
+    },
+    "tongcheng travel": {
+      "company": "TONGCHENGTRAVEL",
+      "listingIds": ["HKEX:0780"],
+      "statuses": ["visual-low-resolution"],
+      "query": "Tongcheng Travel 0780 official logo high resolution",
+      "candidates": [{
+        "title": "Tongcheng Travel current logo",
+        "source": "Google Images / issuer corroborated",
+        "pageUrl": "https://www.tongchengir.com/",
+        "imageUrl": "https://img.php.cn/upload/article/000/887/227/171410985837620.png",
+        "width": 597,
+        "height": 391
+      }]
+    }
+  }
+}

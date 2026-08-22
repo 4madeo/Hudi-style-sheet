@@ -1,0 +1,18 @@
+exchange,symbol,name,sector,source,program_status,supporters,won_at,publicly_on_hudi
+KRX,042700,Hanmi Semiconductor,Semi Equipment / HBM,priority_v3_p0,reference_only,,,true
+KRX,012450,Hanwha Aerospace,Defense / Aerospace / Engines,priority_v3_p0,reference_only,,,true
+KRX,272210,Hanwha Systems,Defense Electronics / Space,priority_v3_p0,reference_only,,,true
+KRX,047810,Korea Aerospace Industries,Defense / Aerospace,priority_v3_p0,reference_only,,,true
+KRX,009540,HD Korea Shipbuilding,Shipbuilding,priority_v3_p0,reference_only,,,true
+KRX,042660,Hanwha Ocean,Shipbuilding / Naval,priority_v3_p0,reference_only,,,true
+KRX,267260,HD Hyundai Electric,Power Equipment / Grid,priority_v3_p0,reference_only,,,true
+KRX,034020,Doosan Enerbility,Power / Nuclear / SMR,priority_v3_p0,reference_only,,,true
+KRX,000990,DB HiTek,Semiconductors / Foundry,priority_v3_p1,reference_only,,,true
+KRX,006400,Samsung SDI,EV Batteries,priority_v3_p1,reference_only,,,true
+KRX,096770,SK Innovation,Energy / Battery,priority_v3_p1,reference_only,,,true
+KRX,450080,Ecopro Materials,Battery Materials / Precursor,priority_v3_p1,reference_only,,,true
+KRX,034220,LG Display,Displays / OLED,priority_v3_p1,reference_only,,,true
+KRX,009830,Hanwha Solutions,Solar / Chemicals,priority_v3_p1,reference_only,,,true
+KRX,000720,Hyundai E&C,Construction / Nuclear,priority_v3_p1,reference_only,,,true
+KRX,028260,Samsung C&T,Conglomerate / Construction,priority_v3_p1,reference_only,,,true
+KRX,004020,Hyundai Steel,Steel,priority_v3_p1,reference_only,,,true
