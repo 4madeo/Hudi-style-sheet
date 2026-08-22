@@ -1,113 +1,69 @@
-# Orb integration reference
+# Logo orb module
 
-The module is intentionally stateless. It accepts ticker data and visual tokens, then renders one orb. Fetching, caching, editing, modal state and persistence belong to the host front end.
+`LogoOrb` is a stateless company-logo renderer. It owns orb geometry, material effects, the central mark safe zone, and logo contrast treatment. Logo fetching, caching, company metadata, editing, and persistence belong to the host application.
 
-## Public surface
+## Public API
 
-Everything intended for consumers is exported from `components/orb/index.ts`:
+Import public values from `components/orb/index.ts`:
 
 | Export | Purpose |
 | --- | --- |
-| `TickerOrb` | React orb renderer |
-| `deriveOrbPalette(colour)` | Derives base, sheen and shadow from `#RGB` or `#RRGGBB` |
-| `createOrbDefinition(input)` | Normalises plain ticker data into component-ready data |
-| `createMarketOrbDefinition(input)` | Generates a stable market-aware palette for a dataset row |
-| `colourForMarket(market, stableKey)` | Selects a deterministic market seed |
-| `ORB_TOKENS` | Palette, contrast and ink rules |
-| `ORB_MARKET_COLOURS` | Warm HK, cool KR and yellow/gold JP colour spaces |
-| `ORB_CSS_VARIABLES` | Supported CSS custom-property names |
+| `LogoOrb` | React company-logo orb renderer |
+| `createLogoDevUrl(domain, options)` | Creates a Logo.dev URL from a verified company domain |
+| `deriveOrbPalette(colour)` | Expands one brand colour into the orb material palette |
+| `createLogoOrbSvg(...)` | Creates an SVG export with a centred logo image |
 
-`TickerOrb` accepts `ticker`, `number`, `colour`, `palette`, `size`, `compact`, `theme`, `glow`, `className`, `style`, `ariaLabel` and `decorative`. `number` can be a string or number; a string is recommended when leading zeroes matter.
+`LogoOrb` accepts `company`, optional `logoUrl`, optional `fallbackKey`, `colour` or `palette`, `logoTreatment`, `logoScale`, `size`, `compact`, `theme`, `glow`, `className`, `style`, `ariaLabel`, and `decorative`.
 
-## Theme contract
+When `logoUrl` is absent or fails to load, the orb renders a compact company monogram. It uses the first letters of up to two meaningful company-name words, ignores common legal suffixes, and falls back to the first two graphemes of a single-word or non-Latin name. The mark remains a clearly system-generated HUDI default rather than a fabricated company logo.
 
-The default `theme="inherit"` looks for `data-theme="dark"` on any ancestor. Dark mode reverses the two equal-width material rings and enables the colour-matched glow. Light mode keeps the dark ring outside and the bright ring inside.
+`logoTreatment` is `original`, `light`, `dark`, `lift`, `deepen`, or `knockout`. Use `original` for marks whose internal brand colours must survive, `light` or `dark` for one-colour inversions, `lift` or `deepen` to preserve a tonal mark while increasing its contrast, and `knockout` to turn brand-colour geometry white while making the source's white areas transparent.
 
-```tsx
-<div data-theme={mode}>
-  <TickerOrb ticker="BABA" number="9988" colour="#ff2a00" size={40} />
-</div>
-```
+Two-tone vectors containing both a brand colour and white detail use `knockout`; their orb uses the extracted brand colour and shows the source geometry as a white-on-brand cutout.
 
-Use an explicit prop if the application uses class-based themes or renders an orb opposite to the surrounding mode:
+The catalog retains the extracted brand colour as its source seed. The rendered palette adds a small saturation and lightness lift and reduces shadow density so orb colours remain vivid without changing their brand hue.
+
+Black logo inversion is reserved for bright orb colours with strong measured contrast. Mid-tone and dark orbs prefer white, while tonal and multicolour marks are tinted toward white or deepened without discarding their internal colour structure.
+
+`logoScale` is the mark’s diameter as a proportion of the orb. The component clamps it to the 0.36–0.72 range; the curated listing set normally stays around 0.54–0.62. This keeps every mark inside the central safe zone and clear of the highlight and rim.
 
 ```tsx
-<TickerOrb ticker="BABA" number="9988" colour="#ff2a00" theme="dark" />
-```
-
-Set `glow={false}` to retain the dark material ordering without an outer glow.
-
-## CSS tokens
-
-The component has namespaced defaults and can be tuned per instance or at a wrapper level:
-
-| Custom property | Default role |
-| --- | --- |
-| `--hudi-orb-size` | Diameter |
-| `--hudi-orb-base` | Main material colour |
-| `--hudi-orb-sheen` | Top gradient and inner light |
-| `--hudi-orb-shadow` | Body and dark-ring shadow |
-| `--hudi-orb-dark-ring` | Optional explicit dark-ring colour |
-| `--hudi-orb-light-ring` | Optional explicit bright-ring colour |
-| `--hudi-orb-ring-width` | Visible outer-ring thickness |
-| `--hudi-orb-ring-depth` | Cumulative depth of both equal rings; normally twice the width |
-| `--hudi-orb-glow-strength` | Dark-mode glow colour percentage |
-| `--hudi-orb-glow-radius` | Dark-mode blur radius |
-| `--hudi-orb-display-font` | Ticker font stack |
-| `--hudi-orb-readout-font` | Curved number font stack |
-
-```tsx
-<TickerOrb
-  ticker="SMSG"
-  number="5930"
-  colour="#00f0ff"
-  size={24}
-  style={{
-    "--hudi-orb-ring-width": "0.875px",
-    "--hudi-orb-ring-depth": "1.75px",
-  }}
+<LogoOrb
+  company="Microsoft"
+  logoUrl="/logos/msft.png"
+  logoTreatment="original"
+  logoScale={0.54}
+  palette={deriveOrbPalette("#0078D4")}
+  size={136}
 />
 ```
 
-The implementation uses `color-mix()`, SVG filters and CSS custom properties, so consumers should target modern evergreen browsers.
+## Logo.dev contract
 
-## Fonts
+`createLogoDevUrl` defaults to `format=svg`, `size=512`, and `fallback=404`. Pass only a publishable API key. A 404 fallback is intentional: it keeps third-party generated monograms out of the catalog so the renderer can apply HUDI’s consistent company-monogram treatment itself.
 
-The renderer does not bundle proprietary display fonts. The host should load properly licensed font files and point the two font variables at them. The fallbacks remain functional when those fonts are unavailable.
+The Orb System reference app uses the validated local snapshot in
+`public/logos/`; `createLogoDevUrl` remains available for consumers that choose
+runtime delivery or for previewing a custom domain in the editor.
 
-```css
-.asset-orbs {
-  --hudi-orb-display-font: "Your Licensed Expanded Face", "Arial Black", sans-serif;
-  --hudi-orb-readout-font: "Your Licensed OCR Face", ui-monospace, monospace;
-}
-```
+Orb assets should use the most recognizable standalone brand mark available in
+the supplied artwork. When a full lockup contains both a mark and a wordmark,
+prefer the mark; retain the full lockup only when it is itself the clearest
+small-size identifier. The local asset manifest may include a normalized `crop`
+rectangle for this art direction. The processing script uses that region to
+produce an orb-specific asset while preserving the complete downloaded artwork
+in `public/logos/source/`.
 
-## Adding dataset rows
+After cropping, normalize by the rendered foreground rather than by the source
+canvas. Standalone marks should occupy approximately 52% of the orb diameter.
+Wide or stacked lockups may extend to roughly 56–60% when needed for legibility,
+provided they remain clear of the highlight and rim.
 
-Always choose colour from a stable key, never a current array index. An explicit `colour` or `palette` can still override the generated market colour.
+For compressed raster sources, an asset-specific `backgroundTolerance` may be
+used to remove matte noise without changing the preserved source artwork.
 
-```ts
-const orb = createMarketOrbDefinition({
-  ticker: row.displayTicker,
-  number: row.exchangeTicker.slice(-4),
-  market: row.market,
-  stableKey: row.id ?? `${row.market}:${row.exchangeTicker}`,
-  colour: row.orbColour,
-});
-```
+Use a verified domain whenever possible. Company-name and ticker lookups are useful fallbacks, but a domain is more deterministic for global listings and similarly named brands.
 
-The default market token map supports `HK`, `KR` and `JP`. A host can supply additional market colour spaces without changing the renderer:
+## Compatibility
 
-```ts
-const orb = createMarketOrbDefinition({
-  ticker: row.ticker,
-  number: row.number,
-  market: row.market,
-  stableKey: row.id,
-  marketPalettes: {
-    HK: ["#ff003d", "#ff5a00"],
-    KR: ["#00f0ff", "#00ffb2"],
-    US: ["#0057ff", "#ff00aa"],
-  },
-});
-```
+`TickerOrb` and the legacy ticker palette helpers remain exported for a short migration window. New product surfaces should use `LogoOrb`; the V2 system does not display ticker text, exchange numbers, or market-state colours inside the orb.

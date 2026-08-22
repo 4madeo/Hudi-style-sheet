@@ -1,6 +1,7 @@
+import type { Font, RenderOptions } from "opentype.js";
 import { hexToRgb, mixRgb, rgbToHex } from "./color";
 import { getOrbPresentation } from "./presentation";
-import type { OrbPalette } from "./types";
+import type { LogoTreatment, OrbPalette } from "./types";
 
 export type OrbExportScalePreset = Readonly<{
   size: number;
@@ -34,14 +35,17 @@ export type OrbExportScaleName = keyof typeof ORB_EXPORT_SCALES;
 export type OrbExportTheme = "light" | "dark";
 
 export type OrbExportFonts = Readonly<{
-  displayDataUri: string;
-  readoutDataUri: string;
+  display: Font;
+  readout: Font;
 }>;
 
 export type CreateOrbSvgOptions = {
   fonts?: OrbExportFonts;
   title?: string;
   theme?: OrbExportTheme;
+  logoHref?: string;
+  logoTreatment?: LogoTreatment;
+  logoScale?: number;
 };
 
 const XML_CHARACTERS: Record<string, string> = {
@@ -56,9 +60,68 @@ function escapeXml(value: string | number) {
   return String(value).replace(/[&<>"']/g, (character) => XML_CHARACTERS[character]);
 }
 
+function svgNumber(value: number) {
+  return Number(value.toFixed(3)).toString();
+}
+
+function centredTextOutline(
+  font: Font,
+  text: string,
+  fontSize: number,
+  letterSpacing: number,
+  centreX: number,
+  centreY: number,
+) {
+  const options: RenderOptions = { kerning: true, letterSpacing };
+  const advanceWidth = font.getAdvanceWidth(text, fontSize, options);
+  const fontXHeight = font.tables.os2?.sxHeight
+    ?? font.charToGlyph("x").yMax
+    ?? font.unitsPerEm * 0.5;
+  const x = centreX - advanceWidth / 2;
+  const y = centreY + fontXHeight / font.unitsPerEm * fontSize / 2;
+  return font.getPath(text, x, y, fontSize, options).toPathData(3);
+}
+
+function curvedNumberOutline(font: Font, text: string) {
+  const fontSize = 15;
+  const letterSpacing = 0.06;
+  const options: RenderOptions = { kerning: true, letterSpacing };
+  const glyphs = font.stringToGlyphs(text);
+  const fontScale = fontSize / font.unitsPerEm;
+  const letterSpacingAdvance = letterSpacing * fontSize;
+  const glyphAdvances = glyphs.map((glyph, index) => {
+    const nextGlyph = glyphs[index + 1];
+    const advance = (glyph.advanceWidth ?? 0) * fontScale;
+    if (!nextGlyph) return advance;
+    return advance
+      + font.getKerningValue(glyph, nextGlyph) * fontScale
+      + letterSpacingAdvance;
+  });
+  const totalAdvance = glyphAdvances.reduce((sum, advance) => sum + advance, 0);
+  const arcRadius = 200;
+  const arcCentreX = 50;
+  const arcCentreY = 26 + Math.sqrt(arcRadius ** 2 - 32 ** 2);
+  const arcStartAngle = Math.atan2(26 - arcCentreY, 18 - arcCentreX);
+  const arcLength = arcRadius * 2 * Math.asin(32 / arcRadius);
+  let cursor = (arcLength - totalAdvance) / 2;
+
+  return glyphs.map((glyph, index) => {
+    const glyphAdvance = (glyph.advanceWidth ?? 0) * fontScale;
+    const glyphMidpoint = cursor + glyphAdvance / 2;
+    const angle = arcStartAngle + glyphMidpoint / arcRadius;
+    const x = arcCentreX + arcRadius * Math.cos(angle);
+    const y = arcCentreY + arcRadius * Math.sin(angle);
+    const rotation = (angle + Math.PI / 2) * 180 / Math.PI;
+    const pathData = glyph.getPath(-glyphAdvance / 2, 0, fontSize, options, font).toPathData(3);
+    cursor += glyphAdvances[index];
+    return `<path d="${pathData}" transform="translate(${svgNumber(x)} ${svgNumber(y)}) rotate(${svgNumber(rotation)})" />`;
+  }).join("\n        ");
+}
+
 /**
- * Creates one self-contained, editable-text SVG. Static IDs are safe because
- * each export is a separate SVG document.
+ * Creates one standalone SVG. When fonts are supplied, all lettering is
+ * converted to vector paths for importers such as Figma. Static IDs are safe
+ * because each export is a separate SVG document.
  */
 export function createOrbSvg(
   ticker: string | number,
@@ -74,6 +137,7 @@ export function createOrbSvg(
   const resolvedNumber = String(number);
   const presentation = getOrbPresentation(palette, resolvedTicker, scale.compact);
   const size = scale.size;
+  const isLogoOrb = Boolean(options.logoHref);
   const radius = size / 2;
   const depthShadowOffset = size * -0.061625;
   const depthShadowDeviation = size * 0.643984 / 2;
@@ -106,7 +170,7 @@ export function createOrbSvg(
   const innerRing = darkTheme ? darkRing : lightRing;
   const innerRingOpacity = darkTheme ? darkRingAlpha : 0.72;
 
-  const title = escapeXml(options.title ?? `${resolvedTicker} ${resolvedNumber}`);
+  const title = escapeXml(options.title ?? (isLogoOrb ? "Company logo orb" : `${resolvedTicker} ${resolvedNumber}`));
   const safeTicker = escapeXml(resolvedTicker);
   const safeNumber = escapeXml(resolvedNumber);
   const safeBase = escapeXml(palette.base);
@@ -118,25 +182,57 @@ export function createOrbSvg(
   const safeLightInk = escapeXml(presentation.lightInk);
   const safeOuterRing = escapeXml(outerRing);
   const safeInnerRing = escapeXml(innerRing);
-  const embeddedFontFaces = options.fonts ? `
-      @font-face {
-        font-family: "Hudi Export Diatype Expanded";
-        src: url("${options.fonts.displayDataUri}") format("opentype");
-        font-style: normal;
-        font-weight: 700;
+  const tickerOutline = options.fonts
+    ? centredTextOutline(options.fonts.display, resolvedTicker, tickerFontSize, -0.01, 50, 19)
+    : null;
+  const numberOutline = options.fonts
+    ? curvedNumberOutline(options.fonts.readout, resolvedNumber)
+    : null;
+  const numberMarkup = numberOutline
+    ? `<g fill="${safeNumberColour}" filter="url(#orb-number-inner)">
+        ${numberOutline}
+      </g>`
+    : `<path id="number-curve" d="M 18 26 A 200 200 0 0 1 82 26" fill="none" />
+      <text class="orb-number-text" fill="${safeNumberColour}" text-anchor="middle" filter="url(#orb-number-inner)">
+        <textPath href="#number-curve" startOffset="50%">${safeNumber}</textPath>
+      </text>`;
+  const tickerMarkup = tickerOutline
+    ? `<path d="${tickerOutline}" transform="translate(0 ${chipOffset})" fill="${chipColour}" fill-opacity="${chipOpacity}" />
+      <path d="${tickerOutline}" fill="${presentation.whiteText ? safeLightInk : "url(#orb-ticker-gradient)"}" />`
+    : `<text class="orb-ticker-text" x="50" y="19" dy="${chipOffset}" text-anchor="middle" dominant-baseline="middle" fill="${chipColour}" fill-opacity="${chipOpacity}">${safeTicker}</text>
+      <text class="orb-ticker-text" x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="${presentation.whiteText ? safeLightInk : "url(#orb-ticker-gradient)"}">${safeTicker}</text>`;
+  const fallbackFontStyles = options.fonts || isLogoOrb ? "" : `<style>
+      .orb-number-text {
+        font-family: "OCRA Fixed", ui-monospace, monospace;
+        font-size: 15px;
+        letter-spacing: 0.06em;
       }
-      @font-face {
-        font-family: "Hudi Export OCR";
-        src: url("${options.fonts.readoutDataUri}") format("opentype");
-        font-style: normal;
-        font-weight: 400;
-      }` : "";
-  const displayFontFamily = options.fonts
-    ? '"Hudi Export Diatype Expanded", "Diatype Expanded", "Arial Black", sans-serif'
-    : '"Diatype Expanded", "Arial Black", sans-serif';
-  const readoutFontFamily = options.fonts
-    ? '"Hudi Export OCR", "OCRA Fixed", ui-monospace, monospace'
-    : '"OCRA Fixed", ui-monospace, monospace';
+      .orb-ticker-text {
+        font-family: "Diatype Expanded", "Arial Black", sans-serif;
+        font-size: ${tickerFontSize}px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+    </style>`;
+  const logoScale = Math.max(0.36, Math.min(0.72, options.logoScale ?? 0.58));
+  const logoSize = size * logoScale;
+  const logoPosition = (size - logoSize) / 2;
+  const logoFilter = options.logoTreatment === "light"
+    ? "url(#orb-logo-light)"
+    : options.logoTreatment === "dark"
+      ? "url(#orb-logo-dark)"
+      : options.logoTreatment === "lift"
+        ? "url(#orb-logo-lift)"
+        : options.logoTreatment === "tint"
+          ? "url(#orb-logo-tint)"
+      : options.logoTreatment === "deepen"
+          ? "url(#orb-logo-deepen)"
+          : options.logoTreatment === "knockout"
+            ? "url(#orb-logo-knockout)"
+          : undefined;
+  const logoMarkup = options.logoHref
+    ? `<image href="${escapeXml(options.logoHref)}" x="${svgNumber(logoPosition)}" y="${svgNumber(logoPosition)}" width="${svgNumber(logoSize)}" height="${svgNumber(logoSize)}" preserveAspectRatio="xMidYMid meet"${logoFilter ? ` filter="${logoFilter}"` : ""} />`
+    : "";
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-labelledby="orb-title">
@@ -156,7 +252,7 @@ export function createOrbSvg(
       <feGaussianBlur in="inverse-alpha" stdDeviation="${depthShadowDeviation}" result="depth-blur" />
       <feOffset in="depth-blur" dy="${depthShadowOffset}" result="depth-offset" />
       <feComposite in="depth-offset" in2="SourceAlpha" operator="in" result="depth-mask" />
-      <feFlood flood-color="${safeShadow}" flood-opacity="0.4" result="depth-colour" />
+      <feFlood flood-color="${safeShadow}" flood-opacity="0.34" result="depth-colour" />
       <feComposite in="depth-colour" in2="depth-mask" operator="in" result="depth-shadow" />
       <feGaussianBlur in="inverse-alpha" stdDeviation="${edgeSheenDeviation}" result="edge-blur" />
       <feComposite in="edge-blur" in2="SourceAlpha" operator="in" result="edge-mask" />
@@ -175,6 +271,39 @@ export function createOrbSvg(
       <stop stop-color="#ffffff" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0.14" />
     </radialGradient>
+    <filter id="orb-logo-light" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0" />
+    </filter>
+    <filter id="orb-logo-dark" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" />
+    </filter>
+    <filter id="orb-logo-lift" color-interpolation-filters="sRGB">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope=".16" intercept=".8" />
+        <feFuncG type="linear" slope=".16" intercept=".8" />
+        <feFuncB type="linear" slope=".16" intercept=".8" />
+      </feComponentTransfer>
+    </filter>
+    <filter id="orb-logo-tint" color-interpolation-filters="sRGB">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope=".4" intercept=".55" />
+        <feFuncG type="linear" slope=".4" intercept=".55" />
+        <feFuncB type="linear" slope=".4" intercept=".55" />
+      </feComponentTransfer>
+    </filter>
+    <filter id="orb-logo-deepen" color-interpolation-filters="sRGB">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="0.48" />
+        <feFuncG type="linear" slope="0.48" />
+        <feFuncB type="linear" slope="0.48" />
+      </feComponentTransfer>
+    </filter>
+    <filter id="orb-logo-knockout" color-interpolation-filters="sRGB">
+      <feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 -.2126 -.7152 -.0722 1 0" />
+      <feComponentTransfer>
+        <feFuncA type="discrete" tableValues="0 1 1 1 1" />
+      </feComponentTransfer>
+    </filter>
     <filter id="orb-number-inner" x="-15%" y="-45%" width="130%" height="190%" color-interpolation-filters="sRGB">
       <feFlood flood-opacity="0" result="background" />
       <feBlend in="SourceGraphic" in2="background" result="shape" />
@@ -190,39 +319,32 @@ export function createOrbSvg(
       <stop stop-color="${safeDarkInkTop}" />
       <stop offset="1" stop-color="${safeDarkInkBottom}" />
     </linearGradient>
-    <style>
-${embeddedFontFaces}
-      .orb-number-text {
-        font-family: ${readoutFontFamily};
-        font-size: 15px;
-        letter-spacing: 0.06em;
-      }
-      .orb-ticker-text {
-        font-family: ${displayFontFamily};
-        font-size: ${tickerFontSize}px;
-        font-weight: 700;
-        letter-spacing: -0.01em;
-      }
-    </style>
+    ${fallbackFontStyles}
   </defs>
   <g clip-path="url(#orb-clip)">
     <circle cx="${radius}" cy="${radius}" r="${radius}" fill="${safeBase}" />
     <circle cx="${radius}" cy="${radius}" r="${radius}" fill="url(#orb-body-sheen)" />
     <circle cx="${radius}" cy="${radius}" r="${radius}" fill="#ffffff" filter="url(#orb-body-inner-shadows)" />
+    ${isLogoOrb ? logoMarkup : ""}
     <ellipse cx="50.6%" cy="26.8%" rx="32%" ry="23%" fill="url(#orb-wide-highlight)" />
     <ellipse cx="50.22%" cy="10.13%" rx="18.17%" ry="9.03%" fill="url(#orb-top-highlight)" />
-    <svg x="22%" y="0" width="56%" height="28%" viewBox="0 0 100 32" overflow="visible" opacity="0.75">
-      <path id="number-curve" d="M 18 26 A 200 200 0 0 1 82 26" fill="none" />
-      <text class="orb-number-text" fill="${safeNumberColour}" text-anchor="middle" filter="url(#orb-number-inner)">
-        <textPath href="#number-curve" startOffset="50%">${safeNumber}</textPath>
-      </text>
+    ${isLogoOrb ? "" : `<svg x="22%" y="0" width="56%" height="28%" viewBox="0 0 100 32" overflow="visible" opacity="0.75">
+      ${numberMarkup}
     </svg>
     <svg x="0" y="37.5%" width="100%" height="34%" viewBox="0 0 100 38" overflow="visible">
-      <text class="orb-ticker-text" x="50" y="19" dy="${chipOffset}" text-anchor="middle" dominant-baseline="middle" fill="${chipColour}" fill-opacity="${chipOpacity}">${safeTicker}</text>
-      <text class="orb-ticker-text" x="50" y="19" text-anchor="middle" dominant-baseline="middle" fill="${presentation.whiteText ? safeLightInk : "url(#orb-ticker-gradient)"}">${safeTicker}</text>
-    </svg>
+      ${tickerMarkup}
+    </svg>`}
   </g>
   <circle cx="${radius}" cy="${radius}" r="${radius - scale.ringDepth / 2}" fill="none" stroke="${safeInnerRing}" stroke-opacity="${innerRingOpacity}" stroke-width="${scale.ringDepth}" />
   <circle cx="${radius}" cy="${radius}" r="${radius - scale.ringWidth / 2}" fill="none" stroke="${safeOuterRing}" stroke-opacity="${outerRingOpacity}" stroke-width="${scale.ringWidth}" />
 </svg>`;
+}
+
+export function createLogoOrbSvg(
+  logoHref: string,
+  palette: OrbPalette,
+  scaleName: OrbExportScaleName,
+  options: Omit<CreateOrbSvgOptions, "logoHref" | "fonts"> = {},
+) {
+  return createOrbSvg("", "", palette, scaleName, { ...options, logoHref });
 }

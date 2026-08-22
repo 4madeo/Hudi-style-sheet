@@ -1,48 +1,52 @@
+import type { LogoTreatment } from "@/components/orb";
+
 export type Listing = {
-  exchangeTicker: string;
-  ticker: string;
+  symbol: string;
   company: string;
-  market: "HK" | "KR" | "JP";
-  priority: "P0" | "P1";
+  exchange: string;
+  logoDomain: string;
+  logoTreatment?: LogoTreatment;
+  logoScale?: number;
 };
 
+/** Reference companies and presentation geometry. Brand colours are generated
+ * from current local artwork and exact brand metadata before builds. */
 export const listings: Listing[] = [
-  { exchangeTicker: "0700", ticker: "TENC", company: "Tencent Holdings", market: "HK", priority: "P0" },
-  { exchangeTicker: "9988", ticker: "BABA", company: "Alibaba Group", market: "HK", priority: "P0" },
-  { exchangeTicker: "3690", ticker: "MEIT", company: "Meituan", market: "HK", priority: "P0" },
-  { exchangeTicker: "1211", ticker: "BYD", company: "BYD Co H", market: "HK", priority: "P0" },
-  { exchangeTicker: "100", ticker: "MINI", company: "MiniMax", market: "HK", priority: "P0" },
-  { exchangeTicker: "005930", ticker: "SMSG", company: "Samsung Electronics", market: "KR", priority: "P0" },
-  { exchangeTicker: "000660", ticker: "HYNX", company: "SK Hynix", market: "KR", priority: "P0" },
-  { exchangeTicker: "373220", ticker: "LGES", company: "LG Energy Solution", market: "KR", priority: "P0" },
-  { exchangeTicker: "000990", ticker: "DBHT", company: "DB HiTek", market: "KR", priority: "P1" },
-  { exchangeTicker: "042700", ticker: "HANM", company: "Hanmi Semiconductor", market: "KR", priority: "P0" },
-  { exchangeTicker: "058470", ticker: "LENO", company: "Leeno Industrial", market: "KR", priority: "P1" },
-  { exchangeTicker: "240810", ticker: "WNIK", company: "Wonik IPS", market: "KR", priority: "P1" },
-  { exchangeTicker: "012450", ticker: "HWAA", company: "Hanwha Aerospace", market: "KR", priority: "P0" },
-  { exchangeTicker: "272210", ticker: "HWAS", company: "Hanwha Systems", market: "KR", priority: "P0" },
-  { exchangeTicker: "047810", ticker: "KAI", company: "Korea Aerospace Industries", market: "KR", priority: "P0" },
-  { exchangeTicker: "009540", ticker: "KSOE", company: "HD Korea Shipbuilding", market: "KR", priority: "P0" },
-  { exchangeTicker: "042660", ticker: "HWO", company: "Hanwha Ocean", market: "KR", priority: "P0" },
-  { exchangeTicker: "006400", ticker: "SSDI", company: "Samsung SDI", market: "KR", priority: "P1" },
-  { exchangeTicker: "096770", ticker: "SKI", company: "SK Innovation", market: "KR", priority: "P1" },
-  { exchangeTicker: "247540", ticker: "ECBM", company: "Ecopro BM", market: "KR", priority: "P0" },
-  { exchangeTicker: "086520", ticker: "ECPR", company: "Ecopro", market: "KR", priority: "P1" },
-  { exchangeTicker: "450080", ticker: "ECMT", company: "Ecopro Materials", market: "KR", priority: "P1" },
-  { exchangeTicker: "034220", ticker: "LGD", company: "LG Display", market: "KR", priority: "P1" },
-  { exchangeTicker: "011200", ticker: "HMM", company: "HMM", market: "KR", priority: "P0" },
-  { exchangeTicker: "009830", ticker: "HWSL", company: "Hanwha Solutions", market: "KR", priority: "P1" },
-  { exchangeTicker: "267260", ticker: "HDEC", company: "HD Hyundai Electric", market: "KR", priority: "P0" },
-  { exchangeTicker: "034020", ticker: "DOOS", company: "Doosan Enerbility", market: "KR", priority: "P0" },
-  { exchangeTicker: "000720", ticker: "HYEC", company: "Hyundai E&C", market: "KR", priority: "P1" },
-  { exchangeTicker: "028260", ticker: "SMCT", company: "Samsung C&T", market: "KR", priority: "P1" },
-  { exchangeTicker: "004020", ticker: "HYST", company: "Hyundai Steel", market: "KR", priority: "P1" },
-  { exchangeTicker: "095340", ticker: "ISC", company: "ISC", market: "KR", priority: "P1" },
-  { exchangeTicker: "403870", ticker: "HPSP", company: "HPSP", market: "KR", priority: "P1" },
-  { exchangeTicker: "039030", ticker: "EOT", company: "EO Technics", market: "KR", priority: "P1" },
-  { exchangeTicker: "6857", ticker: "ADVT", company: "Advantest", market: "JP", priority: "P0" },
-  { exchangeTicker: "8001", ticker: "ITOC", company: "Itochu Corp", market: "JP", priority: "P0" },
-  { exchangeTicker: "8002", ticker: "MARU", company: "Marubeni", market: "JP", priority: "P1" },
-  { exchangeTicker: "6758", ticker: "SONY", company: "Sony Group", market: "JP", priority: "P0" },
-  { exchangeTicker: "7974", ticker: "NTDO", company: "Nintendo", market: "JP", priority: "P0" },
+  { symbol: "ADVANTEST", company: "Advantest", exchange: "TSE", logoDomain: "advantest.com", logoTreatment: "light", logoScale: 0.56 },
+  { symbol: "BABA-HK", company: "Alibaba Group", exchange: "HKEX", logoDomain: "alibabagroup.com", logoTreatment: "light", logoScale: 0.58 },
+  { symbol: "BYD", company: "BYD Co H", exchange: "HKEX", logoDomain: "bydglobal.com", logoTreatment: "light", logoScale: 0.58 },
+  { symbol: "DOOSANENERB", company: "Doosan Enerbility", exchange: "KRX", logoDomain: "doosanenerbility.com", logoTreatment: "light", logoScale: 0.58 },
+  { symbol: "ECOPROBM", company: "Ecopro BM", exchange: "KRX", logoDomain: "ecoprobm.co.kr", logoTreatment: "light", logoScale: 0.54 },
+  { symbol: "FUJIKURA", company: "Fujikura", exchange: "TSE", logoDomain: "fujikura.co.jp", logoTreatment: "light", logoScale: 0.58 },
+  { symbol: "HANMI", company: "Hanmi Semiconductor", exchange: "KRX", logoDomain: "hanmisemi.com", logoTreatment: "light", logoScale: 0.56 },
+  { symbol: "HANWHAAERO", company: "Hanwha Aerospace", exchange: "KRX", logoDomain: "hanwhaaerospace.com", logoTreatment: "light", logoScale: 0.56 },
+  { symbol: "HANWHAOCEAN", company: "Hanwha Ocean", exchange: "KRX", logoDomain: "hanwhaocean.com", logoTreatment: "light", logoScale: 0.58 },
+  { symbol: "HANWHASYS", company: "Hanwha Systems", exchange: "KRX", logoDomain: "hanwhasystems.com", logoTreatment: "light", logoScale: 0.56 },
+  { symbol: "HDHYUNDAIELEC", company: "HD Hyundai Electric", exchange: "KRX", logoDomain: "hyundai-electric.com", logoTreatment: "light", logoScale: 0.55 },
+  { symbol: "HDKSOE", company: "HD Korea Shipbuilding", exchange: "KRX", logoDomain: "hd-ksoe.com", logoTreatment: "light", logoScale: 0.55 },
+  { symbol: "HMM", company: "HMM", exchange: "KRX", logoDomain: "hmm21.com", logoTreatment: "light", logoScale: 0.59 },
+  { symbol: "HYUNDAI", company: "Hyundai Motor", exchange: "KRX", logoDomain: "hyundai.com", logoTreatment: "light", logoScale: 0.58 },
+  { symbol: "IBIDEN", company: "Ibiden", exchange: "TSE", logoDomain: "ibiden.com", logoTreatment: "light", logoScale: 0.54 },
+  { symbol: "ITOCHU", company: "Itochu Corp", exchange: "TSE", logoDomain: "itochu.co.jp", logoTreatment: "light", logoScale: 0.55 },
+  { symbol: "KAI", company: "Korea Aerospace Industries", exchange: "KRX", logoDomain: "koreaaero.com", logoTreatment: "light", logoScale: 0.58 },
+  { symbol: "KIOXIA", company: "Kioxia Holdings", exchange: "TSE", logoDomain: "kioxia-holdings.com", logoTreatment: "light", logoScale: 0.55 },
+  { symbol: "LGES", company: "LG Energy Solution", exchange: "KRX", logoDomain: "lgensol.com", logoTreatment: "light", logoScale: 0.55 },
+  { symbol: "MEITUAN", company: "Meituan", exchange: "HKEX", logoDomain: "meituan.com", logoTreatment: "dark", logoScale: 0.58 },
+  { symbol: "META", company: "Meta Platforms", exchange: "NASDAQ", logoDomain: "meta.com", logoTreatment: "light", logoScale: 0.6 },
+  { symbol: "MICRON", company: "Micron Technology", exchange: "NASDAQ", logoDomain: "micron.com", logoTreatment: "light", logoScale: 0.6 },
+  { symbol: "MINIMAX", company: "MiniMax", exchange: "HKEX", logoDomain: "minimaxi.com", logoTreatment: "light", logoScale: 0.56 },
+  { symbol: "MSFT", company: "Microsoft", exchange: "NASDAQ", logoDomain: "microsoft.com", logoTreatment: "original", logoScale: 0.54 },
+  { symbol: "MSTR", company: "MicroStrategy", exchange: "NASDAQ", logoDomain: "strategy.com", logoTreatment: "light", logoScale: 0.55 },
+  { symbol: "NINTENDO", company: "Nintendo", exchange: "TSE", logoDomain: "nintendo.com", logoTreatment: "light", logoScale: 0.62 },
+  { symbol: "NVDA", company: "Nvidia", exchange: "NASDAQ", logoDomain: "nvidia.com", logoTreatment: "light", logoScale: 0.68 },
+  { symbol: "SAMSUNG", company: "Samsung Electronics", exchange: "KRX", logoDomain: "samsung.com", logoTreatment: "light", logoScale: 0.62 },
+  { symbol: "SANDISK", company: "SanDisk", exchange: "NASDAQ", logoDomain: "sandisk.com", logoTreatment: "light", logoScale: 0.57 },
+  { symbol: "SKHYNIX", company: "SK Hynix", exchange: "KRX", logoDomain: "skhynix.com", logoTreatment: "light", logoScale: 0.58 },
+  { symbol: "SOFTBANK", company: "SoftBank Group", exchange: "TSE", logoDomain: "group.softbank", logoTreatment: "light", logoScale: 0.58 },
+  { symbol: "SONY", company: "Sony Group", exchange: "TSE", logoDomain: "sony.com", logoTreatment: "light", logoScale: 0.61 },
+  { symbol: "SPACEX", company: "SpaceX", exchange: "PRIVATE", logoDomain: "spacex.com", logoTreatment: "light", logoScale: 0.64 },
+  { symbol: "TENCENT", company: "Tencent Holdings", exchange: "HKEX", logoDomain: "tencent.com", logoTreatment: "light", logoScale: 0.59 },
+  { symbol: "TOKYOELEC", company: "Tokyo Electron", exchange: "TSE", logoDomain: "tel.com", logoTreatment: "light", logoScale: 0.59 },
+  { symbol: "TSLA", company: "Tesla", exchange: "NASDAQ", logoDomain: "tesla.com", logoTreatment: "light", logoScale: 0.56 },
+  { symbol: "ZHIPU", company: "Zhipu AI", exchange: "PRIVATE", logoDomain: "z.ai", logoTreatment: "light", logoScale: 0.56 },
 ];

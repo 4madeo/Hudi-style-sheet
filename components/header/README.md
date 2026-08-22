@@ -1,6 +1,6 @@
 # Company header integration
 
-`CompanyHeader` is the stateless 784×65 market header used by the app's `#header` view. It owns the supplied light/dark visual treatment and renders the shared `TickerOrb`; the host application owns market data, ticker selection, modal state and routing.
+`CompanyHeader` is the stateless 784×65 market header used by the app's `#header` view. It owns the supplied light/dark visual treatment and renders the shared `LogoOrb`; the host application owns market data, company selection, modal state and routing.
 
 ```tsx
 import { CompanyHeader } from "@/components/header";

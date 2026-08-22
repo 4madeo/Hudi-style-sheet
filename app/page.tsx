@@ -2,23 +2,24 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  TickerOrb,
-  createMarketOrbDefinition,
+  LogoOrb,
+  createLogoDevUrl,
   deriveOrbPalette,
+  type LogoTreatment,
   type OrbPalette,
 } from "@/components/orb";
 import { CompanyHeader, type CompanyHeaderStat } from "@/components/header";
-import { hslToHex } from "@/components/orb/color";
 import {
   ORB_EXPORT_SCALES,
-  createOrbSvg,
-  type OrbExportFonts,
+  createLogoOrbSvg,
   type OrbExportScaleName,
 } from "@/components/orb/svg";
 import { createZipBlob } from "@/lib/zip";
+import logoAssetManifest from "@/public/logos/manifest.json";
+import brandColourManifest from "@/public/logos/brand-colours.json";
 import { listings } from "./listings";
 
-type View = "generator" | "listings" | "blotter" | "header";
+type View = "generator" | "listings" | "catalog" | "blotter" | "header";
 type Position = {
   side: "LONG" | "SHORT";
   size: number;
@@ -36,131 +37,78 @@ function listingHash(label: string) {
   return hash >>> 0;
 }
 
-function previousColourForListing(label: string, index: number) {
-  const hash = listingHash(label);
-  return hslToHex({
-    h: (hash + index * 47) % 360,
-    s: 1,
-    l: 0.5,
-  });
-}
-
-const previousGalleryColourSeeds = [
-  "#00b7ff",
-  "#ff008c",
-  "#ffd500",
-  "#aaff00",
-  "#b80022",
-  "#0077ff",
-  "#00e5d4",
-  "#ff2b00",
-  "#00d5ff",
-  "#ff1493",
-  "#ffe600",
-  "#cf143f",
-  "#00a8e8",
-  "#00f0b5",
-];
-
-function previousCuratedColourForListing(label: string, index: number) {
-  const hash = listingHash(label);
-  return previousGalleryColourSeeds[(hash + index * 5) % previousGalleryColourSeeds.length];
-}
-
-const previousReferenceGalleryColourSeeds = [
-  "#ff0099",
-  "#fff000",
-  "#9dff00",
-  "#ff00c8",
-  "#ffd000",
-  "#00ffb2",
-  "#ff006e",
-  "#ffe600",
-  "#00ff66",
-  "#ff00a8",
-  "#ffc400",
-  "#b7ff00",
-  "#ff003d",
-  "#00ffd5",
-  "#ff00b8",
-  "#e1ff00",
-];
-
-function previousReferenceColourForListing(_label: string, index: number) {
-  return previousReferenceGalleryColourSeeds[index % previousReferenceGalleryColourSeeds.length];
-}
-
-const previousMarketAgnosticGalleryColourSeeds = [
-  "#ff0099",
-  "#00ffff",
-  "#9dff00",
-  "#ff00c8",
-  "#ffd000",
-  "#00ffb2",
-  "#ff003d",
-  "#00eaff",
-  "#00ff66",
-  "#ff00a8",
-  "#00ffd5",
-  "#b7ff00",
-  "#ff006e",
-  "#fff000",
-  "#00f0ff",
-  "#ff00b8",
-];
-
-function previousMarketAgnosticColourForListing(index: number) {
-  return previousMarketAgnosticGalleryColourSeeds[index % previousMarketAgnosticGalleryColourSeeds.length];
-}
+const logoDevFormat = process.env.NEXT_PUBLIC_LOGO_DEV_FORMAT === "png"
+  || process.env.NEXT_PUBLIC_LOGO_DEV_FORMAT === "webp"
+  || process.env.NEXT_PUBLIC_LOGO_DEV_FORMAT === "jpg"
+  ? process.env.NEXT_PUBLIC_LOGO_DEV_FORMAT
+  : "svg";
+const logoDevToken = process.env.NEXT_PUBLIC_LOGO_DEV_TOKEN;
+const localLogoAssets = logoAssetManifest as Record<string, {
+  path: string;
+  format: "svg" | "png";
+}>;
+const localBrandColours = brandColourManifest as Record<string, { orbColour: string }>;
 
 const initialGalleryOrbs = listings.map((listing) => ({
   ...listing,
-  number: listing.exchangeTicker.padStart(4, "0").slice(-4),
-  palette: createMarketOrbDefinition({
-    ticker: listing.ticker,
-    number: listing.exchangeTicker.padStart(4, "0").slice(-4),
-    market: listing.market,
-    stableKey: listing.exchangeTicker,
-  }).palette,
+  logoUrl: localLogoAssets[listing.symbol]?.path ?? createLogoDevUrl(listing.logoDomain, {
+    format: logoDevFormat,
+    token: logoDevToken,
+  }),
+  palette: deriveOrbPalette(localBrandColours[listing.symbol]?.orbColour ?? "#394150"),
 }));
 
 type GalleryOrb = (typeof initialGalleryOrbs)[number];
 
+type CatalogLogo = {
+  path: string;
+  orbColour: string;
+  orbColourSeed?: string;
+  orbColourSource?: "manual-override" | "simple-icons-brand" | "logo-derived" | "removed-background" | "verified-family" | "neutral-fallback";
+  orbColourSourceRef?: string;
+  orbColourSourceUrl?: string;
+  logoTreatment: LogoTreatment;
+  logoScale: number;
+  cropMode: "curated-emblem" | "curated-mark" | "auto-emblem" | "full-mark";
+};
+
+type CatalogEntry = {
+  id: string;
+  exchange: string;
+  symbol: string;
+  company: string;
+  sector: string;
+  logo: CatalogLogo | null;
+  logoStatus?: "missing" | "failed" | "low-resolution" | "duplicate-review" | "source-review";
+};
+
+type CatalogManifest = {
+  rowCount: number;
+  summary: {
+    reference: number;
+    ticker: number;
+    name: number;
+    missing: number;
+    failed: number;
+    duplicateReview?: number;
+    sourceReview?: number;
+  };
+  entries: CatalogEntry[];
+};
+
+type CatalogReviewEntry = {
+  id: string;
+  reason: "visual-mismatch" | "name-lookup" | "unreadable" | "low-resolution" | "empty-geometric-mark";
+  similarity?: number;
+};
+
+type CatalogReviewIndex = {
+  summary: { total: number };
+  entries: CatalogReviewEntry[];
+};
+
 const leverageOptions = [2, 3, 5, 8, 10, 15, 20, 23];
 const orbExportScaleNames = Object.keys(ORB_EXPORT_SCALES) as OrbExportScaleName[];
-let exportFontsPromise: Promise<OrbExportFonts> | null = null;
-
-function fontDataUri(buffer: ArrayBuffer) {
-  const bytes = new Uint8Array(buffer);
-  const chunkSize = 0x8000;
-  let binary = "";
-  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
-    binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
-  }
-  return `data:font/otf;base64,${window.btoa(binary)}`;
-}
-
-async function fetchExportFont(path: string) {
-  const response = await window.fetch(path);
-  if (!response.ok) throw new Error(`Unable to load export font: ${path}`);
-  return fontDataUri(await response.arrayBuffer());
-}
-
-function loadExportFonts() {
-  if (!exportFontsPromise) {
-    exportFontsPromise = Promise.all([
-      fetchExportFont("/fonts/diatype-expanded-bold.otf"),
-      fetchExportFont("/fonts/ocra-fixed.otf"),
-    ]).then(([displayDataUri, readoutDataUri]) => ({
-      displayDataUri,
-      readoutDataUri,
-    })).catch((error) => {
-      exportFontsPromise = null;
-      throw error;
-    });
-  }
-  return exportFontsPromise;
-}
 
 function exportFilenamePart(value: string) {
   return value
@@ -169,8 +117,89 @@ function exportFilenamePart(value: string) {
     .replace(/^-+|-+$/g, "") || "orb";
 }
 
+function googleLogoSearchUrl(entry: CatalogEntry) {
+  const query = `"${entry.company}" company logo ${entry.exchange} ${entry.symbol}`;
+  return `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
+}
+
+function fallbackOrbColour(key: string) {
+  const colours = ["#3867d6", "#6657d9", "#a646d4", "#d13f78", "#d75a34", "#168c87", "#397f4a", "#47657f"];
+  return colours[listingHash(key) % colours.length];
+}
+
+function randomSample<T>(items: T[], count: number) {
+  const sample = [...items];
+  const sampleSize = Math.min(count, sample.length);
+  for (let index = 0; index < sampleSize; index += 1) {
+    const randomIndex = index + Math.floor(Math.random() * (sample.length - index));
+    [sample[index], sample[randomIndex]] = [sample[randomIndex], sample[index]];
+  }
+  return sample.slice(0, sampleSize);
+}
+
+function catalogReviewLabel(review: CatalogReviewEntry) {
+  if (review.reason === "visual-mismatch" && typeof review.similarity === "number") {
+    return `${Math.round(review.similarity * 100)}% cross-check`;
+  }
+  if (review.reason === "name-lookup") return "name lookup";
+  if (review.reason === "low-resolution") return "low resolution";
+  if (review.reason === "empty-geometric-mark") return "empty geometric mark";
+  return "unreadable";
+}
+
+function blobToDataUrl(blob: Blob) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(reader.error ?? new Error("Unable to read Logo.dev response"));
+    reader.onload = () => resolve(String(reader.result));
+    reader.readAsDataURL(blob);
+  });
+}
+
+function loadSvgImage(svg: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    const svgUrl = window.URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+
+    image.onload = () => {
+      window.URL.revokeObjectURL(svgUrl);
+      resolve(image);
+    };
+    image.onerror = () => {
+      window.URL.revokeObjectURL(svgUrl);
+      reject(new Error("Unable to rasterize orb SVG"));
+    };
+    image.src = svgUrl;
+  });
+}
+
+async function createOrbPng(svg: string, size: number) {
+  const image = await loadSvgImage(svg);
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("Canvas rendering is unavailable");
+  context.drawImage(image, 0, 0, size, size);
+
+  const png = await new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error("Unable to encode orb PNG"));
+    }, "image/png");
+  });
+  return new Uint8Array(await png.arrayBuffer());
+}
+
+async function fetchLogoAsset(item: GalleryOrb) {
+  const response = await window.fetch(item.logoUrl);
+  if (!response.ok) throw new Error(`Logo.dev returned ${response.status} for ${item.company}`);
+  return blobToDataUrl(await response.blob());
+}
+
 function createPosition(listing: GalleryOrb, index: number): Position {
-  const hash = listingHash(`${listing.company}-${listing.exchangeTicker}`);
+  const hash = listingHash(`${listing.company}-${listing.symbol}`);
   const side = ((hash >>> 4) + index) % 5 < 2 ? "SHORT" : "LONG";
   const entry = 18 + ((hash >>> 7) % 28000) / 100;
   const move = (((hash >>> 19) % 901) - 450) / 10000;
@@ -183,14 +212,8 @@ function createPosition(listing: GalleryOrb, index: number): Position {
   };
 }
 
-function marketLabel(market: GalleryOrb["market"]) {
-  if (market === "KR") return "KRX";
-  if (market === "JP") return "TSE";
-  return "HKEX";
-}
-
-function galleryKey(item: Pick<GalleryOrb, "market" | "exchangeTicker">) {
-  return `${item.market}-${item.exchangeTicker}`;
+function galleryKey(item: Pick<GalleryOrb, "symbol">) {
+  return item.symbol;
 }
 
 function formatSignedCurrency(value: number) {
@@ -199,7 +222,7 @@ function formatSignedCurrency(value: number) {
 }
 
 function createHeaderStats(item: GalleryOrb, position: Position): CompanyHeaderStat[] {
-  const hash = listingHash(`${item.market}-${item.exchangeTicker}-header`);
+  const hash = listingHash(`${item.exchange}-${item.symbol}-header`);
   const indexOffset = (((hash >>> 3) % 121) - 60) / 10000;
   const index = position.mark * (1 + indexOffset);
   const volume = 18 + ((hash >>> 9) % 1250) / 10;
@@ -215,7 +238,7 @@ function createHeaderStats(item: GalleryOrb, position: Position): CompanyHeaderS
 }
 
 function createHeaderChange(item: GalleryOrb, mark: number) {
-  const seed = listingHash(`${item.exchangeTicker}-daily`) % 901;
+  const seed = listingHash(`${item.symbol}-daily`) % 901;
   const percent = (seed - 300) / 20;
   return {
     amount: mark * (percent / 100),
@@ -223,11 +246,14 @@ function createHeaderChange(item: GalleryOrb, mark: number) {
   };
 }
 
-type OrbDraft = OrbPalette & { ticker: string; number: string };
+type OrbDraft = OrbPalette & {
+  logoDomain: string;
+  logoScale: number;
+  logoTreatment: LogoTreatment;
+};
 type StoredOrbDraft = Partial<OrbDraft> & { key?: string };
-const galleryStorageKey = "hudi-gallery-orbs-v1";
+const galleryStorageKey = "hudi-logo-orbs-v2";
 const themeStorageKey = "hudi-orb-theme";
-const marketPaletteStorageKey = "hudi-gallery-market-palette-v1";
 
 function storedColour(value: unknown, fallback: string) {
   return typeof value === "string" && /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
@@ -277,10 +303,19 @@ function Blotter({ items, positions, selectedKey, onSelect }: BlotterProps) {
                 const asset = (
                   <>
                     <div className="blotter-asset-orb" aria-hidden="true">
-                      <TickerOrb ticker={item.ticker} number={item.number} palette={item.palette} size={24} compact decorative />
+                      <LogoOrb
+                        company={item.company}
+                        logoUrl={item.logoUrl}
+                        logoTreatment={item.logoTreatment}
+                        logoScale={item.logoScale}
+                        palette={item.palette}
+                        size={24}
+                        compact
+                        decorative
+                      />
                     </div>
                     <span className="blotter-company">{item.company}</span>
-                    <span className="blotter-market">{marketLabel(item.market)}</span>
+                    <span className="blotter-market">{item.exchange}</span>
                   </>
                 );
                 return (
@@ -388,23 +423,33 @@ function HeaderTickerSelector({
 }
 
 export default function Home() {
+  const generatorDefault = initialGalleryOrbs.find((item) => item.symbol === "NVDA") ?? initialGalleryOrbs[0];
   const [view, setView] = useState<View>("generator");
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [ticker, setTicker] = useState("NTNDO");
-  const [number, setNumber] = useState("3325");
-  const [palette, setPalette] = useState<OrbPalette>(() => deriveOrbPalette("#ff00aa"));
+  const [generatorSymbol, setGeneratorSymbol] = useState(generatorDefault.symbol);
+  const [palette, setPalette] = useState<OrbPalette>(generatorDefault.palette);
+  const [logoScale, setLogoScale] = useState(generatorDefault.logoScale ?? 0.58);
+  const [logoTreatment, setLogoTreatment] = useState<LogoTreatment>(generatorDefault.logoTreatment ?? "original");
   const [galleryItems, setGalleryItems] = useState(initialGalleryOrbs);
   const [positions, setPositions] = useState<Position[]>(() => initialGalleryOrbs.map(createPosition));
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [selectedHeaderKey, setSelectedHeaderKey] = useState("KR-005930");
+  const [selectedHeaderKey, setSelectedHeaderKey] = useState("SAMSUNG");
   const [headerPickerOpen, setHeaderPickerOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportMessage, setExportMessage] = useState("");
   const [exportError, setExportError] = useState("");
+  const [catalog, setCatalog] = useState<CatalogManifest | null>(null);
+  const [catalogReview, setCatalogReview] = useState<CatalogReviewIndex | null>(null);
+  const [catalogError, setCatalogError] = useState("");
+  const [catalogQuery, setCatalogQuery] = useState("");
+  const [catalogVisibleCount, setCatalogVisibleCount] = useState(180);
+  const [catalogRandomEntries, setCatalogRandomEntries] = useState<CatalogEntry[] | null>(null);
+  const [catalogIssuesOnly, setCatalogIssuesOnly] = useState(false);
   const headerPickerTriggerRef = useRef<HTMLButtonElement>(null);
   const [draft, setDraft] = useState<OrbDraft>({
-    ticker: "",
-    number: "",
+    logoDomain: "",
+    logoScale: 0.58,
+    logoTreatment: "original",
     ...deriveOrbPalette("#ff0000"),
   });
   const draftPalette = useMemo<OrbPalette>(() => ({
@@ -421,16 +466,63 @@ export default function Home() {
   ], []);
   const selectedHeaderIndex = Math.max(0, galleryItems.findIndex((item) => galleryKey(item) === selectedHeaderKey));
   const selectedHeaderItem = galleryItems[selectedHeaderIndex] ?? initialGalleryOrbs[0];
+  const generatorItem = galleryItems.find((item) => item.symbol === generatorSymbol) ?? galleryItems[0];
+  const generatorLogoUrl = generatorItem.logoUrl;
   const selectedHeaderPosition = positions[selectedHeaderIndex] ?? createPosition(selectedHeaderItem, selectedHeaderIndex);
   const selectedHeaderChange = createHeaderChange(selectedHeaderItem, selectedHeaderPosition.mark);
   const selectedHeaderStats = useMemo(
     () => createHeaderStats(selectedHeaderItem, selectedHeaderPosition),
     [selectedHeaderItem, selectedHeaderPosition],
   );
+  const catalogReviewById = useMemo(() => new Map(
+    catalogReview?.entries.map((entry) => [entry.id, entry]) ?? [],
+  ), [catalogReview]);
+  const catalogReviewRankById = useMemo(() => new Map(
+    catalogReview?.entries.map((entry, index) => [entry.id, index]) ?? [],
+  ), [catalogReview]);
+  const catalogMatches = useMemo(() => {
+    if (!catalog) return [];
+    const query = catalogQuery.trim().toLocaleLowerCase();
+    const matches = catalog.entries.filter((entry) => (
+      (!catalogIssuesOnly || (Boolean(entry.logo) && catalogReviewById.has(entry.id)))
+      && (!query || [
+      entry.symbol,
+      entry.company,
+      entry.exchange,
+      entry.sector,
+      ].some((value) => value.toLocaleLowerCase().includes(query)))
+    ));
+    if (catalogIssuesOnly) {
+      matches.sort((left, right) => (
+        (catalogReviewRankById.get(left.id) ?? Number.POSITIVE_INFINITY)
+        - (catalogReviewRankById.get(right.id) ?? Number.POSITIVE_INFINITY)
+      ));
+    }
+    return matches;
+  }, [catalog, catalogIssuesOnly, catalogQuery, catalogReviewById, catalogReviewRankById]);
+  const visibleCatalogEntries = catalogRandomEntries ?? catalogMatches.slice(0, catalogVisibleCount);
 
   const updateColour = (colour: string) => setPalette(deriveOrbPalette(colour));
   const updateToken = (key: "base" | "sheen" | "shadow", value: string) => {
     setPalette((current) => ({ ...current, [key]: value }));
+  };
+  const selectGeneratorOrb = (symbol: string) => {
+    const item = galleryItems.find((candidate) => candidate.symbol === symbol);
+    if (!item) return;
+    setGeneratorSymbol(item.symbol);
+    setPalette(item.palette);
+    setLogoScale(item.logoScale ?? 0.58);
+    setLogoTreatment(item.logoTreatment ?? "original");
+  };
+  const showRandomCatalogEntries = () => {
+    if (!catalogMatches.length) return;
+    setCatalogVisibleCount(180);
+    setCatalogRandomEntries(randomSample(catalogMatches, 180));
+  };
+  const toggleCatalogIssues = () => {
+    setCatalogIssuesOnly((current) => !current);
+    setCatalogVisibleCount(180);
+    setCatalogRandomEntries(null);
   };
   const changeView = (nextView: View) => {
     setView(nextView);
@@ -438,6 +530,7 @@ export default function Home() {
     const hashes: Record<View, string> = {
       generator: "#generator",
       listings: "#tickers",
+      catalog: "#catalog",
       blotter: "#blotter",
       header: "#header",
     };
@@ -452,7 +545,12 @@ export default function Home() {
   };
   const openEditor = (index: number) => {
     const item = galleryItems[index];
-    setDraft({ ticker: item.ticker, number: item.number, ...item.palette });
+    setDraft({
+      logoDomain: item.logoDomain,
+      logoScale: item.logoScale ?? 0.58,
+      logoTreatment: item.logoTreatment ?? "original",
+      ...item.palette,
+    });
     setEditingIndex(index);
   };
   const closeEditor = () => setEditingIndex(null);
@@ -467,16 +565,25 @@ export default function Home() {
   };
   const saveEditor = () => {
     if (editingIndex === null) return;
-    const tickerValue = draft.ticker.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4) || "ORB";
-    const numberValue = draft.number.replace(/\D/g, "").slice(0, 4).padStart(4, "0");
     const nextItems = galleryItems.map((item, index) => index === editingIndex
-      ? { ...item, ticker: tickerValue, number: numberValue, palette: draftPalette }
+      ? {
+        ...item,
+        logoDomain: draft.logoDomain.trim() || item.logoDomain,
+        logoUrl: createLogoDevUrl(draft.logoDomain.trim() || item.logoDomain, {
+          format: logoDevFormat,
+          token: logoDevToken,
+        }),
+        logoScale: draft.logoScale,
+        logoTreatment: draft.logoTreatment,
+        palette: draftPalette,
+      }
       : item);
     setGalleryItems(nextItems);
     window.localStorage.setItem(galleryStorageKey, JSON.stringify(nextItems.map((item) => ({
       key: galleryKey(item),
-      ticker: item.ticker,
-      number: item.number,
+      logoDomain: item.logoDomain,
+      logoScale: item.logoScale,
+      logoTreatment: item.logoTreatment,
       colour: item.palette.colour,
       base: item.palette.base,
       sheen: item.palette.sheen,
@@ -493,19 +600,29 @@ export default function Home() {
     await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
 
     try {
-      const fonts = await loadExportFonts();
-      const entries = orbExportScaleNames.flatMap((scaleName) => galleryItems.map((item) => {
-        const filename = [item.market, item.exchangeTicker, item.ticker]
+      const logoAssets = await Promise.all(galleryItems.map(fetchLogoAsset));
+      const orbExports = orbExportScaleNames.flatMap((scaleName) => galleryItems.map((item, index) => {
+        const filename = [item.exchange, item.symbol]
           .map(exportFilenamePart)
           .join("-");
         return {
-          name: `${scaleName}/${filename}.svg`,
-          data: createOrbSvg(item.ticker, item.number, item.palette, scaleName, {
-            fonts,
+          scaleName,
+          filename,
+          svg: createLogoOrbSvg(logoAssets[index], item.palette, scaleName, {
+            theme,
+            logoTreatment: item.logoTreatment,
+            logoScale: item.logoScale,
             title: `${item.company} ${scaleName} orb`,
           }),
         };
       }));
+      const pngs = await Promise.all(orbExports.map(({ scaleName, svg }) => (
+        createOrbPng(svg, ORB_EXPORT_SCALES[scaleName].size)
+      )));
+      const entries = orbExports.flatMap(({ scaleName, filename, svg }, index) => ([
+        { name: `svg/${scaleName}/${filename}.svg`, data: svg },
+        { name: `png/${scaleName}/${filename}.png`, data: pngs[index] },
+      ]));
       const archive = createZipBlob(entries);
       const archiveUrl = window.URL.createObjectURL(archive);
       const downloadLink = document.createElement("a");
@@ -515,10 +632,10 @@ export default function Home() {
       downloadLink.click();
       downloadLink.remove();
       window.setTimeout(() => window.URL.revokeObjectURL(archiveUrl), 1_000);
-      setExportMessage(`${entries.length} SVGs exported in three scale folders.`);
+      setExportMessage(`${orbExports.length} orbs exported as SVG and PNG in matching scale folders.`);
     } catch (error) {
-      console.error("Unable to export orb SVGs", error);
-      setExportError("Couldn’t create the SVG ZIP. Please try again.");
+      console.error("Unable to export orb assets", error);
+      setExportError("Couldn’t create the orb ZIP. Please try again.");
     } finally {
       setIsExporting(false);
     }
@@ -527,6 +644,7 @@ export default function Home() {
   /* eslint-disable react-hooks/set-state-in-effect -- this mount pass hydrates browser URL and persisted UI state. */
   useEffect(() => {
     if (window.location.hash === "#tickers") setView("listings");
+    if (window.location.hash === "#catalog") setView("catalog");
     if (window.location.hash === "#blotter") setView("blotter");
     if (window.location.hash === "#header") setView("header");
     const storedTheme = window.localStorage.getItem(themeStorageKey) === "dark" ? "dark" : "light";
@@ -535,15 +653,13 @@ export default function Home() {
 
     try {
       const storedOrbs = JSON.parse(window.localStorage.getItem(galleryStorageKey) || "[]") as StoredOrbDraft[];
-      const shouldApplyMarketPalette = window.localStorage.getItem(marketPaletteStorageKey) !== "1";
       if (Array.isArray(storedOrbs)) {
         const storedByKey = new Map(storedOrbs.flatMap((stored) => (
           typeof stored.key === "string" ? [[stored.key, stored] as const] : []
         )));
-        const hasStableKeys = storedByKey.size > 0;
-        const restoredItems = initialGalleryOrbs.map((item, index) => {
-          const stored = storedByKey.get(galleryKey(item)) ?? (!hasStableKeys ? storedOrbs[index] : undefined);
-          if (!stored || typeof stored.ticker !== "string" || typeof stored.number !== "string" || typeof stored.colour !== "string") return item;
+        const restoredItems = initialGalleryOrbs.map((item) => {
+          const stored = storedByKey.get(galleryKey(item));
+          if (!stored || typeof stored.colour !== "string") return item;
           const derived = deriveOrbPalette(stored.colour);
           const storedPalette = {
             colour: storedColour(stored.colour, derived.colour),
@@ -551,42 +667,54 @@ export default function Home() {
             sheen: storedColour(stored.sheen, derived.sheen),
             shadow: storedColour(stored.shadow, derived.shadow),
           };
-          const previousDefault = deriveOrbPalette(previousColourForListing(item.company, index));
-          const previousCuratedDefault = deriveOrbPalette(previousCuratedColourForListing(item.company, index));
-          const previousReferenceDefault = deriveOrbPalette(previousReferenceColourForListing(item.company, index));
-          const previousMarketAgnosticDefault = deriveOrbPalette(previousMarketAgnosticColourForListing(index));
-          const isGeneratedDefault = (["colour", "base", "sheen", "shadow"] as const)
-            .every((key) => {
-              const value = storedPalette[key].toLowerCase();
-              return value === previousDefault[key].toLowerCase()
-                || value === previousCuratedDefault[key].toLowerCase()
-                || value === previousReferenceDefault[key].toLowerCase()
-                || value === previousMarketAgnosticDefault[key].toLowerCase();
-            });
+          const logoDomain = typeof stored.logoDomain === "string" && stored.logoDomain.trim()
+            ? stored.logoDomain.trim()
+            : item.logoDomain;
           return {
             ...item,
-            ticker: stored.ticker.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4) || item.ticker,
-            number: stored.number.replace(/\D/g, "").slice(0, 4).padStart(4, "0"),
-            palette: shouldApplyMarketPalette || isGeneratedDefault ? item.palette : storedPalette,
+            logoDomain,
+            logoUrl: logoDomain === item.logoDomain
+              ? item.logoUrl
+              : createLogoDevUrl(logoDomain, { format: logoDevFormat, token: logoDevToken }),
+            logoScale: typeof stored.logoScale === "number" ? stored.logoScale : item.logoScale,
+            logoTreatment: stored.logoTreatment === "light" || stored.logoTreatment === "dark" || stored.logoTreatment === "lift" || stored.logoTreatment === "tint" || stored.logoTreatment === "deepen" || stored.logoTreatment === "knockout" || stored.logoTreatment === "original"
+              ? stored.logoTreatment
+              : item.logoTreatment,
+            palette: storedPalette,
           };
         });
         setGalleryItems(restoredItems);
-        window.localStorage.setItem(galleryStorageKey, JSON.stringify(restoredItems.map((item) => ({
-          key: galleryKey(item),
-          ticker: item.ticker,
-          number: item.number,
-          colour: item.palette.colour,
-          base: item.palette.base,
-          sheen: item.palette.sheen,
-          shadow: item.palette.shadow,
-        }))));
-        window.localStorage.setItem(marketPaletteStorageKey, "1");
       }
     } catch {
       window.localStorage.removeItem(galleryStorageKey);
     }
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    if (view !== "catalog" || catalog || catalogError) return;
+    const controller = new AbortController();
+    Promise.all([
+      window.fetch("/logos/catalog/manifest.json", { signal: controller.signal }),
+      window.fetch("/logos/catalog/review.json", { signal: controller.signal }),
+    ])
+      .then(async ([catalogResponse, reviewResponse]) => {
+        if (!catalogResponse.ok) throw new Error(`catalog returned ${catalogResponse.status}`);
+        if (!reviewResponse.ok) throw new Error(`catalog review returned ${reviewResponse.status}`);
+        const [nextCatalog, nextReview] = await Promise.all([
+          catalogResponse.json() as Promise<CatalogManifest>,
+          reviewResponse.json() as Promise<CatalogReviewIndex>,
+        ]);
+        setCatalog(nextCatalog);
+        setCatalogReview(nextReview);
+      })
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        console.error("Unable to load the orb catalog", error);
+        setCatalogError("The community orb catalog could not be loaded.");
+      });
+    return () => controller.abort();
+  }, [catalog, catalogError, view]);
 
   useEffect(() => {
     if (view !== "blotter" && view !== "header") return;
@@ -620,31 +748,38 @@ export default function Home() {
   }, [editingIndex, headerPickerOpen]);
 
   return (
-    <main className={`generator-shell${view === "listings" ? " is-listings-view" : ""}${view === "blotter" ? " is-blotter-view" : ""}${view === "header" ? " is-header-view" : ""}`}>
+    <main className={`generator-shell${view === "listings" ? " is-listings-view" : ""}${view === "catalog" ? " is-catalog-view" : ""}${view === "blotter" ? " is-blotter-view" : ""}${view === "header" ? " is-header-view" : ""}`}>
       <nav className="view-toggle" aria-label="Orb page">
         <button type="button" aria-pressed={view === "generator"} onClick={() => changeView("generator")}>generator</button>
-        <button type="button" aria-pressed={view === "listings"} onClick={() => changeView("listings")}>tickers</button>
+        <button type="button" aria-pressed={view === "listings"} onClick={() => changeView("listings")}>mvp</button>
+        <button type="button" aria-pressed={view === "catalog"} onClick={() => changeView("catalog")}>catalog</button>
         <button type="button" aria-pressed={view === "blotter"} onClick={() => changeView("blotter")}>blotter</button>
         <button type="button" aria-pressed={view === "header"} onClick={() => changeView("header")}>header</button>
         <button type="button" aria-pressed={theme === "dark"} onClick={toggleTheme}>dark</button>
         <button
           type="button"
           disabled={isExporting}
-          aria-label="Export all orbs as an SVG ZIP"
+          aria-label={`Export all orbs in ${theme} mode as an SVG and PNG ZIP`}
           onClick={() => void exportAllOrbs()}
-          title="Export every orb at all three scales as an SVG ZIP"
+          title={`Export every orb in ${theme} mode at all three scales as SVG and PNG`}
         >
           {isExporting ? "exporting…" : "export"}
         </button>
       </nav>
 
-      <p className="visually-hidden" aria-live="polite">{exportMessage || (isExporting ? "Creating SVG ZIP." : "")}</p>
+      <p className="visually-hidden" aria-live="polite">{exportMessage || (isExporting ? "Creating SVG and PNG ZIP." : "")}</p>
       {exportError && <p className="export-error" role="alert">{exportError}</p>}
 
       {view === "generator" && (
         <>
-          <section className="orb-stage" aria-label="Ticker orb preview">
-            <TickerOrb ticker={ticker || " "} number={number || " "} palette={palette} />
+          <section className="orb-stage" aria-label="Company logo orb preview">
+            <LogoOrb
+              company={generatorItem.company}
+              logoUrl={generatorLogoUrl}
+              logoTreatment={logoTreatment}
+              logoScale={logoScale}
+              palette={palette}
+            />
           </section>
 
           <section className="orb-controls" aria-label="Orb controls">
@@ -666,48 +801,149 @@ export default function Home() {
               ))}
             </div>
 
-            <div className="text-controls">
+            <div className="text-controls logo-controls">
               <label className="text-control">
-                <span>ticker:</span>
-                <input
-                  value={ticker}
-                  maxLength={7}
-                  aria-label="Ticker"
-                  onChange={(event) => setTicker(event.target.value.toUpperCase().replace(/\s/g, ""))}
-                />
+                <span>company:</span>
+                <select value={generatorSymbol} aria-label="Company" onChange={(event) => selectGeneratorOrb(event.target.value)}>
+                  {galleryItems.map((item) => <option value={item.symbol} key={item.symbol}>{item.company}</option>)}
+                </select>
               </label>
               <label className="text-control">
-                <span>number:</span>
-                <input
-                  value={number}
-                  maxLength={8}
-                  aria-label="Number"
-                  inputMode="numeric"
-                  onChange={(event) => setNumber(event.target.value.replace(/\s/g, ""))}
-                />
+                <span>logo:</span>
+                <select value={logoTreatment} aria-label="Logo treatment" onChange={(event) => setLogoTreatment(event.target.value as LogoTreatment)}>
+                  <option value="light">light</option>
+                  <option value="dark">dark</option>
+                  <option value="lift">lift colour</option>
+                  <option value="tint">tint colour</option>
+                  <option value="deepen">deepen colour</option>
+                  <option value="knockout">white detail knockout</option>
+                  <option value="original">original</option>
+                </select>
+              </label>
+              <label className="text-control">
+                <span>scale:</span>
+                <input type="range" min="0.36" max="0.72" step="0.01" value={logoScale} aria-label="Logo scale" onChange={(event) => setLogoScale(Number(event.target.value))} />
               </label>
             </div>
+            <p className="logo-source-note">Logo source: {generatorItem.logoDomain}</p>
           </section>
         </>
       )}
 
       {view === "listings" && (
-        <section className="listings-gallery" aria-label="Hudi listing ticker orbs">
-          <h1 className="visually-hidden">Hudi listing ticker orbs</h1>
+        <section className="listings-gallery" aria-label="Hudi company logo orbs">
+          <h1 className="visually-hidden">Hudi company logo orbs</h1>
           <div className="listing-grid">
             {galleryItems.map((listing, index) => (
               <article
                 className="listing-card"
-                key={`${listing.market}-${listing.exchangeTicker}`}
-                aria-label={`${listing.company}, ${listing.market}, ${listing.priority}`}
-                title={`${listing.company} · ${listing.priority}`}
+                key={listing.symbol}
+                aria-label={`${listing.company}, ${listing.exchange}`}
+                title={`${listing.symbol} · ${listing.company}`}
               >
                 <button className="listing-orb-button" type="button" onClick={() => openEditor(index)} aria-label={`Edit ${listing.company} orb`}>
-                  <TickerOrb ticker={listing.ticker} number={listing.number} palette={listing.palette} size="var(--gallery-orb-size)" compact />
+                  <LogoOrb company={listing.company} logoUrl={listing.logoUrl} logoTreatment={listing.logoTreatment} logoScale={listing.logoScale} palette={listing.palette} size="var(--gallery-orb-size)" compact />
                 </button>
               </article>
             ))}
           </div>
+        </section>
+      )}
+
+      {view === "catalog" && (
+        <section className="catalog-gallery" aria-label="HUDI community orb catalog">
+          <header className="catalog-toolbar">
+            <div>
+              <p>community listings</p>
+              <h1>{catalog ? catalog.rowCount.toLocaleString() : "20,524"} orbs</h1>
+            </div>
+            <div className="catalog-actions">
+              <button
+                type="button"
+                aria-pressed={catalogIssuesOnly}
+                disabled={!catalogReview}
+                onClick={toggleCatalogIssues}
+                title="Show current logo assets flagged by visual cross-checks or weaker lookup sources"
+              >
+                likely issues
+              </button>
+              <button type="button" disabled={!catalogMatches.length} onClick={showRandomCatalogEntries}>
+                random 180
+              </button>
+              <label>
+                <span className="visually-hidden">Search orb catalog</span>
+                <input
+                  type="search"
+                  value={catalogQuery}
+                  placeholder="ticker, company, exchange"
+                  onChange={(event) => {
+                    setCatalogQuery(event.target.value);
+                    setCatalogVisibleCount(180);
+                    setCatalogRandomEntries(null);
+                  }}
+                />
+              </label>
+            </div>
+          </header>
+          {!catalog && !catalogError && <p className="catalog-status">Loading the community catalog…</p>}
+          {catalogError && <p className="catalog-status is-error" role="alert">{catalogError}</p>}
+          {catalog && (
+            <>
+              <p className="catalog-status">
+                {catalogRandomEntries
+                  ? `Showing a random ${catalogRandomEntries.length.toLocaleString()} of ${catalogMatches.length.toLocaleString()} ${catalogIssuesOnly ? "likely issues" : catalogQuery.trim() ? "matches" : "listings"}`
+                  : `Showing ${Math.min(catalogVisibleCount, catalogMatches.length).toLocaleString()} of ${catalogMatches.length.toLocaleString()} ${catalogIssuesOnly ? "likely issues" : "matches"}`}
+                {!catalogIssuesOnly && (catalog.summary.sourceReview ?? (catalog.summary.missing + catalog.summary.failed)) > 0 ? ` · ${(catalog.summary.sourceReview ?? (catalog.summary.missing + catalog.summary.failed)).toLocaleString()} need source review` : ""}
+              </p>
+              <div className="catalog-grid">
+                {visibleCatalogEntries.map((entry) => (
+                  <article className="catalog-card" key={entry.id} title={`${entry.symbol} · ${entry.company}`}>
+                    {entry.logo ? (
+                      <LogoOrb
+                        company={entry.company}
+                        logoUrl={entry.logo.path}
+                        logoTreatment={entry.logo.logoTreatment}
+                        logoScale={entry.logo.logoScale}
+                        palette={deriveOrbPalette(entry.logo.orbColour)}
+                        size="var(--catalog-orb-size)"
+                        compact
+                      />
+                    ) : (
+                      <a
+                        className="catalog-missing"
+                        href={googleLogoSearchUrl(entry)}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Search Google Images for ${entry.company} logo`}
+                        title={`Search Google Images for ${entry.company} logo`}
+                      >
+                        <LogoOrb
+                          company={entry.company}
+                          fallbackKey={entry.id}
+                          colour={fallbackOrbColour(entry.id)}
+                          size="var(--catalog-orb-size)"
+                          compact
+                        />
+                      </a>
+                    )}
+                    <strong>{entry.symbol}</strong>
+                    <span>{entry.company}</span>
+                    <small>
+                      {entry.exchange}
+                      {catalogIssuesOnly && catalogReviewById.has(entry.id)
+                        ? ` · ${catalogReviewLabel(catalogReviewById.get(entry.id)!)}`
+                        : entry.logo?.cropMode.includes("emblem") ? " · emblem" : !entry.logo ? " · default" : ""}
+                    </small>
+                  </article>
+                ))}
+              </div>
+              {!catalogRandomEntries && catalogVisibleCount < catalogMatches.length && (
+                <button className="catalog-more" type="button" onClick={() => setCatalogVisibleCount((current) => current + 180)}>
+                  load 180 more
+                </button>
+              )}
+            </>
+          )}
         </section>
       )}
 
@@ -717,9 +953,10 @@ export default function Home() {
         <section className="header-page" aria-label="Selected ticker header preview">
           <CompanyHeader
             company={selectedHeaderItem.company}
-            market={marketLabel(selectedHeaderItem.market)}
-            ticker={selectedHeaderItem.ticker}
-            number={selectedHeaderItem.number}
+            market={selectedHeaderItem.exchange}
+            logoUrl={selectedHeaderItem.logoUrl}
+            logoTreatment={selectedHeaderItem.logoTreatment}
+            logoScale={selectedHeaderItem.logoScale}
             palette={selectedHeaderItem.palette}
             price={`$${selectedHeaderPosition.mark.toFixed(2)}`}
             change={formatSignedCurrency(selectedHeaderChange.amount)}
@@ -764,7 +1001,15 @@ export default function Home() {
             </header>
 
             <div className="orb-editor-preview" aria-hidden="true">
-              <TickerOrb ticker={draft.ticker || "ORB"} number={draft.number || "0000"} palette={draftPalette} compact decorative />
+              <LogoOrb
+                company={galleryItems[editingIndex]?.company ?? "Company"}
+                logoUrl={createLogoDevUrl(draft.logoDomain || "logo.dev", { format: logoDevFormat, token: logoDevToken })}
+                logoTreatment={draft.logoTreatment}
+                logoScale={draft.logoScale}
+                palette={draftPalette}
+                compact
+                decorative
+              />
             </div>
 
             <div className="orb-editor-fields">
@@ -785,30 +1030,32 @@ export default function Home() {
                 ))}
               </div>
               <label className="orb-editor-field">
-                <span>title</span>
+                <span>Logo.dev domain</span>
                 <input
                   autoFocus
-                  value={draft.ticker}
-                  maxLength={4}
-                  aria-label="Orb title"
+                  value={draft.logoDomain}
+                  aria-label="Logo.dev domain"
                   onChange={(event) => setDraft((current) => ({
                     ...current,
-                    ticker: event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4),
+                    logoDomain: event.target.value.trim(),
                   }))}
                 />
               </label>
               <label className="orb-editor-field">
-                <span>number</span>
-                <input
-                  value={draft.number}
-                  maxLength={4}
-                  inputMode="numeric"
-                  aria-label="Orb number"
-                  onChange={(event) => setDraft((current) => ({
-                    ...current,
-                    number: event.target.value.replace(/\D/g, "").slice(0, 4),
-                  }))}
-                />
+                <span>logo treatment</span>
+                <select value={draft.logoTreatment} aria-label="Logo treatment" onChange={(event) => setDraft((current) => ({ ...current, logoTreatment: event.target.value as LogoTreatment }))}>
+                  <option value="light">light</option>
+                  <option value="dark">dark</option>
+                  <option value="lift">lift colour</option>
+                  <option value="tint">tint colour</option>
+                  <option value="deepen">deepen colour</option>
+                  <option value="knockout">white detail knockout</option>
+                  <option value="original">original</option>
+                </select>
+              </label>
+              <label className="orb-editor-field">
+                <span>logo scale</span>
+                <input type="range" min="0.36" max="0.72" step="0.01" value={draft.logoScale} aria-label="Logo scale" onChange={(event) => setDraft((current) => ({ ...current, logoScale: Number(event.target.value) }))} />
               </label>
             </div>
 
@@ -819,6 +1066,10 @@ export default function Home() {
           </form>
         </div>
       )}
+
+      <footer className="logo-dev-attribution">
+        <a href="https://logo.dev">Logos provided by Logo.dev</a>
+      </footer>
     </main>
   );
 }

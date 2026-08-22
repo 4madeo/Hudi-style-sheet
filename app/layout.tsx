@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Hudi Orb Generator",
-  description: "A focused generator for Hudi ticker orbs in all four canonical sizes.",
+  title: "HUDI Company Orb System",
+  description: "Company-logo orbs with brand-derived palettes for the HUDI market universe.",
   icons: { icon: "/favicon.svg" },
 };
 

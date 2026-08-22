@@ -95,7 +95,7 @@
   opacity: .19;
 }
 
-.company-header__orb .ticker-orb {
+.company-header__orb .hudi-orb {
   position: relative;
   z-index: 1;
 }

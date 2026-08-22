@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 
 export type OrbTheme = "light" | "dark" | "inherit";
+export type LogoTreatment = "original" | "light" | "dark" | "lift" | "tint" | "deepen" | "knockout";
 
 export type OrbPalette = {
   colour: string;
@@ -27,6 +28,24 @@ export type OrbDefinitionInput = {
 };
 
 export type TickerOrbProps = OrbDefinitionInput & {
+  size?: number | string;
+  compact?: boolean;
+  theme?: OrbTheme;
+  glow?: boolean;
+  className?: string;
+  style?: OrbStyle;
+  ariaLabel?: string;
+  decorative?: boolean;
+};
+
+export type LogoOrbProps = {
+  company: string;
+  logoUrl?: string;
+  fallbackKey?: string;
+  colour?: string;
+  palette?: OrbPalette;
+  logoTreatment?: LogoTreatment;
+  logoScale?: number;
   size?: number | string;
   compact?: boolean;
   theme?: OrbTheme;

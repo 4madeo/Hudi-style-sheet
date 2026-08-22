@@ -1,0 +1,382 @@
+{
+  "ADVANTEST": {
+    "symbol": "ADVANTEST",
+    "domain": "advantest.com",
+    "format": "png",
+    "path": "/logos/advantest.png",
+    "bytes": 616521,
+    "sourcePath": "/logos/source/advantest.png",
+    "background": "#ffffff",
+    "crop": {
+      "left": 0,
+      "top": 0.39,
+      "width": 0.138,
+      "height": 0.16
+    },
+    "backgroundTolerance": 20
+  },
+  "BABA-HK": {
+    "symbol": "BABA-HK",
+    "domain": "alibabagroup.com",
+    "format": "png",
+    "path": "/logos/baba-hk.png",
+    "bytes": 198212,
+    "sourcePath": "/logos/source/baba-hk.png",
+    "background": "#ff5a00"
+  },
+  "BYD": {
+    "symbol": "BYD",
+    "domain": "bydglobal.com",
+    "format": "png",
+    "path": "/logos/byd.png",
+    "bytes": 561767,
+    "sourcePath": "/logos/source/byd.png",
+    "background": "#ffffff"
+  },
+  "DOOSANENERB": {
+    "symbol": "DOOSANENERB",
+    "domain": "doosanenerbility.com",
+    "format": "png",
+    "path": "/logos/doosanenerb.png",
+    "bytes": 312181,
+    "sourcePath": "/logos/source/doosanenerb.png",
+    "background": "#ffffff",
+    "crop": {
+      "left": 0.1,
+      "top": 0.34,
+      "width": 0.8,
+      "height": 0.33
+    }
+  },
+  "ECOPROBM": {
+    "symbol": "ECOPROBM",
+    "domain": "ecoprobm.co.kr",
+    "format": "png",
+    "path": "/logos/ecoprobm.png",
+    "bytes": 332589,
+    "sourcePath": "/logos/source/ecoprobm.png",
+    "background": "#ffffff"
+  },
+  "FUJIKURA": {
+    "symbol": "FUJIKURA",
+    "domain": "fujikura.co.jp",
+    "format": "png",
+    "path": "/logos/fujikura.png",
+    "bytes": 389008,
+    "sourcePath": "/logos/source/fujikura.png",
+    "background": "#ffffff",
+    "crop": {
+      "left": 0.09,
+      "top": 0.37,
+      "width": 0.19,
+      "height": 0.23
+    },
+    "backgroundTolerance": 24
+  },
+  "HANMI": {
+    "symbol": "HANMI",
+    "domain": "hanmisemi.com",
+    "format": "png",
+    "path": "/logos/hanmi.png",
+    "bytes": 627531,
+    "sourcePath": "/logos/source/hanmi.png",
+    "background": "#ffffff"
+  },
+  "HANWHAAERO": {
+    "symbol": "HANWHAAERO",
+    "domain": "hanwhaaerospace.com",
+    "format": "png",
+    "path": "/logos/hanwhaaero.png",
+    "bytes": 216486,
+    "sourcePath": "/logos/source/hanwhaaero.png",
+    "background": "#ffffff"
+  },
+  "HANWHAOCEAN": {
+    "symbol": "HANWHAOCEAN",
+    "domain": "hanwhaocean.com",
+    "format": "png",
+    "path": "/logos/hanwhaocean.png",
+    "bytes": 341628,
+    "sourcePath": "/logos/source/hanwhaocean.png",
+    "background": "transparent"
+  },
+  "HANWHASYS": {
+    "symbol": "HANWHASYS",
+    "domain": "hanwhasystems.com",
+    "format": "png",
+    "path": "/logos/hanwhasys.png",
+    "bytes": 280856,
+    "sourcePath": "/logos/source/hanwhasys.png",
+    "background": "#ffffff"
+  },
+  "HDHYUNDAIELEC": {
+    "symbol": "HDHYUNDAIELEC",
+    "domain": "hyundai-electric.com",
+    "format": "png",
+    "path": "/logos/hdhyundaielec.png",
+    "bytes": 350114,
+    "sourcePath": "/logos/source/hdhyundaielec.png",
+    "background": "#ffffff",
+    "crop": {
+      "left": 0.01,
+      "top": 0.37,
+      "width": 0.56,
+      "height": 0.26
+    },
+    "backgroundTolerance": 24
+  },
+  "HDKSOE": {
+    "symbol": "HDKSOE",
+    "domain": "hd-ksoe.com",
+    "format": "png",
+    "path": "/logos/hdksoe.png",
+    "bytes": 465289,
+    "sourcePath": "/logos/source/hdksoe.png",
+    "background": "#ffffff",
+    "crop": {
+      "left": 0,
+      "top": 0.42,
+      "width": 0.34,
+      "height": 0.18
+    },
+    "backgroundTolerance": 24
+  },
+  "HMM": {
+    "symbol": "HMM",
+    "domain": "hmm21.com",
+    "format": "png",
+    "path": "/logos/hmm.png",
+    "bytes": 149803,
+    "sourcePath": "/logos/source/hmm.png",
+    "background": "#ffffff"
+  },
+  "HYUNDAI": {
+    "symbol": "HYUNDAI",
+    "domain": "hyundai.com",
+    "format": "png",
+    "path": "/logos/hyundai.png",
+    "bytes": 294019,
+    "sourcePath": "/logos/source/hyundai.png",
+    "background": "#ffffff"
+  },
+  "IBIDEN": {
+    "symbol": "IBIDEN",
+    "domain": "ibiden.com",
+    "format": "png",
+    "path": "/logos/ibiden.png",
+    "bytes": 43889,
+    "sourcePath": "/logos/source/ibiden.png",
+    "background": "transparent"
+  },
+  "ITOCHU": {
+    "symbol": "ITOCHU",
+    "domain": "itochu.co.jp",
+    "format": "png",
+    "path": "/logos/itochu.png",
+    "bytes": 84687,
+    "sourcePath": "/logos/source/itochu.png",
+    "background": "transparent"
+  },
+  "KAI": {
+    "symbol": "KAI",
+    "domain": "koreaaero.com",
+    "format": "png",
+    "path": "/logos/kai.png",
+    "bytes": 265735,
+    "sourcePath": "/logos/source/kai.png",
+    "background": "#f1f1f1"
+  },
+  "KIOXIA": {
+    "symbol": "KIOXIA",
+    "domain": "kioxia-holdings.com",
+    "format": "png",
+    "path": "/logos/kioxia.png",
+    "bytes": 63546,
+    "sourcePath": "/logos/source/kioxia.png",
+    "background": "#ffffff"
+  },
+  "LGES": {
+    "symbol": "LGES",
+    "domain": "lgensol.com",
+    "format": "png",
+    "path": "/logos/lges.png",
+    "bytes": 65838,
+    "sourcePath": "/logos/source/lges.png",
+    "background": "#ad002a"
+  },
+  "MEITUAN": {
+    "symbol": "MEITUAN",
+    "domain": "meituan.com",
+    "format": "png",
+    "path": "/logos/meituan.png",
+    "bytes": 385462,
+    "sourcePath": "/logos/source/meituan.png",
+    "background": "#ffd101"
+  },
+  "META": {
+    "symbol": "META",
+    "domain": "meta.com",
+    "format": "png",
+    "path": "/logos/meta.png",
+    "bytes": 277362,
+    "sourcePath": "/logos/source/meta.png",
+    "background": "#ffffff"
+  },
+  "MICRON": {
+    "symbol": "MICRON",
+    "domain": "micron.com",
+    "format": "png",
+    "path": "/logos/micron.png",
+    "bytes": 109425,
+    "sourcePath": "/logos/source/micron.png",
+    "background": "transparent"
+  },
+  "MINIMAX": {
+    "symbol": "MINIMAX",
+    "domain": "minimaxi.com",
+    "format": "png",
+    "path": "/logos/minimax.png",
+    "bytes": 320415,
+    "sourcePath": "/logos/source/minimax.png",
+    "background": "#ffffff"
+  },
+  "MSFT": {
+    "symbol": "MSFT",
+    "domain": "microsoft.com",
+    "format": "png",
+    "path": "/logos/msft.png",
+    "bytes": 10288,
+    "sourcePath": "/logos/source/msft.png",
+    "background": "#f3f3f3"
+  },
+  "MSTR": {
+    "symbol": "MSTR",
+    "domain": "strategy.com",
+    "format": "png",
+    "path": "/logos/mstr.png",
+    "bytes": 28496,
+    "sourcePath": "/logos/source/mstr.png",
+    "background": "transparent"
+  },
+  "NINTENDO": {
+    "symbol": "NINTENDO",
+    "domain": "nintendo.com",
+    "format": "png",
+    "path": "/logos/nintendo.png",
+    "bytes": 225371,
+    "sourcePath": "/logos/source/nintendo.png",
+    "background": "#e70012"
+  },
+  "NVDA": {
+    "symbol": "NVDA",
+    "domain": "nvidia.com",
+    "format": "png",
+    "path": "/logos/nvda.png",
+    "bytes": 63565,
+    "sourcePath": "/logos/source/nvda.svg",
+    "background": "transparent"
+  },
+  "SAMSUNG": {
+    "symbol": "SAMSUNG",
+    "domain": "samsung.com",
+    "format": "png",
+    "path": "/logos/samsung.png",
+    "bytes": 55899,
+    "sourcePath": "/logos/source/samsung.png",
+    "background": "#000000"
+  },
+  "SANDISK": {
+    "symbol": "SANDISK",
+    "domain": "sandisk.com",
+    "format": "png",
+    "path": "/logos/sandisk.png",
+    "bytes": 123701,
+    "sourcePath": "/logos/source/sandisk.png",
+    "background": "#e10600"
+  },
+  "SKHYNIX": {
+    "symbol": "SKHYNIX",
+    "domain": "skhynix.com",
+    "format": "png",
+    "path": "/logos/skhynix.png",
+    "bytes": 125150,
+    "sourcePath": "/logos/source/skhynix.png",
+    "background": "#f0f3fa"
+  },
+  "SOFTBANK": {
+    "symbol": "SOFTBANK",
+    "domain": "group.softbank",
+    "format": "png",
+    "path": "/logos/softbank.png",
+    "bytes": 14508,
+    "sourcePath": "/logos/source/softbank.png",
+    "background": "#ffffff",
+    "crop": {
+      "left": 0.08,
+      "top": 0.38,
+      "width": 0.2,
+      "height": 0.17
+    },
+    "backgroundTolerance": 16
+  },
+  "SONY": {
+    "symbol": "SONY",
+    "domain": "sony.com",
+    "format": "png",
+    "path": "/logos/sony.png",
+    "bytes": 84091,
+    "sourcePath": "/logos/source/sony.png",
+    "background": "#000000"
+  },
+  "SPACEX": {
+    "symbol": "SPACEX",
+    "domain": "spacex.com",
+    "format": "png",
+    "path": "/logos/spacex.png",
+    "bytes": 67491,
+    "sourcePath": "/logos/source/spacex.png",
+    "crop": {
+      "left": 0.665,
+      "top": 0.425,
+      "width": 0.255,
+      "height": 0.16
+    },
+    "background": "#000000"
+  },
+  "TENCENT": {
+    "symbol": "TENCENT",
+    "domain": "tencent.com",
+    "format": "png",
+    "path": "/logos/tencent.png",
+    "bytes": 47676,
+    "sourcePath": "/logos/source/tencent.png",
+    "background": "transparent"
+  },
+  "TOKYOELEC": {
+    "symbol": "TOKYOELEC",
+    "domain": "tel.com",
+    "format": "png",
+    "path": "/logos/tokyoelec.png",
+    "bytes": 122633,
+    "sourcePath": "/logos/source/tokyoelec.png",
+    "background": "#ffffff"
+  },
+  "TSLA": {
+    "symbol": "TSLA",
+    "domain": "tesla.com",
+    "format": "png",
+    "path": "/logos/tsla.png",
+    "bytes": 191687,
+    "sourcePath": "/logos/source/tsla.png",
+    "background": "#e31937"
+  },
+  "ZHIPU": {
+    "symbol": "ZHIPU",
+    "domain": "z.ai",
+    "format": "png",
+    "path": "/logos/zhipu.png",
+    "bytes": 71530,
+    "sourcePath": "/logos/source/zhipu.png",
+    "background": "#ffffff"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-08-20T15:16:36.053Z",
+  "manifest": "public/logos/catalog/manifest.json",
+  "floors": {
+    "general": {
+      "minimumRasterDimension": 256,
+      "minimumRasterShortDimension": 64,
+      "analysisSize": 128,
+      "minimumSharpness": 4,
+      "maximumTranslucentPixelShare": 0.35,
+      "maximumSoftVisiblePixelShare": 0.65
+    },
+    "exactWikidataTicker": {
+      "minimumRasterDimension": 96,
+      "minimumRasterShortDimension": 30,
+      "analysisSize": 128,
+      "minimumSharpness": 4,
+      "maximumTranslucentPixelShare": 0.35,
+      "maximumSoftVisiblePixelShare": 0.65
+    }
+  },
+  "summary": {
+    "catalogEntries": 20524,
+    "measured": 20419,
+    "passed": 20419,
+    "belowFloor": 0,
+    "unresolvedWithoutLogo": 105
+  },
+  "failures": []
+}

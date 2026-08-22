@@ -41,8 +41,11 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+/artifacts/orb-exports/
 
-# Diatype Trial is licensed for local evaluation only. Replace with licensed
-# webfont files before a public deployment.
+# Licensed Diatype font files stay local and are not committed.
 /public/fonts/diatype-expanded-bold.otf
 /public/fonts/diatype-regular.otf
+
+# The local Figma build embeds the licensed font data so it stays uncommitted.
+/figma-plugin/dist/

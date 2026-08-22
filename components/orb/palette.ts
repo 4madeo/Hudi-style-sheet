@@ -28,9 +28,16 @@ export function deriveOrbPalette(inputColour: string): OrbPalette {
   const colour = normaliseHexColour(inputColour);
   const tokens = ORB_TOKENS.palette;
   const hsl = rgbToHsl(hexToRgb(colour));
+  const isAchromatic = hsl.s <= 0.03;
   const sourceHue = hsl.s > 0.03 ? hsl.h : tokens.achromaticHue;
   const sourceSaturation = Math.max(hsl.s, hsl.s > 0.03 ? hsl.s : tokens.achromaticSaturation);
-  let base = hexToRgb(colour);
+  const base = hsl.s > 0.03
+    ? hslToRgb({
+      h: hsl.h,
+      s: Math.min(1, hsl.s * tokens.baseSaturationMultiplier + tokens.baseSaturationOffset),
+      l: Math.min(tokens.baseMaximumLightness, hsl.l + tokens.baseLightnessOffset),
+    })
+    : hexToRgb(colour);
   let sheen = hslToRgb({
     h: shiftHueToward(sourceHue, tokens.sheenHueTarget, tokens.sheenHueShift),
     s: Math.max(
@@ -48,23 +55,32 @@ export function deriveOrbPalette(inputColour: string): OrbPalette {
     ),
   });
 
+  // Neutral brand colours should stay neutral. The regular minimum saturation
+  // gives a true black input a teal cast, which makes black brand orbs read as
+  // coloured rather than as glossy black.
+  if (isAchromatic) {
+    sheen = hslToRgb({ h: 0, s: 0, l: Math.min(0.82, hsl.l + 0.42) });
+    shadow = hslToRgb({ h: 0, s: 0, l: Math.max(0.02, hsl.l * 0.52) });
+  }
+
   if (hsl.s > tokens.neighbourhoodMinimumSaturation) {
     for (const neighbourhood of tokens.neighbourhoods) {
       const anchor = rgbToHsl(hexToRgb(neighbourhood.colour));
       const proximity = Math.max(0, 1 - hueDistance(hsl.h, anchor.h) / neighbourhood.radius);
       const weight = proximity * proximity * (3 - 2 * proximity);
       if (weight === 0) continue;
-      base = mixRgb(base, anchoredColour(hsl, neighbourhood.colour, neighbourhood.base), weight);
       sheen = mixRgb(sheen, anchoredColour(hsl, neighbourhood.colour, neighbourhood.sheen), weight);
       shadow = mixRgb(shadow, anchoredColour(hsl, neighbourhood.colour, neighbourhood.shadow), weight);
     }
   }
 
-  const sheenHsl = rgbToHsl(sheen);
-  sheen = hslToRgb({
-    ...sheenHsl,
-    s: Math.min(1, sheenHsl.s * tokens.sheenFinalSaturationMultiplier + tokens.sheenFinalSaturationOffset),
-  });
+  if (!isAchromatic) {
+    const sheenHsl = rgbToHsl(sheen);
+    sheen = hslToRgb({
+      ...sheenHsl,
+      s: Math.min(1, sheenHsl.s * tokens.sheenFinalSaturationMultiplier + tokens.sheenFinalSaturationOffset),
+    });
+  }
 
   return { colour, base: rgbToHex(base), sheen: rgbToHex(sheen), shadow: rgbToHex(shadow) };
 }

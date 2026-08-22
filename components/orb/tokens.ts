@@ -3,6 +3,10 @@ export const ORB_TOKENS = {
   palette: {
     achromaticHue: 196,
     achromaticSaturation: 0.48,
+    baseSaturationMultiplier: 1.08,
+    baseSaturationOffset: 0.02,
+    baseLightnessOffset: 0.04,
+    baseMaximumLightness: 0.74,
     sheenHueTarget: 55,
     sheenHueShift: 0.21,
     sheenMinimumSaturation: 0.28,
@@ -30,7 +34,7 @@ export const ORB_TOKENS = {
   presentation: {
     contrastReference: "#506868",
     minimumContrast: 3,
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.34,
     numberDarken: 0.18,
     lightInkTint: 0.1,
     yellowGreenInkRange: [35, 115] as const,

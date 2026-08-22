@@ -1,7 +1,7 @@
 "use client";
 
 import type { Ref } from "react";
-import { TickerOrb, type OrbPalette, type OrbStyle } from "@/components/orb";
+import { LogoOrb, type LogoTreatment, type OrbPalette, type OrbStyle } from "@/components/orb";
 import "./company-header.css";
 
 export type CompanyHeaderStat = {
@@ -12,8 +12,9 @@ export type CompanyHeaderStat = {
 export type CompanyHeaderProps = {
   company: string;
   market: string;
-  ticker: string;
-  number: string;
+  logoUrl: string;
+  logoTreatment?: LogoTreatment;
+  logoScale?: number;
   palette: OrbPalette;
   price: string;
   change: string;
@@ -33,8 +34,9 @@ const headerOrbStyle: OrbStyle = {
 export function CompanyHeader({
   company,
   market,
-  ticker,
-  number,
+  logoUrl,
+  logoTreatment,
+  logoScale,
   palette,
   price,
   change,
@@ -48,9 +50,11 @@ export function CompanyHeader({
   return (
     <section className="company-header" data-change={changePositive ? "positive" : "negative"} aria-label={`${company} market header`}>
       <div className="company-header__orb" aria-hidden="true" style={{ color: palette.base }}>
-        <TickerOrb
-          ticker={ticker}
-          number={number}
+        <LogoOrb
+          company={company}
+          logoUrl={logoUrl}
+          logoTreatment={logoTreatment}
+          logoScale={logoScale}
           palette={palette}
           size={48}
           compact

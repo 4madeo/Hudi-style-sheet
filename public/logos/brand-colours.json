@@ -1,0 +1,202 @@
+{
+  "ADVANTEST": {
+    "orbColour": "#88033b",
+    "orbColourSeed": "#88033b",
+    "orbColourSource": "logo-derived"
+  },
+  "BABA-HK": {
+    "orbColour": "#db4703",
+    "orbColourSeed": "#db4703",
+    "orbColourSource": "logo-derived"
+  },
+  "BYD": {
+    "orbColour": "#e50214",
+    "orbColourSeed": "#e50214",
+    "orbColourSource": "logo-derived"
+  },
+  "DOOSANENERB": {
+    "orbColour": "#0861b4",
+    "orbColourSeed": "#0861b4",
+    "orbColourSource": "logo-derived"
+  },
+  "ECOPROBM": {
+    "orbColour": "#048ad5",
+    "orbColourSeed": "#048ad5",
+    "orbColourSource": "logo-derived"
+  },
+  "FUJIKURA": {
+    "orbColour": "#013c84",
+    "orbColourSeed": "#013c84",
+    "orbColourSource": "logo-derived"
+  },
+  "HANMI": {
+    "orbColour": "#ee232e",
+    "orbColourSeed": "#ee232e",
+    "orbColourSource": "logo-derived"
+  },
+  "HANWHAAERO": {
+    "orbColour": "#f7b484",
+    "orbColourSeed": "#f7b484",
+    "orbColourSource": "logo-derived"
+  },
+  "HANWHAOCEAN": {
+    "orbColour": "#f37321",
+    "orbColourSeed": "#f37321",
+    "orbColourSource": "logo-derived"
+  },
+  "HANWHASYS": {
+    "orbColour": "#231a15",
+    "orbColourSeed": "#231a15",
+    "orbColourSource": "logo-derived"
+  },
+  "HDHYUNDAIELEC": {
+    "orbColour": "#03ac44",
+    "orbColourSeed": "#03ac44",
+    "orbColourSource": "logo-derived"
+  },
+  "HDKSOE": {
+    "orbColour": "#072977",
+    "orbColourSeed": "#072977",
+    "orbColourSource": "logo-derived"
+  },
+  "HMM": {
+    "orbColour": "#0d205c",
+    "orbColourSeed": "#0d205c",
+    "orbColourSource": "logo-derived"
+  },
+  "HYUNDAI": {
+    "orbColour": "#013468",
+    "orbColourSeed": "#013468",
+    "orbColourSource": "logo-derived"
+  },
+  "IBIDEN": {
+    "orbColour": "#394150",
+    "orbColourSeed": "#394150",
+    "orbColourSource": "neutral-fallback"
+  },
+  "ITOCHU": {
+    "orbColour": "#2663ac",
+    "orbColourSeed": "#2663ac",
+    "orbColourSource": "logo-derived"
+  },
+  "KAI": {
+    "orbColour": "#0b4696",
+    "orbColourSeed": "#0b4696",
+    "orbColourSource": "logo-derived"
+  },
+  "KIOXIA": {
+    "orbColour": "#394150",
+    "orbColourSeed": "#394150",
+    "orbColourSource": "neutral-fallback"
+  },
+  "LGES": {
+    "orbColour": "#ebb7c4",
+    "orbColourSeed": "#ebb7c4",
+    "orbColourSource": "logo-derived"
+  },
+  "MEITUAN": {
+    "orbColour": "#fbd318",
+    "orbColourSeed": "#FFD100",
+    "orbColourSource": "simple-icons-brand",
+    "orbColourSourceRef": "meituan",
+    "orbColourSourceUrl": "https://www.meituan.com/media",
+    "orbColourAdjustment": "logo-derived-for-mark-contrast"
+  },
+  "META": {
+    "orbColour": "#0183fe",
+    "orbColourSeed": "#0183fe",
+    "orbColourSource": "logo-derived"
+  },
+  "MICRON": {
+    "orbColour": "#394150",
+    "orbColourSeed": "#394150",
+    "orbColourSource": "neutral-fallback"
+  },
+  "MINIMAX": {
+    "orbColour": "#E73562",
+    "orbColourSeed": "#E73562",
+    "orbColourSource": "simple-icons-brand",
+    "orbColourSourceRef": "minimax",
+    "orbColourSourceUrl": "https://github.com/MiniMax-AI/MiniMax-01/blob/57cf223b177e99636c7711a0f179e9fdc9c38e8a/figures/minimax.svg"
+  },
+  "MSFT": {
+    "orbColour": "#f35325",
+    "orbColourSeed": "#f35325",
+    "orbColourSource": "logo-derived"
+  },
+  "MSTR": {
+    "orbColour": "#D9232E",
+    "orbColourSeed": "#D9232E",
+    "orbColourSource": "simple-icons-brand",
+    "orbColourSourceRef": "microstrategy",
+    "orbColourSourceUrl": "https://www.microstrategy.com/en/company/press-kit"
+  },
+  "NINTENDO": {
+    "orbColour": "#c50003",
+    "orbColourSeed": "#c50003",
+    "orbColourSource": "logo-derived"
+  },
+  "NVDA": {
+    "orbColour": "#76B900",
+    "orbColourSeed": "#76B900",
+    "orbColourSource": "simple-icons-brand",
+    "orbColourSourceRef": "nvidia",
+    "orbColourSourceUrl": "https://www.nvidia.com/en-us"
+  },
+  "SAMSUNG": {
+    "orbColour": "#394150",
+    "orbColourSeed": "#394150",
+    "orbColourSource": "neutral-fallback"
+  },
+  "SANDISK": {
+    "orbColour": "#ac0000",
+    "orbColourSeed": "#ac0000",
+    "orbColourSource": "logo-derived"
+  },
+  "SKHYNIX": {
+    "orbColour": "#ee7602",
+    "orbColourSeed": "#ee7602",
+    "orbColourSource": "logo-derived"
+  },
+  "SOFTBANK": {
+    "orbColour": "#394150",
+    "orbColourSeed": "#394150",
+    "orbColourSource": "neutral-fallback"
+  },
+  "SONY": {
+    "orbColour": "#FFFFFF",
+    "orbColourSeed": "#FFFFFF",
+    "orbColourSource": "simple-icons-brand",
+    "orbColourSourceRef": "sony",
+    "orbColourSourceUrl": "https://www.sony.com"
+  },
+  "SPACEX": {
+    "orbColour": "#000000",
+    "orbColourSeed": "#000000",
+    "orbColourSource": "simple-icons-brand",
+    "orbColourSourceRef": "spacex",
+    "orbColourSourceUrl": "https://www.spacex.com"
+  },
+  "TENCENT": {
+    "orbColour": "#006cb7",
+    "orbColourSeed": "#006cb7",
+    "orbColourSource": "logo-derived"
+  },
+  "TOKYOELEC": {
+    "orbColour": "#12a9e0",
+    "orbColourSeed": "#12a9e0",
+    "orbColourSource": "logo-derived"
+  },
+  "TSLA": {
+    "orbColour": "#CC0000",
+    "orbColourSeed": "#CC0000",
+    "orbColourSource": "simple-icons-brand",
+    "orbColourSourceRef": "tesla",
+    "orbColourSourceUrl": "https://www.tesla.com/tesla-gallery"
+  },
+  "ZHIPU": {
+    "orbColour": "#394150",
+    "orbColourSeed": "#394150",
+    "orbColourSource": "neutral-fallback"
+  }
+}
