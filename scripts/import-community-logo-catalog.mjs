@@ -11,6 +11,7 @@ import {
 } from "./logo-resolution.mjs";
 import { logoSignature, logoSimilarity } from "./logo-similarity.mjs";
 import { manualLogoOverrides } from "./manual-logo-overrides.mjs";
+import { canvasEdgeLineInsets, stripExtractedCanvasEdgeLines } from "./png-logo-processing.mjs";
 import {
   downloadSimpleIconsLogo,
   findSimpleIconsBrandColourCandidates,
@@ -21,6 +22,8 @@ import { downloadWikimediaLogo, findWikimediaLogoCandidates } from "./wikimedia-
 import { downloadTradingViewLogo, findTradingViewLogoCandidates } from "./tradingview-logo-source.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const pngAdjustmentDocument = JSON.parse(await readFile(path.join(root, "data/png-logo-adjustments.json"), "utf8"));
+const pngLogoAdjustments = new Map(pngAdjustmentDocument.adjustments.map((adjustment) => [adjustment.sourceSha256, adjustment]));
 const token = process.env.LOGO_DEV_PUBLISHABLE_KEY;
 const csvPath = process.argv.slice(2).find((argument) => !argument.startsWith("--"));
 const concurrencyArgument = process.argv.find((argument) => argument.startsWith("--concurrency="));
@@ -118,6 +121,10 @@ const logoProcessingOverrides = {
   "HKEX:6099": {
     stripVisibleElementIndexes: [0, 1],
     deriveOrbColourFromSource: true,
+  },
+  "HKEX:1310": {
+    // The blue square is HKBN's emblem, not a removable app-tile container.
+    retainContainer: true,
   },
 };
 
@@ -848,6 +855,9 @@ async function processLogo(sourcePath, outputPath, {
   sourceCrop,
   excludeRegions = [],
   backgroundTolerance = 30,
+  lightPixelThreshold,
+  stripCanvasEdgeLines = false,
+  retainContainer = false,
   containerRemoved: forcedContainerRemoval = false,
   stripVisibleElementIndexes,
   deriveOrbColourFromSource = false,
@@ -879,6 +889,9 @@ async function processLogo(sourcePath, outputPath, {
   // (Apple is a common example). Only treat the dominant opaque colour as a
   // matte when it covers almost the entire response.
   const removeDominantFill = hasTransparency && opaqueCoverage > 0.88;
+  const edgeInsets = stripCanvasEdgeLines
+    ? canvasEdgeLineInsets(data, info.width, info.height, info.channels)
+    : { left: 0, top: 0, right: 0, bottom: 0 };
   const background = removeDominantFill
     ? dominantOpaqueBackground(data, info.width, info.height, info.channels)
     : borderBackground(data, info.width, info.height, info.channels);
@@ -905,8 +918,17 @@ async function processLogo(sourcePath, outputPath, {
         && sourceY >= Math.floor(region.top * info.height)
         && sourceY < Math.ceil((region.top + region.height) * info.height)
       ));
-      const alpha = !withinSourceCrop || withinExcludedRegion
+      const withinEdgeInsets = sourceX >= edgeInsets.left
+        && sourceX < info.width - edgeInsets.right
+        && sourceY >= edgeInsets.top
+        && sourceY < info.height - edgeInsets.bottom;
+      const lightAlpha = lightPixelThreshold == null
+        ? undefined
+        : Math.max(0, Math.min(255, Math.round((Math.min(colour.r, colour.g, colour.b) - lightPixelThreshold) * 10.2)));
+      const alpha = !withinSourceCrop || withinExcludedRegion || !withinEdgeInsets
         ? 0
+        : lightAlpha != null
+        ? Math.round(sourceAlpha * lightAlpha / 255)
         : hasTransparency && !removeDominantFill
         ? sourceAlpha
         : Math.round(sourceAlpha * Math.max(0, Math.min(255, Math.round((distance - tolerance) * 10.2))) / 255);
@@ -916,6 +938,7 @@ async function processLogo(sourcePath, outputPath, {
       rgba[targetOffset + 3] = alpha;
       if (alpha > 24) mask[pixel] = 1;
     }
+    if (stripCanvasEdgeLines) stripExtractedCanvasEdgeLines(rgba, mask, info.width, info.height);
   }
 
   let effectiveBackgroundTolerance = backgroundTolerance;
@@ -927,7 +950,9 @@ async function processLogo(sourcePath, outputPath, {
     full = foregroundBounds(mask, info.width, info.height);
   }
   if (!full) throw new Error("no foreground found");
-  let removedContainer = stripRectangularContainer(rgba, mask, info.width, info.height, full);
+  let removedContainer = retainContainer
+    ? undefined
+    : stripRectangularContainer(rgba, mask, info.width, info.height, full);
   if (removedContainer) {
     full = foregroundBounds(mask, info.width, info.height);
     if (!full) {
@@ -1020,10 +1045,14 @@ async function processLogo(sourcePath, outputPath, {
 
 function parseReferenceStyles(source) {
   const styles = new Map();
-  for (const match of source.matchAll(/symbol: "([^"]+)"[^\n]+logoTreatment: "([^"]+)"(?:[^\n]+logoScale: ([0-9.]+))?/g)) {
-    styles.set(match[1], {
-      logoTreatment: match[2] ?? "original",
-      logoScale: Number(match[3] ?? 0.58),
+  for (const line of source.split("\n")) {
+    const symbol = /symbol: "([^"]+)"/.exec(line)?.[1];
+    const logoTreatment = /logoTreatment: "([^"]+)"/.exec(line)?.[1];
+    if (!symbol || !logoTreatment) continue;
+    styles.set(symbol, {
+      logoTreatment,
+      logoScale: Number(/logoScale: ([0-9.]+)/.exec(line)?.[1] ?? 0.58),
+      logoOffsetY: Number(/logoOffsetY: (-?[0-9.]+)/.exec(line)?.[1] ?? 0),
     });
   }
   return styles;
@@ -1286,7 +1315,7 @@ let completed = 0;
 const summary = { total: rows.length, reference: 0, ticker: 0, name: 0, manualReview: 0, tradingView: 0, wikimedia: 0, simpleIcons: 0, serpapi: 0, cached: 0, missing: 0, failed: 0, autoEmblem: 0, containerRemoved: 0, resolutionFlagged: 0, resolutionReplaced: 0, resolutionReview: 0 };
 summary.resolutionFlagged = lowResolutionSourceIds.size;
 
-function resolvedOrbColour(id, treatment, previous) {
+function resolvedOrbColour(id, treatment, previous, pngAdjustment) {
   const reviewedBackground = manualLogoCandidates.get(id)?.brandBackground;
   if (reviewedBackground) {
     return {
@@ -1295,6 +1324,13 @@ function resolvedOrbColour(id, treatment, previous) {
       orbColourSource: "removed-background",
       orbColourSourceRef: reviewedBackground.sourceRef,
       orbColourSourceUrl: reviewedBackground.sourceUrl,
+    };
+  }
+  if (pngAdjustment?.orbColour) {
+    return {
+      orbColour: pngAdjustment.orbColour,
+      orbColourSeed: pngAdjustment.orbColour,
+      orbColourSource: "png-source-review",
     };
   }
   const brand = simpleIconBrandColours.get(id);
@@ -1364,6 +1400,7 @@ async function importRow(row) {
         ...colour,
         logoTreatment: style.logoTreatment,
         logoScale: style.logoScale,
+        logoOffsetY: style.logoOffsetY,
       },
     };
   }
@@ -1598,10 +1635,14 @@ async function importRow(row) {
     } else {
       outputPath = path.join(outputDirectory, `${filenameStem}.png`);
     }
+    const sourceSha256 = createHash("sha256").update(cachedSourceBytes).digest("hex");
+    const pngAdjustment = isSvgBytes(cachedSourceBytes) ? undefined : pngLogoAdjustments.get(sourceSha256);
     const treatment = await processLogo(sourcePath, outputPath, {
       provider: download.provider,
       preserveFullMark: manualCandidate?.preserveFullMark ?? Boolean(serpApiCandidate?.preserveFullMark),
+      stripCanvasEdgeLines: !isSvgBytes(cachedSourceBytes),
       ...logoProcessingOverrides[id],
+      ...pngAdjustment?.processing,
       ...manualCandidate?.processing,
     });
     outputPath = treatment.processedPath;
@@ -1619,7 +1660,7 @@ async function importRow(row) {
     summary[summaryKey] += 1;
     if (treatment.cropMode === "auto-emblem") summary.autoEmblem += 1;
     if (treatment.containerRemoved) summary.containerRemoved += 1;
-    const colour = resolvedOrbColour(id, treatment, previous);
+    const colour = resolvedOrbColour(id, treatment, previous, pngAdjustment);
     completed += 1;
     if (completed % 100 === 0 || completed === rows.length) {
       console.log(`${completed}/${rows.length} · reference ${summary.reference} · ticker ${summary.ticker} · name ${summary.name} · missing ${summary.missing} · failed ${summary.failed}`);
@@ -1672,10 +1713,16 @@ async function importRow(row) {
         } : {}),
         ...treatment,
         ...colour,
+        ...(pngAdjustment ? {
+          adjustmentSource: "png-source-review",
+          adjustmentSourceHash: sourceSha256,
+        } : {}),
+        ...(typeof previous?.logo?.logoOffsetY === "number" ? { logoOffsetY: previous.logo.logoOffsetY } : {}),
         ...(((forceReprocess && !refreshPresentation) || (replaceWithOpenSource && allowOpenSourceReplacement)) && previous?.logo ? {
           logoTreatment: previous.logo.logoTreatment,
           logoScale: previous.logo.logoScale,
         } : {}),
+        ...pngAdjustment?.presentation,
       },
     };
   } catch (error) {

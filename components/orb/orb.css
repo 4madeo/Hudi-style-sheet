@@ -124,11 +124,16 @@
 }
 
 .hudi-orb__logo {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + var(--hudi-orb-logo-offset-y, 0%));
+  z-index: 0;
   display: block;
-  width: calc(var(--hudi-orb-logo-scale, .58) * 166.667%);
-  height: calc(var(--hudi-orb-logo-scale, .58) * 166.667%);
+  width: calc(var(--hudi-orb-logo-scale, .58) * 100%);
+  height: calc(var(--hudi-orb-logo-scale, .58) * 100%);
   object-fit: contain;
   object-position: center;
+  transform: translate(-50%, -50%);
   filter: none;
   opacity: 0;
   transition: opacity 120ms ease;

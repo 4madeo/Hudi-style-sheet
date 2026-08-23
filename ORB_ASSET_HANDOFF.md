@@ -43,7 +43,7 @@ Use the asset closest to the final display size. In particular, use the purpose-
 
 The package is exported in one theme, recorded as `light` or `dark` in `export-manifest.json`. The theme changes the order and contrast of the material rings; it does not change the company identity. Use assets from a package whose theme matches the surface where they will appear.
 
-Logo colour treatment, logo scale, orb colour, highlights, shadows, and rings are final. Do not recolour the logo or orb, crop into the circle, add a second border, remove the highlight, or place the artwork inside another circular mask.
+Logo colour treatment, logo scale, optical position, orb colour, highlights, shadows, and rings are final. Do not recolour the logo or orb, crop into the circle, add a second border, remove the highlight, or place the artwork inside another circular mask.
 
 ## Fallback orbs
 

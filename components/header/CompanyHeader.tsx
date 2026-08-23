@@ -15,6 +15,7 @@ export type CompanyHeaderProps = {
   logoUrl: string;
   logoTreatment?: LogoTreatment;
   logoScale?: number;
+  logoOffsetY?: number;
   palette: OrbPalette;
   price: string;
   change: string;
@@ -37,6 +38,7 @@ export function CompanyHeader({
   logoUrl,
   logoTreatment,
   logoScale,
+  logoOffsetY,
   palette,
   price,
   change,
@@ -55,6 +57,7 @@ export function CompanyHeader({
           logoUrl={logoUrl}
           logoTreatment={logoTreatment}
           logoScale={logoScale}
+          logoOffsetY={logoOffsetY}
           palette={palette}
           size={48}
           compact

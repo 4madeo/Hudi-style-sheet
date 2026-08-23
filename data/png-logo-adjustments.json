@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "adjustments": [
+    {
+      "sourceSha256": "ed54b7b47258ec8ffcddc9df535855ea6949cccf2302c828652ec14d9b3e45c9",
+      "note": "Use the standalone ANDINA wordmark and underline.",
+      "orbColour": "#da5558",
+      "presentation": {
+        "logoTreatment": "lift",
+        "logoScale": 0.56
+      },
+      "processing": {
+        "sourceCrop": {
+          "left": 0.53,
+          "top": 0.39,
+          "width": 0.37,
+          "height": 0.14
+        }
+      }
+    },
+    {
+      "sourceSha256": "5d345aacd3cefc9382ca770ab5d4ed2acbc1de966a8fe97995fed23057c8c3db",
+      "note": "Remove the blue gradient panel and retain the white ARBE lettermark.",
+      "orbColour": "#04b7fe",
+      "presentation": {
+        "logoTreatment": "original",
+        "logoScale": 0.6
+      },
+      "processing": {
+        "lightPixelThreshold": 220,
+        "deriveOrbColourFromSource": true
+      }
+    },
+    {
+      "sourceSha256": "3b4e4de547221f55f2b6b9e20df827d5320759bef87bf5ef825b4c5ac5c736aa",
+      "note": "Remove the thin full-width canvas-edge artifact.",
+      "orbColour": "#08aae9",
+      "presentation": {
+        "logoTreatment": "deepen",
+        "logoScale": 0.56
+      },
+      "processing": {
+        "stripCanvasEdgeLines": true
+      }
+    },
+    {
+      "sourceSha256": "b6cada8ce670a4ece1102bafc6120ba951b649d93e065839a7f50cc65fb59c61",
+      "note": "Remove the orange gradient panel and retain the white N lettermark.",
+      "orbColour": "#f6a844",
+      "presentation": {
+        "logoTreatment": "original",
+        "logoScale": 0.56
+      },
+      "processing": {
+        "lightPixelThreshold": 220,
+        "deriveOrbColourFromSource": true
+      }
+    },
+    {
+      "sourceSha256": "7a14ffd7366b85278c4d6d8d1cbaeb702ea3ee577af15e5048415f14f0265391",
+      "note": "Remove the thin full-width bottom canvas artifact.",
+      "orbColour": "#394150",
+      "presentation": {
+        "logoTreatment": "light",
+        "logoScale": 0.56
+      },
+      "processing": {
+        "stripCanvasEdgeLines": true
+      }
+    }
+  ]
+}

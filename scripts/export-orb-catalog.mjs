@@ -444,6 +444,7 @@ async function main() {
       const svg = createLogoOrbSvg(logoHref, palette, scaleName, {
         logoTreatment: entry.logo?.logoTreatment ?? (presentation.whiteText ? "light" : "dark"),
         logoScale: entry.logo?.logoScale ?? 0.58,
+        logoOffsetY: entry.logo?.logoOffsetY ?? 0,
         title: `${entry.company}${entry.logo ? "" : " fallback"} ${scaleName} orb`,
         theme: options.theme,
       });

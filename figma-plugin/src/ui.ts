@@ -94,6 +94,7 @@ async function createSvg(item: OrbItem) {
     {
       logoTreatment: item.logoTreatment,
       logoScale: item.logoScale,
+      logoOffsetY: item.logoOffsetY,
       title: `${item.company} ${scaleLabels[scale]} orb`,
     },
   ));

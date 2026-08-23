@@ -69,6 +69,7 @@ type CatalogLogo = {
   orbColourSourceUrl?: string;
   logoTreatment: LogoTreatment;
   logoScale: number;
+  logoOffsetY?: number;
   cropMode: "curated-emblem" | "curated-mark" | "auto-emblem" | "full-mark";
 };
 
@@ -84,6 +85,7 @@ type CatalogEntry = {
 };
 
 type CatalogManifest = {
+  generatedAt: string;
   rowCount: number;
   summary: {
     reference: number;
@@ -96,6 +98,11 @@ type CatalogManifest = {
   };
   entries: CatalogEntry[];
 };
+
+function catalogLogoUrl(path: string, catalogVersion: string) {
+  const separator = path.includes("?") ? "&" : "?";
+  return `${path}${separator}v=${encodeURIComponent(catalogVersion)}`;
+}
 
 type CatalogReviewEntry = {
   id: string;
@@ -310,6 +317,7 @@ function createHeaderChange(item: GalleryOrb, mark: number) {
 type OrbDraft = OrbPalette & {
   logoDomain: string;
   logoScale: number;
+  logoOffsetY: number;
   logoTreatment: LogoTreatment;
 };
 type StoredOrbDraft = Partial<OrbDraft> & { key?: string };
@@ -369,6 +377,7 @@ function Blotter({ items, positions, selectedKey, onSelect }: BlotterProps) {
                         logoUrl={item.logoUrl}
                         logoTreatment={item.logoTreatment}
                         logoScale={item.logoScale}
+                        logoOffsetY={item.logoOffsetY}
                         palette={item.palette}
                         size={24}
                         compact
@@ -490,6 +499,7 @@ export default function Home() {
   const [generatorSymbol, setGeneratorSymbol] = useState(generatorDefault.symbol);
   const [palette, setPalette] = useState<OrbPalette>(generatorDefault.palette);
   const [logoScale, setLogoScale] = useState(generatorDefault.logoScale ?? 0.58);
+  const [logoOffsetY, setLogoOffsetY] = useState(generatorDefault.logoOffsetY ?? 0);
   const [logoTreatment, setLogoTreatment] = useState<LogoTreatment>(generatorDefault.logoTreatment ?? "original");
   const [galleryItems, setGalleryItems] = useState(initialGalleryOrbs);
   const [positions, setPositions] = useState<Position[]>(() => initialGalleryOrbs.map(createPosition));
@@ -512,6 +522,7 @@ export default function Home() {
   const [draft, setDraft] = useState<OrbDraft>({
     logoDomain: "",
     logoScale: 0.58,
+    logoOffsetY: 0,
     logoTreatment: "original",
     ...deriveOrbPalette("#ff0000"),
   });
@@ -584,6 +595,7 @@ export default function Home() {
     setGeneratorSymbol(item.symbol);
     setPalette(item.palette);
     setLogoScale(item.logoScale ?? 0.58);
+    setLogoOffsetY(item.logoOffsetY ?? 0);
     setLogoTreatment(item.logoTreatment ?? "original");
   };
   const showRandomCatalogEntries = () => {
@@ -625,6 +637,7 @@ export default function Home() {
     setDraft({
       logoDomain: item.logoDomain,
       logoScale: item.logoScale ?? 0.58,
+      logoOffsetY: item.logoOffsetY ?? 0,
       logoTreatment: item.logoTreatment ?? "original",
       ...item.palette,
     });
@@ -651,6 +664,7 @@ export default function Home() {
           token: logoDevToken,
         }),
         logoScale: draft.logoScale,
+        logoOffsetY: draft.logoOffsetY,
         logoTreatment: draft.logoTreatment,
         palette: draftPalette,
       }
@@ -660,6 +674,7 @@ export default function Home() {
       key: galleryKey(item),
       logoDomain: item.logoDomain,
       logoScale: item.logoScale,
+      logoOffsetY: item.logoOffsetY,
       logoTreatment: item.logoTreatment,
       colour: item.palette.colour,
       base: item.palette.base,
@@ -689,6 +704,7 @@ export default function Home() {
             theme,
             logoTreatment: item.logoTreatment,
             logoScale: item.logoScale,
+            logoOffsetY: item.logoOffsetY,
             title: `${item.company} ${scaleName} orb`,
           }),
         };
@@ -755,6 +771,7 @@ export default function Home() {
               ? item.logoUrl
               : createLogoDevUrl(logoDomain, { format: logoDevFormat, token: logoDevToken }),
             logoScale: typeof stored.logoScale === "number" ? stored.logoScale : item.logoScale,
+            logoOffsetY: typeof stored.logoOffsetY === "number" ? stored.logoOffsetY : item.logoOffsetY,
             logoTreatment: stored.logoTreatment === "light" || stored.logoTreatment === "dark" || stored.logoTreatment === "lift" || stored.logoTreatment === "tint" || stored.logoTreatment === "deepen" || stored.logoTreatment === "knockout" || stored.logoTreatment === "original"
               ? stored.logoTreatment
               : item.logoTreatment,
@@ -773,8 +790,8 @@ export default function Home() {
     if (view !== "catalog" || catalog || catalogError) return;
     const controller = new AbortController();
     Promise.all([
-      window.fetch("/logos/catalog/manifest.json", { signal: controller.signal }),
-      window.fetch("/logos/catalog/review.json", { signal: controller.signal }),
+      window.fetch("/logos/catalog/manifest.json", { cache: "no-store", signal: controller.signal }),
+      window.fetch("/logos/catalog/review.json", { cache: "no-store", signal: controller.signal }),
     ])
       .then(async ([catalogResponse, reviewResponse]) => {
         if (!catalogResponse.ok) throw new Error(`catalog returned ${catalogResponse.status}`);
@@ -797,7 +814,7 @@ export default function Home() {
   useEffect(() => {
     if (view !== "crypto" || cryptoCatalog || cryptoCatalogError) return;
     const controller = new AbortController();
-    window.fetch("/logos/crypto/manifest.json", { signal: controller.signal })
+    window.fetch("/logos/crypto/manifest.json", { cache: "no-store", signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error(`crypto catalog returned ${response.status}`);
         setCryptoCatalog(await response.json() as CatalogManifest);
@@ -873,6 +890,7 @@ export default function Home() {
               logoUrl={generatorLogoUrl}
               logoTreatment={logoTreatment}
               logoScale={logoScale}
+              logoOffsetY={logoOffsetY}
               palette={palette}
             />
           </section>
@@ -919,6 +937,10 @@ export default function Home() {
                 <span>scale:</span>
                 <input type="range" min="0.36" max="0.72" step="0.01" value={logoScale} aria-label="Logo scale" onChange={(event) => setLogoScale(Number(event.target.value))} />
               </label>
+              <label className="text-control">
+                <span>vertical:</span>
+                <input type="range" min="-0.08" max="0.08" step="0.005" value={logoOffsetY} aria-label="Logo vertical offset" onChange={(event) => setLogoOffsetY(Number(event.target.value))} />
+              </label>
             </div>
             <p className="logo-source-note">Logo source: {generatorItem.logoDomain}</p>
           </section>
@@ -937,7 +959,7 @@ export default function Home() {
                 title={`${listing.symbol} · ${listing.company}`}
               >
                 <button className="listing-orb-button" type="button" onClick={() => openEditor(index)} aria-label={`Edit ${listing.company} orb`}>
-                  <LogoOrb company={listing.company} logoUrl={listing.logoUrl} logoTreatment={listing.logoTreatment} logoScale={listing.logoScale} palette={listing.palette} size="var(--gallery-orb-size)" compact />
+                  <LogoOrb company={listing.company} logoUrl={listing.logoUrl} logoTreatment={listing.logoTreatment} logoScale={listing.logoScale} logoOffsetY={listing.logoOffsetY} palette={listing.palette} size="var(--gallery-orb-size)" compact />
                 </button>
               </article>
             ))}
@@ -1006,9 +1028,10 @@ export default function Home() {
                         {entry.logo ? (
                           <LogoOrb
                             company={entry.company}
-                            logoUrl={entry.logo.path}
+                            logoUrl={catalogLogoUrl(entry.logo.path, activeCatalog.generatedAt)}
                             logoTreatment={entry.logo.logoTreatment}
                             logoScale={entry.logo.logoScale}
+                            logoOffsetY={entry.logo.logoOffsetY}
                             palette={deriveOrbPalette(entry.logo.orbColour)}
                             size="var(--catalog-orb-size)"
                             compact
@@ -1064,6 +1087,7 @@ export default function Home() {
             logoUrl={selectedHeaderItem.logoUrl}
             logoTreatment={selectedHeaderItem.logoTreatment}
             logoScale={selectedHeaderItem.logoScale}
+            logoOffsetY={selectedHeaderItem.logoOffsetY}
             palette={selectedHeaderItem.palette}
             price={`$${selectedHeaderPosition.mark.toFixed(2)}`}
             change={formatSignedCurrency(selectedHeaderChange.amount)}
@@ -1113,6 +1137,7 @@ export default function Home() {
                 logoUrl={createLogoDevUrl(draft.logoDomain || "logo.dev", { format: logoDevFormat, token: logoDevToken })}
                 logoTreatment={draft.logoTreatment}
                 logoScale={draft.logoScale}
+                logoOffsetY={draft.logoOffsetY}
                 palette={draftPalette}
                 compact
                 decorative
@@ -1163,6 +1188,10 @@ export default function Home() {
               <label className="orb-editor-field">
                 <span>logo scale</span>
                 <input type="range" min="0.36" max="0.72" step="0.01" value={draft.logoScale} aria-label="Logo scale" onChange={(event) => setDraft((current) => ({ ...current, logoScale: Number(event.target.value) }))} />
+              </label>
+              <label className="orb-editor-field">
+                <span>vertical position</span>
+                <input type="range" min="-0.08" max="0.08" step="0.005" value={draft.logoOffsetY} aria-label="Logo vertical offset" onChange={(event) => setDraft((current) => ({ ...current, logoOffsetY: Number(event.target.value) }))} />
               </label>
             </div>
 

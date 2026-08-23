@@ -11,9 +11,9 @@ Import public values from `components/orb/index.ts`:
 | `LogoOrb` | React company-logo orb renderer |
 | `createLogoDevUrl(domain, options)` | Creates a Logo.dev URL from a verified company domain |
 | `deriveOrbPalette(colour)` | Expands one brand colour into the orb material palette |
-| `createLogoOrbSvg(...)` | Creates an SVG export with a centred logo image |
+| `createLogoOrbSvg(...)` | Creates an SVG export with a geometrically centred or optically corrected logo image |
 
-`LogoOrb` accepts `company`, optional `logoUrl`, optional `fallbackKey`, `colour` or `palette`, `logoTreatment`, `logoScale`, `size`, `compact`, `theme`, `glow`, `className`, `style`, `ariaLabel`, and `decorative`.
+`LogoOrb` accepts `company`, optional `logoUrl`, optional `fallbackKey`, `colour` or `palette`, `logoTreatment`, `logoScale`, `logoOffsetY`, `size`, `compact`, `theme`, `glow`, `className`, `style`, `ariaLabel`, and `decorative`.
 
 When `logoUrl` is absent or fails to load, the orb renders a compact company monogram. It uses the first letters of up to two meaningful company-name words, ignores common legal suffixes, and falls back to the first two graphemes of a single-word or non-Latin name. The mark remains a clearly system-generated HUDI default rather than a fabricated company logo.
 
@@ -27,12 +27,15 @@ Black logo inversion is reserved for bright orb colours with strong measured con
 
 `logoScale` is the mark’s diameter as a proportion of the orb. The component clamps it to the 0.36–0.72 range; the curated listing set normally stays around 0.54–0.62. This keeps every mark inside the central safe zone and clear of the highlight and rim.
 
+`logoOffsetY` is an optional optical correction expressed as a proportion of the orb diameter and clamped to −0.12–0.12. Positive values move a visually top-heavy mark down; negative values move it up. Keep it at the default `0` unless the logo’s visual weight makes geometric centring look wrong. The same value is honored by the React renderer and standalone SVG exports.
+
 ```tsx
 <LogoOrb
   company="Microsoft"
   logoUrl="/logos/msft.png"
   logoTreatment="original"
   logoScale={0.54}
+  logoOffsetY={0.02}
   palette={deriveOrbPalette("#0078D4")}
   size={136}
 />

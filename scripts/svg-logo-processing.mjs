@@ -38,6 +38,89 @@ function normalizedPathData(tag) {
   return (attribute(tag, "d") ?? "").toLowerCase().replace(/[\s,]+/g, "");
 }
 
+function axisAlignedPathBounds(tag) {
+  const pathData = attribute(tag, "d") ?? "";
+  const tokens = pathData.match(/[a-z]|[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/gi) ?? [];
+  const residue = pathData.replace(/[a-z]|[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/gi, "");
+  if (!tokens.length || /[^\s,]/.test(residue)) return undefined;
+
+  let command;
+  let x = 0;
+  let y = 0;
+  let start;
+  const points = [];
+  let index = 0;
+
+  function number() {
+    const value = Number(tokens[index]);
+    if (!Number.isFinite(value)) return undefined;
+    index += 1;
+    return value;
+  }
+
+  function lineTo(nextX, nextY) {
+    if (nextX !== x && nextY !== y) return false;
+    x = nextX;
+    y = nextY;
+    const previous = points.at(-1);
+    if (!previous || previous.x !== x || previous.y !== y) points.push({ x, y });
+    return true;
+  }
+
+  while (index < tokens.length) {
+    if (/^[a-z]$/i.test(tokens[index])) command = tokens[index++];
+    if (!command) return undefined;
+    const relative = command === command.toLowerCase();
+    switch (command.toLowerCase()) {
+      case "m": {
+        if (start) return undefined;
+        const nextX = number();
+        const nextY = number();
+        if (nextX == null || nextY == null) return undefined;
+        x = relative ? x + nextX : nextX;
+        y = relative ? y + nextY : nextY;
+        start = { x, y };
+        points.push(start);
+        command = relative ? "l" : "L";
+        break;
+      }
+      case "l": {
+        const nextX = number();
+        const nextY = number();
+        if (nextX == null || nextY == null) return undefined;
+        if (!lineTo(relative ? x + nextX : nextX, relative ? y + nextY : nextY)) return undefined;
+        break;
+      }
+      case "h": {
+        const nextX = number();
+        if (nextX == null || !lineTo(relative ? x + nextX : nextX, y)) return undefined;
+        break;
+      }
+      case "v": {
+        const nextY = number();
+        if (nextY == null || !lineTo(x, relative ? y + nextY : nextY)) return undefined;
+        break;
+      }
+      case "z":
+        if (!start || !lineTo(start.x, start.y)) return undefined;
+        command = undefined;
+        break;
+      default:
+        return undefined;
+    }
+  }
+
+  if (!start || points.length !== 5 || points.at(-1).x !== start.x || points.at(-1).y !== start.y) return undefined;
+  const xs = points.map((point) => point.x);
+  const ys = points.map((point) => point.y);
+  return {
+    left: Math.min(...xs),
+    top: Math.min(...ys),
+    right: Math.max(...xs),
+    bottom: Math.max(...ys),
+  };
+}
+
 function isCanvasRect(tag, viewBox) {
   if (!/^<rect\b/i.test(tag)) return false;
   const x = finiteNumber(attribute(tag, "x"), 0);
@@ -53,6 +136,14 @@ function isCanvasRect(tag, viewBox) {
 
 function isCanvasPath(tag, viewBox) {
   if (!/^<path\b/i.test(tag)) return false;
+  const bounds = axisAlignedPathBounds(tag);
+  if (bounds) {
+    const tolerance = Math.max(viewBox.width, viewBox.height) * 0.02;
+    return Math.abs(bounds.left - viewBox.x) <= tolerance
+      && Math.abs(bounds.top - viewBox.y) <= tolerance
+      && Math.abs(bounds.right - (viewBox.x + viewBox.width)) <= tolerance
+      && Math.abs(bounds.bottom - (viewBox.y + viewBox.height)) <= tolerance;
+  }
   const x = cleanNumber(viewBox.x);
   const y = cleanNumber(viewBox.y);
   const width = cleanNumber(viewBox.width);

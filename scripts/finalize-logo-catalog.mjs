@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFile, rename, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { verifiedLogoFamilies, verifiedLogoFamilyByListing } from "./catalog-logo-families.mjs";
@@ -9,6 +9,7 @@ import {
   resolutionFailureMessage,
 } from "./logo-resolution.mjs";
 import { prepareVectorLogo } from "./svg-logo-processing.mjs";
+import { correctLogoContrast } from "./logo-contrast.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const manifestArgument = process.argv.slice(2).find((argument) => !argument.startsWith("--"))
@@ -308,15 +309,26 @@ function readableOriginalTreatment(logo, artworkStructure = {}) {
   return restored;
 }
 
+function isWordmarkLogo(logo) {
+  return logo.crop?.width / Math.max(0.001, logo.crop?.height ?? 0) >= 2.25;
+}
+
 manifest.entries = await Promise.all(manifest.entries.map(async (entry) => {
   if (!entry.logo) return entry;
+  const sourceLogo = { ...entry.logo };
+  if (sourceLogo.logoContrastSourcePath) {
+    sourceLogo.path = sourceLogo.logoContrastSourcePath;
+    delete sourceLogo.logoContrastSourcePath;
+    delete sourceLogo.logoContrastAdjustment;
+    delete sourceLogo.logoPaintAdjustments;
+  }
   let artworkStructure = {};
-  if (entry.logo.assetFormat === "svg" && entry.logo.path) {
+  if (sourceLogo.assetFormat === "svg" && sourceLogo.path) {
     try {
-      const logoPath = path.join(root, "public", entry.logo.path.replace(/^\//, ""));
+      const logoPath = path.join(root, "public", sourceLogo.path.replace(/^\//, ""));
       artworkStructure = svgArtworkStructure(await readFile(logoPath, "utf8"));
-      if (entry.logo.sourcePath) {
-        const sourcePath = path.join(root, "public", entry.logo.sourcePath.replace(/^\//, ""));
+      if (sourceLogo.sourcePath) {
+        const sourcePath = path.join(root, "public", sourceLogo.sourcePath.replace(/^\//, ""));
         const preparedSource = prepareVectorLogo(await readFile(sourcePath), { stripCanvasBackground: true });
         const removedBackgroundColour = preparedSource?.removedBackgroundColours
           .map((colour) => {
@@ -330,7 +342,7 @@ manifest.entries = await Promise.all(manifest.entries.map(async (entry) => {
       artworkStructure = {};
     }
   }
-  let logo = readableOriginalTreatment(entry.logo, artworkStructure);
+  let logo = readableOriginalTreatment(sourceLogo, artworkStructure);
   if (logo.provider === "logo.dev"
     && logo.lookup === "cached"
     && logo.sourcePath) {
@@ -354,19 +366,48 @@ const reviewedTreatmentOverrides = new Map([
   ["TSE:8802", "light"],
   ["TSE:9869", "light"],
   ["NASDAQ:BMRA", "light"],
+  ["HKEX:0002", "light"],
+  ["HKEX:0005", "knockout"],
+  ["NYSE:HSBC", "knockout"],
+  // Filled badges must keep their internal colour separation. A light/dark
+  // CSS treatment flattens each of these approved marks into a plain disc.
+  ["NYSE:SECZ", "original"],
+  ["NYSE:EVEX-WT", "original"],
+  ["NASDAQ:AEAQW", "original"],
+  ["HKEX:8341", "original"],
+  ["NASDAQ:PRTH", "original"],
+  ["NASDAQ:QUMSR", "original"],
+  ["NASDAQ:PONOR", "original"],
+  ["HKEX:1310", "original"],
 ]);
-manifest.entries = manifest.entries.map((entry) => {
+const reviewedOrbColourOverrides = new Map([
+  // HKBN's emblem is a blue square with transparent/white internal detail.
+  // Reusing that same blue as the orb surface makes the square disappear.
+  ["HKEX:1310", "#f0f3fa"],
+]);
+const reviewedOriginalArtworkIds = new Set([
+  "HKEX:0018", // ORIENTAL M G already has sufficient internal/exterior contrast.
+  "HKEX:0168", // TSINGTAO BREW already has sufficient internal/exterior contrast.
+]);
+function applyReviewedTreatmentOverride(entry) {
   const treatment = reviewedTreatmentOverrides.get(entry.id);
-  if (!treatment || !entry.logo) return entry;
+  const orbColour = reviewedOrbColourOverrides.get(entry.id);
+  if ((!treatment && !orbColour) || !entry.logo) return entry;
   return {
     ...entry,
     logo: {
       ...entry.logo,
-      logoTreatment: treatment,
+      ...(treatment ? { logoTreatment: treatment } : {}),
+      ...(orbColour ? {
+        orbColour,
+        orbColourSeed: orbColour,
+        orbColourSource: "removed-background",
+      } : {}),
       orbColourAdjustment: "reviewed-logo-contrast",
     },
   };
-});
+}
+manifest.entries = manifest.entries.map(applyReviewedTreatmentOverride);
 
 function normalizedName(value) {
   return value
@@ -648,6 +689,74 @@ manifest.entries = manifest.entries.map((entry) => {
   };
 });
 
+function contrastAssetPublicPath(entry, format, bytes) {
+  const exchange = entry.exchange.toLocaleLowerCase().replace(/[^a-z0-9._-]+/g, "-");
+  const symbol = entry.symbol.replace(/[^a-z0-9._-]+/gi, "-").replace(/^-+|-+$/g, "") || "logo";
+  const suffix = createHash("sha256").update(bytes).digest("hex").slice(0, 8);
+  return `/logos/catalog/contrast/${exchange}/${symbol}-${suffix}.${format}`;
+}
+
+const contrastCounts = { selectivePaint: 0, silhouetteUnderlay: 0 };
+const contrastCandidates = manifest.entries.filter((entry) => (
+  entry.logo?.path
+  && ["svg", "png"].includes(entry.logo.assetFormat)
+  && entry.logo.logoTreatment !== "light"
+  && !reviewedOriginalArtworkIds.has(entry.id)
+));
+let nextContrastCandidate = 0;
+async function contrastWorker() {
+  while (nextContrastCandidate < contrastCandidates.length) {
+    const entry = contrastCandidates[nextContrastCandidate];
+    nextContrastCandidate += 1;
+    const sourcePublicPath = entry.logo.logoContrastSourcePath ?? entry.logo.path;
+    const sourcePath = path.join(root, "public", sourcePublicPath.replace(/^\/+/, ""));
+    try {
+      const wordmark = isWordmarkLogo(entry.logo);
+      const result = await correctLogoContrast(
+        await readFile(sourcePath),
+        entry.logo.assetFormat,
+        entry.logo.orbColour,
+        { wordmark },
+      );
+      if (result.kind === "none") {
+        entry.logo.path = sourcePublicPath;
+        if (result.preserveOriginal) {
+          entry.logo.logoTreatment = "original";
+          entry.logo.orbColourAdjustment = "preserved-container-contrast";
+        }
+        delete entry.logo.logoContrastSourcePath;
+        delete entry.logo.logoContrastAdjustment;
+        delete entry.logo.logoPaintAdjustments;
+        continue;
+      }
+      const outputPublicPath = contrastAssetPublicPath(entry, entry.logo.assetFormat, result.bytes);
+      const outputPath = path.join(root, "public", outputPublicPath.replace(/^\/+/, ""));
+      await mkdir(path.dirname(outputPath), { recursive: true });
+      const temporaryPath = `${outputPath}.process`;
+      await writeFile(temporaryPath, result.bytes);
+      await rename(temporaryPath, outputPath);
+      entry.logo.path = outputPublicPath;
+      entry.logo.logoContrastSourcePath = sourcePublicPath;
+      entry.logo.logoContrastAdjustment = result.kind;
+      entry.logo.logoTreatment = "original";
+      entry.logo.orbColourAdjustment = result.kind === "selective-paint"
+        ? "selective-logo-contrast"
+        : "silhouette-logo-contrast";
+      if (result.adjustments.length) entry.logo.logoPaintAdjustments = result.adjustments;
+      else delete entry.logo.logoPaintAdjustments;
+      if (result.kind === "selective-paint") contrastCounts.selectivePaint += 1;
+      else contrastCounts.silhouetteUnderlay += 1;
+    } catch (error) {
+      console.warn(`Contrast correction skipped for ${entry.id}: ${error.message}`);
+    }
+  }
+}
+await Promise.all(Array.from(
+  { length: Math.min(8, contrastCandidates.length) },
+  contrastWorker,
+));
+manifest.entries = manifest.entries.map(applyReviewedTreatmentOverride);
+
 const missing = manifest.entries.filter((entry) => entry.logoStatus === "missing").length;
 const failed = manifest.entries.filter((entry) => entry.logoStatus === "failed").length;
 const wrongSource = manifest.entries.filter((entry) => entry.logoStatus === "wrong-source").length;
@@ -670,6 +779,7 @@ manifest.summary = {
   finalizerResolutionReview: finalizerResolutionFailures.size,
   duplicateReview,
   verifiedSharedLogos,
+  logoContrastAdjustments: contrastCounts,
   sourceReview: sourceReviewCount,
   orbColourSources,
 };
@@ -706,4 +816,5 @@ console.log(`Linked ${aliases} unresolved listings to an exact-name logo on the 
 console.log(`Accepted ${verifiedSharedLogos} logos from explicitly verified corporate families.`);
 console.log(`Rejected ${finalizerResolutionFailures.size} retained logos below the resolution floor.`);
 console.log(`Quarantined ${duplicateReview} suspicious repeated marks.`);
+console.log(`Adjusted ${contrastCounts.selectivePaint} chromatic logos selectively and added ${contrastCounts.silhouetteUnderlay} silhouette underlays.`);
 console.log(`Remaining source review: ${sourceReviewCount} (${missing} missing, ${failed} failed, ${wrongSource} wrong source, ${lowResolution} below resolution floor, ${duplicateReview} duplicates).`);

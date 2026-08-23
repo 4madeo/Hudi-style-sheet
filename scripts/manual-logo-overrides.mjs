@@ -2,6 +2,20 @@
 // Keep the original review files separate from the importer source cache so a
 // later catalog refresh can deterministically restore the approved mark.
 export const manualLogoOverrides = new Map([
+  ["NASDAQ:PRTH", {
+    assetPath: "public/logos/manual-review/nasdaq/prth.png",
+    brandBackground: {
+      colour: "#01271a",
+      sourceRef: "official-2024-rebrand",
+      sourceUrl: "https://prioritycommerce.com/resource-center/priority-rebrand-2024/",
+    },
+    preserveFullMark: true,
+    processing: {
+      // The reviewed source is Priority's complete horizontal lockup. The orb
+      // uses the standalone gradient emblem at the left of that lockup.
+      sourceCrop: { left: 0, top: 0, width: 0.285, height: 1 },
+    },
+  }],
   ["SZSE:301669", {
     assetPath: "public/logos/manual-review/szse/301669.png",
     brandBackground: {

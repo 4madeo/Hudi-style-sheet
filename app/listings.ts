@@ -7,6 +7,7 @@ export type Listing = {
   logoDomain: string;
   logoTreatment?: LogoTreatment;
   logoScale?: number;
+  logoOffsetY?: number;
 };
 
 /** Reference companies and presentation geometry. Brand colours are generated

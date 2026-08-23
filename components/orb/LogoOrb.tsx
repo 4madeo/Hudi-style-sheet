@@ -38,6 +38,7 @@ export function LogoOrb({
   palette,
   logoTreatment = "original",
   logoScale = 0.58,
+  logoOffsetY = 0,
   size,
   compact = false,
   theme = "inherit",
@@ -70,11 +71,14 @@ export function LogoOrb({
     .filter(Boolean)
     .join(" ");
   const resolvedSize = typeof size === "number" ? `${size}px` : size;
+  const resolvedLogoScale = Math.max(0.36, Math.min(0.72, logoScale));
+  const resolvedLogoOffsetY = Math.max(-0.12, Math.min(0.12, logoOffsetY));
   const orbStyle = {
     "--hudi-orb-base": resolvedPalette.base,
     "--hudi-orb-sheen": resolvedPalette.sheen,
     "--hudi-orb-shadow": presentation.shadow,
-    "--hudi-orb-logo-scale": Math.max(0.36, Math.min(0.72, logoScale)),
+    "--hudi-orb-logo-scale": resolvedLogoScale,
+    "--hudi-orb-logo-offset-y": `${resolvedLogoOffsetY * 100}%`,
     ...(resolvedSize ? { "--hudi-orb-size": resolvedSize } : {}),
     ...style,
   } as OrbStyle;
@@ -146,23 +150,23 @@ export function LogoOrb({
             {fallbackMonogram}
           </text>
         </svg>
-        {logoUrl ? (
-          // Logo.dev and local catalog assets share this vector/raster image contract.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            className="hudi-orb__logo"
-            src={logoUrl}
-            alt=""
-            draggable={false}
-            style={logoTreatment === "lift"
-              ? { filter: `url(#${liftFilterId})` }
-              : logoTreatment === "tint" ? { filter: `url(#${tintFilterId})` }
-              : logoTreatment === "knockout" ? { filter: `url(#${knockoutFilterId})` } : undefined}
-            onLoad={() => setLoadedLogoUrl(logoUrl)}
-            onError={() => setLoadedLogoUrl(undefined)}
-          />
-        ) : null}
       </span>
+      {logoUrl ? (
+        // Logo.dev and local catalog assets share this vector/raster image contract.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          className="hudi-orb__logo"
+          src={logoUrl}
+          alt=""
+          draggable={false}
+          style={logoTreatment === "lift"
+            ? { filter: `url(#${liftFilterId})` }
+            : logoTreatment === "tint" ? { filter: `url(#${tintFilterId})` }
+            : logoTreatment === "knockout" ? { filter: `url(#${knockoutFilterId})` } : undefined}
+          onLoad={() => setLoadedLogoUrl(logoUrl)}
+          onError={() => setLoadedLogoUrl(undefined)}
+        />
+      ) : null}
     </div>
   );
 }

@@ -46,6 +46,7 @@ export type CreateOrbSvgOptions = {
   logoHref?: string;
   logoTreatment?: LogoTreatment;
   logoScale?: number;
+  logoOffsetY?: number;
 };
 
 const XML_CHARACTERS: Record<string, string> = {
@@ -215,8 +216,10 @@ export function createOrbSvg(
       }
     </style>`;
   const logoScale = Math.max(0.36, Math.min(0.72, options.logoScale ?? 0.58));
+  const logoOffsetY = Math.max(-0.12, Math.min(0.12, options.logoOffsetY ?? 0));
   const logoSize = size * logoScale;
-  const logoPosition = (size - logoSize) / 2;
+  const logoPositionX = (size - logoSize) / 2;
+  const logoPositionY = logoPositionX + size * logoOffsetY;
   const logoFilter = options.logoTreatment === "light"
     ? "url(#orb-logo-light)"
     : options.logoTreatment === "dark"
@@ -231,7 +234,7 @@ export function createOrbSvg(
             ? "url(#orb-logo-knockout)"
           : undefined;
   const logoMarkup = options.logoHref
-    ? `<image href="${escapeXml(options.logoHref)}" x="${svgNumber(logoPosition)}" y="${svgNumber(logoPosition)}" width="${svgNumber(logoSize)}" height="${svgNumber(logoSize)}" preserveAspectRatio="xMidYMid meet"${logoFilter ? ` filter="${logoFilter}"` : ""} />`
+    ? `<image href="${escapeXml(options.logoHref)}" x="${svgNumber(logoPositionX)}" y="${svgNumber(logoPositionY)}" width="${svgNumber(logoSize)}" height="${svgNumber(logoSize)}" preserveAspectRatio="xMidYMid meet"${logoFilter ? ` filter="${logoFilter}"` : ""} />`
     : "";
 
   return `<?xml version="1.0" encoding="UTF-8"?>

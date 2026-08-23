@@ -1,6 +1,6 @@
 # HUDI company-logo orbs
 
-A Next.js reference app and reusable React module for HUDI’s company-logo orb system. Each company has a unique, brand-derived orb palette with a verified local logo centred inside the orb’s safe zone. Ticker text, exchange numbers, and market-state colours are not part of the V2 orb identity.
+A Next.js reference app and reusable React module for HUDI’s company-logo orb system. Each company has a unique, brand-derived orb palette with a verified local logo optically positioned inside the orb’s safe zone. Ticker text, exchange numbers, and market-state colours are not part of the V2 orb identity.
 
 The generator, 37-company MVP gallery, blotter, market header, SVG/PNG exporter, and local Figma plugin share the hand-curated reference data and orb geometry. A separate searchable catalog contains every row from the HUDI community listings staging export; the MVP files remain the quality reference and are never overwritten by the bulk importer.
 
@@ -194,6 +194,21 @@ records them as `manual-review`, and reapplies an override only when the
 approved file changes or the listing has not yet received it. This keeps a
 later catalog refresh from silently restoring the rejected provider asset.
 
+PNG crop decisions are keyed by source SHA-256 in
+`data/png-logo-adjustments.json`, so one approved adjustment covers duplicate
+tickers and share classes without changing the preserved source. Build the
+next deduplicated before/current review batch with:
+
+```bash
+npm run review:png-logos -- --count=80 --offset=0
+```
+
+The command writes JSON, CSV, and a contact sheet to `artifacts/png-logo-review.*`.
+Only reviewed decisions are applied by the importer; the report's crop
+suggestions remain advisory. Raster normalization also removes one-to-three
+pixel edge bands only when they span at least 94% of a source side; reviewed
+gradient panels can retain a light lettermark through `lightPixelThreshold`.
+
 The audit writes JSON and CSV reports beside the catalog manifest. Entries that remain below the floor after revalidation also appear in `source-review.csv`.
 
 Yahoo Finance is not used as a logo source. Its current company-profile data does not provide a dependable logo field, and its unofficial endpoints are too aggressively rate-limited for a 20k-entry catalog. Existing MVP matches point to the curated files in `public/logos/`; all other source responses are preserved under `public/logos/catalog/source/` and their normalized 512px transparent assets are written by exchange under `public/logos/catalog/`.
@@ -294,6 +309,7 @@ export function NvidiaOrb() {
       logoUrl="/logos/nvda.png"
       logoTreatment="light"
       logoScale={0.58}
+      logoOffsetY={0.02}
       palette={deriveOrbPalette("#76B900")}
       size={48}
     />

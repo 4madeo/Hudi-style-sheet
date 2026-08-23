@@ -46,6 +46,8 @@ export type LogoOrbProps = {
   palette?: OrbPalette;
   logoTreatment?: LogoTreatment;
   logoScale?: number;
+  /** Vertical optical correction as a proportion of the orb diameter. Positive values move the logo down. */
+  logoOffsetY?: number;
   size?: number | string;
   compact?: boolean;
   theme?: OrbTheme;
