@@ -75,3 +75,60 @@ The package does not contain live market data, trading state, source component c
 ## Recipient check
 
 Before integration, confirm that the manifest reports `assets-complete`, the package theme matches the target surface, the chosen file size matches its display context, and any entries marked as fallbacks have been accepted for that use.
+
+## Post Composer catalog handoff
+
+The Figma Post Composer uses a separate recipe handoff rather than these baked,
+fixed-size orb exports. Generate it from the finalized company and crypto
+catalogs with:
+
+```sh
+npm run export:post-composer -- --release <immutable-release-name>
+```
+
+By default the exporter merges resolved entries from
+`public/logos/catalog/manifest.json` and
+`public/logos/crypto/manifest.json` into one collection. Use `--no-crypto` only
+for an intentionally company-only release. The output in
+`artifacts/post-composer-catalog/<release>/` contains a manifest and up to 256
+content-addressed JSON shards. Every entry carries the adjusted SVG or PNG logo
+source by hash, exact byte length, logo treatment, scale, optical X/Y offsets,
+four-colour material, searchable identity keys, source-manifest hashes, and
+renderer fingerprint. Post Composer can therefore build an editable orb at
+any supported diameter instead of scaling a baked 24, 136, or 460px orb.
+
+Publish this handoff with the guarded Cloudflare KV publisher. Its default mode
+only reads the remote namespace and prints the write plan:
+
+```sh
+npm run publish:post-composer -- \
+  --release <immutable-release-name> \
+  --namespace-id <kv-namespace-id>
+```
+
+Before applying, read the namespace's current remaining daily writes from the
+Cloudflare dashboard. Supply that live number explicitly; add `--activate` only
+when this release should become current:
+
+```sh
+npm run publish:post-composer -- \
+  --release <immutable-release-name> \
+  --namespace-id <kv-namespace-id> \
+  --apply \
+  --activate \
+  --remaining-writes <current-remaining-writes>
+```
+
+The publisher hash-checks every existing release key and skips exact matches.
+It refuses to overwrite a mismatched immutable key, caps a run at 300 writes,
+keeps a local UTC-day journal capped at 900 writes and three distinct releases,
+and requires the live remaining-quota allowance for any applying run. Shards
+are written first and the manifest last. `channels/current.json` is written
+only after every release key has been re-read and verified, then the channel is
+also re-read to confirm activation. The journal lives in the ignored
+`artifacts/post-composer-catalog/` directory; the live quota allowance remains
+required because the journal cannot see writes from another machine or tool.
+
+Do not use an unguarded `orbs:sync`, bulk upload, or manual per-key retry for
+these releases. A retry should go through the publisher above: if the release
+and channel already match, its plan contains zero writes.

@@ -6,6 +6,15 @@ const scannerMarkets = {
   SSE: "china",
   SZSE: "china",
   TSE: "japan",
+  TWSE: "taiwan",
+};
+
+// Product-level identities intentionally remain stable even when a provider
+// uses a venue-specific symbol for the underlying index.
+const symbolOverrides = {
+  "INDEX:KOSPI": { market: "korea", symbols: ["KRX:KOSPI"] },
+  "INDEX:HSI": { market: "hongkong", symbols: ["HSI:HSI"] },
+  "INDEX:NIKKEI": { market: "japan", symbols: ["TVC:NI225"] },
 };
 
 const userAgent = "HUDIOrbCatalog/0.1 (exchange-qualified logo resolver)";
@@ -22,6 +31,8 @@ function tradingViewSymbol(row) {
 }
 
 function tradingViewSymbols(row) {
+  const override = symbolOverrides[`${row.exchange}:${row.symbol}`];
+  if (override) return override.symbols;
   const primary = tradingViewSymbol(row);
   if (row.exchange !== "NYSE") return [primary];
   const symbols = [primary, `AMEX:${row.symbol}`];
@@ -31,6 +42,11 @@ function tradingViewSymbols(row) {
     symbols.push(`NYSE:${tradingViewPreferred}`, `AMEX:${tradingViewPreferred}`);
   }
   return symbols;
+}
+
+function scannerMarket(row) {
+  return symbolOverrides[`${row.exchange}:${row.symbol}`]?.market
+    ?? scannerMarkets[row.exchange];
 }
 
 async function fetchBatch(market, rows) {
@@ -68,7 +84,7 @@ export async function findTradingViewLogoCandidates(rows, options = {}) {
   const batchSize = Math.max(20, Math.min(500, options.batchSize ?? 300));
   const candidates = new Map();
   const requested = new Map(rows.flatMap((row) => tradingViewSymbols(row).map((symbol) => [symbol, row])));
-  const grouped = Object.groupBy(rows, (row) => scannerMarkets[row.exchange]);
+  const grouped = Object.groupBy(rows, scannerMarket);
   let completed = 0;
 
   for (const [market, marketRows] of Object.entries(grouped)) {

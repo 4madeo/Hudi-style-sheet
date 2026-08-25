@@ -1,6 +1,6 @@
-# HUDI company-logo orbs
+# HUDI company and crypto logo orbs
 
-A Next.js reference app and reusable React module for HUDI’s company-logo orb system. Each company has a unique, brand-derived orb palette with a verified local logo optically positioned inside the orb’s safe zone. Ticker text, exchange numbers, and market-state colours are not part of the V2 orb identity.
+A Next.js reference app and reusable React module for HUDI’s company and crypto logo-orb system. Each identity has a brand-derived orb palette with a verified local logo optically positioned inside the orb’s safe zone. Ticker text, exchange numbers, and market-state colours are not part of the V2 orb identity.
 
 The generator, 37-company MVP gallery, blotter, market header, SVG/PNG exporter, and local Figma plugin share the hand-curated reference data and orb geometry. A separate searchable catalog contains every row from the HUDI community listings staging export; the MVP files remain the quality reference and are never overwritten by the bulk importer.
 
@@ -54,7 +54,10 @@ The command writes a separate ranked manifest to
 `public/logos/crypto/source/`, and writes background-free vector marks beside
 the manifest. The app exposes these as the `crypto` view without changing the
 community-equity catalog. Use `-- --refresh-assets` to redownload already
-cached TradingView SVGs.
+cached TradingView SVGs. The Post Composer handoff exporter merges every
+resolved crypto entry into the same hosted Logo V2 collection as company
+listings, so company and crypto identities share one search endpoint and
+result list.
 
 ## Logo assets
 
@@ -137,7 +140,14 @@ the full source export does not need to be kept outside this repository for
 routine additions. Keep exchange symbols zero-padded and use `false` for
 `publicly_on_hudi` unless the listing is actually live in HUDI.
 
-The importer qualifies tickers for HKEX, KRX, NASDAQ, NYSE, SSE, SZSE, and TSE. Its normal source order is an exchange-qualified Logo.dev ticker, an exact TradingView exchange+ticker match, an exact Wikidata exchange+ticker match whose P154 image is hosted on Wikimedia Commons, and only then a Logo.dev company-name lookup. It requests `fallback=404`, so Logo.dev letter monograms never enter the orb system. Existing unresolved or suspect sources prefer the exact providers during revalidation. Pass `--skip-tradingview` or `--skip-wikimedia` to disable either exact fallback.
+The importer qualifies instruments for CMDTY, FX, HKEX, INDEX, KRX, NASDAQ,
+NYSE, SSE, SZSE, TSE, and TWSE. Its normal source order is an exchange-qualified Logo.dev
+ticker, an exact TradingView exchange+ticker match, an exact Wikidata
+exchange+ticker match whose P154 image is hosted on Wikimedia Commons, and
+only then a Logo.dev company-name lookup. It requests `fallback=404`, so
+Logo.dev letter monograms never enter the orb system. Existing unresolved or
+suspect sources prefer the exact providers during revalidation. Pass
+`--skip-tradingview` or `--skip-wikimedia` to disable either exact fallback.
 
 NYSE preferred-share symbols are also queried using TradingView's slash form
 (for example, catalog `SPE-PC` maps to `NYSE:SPE/PC`).
@@ -295,6 +305,7 @@ npm run lint
 npx tsc --noEmit
 npm run build
 npm run build:figma
+npm run test:post-composer-publisher
 ```
 
 ## Front-end integration

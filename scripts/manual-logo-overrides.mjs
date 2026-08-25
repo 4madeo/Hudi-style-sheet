@@ -2,6 +2,46 @@
 // Keep the original review files separate from the importer source cache so a
 // later catalog refresh can deterministically restore the approved mark.
 export const manualLogoOverrides = new Map([
+  ["FX:USDJPY", {
+    assetPath: "public/logos/manual-review/fx/usdjpy.svg",
+    brandBackground: {
+      colour: "#275dad",
+      sourceRef: "hudi-fx-pair-glyph-v1",
+    },
+    preserveFullMark: true,
+  }],
+  ["CMDTY:XAU", {
+    assetPath: "public/logos/manual-review/cmdty/xau.svg",
+    brandBackground: {
+      colour: "#d2a72c",
+      sourceRef: "hudi-instrument-glyph-v1",
+    },
+    preserveFullMark: true,
+  }],
+  ["CMDTY:XAG", {
+    assetPath: "public/logos/manual-review/cmdty/xag.svg",
+    brandBackground: {
+      colour: "#8d9aa7",
+      sourceRef: "hudi-instrument-glyph-v1",
+    },
+    preserveFullMark: true,
+  }],
+  ["CMDTY:BRENT", {
+    assetPath: "public/logos/manual-review/cmdty/brent.svg",
+    brandBackground: {
+      colour: "#175f72",
+      sourceRef: "hudi-instrument-glyph-v1",
+    },
+    preserveFullMark: true,
+  }],
+  ["CMDTY:WTI", {
+    assetPath: "public/logos/manual-review/cmdty/wti.svg",
+    brandBackground: {
+      colour: "#7a4524",
+      sourceRef: "hudi-instrument-glyph-v1",
+    },
+    preserveFullMark: true,
+  }],
   ["NASDAQ:PRTH", {
     assetPath: "public/logos/manual-review/nasdaq/prth.png",
     brandBackground: {

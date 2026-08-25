@@ -19,6 +19,8 @@
     "enrich:orb-colours": "node scripts/enrich-orb-colours.mjs",
     "enrich:logo-colour-modes": "node scripts/enrich-logo-colour-modes.mjs",
     "export:catalog": "node scripts/export-orb-catalog.mjs",
+    "export:post-composer": "node scripts/export-post-composer-catalog.mjs",
+    "publish:post-composer": "node scripts/publish-post-composer-catalog.mjs",
     "finalize:catalog": "node scripts/finalize-logo-catalog.mjs",
     "import:catalog": "node scripts/import-community-logo-catalog.mjs",
     "import:crypto": "node scripts/import-crypto-logo-catalog.mjs",
@@ -30,6 +32,7 @@
     "start": "next start",
     "test:logo-pipeline": "node scripts/test-logo-pipeline.mjs",
     "test:crypto-catalog": "node scripts/test-crypto-catalog.mjs",
+    "test:post-composer-publisher": "node scripts/test-post-composer-publisher.mjs",
     "lint": "eslint . --ignore-pattern .next"
   },
   "dependencies": {
@@ -51,7 +54,8 @@
     "eslint-config-next": "16.2.6",
     "sharp": "^0.34.5",
     "tailwindcss": "4.2.1",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "wrangler": "^4.125.0"
   },
   "type": "module"
 }

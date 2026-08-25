@@ -129,13 +129,17 @@ const logoProcessingOverrides = {
 };
 
 const exchangeSuffixes = {
+  CMDTY: [""],
+  FX: [""],
   HKEX: [".HK"],
+  INDEX: [""],
   KRX: [".KS", ".KQ"],
   NASDAQ: [""],
   NYSE: [""],
   SSE: [".SS"],
   SZSE: [".SZ"],
   TSE: [".T"],
+  TWSE: [".TW"],
 };
 
 function parseCsv(value) {
@@ -312,7 +316,7 @@ async function downloadManualLogo(candidate) {
     provider: "manual-review",
     lookup: "user-supplied-reference",
     query: candidate.id,
-    sourceFormat: "png",
+    sourceFormat: candidate.sourceFormat ?? "png",
     manualAssetHash: candidate.hash,
   };
 }
@@ -1117,6 +1121,7 @@ for (const [id, override] of manualLogoOverrides) {
     id,
     bytes,
     hash: createHash("sha256").update(bytes).digest("hex"),
+    sourceFormat: path.extname(override.assetPath).slice(1).toLowerCase() || "png",
   });
 }
 const simpleIconCandidates = new Map();
@@ -1552,7 +1557,7 @@ async function importRow(row) {
           tradingView: tradingViewCandidate,
           wikimedia: wikimediaCandidate,
           simpleIcons: simpleIconCandidate,
-        }, Boolean(replaceWithManual || (previous && !previous.logo) || suspiciousSource || lowResolutionSource || replaceAmbiguousNameSource || replaceWithTradingView || (replaceWithOpenSource && allowOpenSourceReplacement) || refreshTradingViewSource));
+        }, Boolean((!previous && hasExactCandidate) || replaceWithManual || (previous && !previous.logo) || suspiciousSource || lowResolutionSource || replaceAmbiguousNameSource || replaceWithTradingView || (replaceWithOpenSource && allowOpenSourceReplacement) || refreshTradingViewSource));
       } catch (error) {
         if (previous?.logo && await fileExists(sourcePath) && await fileExists(outputPath)) {
           console.warn(`${id}: retained previous local asset after replacement failed: ${error.message}`);

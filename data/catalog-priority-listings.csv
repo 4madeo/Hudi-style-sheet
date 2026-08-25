@@ -1,4 +1,17 @@
 exchange,symbol,name,sector,source,program_status,supporters,won_at,publicly_on_hudi
+TWSE,2330,Taiwan Semiconductor Manufacturing,Semiconductors,ios_app_seed,reference_only,,,true
+INDEX,KOSPI,KOSPI Composite Index,Market Index,product_seed,reference_only,,,true
+INDEX,HSI,Hang Seng Index,Market Index,product_seed,reference_only,,,true
+INDEX,NIKKEI,Nikkei 225,Market Index,product_seed,reference_only,,,true
+FX,USDJPY,USD / JPY,Foreign Exchange,ios_app_seed,reference_only,,,true
+CMDTY,XAU,Gold,Precious Metals,ios_app_seed,reference_only,,,true
+CMDTY,XAG,Silver,Precious Metals,ios_app_seed,reference_only,,,true
+CMDTY,BRENT,Brent Crude Oil,Energy Commodities,ios_app_seed,reference_only,,,true
+CMDTY,WTI,WTI Crude Oil,Energy Commodities,ios_app_seed,reference_only,,,true
+KRX,KOSPI200,KOSPI 200,Market Index,ios_app_seed,reference_only,,,true
+KRX,009150,Samsung Electro-Mechanics,Electronic Components,ios_app_seed,reference_only,,,true
+KRX,454910,Doosan Robotics,Industrial Robotics,ios_app_seed,reference_only,,,true
+KRX,010120,LS Electric,Electrical Equipment / Grid,ios_app_seed,reference_only,,,true
 KRX,042700,Hanmi Semiconductor,Semi Equipment / HBM,priority_v3_p0,reference_only,,,true
 KRX,012450,Hanwha Aerospace,Defense / Aerospace / Engines,priority_v3_p0,reference_only,,,true
 KRX,272210,Hanwha Systems,Defense Electronics / Space,priority_v3_p0,reference_only,,,true
