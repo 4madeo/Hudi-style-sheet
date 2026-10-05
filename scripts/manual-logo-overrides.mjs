@@ -2,6 +2,20 @@
 // Keep the original review files separate from the importer source cache so a
 // later catalog refresh can deterministically restore the approved mark.
 export const manualLogoOverrides = new Map([
+  ["INDEX:NIKKEI", {
+    assetPath: "public/logos/manual-review/index/nikkei.svg",
+    brandBackground: {
+      colour: "#f2f5f4",
+      sourceRef: "hudi-nikkei-225-white-material-v1",
+    },
+    orbMaterial: {
+      colour: "#f2f5f4",
+      base: "#e2e8e7",
+      sheen: "#ffffff",
+      shadow: "#8fa2a6",
+    },
+    preserveFullMark: true,
+  }],
   ["FX:USDJPY", {
     assetPath: "public/logos/manual-review/fx/usdjpy.svg",
     brandBackground: {

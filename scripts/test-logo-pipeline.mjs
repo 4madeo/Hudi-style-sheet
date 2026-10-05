@@ -189,6 +189,12 @@ for (const adjustment of pngAdjustments.adjustments) {
 
 const catalog = JSON.parse(await readFile(path.join(root, "public/logos/catalog/manifest.json"), "utf8"));
 const catalogEntries = new Map(catalog.entries.map((entry) => [entry.id, entry]));
+assert.deepEqual(catalogEntries.get("INDEX:NIKKEI")?.logo?.orbMaterial, {
+  colour: "#f2f5f4",
+  base: "#e2e8e7",
+  sheen: "#ffffff",
+  shadow: "#8fa2a6",
+});
 const reviewedFilledBadges = [
   "NYSE:SECZ",
   "NYSE:EVEX-WT",

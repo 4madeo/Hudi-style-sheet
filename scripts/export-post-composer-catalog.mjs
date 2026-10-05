@@ -107,6 +107,22 @@ function mimeType(filePath) {
   return "image/png";
 }
 
+const materialKeys = ["colour", "base", "sheen", "shadow"];
+function resolvedMaterial(entry, deriveOrbPalette) {
+  if (!entry.logo.orbMaterial) {
+    return deriveOrbPalette(entry.logo.orbColour ?? "#394150");
+  }
+  const material = {};
+  for (const key of materialKeys) {
+    const value = entry.logo.orbMaterial[key];
+    if (!/^#[0-9a-f]{6}$/i.test(value ?? "")) {
+      throw new TypeError(`${entry.id}: logo.orbMaterial.${key} must be a six-digit hex colour.`);
+    }
+    material[key] = value.toLowerCase();
+  }
+  return material;
+}
+
 async function atomicWrite(filePath, contents) {
   await mkdir(path.dirname(filePath), { recursive: true });
   const temporary = `${filePath}.tmp-${process.pid}`;
@@ -229,7 +245,7 @@ async function main() {
         mimeType: assets.get(assetHash).mimeType,
         bytes: assets.get(assetHash).bytes,
       },
-      material: deriveOrbPalette(entry.logo.orbColour ?? "#394150"),
+      material: resolvedMaterial(entry, deriveOrbPalette),
       logo: {
         treatment: entry.logo.logoTreatment ?? "original",
         scale: entry.logo.logoScale ?? 0.56,
@@ -246,14 +262,21 @@ async function main() {
     shard[hash] = asset;
     shards.set(shardKey, shard);
   }
-  await Promise.all([...shards].map(([shard, shardAssets]) => atomicWrite(
+  const shardDocuments = new Map([...shards].map(([shard, shardAssets]) => {
+    const contents = JSON.stringify({ version: 1, assets: shardAssets });
+    return [shard, { contents, bundle: sha256(contents) }];
+  }));
+  for (const entry of entries) {
+    entry.asset.bundle = shardDocuments.get(entry.asset.shard).bundle;
+  }
+  await Promise.all([...shardDocuments].map(([shard, document]) => atomicWrite(
     path.join(releaseDirectory, "shards", `${shard}.json`),
-    JSON.stringify({ version: 1, assets: shardAssets }),
+    document.contents,
   )));
 
   const completedAt = new Date().toISOString();
   const manifest = {
-    version: 1,
+    version: 2,
     status: "assets-complete",
     release: options.release,
     rendererVersion: `logo-orb-v2-${rendererHash.digest("hex").slice(0, 12)}`,
@@ -280,6 +303,9 @@ async function main() {
     entryCount: entries.length,
     uniqueAssetCount: assets.size,
     shardCount: shards.size,
+    assetShards: Object.fromEntries(
+      [...shardDocuments].map(([shard, document]) => [shard, document.bundle]),
+    ),
     rawAssetBytes: [...assets.values()].reduce((total, asset) => total + asset.bytes, 0),
     entries,
   };

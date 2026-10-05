@@ -1321,7 +1321,8 @@ const summary = { total: rows.length, reference: 0, ticker: 0, name: 0, manualRe
 summary.resolutionFlagged = lowResolutionSourceIds.size;
 
 function resolvedOrbColour(id, treatment, previous, pngAdjustment) {
-  const reviewedBackground = manualLogoCandidates.get(id)?.brandBackground;
+  const reviewedCandidate = manualLogoCandidates.get(id);
+  const reviewedBackground = reviewedCandidate?.brandBackground;
   if (reviewedBackground) {
     return {
       orbColour: reviewedBackground.colour,
@@ -1329,6 +1330,7 @@ function resolvedOrbColour(id, treatment, previous, pngAdjustment) {
       orbColourSource: "removed-background",
       orbColourSourceRef: reviewedBackground.sourceRef,
       orbColourSourceUrl: reviewedBackground.sourceUrl,
+      ...(reviewedCandidate.orbMaterial ? { orbMaterial: reviewedCandidate.orbMaterial } : {}),
     };
   }
   if (pngAdjustment?.orbColour) {
@@ -1485,7 +1487,12 @@ async function importRow(row) {
     && await fileExists(sourcePath)) {
     summary.cached += 1;
     completed += 1;
-    return { ...previous, ...common };
+    const logo = { ...previous.logo };
+    if (manualCandidate) {
+      Object.assign(logo, resolvedOrbColour(id, previous.logo, previous));
+      if (!manualCandidate.orbMaterial) delete logo.orbMaterial;
+    }
+    return { ...previous, ...common, logo };
   }
   if (fromManifest && previous && !previous.logo && !hasExactCandidate) {
     if (previous.logoStatus === "low-resolution") summary.resolutionReview += 1;

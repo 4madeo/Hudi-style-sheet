@@ -90,8 +90,8 @@ By default the exporter merges resolved entries from
 `public/logos/catalog/manifest.json` and
 `public/logos/crypto/manifest.json` into one collection. Use `--no-crypto` only
 for an intentionally company-only release. The output in
-`artifacts/post-composer-catalog/<release>/` contains a manifest and up to 256
-content-addressed JSON shards. Every entry carries the adjusted SVG or PNG logo
+`artifacts/post-composer-catalog/<release>/` contains a format-v2 manifest and
+up to 256 content-addressed JSON shards. Every entry carries the adjusted SVG or PNG logo
 source by hash, exact byte length, logo treatment, scale, optical X/Y offsets,
 four-colour material, searchable identity keys, source-manifest hashes, and
 renderer fingerprint. Post Composer can therefore build an editable orb at
@@ -119,12 +119,16 @@ npm run publish:post-composer -- \
   --remaining-writes <current-remaining-writes>
 ```
 
-The publisher hash-checks every existing release key and skips exact matches.
-It refuses to overwrite a mismatched immutable key, caps a run at 300 writes,
-keeps a local UTC-day journal capped at 900 writes and three distinct releases,
-and requires the live remaining-quota allowance for any applying run. Shards
-are written first and the manifest last. `channels/current.json` is written
-only after every release key has been re-read and verified, then the channel is
+The publisher checks the immutable manifest and skips a complete matching
+release. Shards are stored globally under their canonical content hash and are
+reused by every later release. A material-only edit therefore writes only the
+new manifest and channel pointer; a new logo normally adds one changed shard.
+Missing shards are uploaded in bounded Wrangler bulk batches, followed by the
+manifest. It refuses to overwrite a mismatched immutable manifest, caps a run
+at 300 writes, keeps a local UTC-day journal capped at 900 writes and three
+distinct releases, and requires the live remaining-quota allowance for any
+applying run. `channels/current.json` is written only after every expected key
+is present and the manifest has been re-read and verified, then the channel is
 also re-read to confirm activation. The journal lives in the ignored
 `artifacts/post-composer-catalog/` directory; the live quota allowance remains
 required because the journal cannot see writes from another machine or tool.
@@ -132,3 +136,7 @@ required because the journal cannot see writes from another machine or tool.
 Do not use an unguarded `orbs:sync`, bulk upload, or manual per-key retry for
 these releases. A retry should go through the publisher above: if the release
 and channel already match, its plan contains zero writes.
+
+The 900-write journal is intentionally below the Cloudflare Workers Free KV
+limit of 1,000 writes per UTC day. It is a local guard, not an additional
+Cloudflare quota.

@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
-import { access, mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -13,6 +13,7 @@ const defaultChannelKey = "channels/current.json";
 const hardWriteLimit = 300;
 const dailyWriteLimit = 900;
 const dailyReleaseLimit = 3;
+const bulkPayloadLimit = 20 * 1024 * 1024;
 
 function usage() {
   return `Usage: npm run publish:post-composer -- --release NAME [options]
@@ -40,8 +41,9 @@ Other options:
   --help                  Show this help
 
 The publisher also refuses a fourth distinct release or more than
-${dailyWriteLimit} recorded writes in one UTC day. Existing matching keys are read,
-hash-checked, and skipped; an existing key with different content is never
+${dailyWriteLimit} recorded writes in one UTC day. Format-v2 releases reuse
+immutable global asset shards by content hash, so an unchanged shard costs no
+write in later releases. Existing release manifests are hash-checked and never
 overwritten.
 `;
 }
@@ -193,18 +195,43 @@ export async function inspectLocalRelease(releaseDirectory, requestedRelease = n
     throw new Error(`Manifest expects ${manifest.shardCount} shards but found ${shardFiles.length}.`);
   }
 
+  const incremental = manifest.version === 2;
+  const assetShards = manifest.assetShards;
+  if (incremental && (
+    !assetShards ||
+    typeof assetShards !== "object" ||
+    Array.isArray(assetShards) ||
+    Object.keys(assetShards).length !== shardFiles.length
+  )) {
+    throw new Error("Format-v2 manifest must map every shard prefix to an immutable bundle hash.");
+  }
+
   const files = [];
   for (const fileName of shardFiles) {
     const filePath = path.join(releaseDirectory, "shards", fileName);
     const text = await readFile(filePath, "utf8");
     parseJson(text, filePath);
+    const hash = canonicalHash(text, filePath);
+    const shard = fileName.slice(0, 2).toLowerCase();
+    const bundle = incremental ? assetShards[shard] : null;
+    if (incremental && (!/^[a-f0-9]{64}$/i.test(bundle ?? "") || bundle !== hash)) {
+      throw new Error(`Format-v2 shard ${fileName} does not match manifest.assetShards.${shard}.`);
+    }
     files.push({
-      key: `releases/${releaseName}/shards/${fileName}`,
+      key: incremental
+        ? `asset-shards/${bundle}.json`
+        : `releases/${releaseName}/shards/${fileName}`,
       path: filePath,
-      hash: canonicalHash(text, filePath),
+      hash,
+      kind: "asset-shard",
     });
   }
-  files.push({ key: manifestKey, path: manifestPath, hash: actualManifestHash });
+  files.push({
+    key: manifestKey,
+    path: manifestPath,
+    hash: actualManifestHash,
+    kind: "release-manifest",
+  });
 
   return {
     releaseName,
@@ -213,6 +240,7 @@ export async function inspectLocalRelease(releaseDirectory, requestedRelease = n
     releaseText,
     releaseHash: canonicalHash(releaseText, releasePath),
     manifestKey,
+    incremental,
     files,
   };
 }
@@ -285,11 +313,57 @@ export class WranglerKv {
       "--remote",
     ]);
   }
+
+  async putMany(files) {
+    if (!files.length) return;
+    const chunks = [];
+    let chunk = [];
+    let chunkBytes = 2;
+    for (const file of files) {
+      const value = await readFile(file.path, "utf8");
+      const entry = { key: file.key, value };
+      const entryBytes = Buffer.byteLength(JSON.stringify(entry)) + 1;
+      if (chunk.length && chunkBytes + entryBytes > bulkPayloadLimit) {
+        chunks.push(chunk);
+        chunk = [];
+        chunkBytes = 2;
+      }
+      chunk.push(entry);
+      chunkBytes += entryBytes;
+    }
+    if (chunk.length) chunks.push(chunk);
+
+    await mkdir(artifactRoot, { recursive: true });
+    for (let index = 0; index < chunks.length; index += 1) {
+      const payloadPath = path.join(
+        artifactRoot,
+        `.bulk-${process.pid}-${Date.now()}-${index}.json`,
+      );
+      try {
+        await writeFile(payloadPath, JSON.stringify(chunks[index]));
+        await this.run([
+          "kv", "bulk", "put", payloadPath,
+          "--namespace-id", this.namespaceId,
+          "--remote",
+        ]);
+      } finally {
+        await rm(payloadPath, { force: true });
+      }
+    }
+  }
 }
 
 export async function planPublish(local, remote, { activate, channelKey }) {
   const remoteReleaseKeys = await remote.list(`releases/${local.releaseName}/`);
-  const expectedKeys = new Set(local.files.map((file) => file.key));
+  const releaseFiles = local.files.filter((file) => file.kind === "release-manifest");
+  const assetFiles = local.files.filter((file) => file.kind === "asset-shard");
+  const remoteAssetKeys = local.incremental
+    ? await remote.list("asset-shards/")
+    : remoteReleaseKeys;
+  const expectedKeys = new Set(releaseFiles.map((file) => file.key));
+  if (!local.incremental) {
+    for (const file of assetFiles) expectedKeys.add(file.key);
+  }
   const unexpectedKeys = [...remoteReleaseKeys].filter((key) => !expectedKeys.has(key));
   if (unexpectedKeys.length) {
     throw new Error(
@@ -298,15 +372,31 @@ export async function planPublish(local, remote, { activate, channelKey }) {
   }
 
   const missingFiles = [];
-  for (const file of local.files) {
-    if (!remoteReleaseKeys.has(file.key)) {
-      missingFiles.push(file);
-      continue;
+  const remoteHas = (file) => file.kind === "asset-shard"
+    ? remoteAssetKeys.has(file.key)
+    : remoteReleaseKeys.has(file.key);
+  if (remoteReleaseKeys.has(local.manifestKey)) {
+    const remoteManifest = await remote.get(local.manifestKey);
+    const remoteHash = canonicalHash(remoteManifest, `remote ${local.manifestKey}`);
+    const manifest = local.files.find((file) => file.key === local.manifestKey);
+    if (!manifest || remoteHash !== manifest.hash) {
+      throw new Error(`Refusing to overwrite immutable key with different content: ${local.manifestKey}`);
     }
-    const remoteText = await remote.get(file.key);
-    const remoteHash = canonicalHash(remoteText, `remote ${file.key}`);
-    if (remoteHash !== file.hash) {
-      throw new Error(`Refusing to overwrite immutable key with different content: ${file.key}`);
+    missingFiles.push(...local.files.filter((file) => !remoteHas(file)));
+  } else {
+    for (const file of local.files) {
+      if (!remoteHas(file)) {
+        missingFiles.push(file);
+        continue;
+      }
+      // Format-v2 asset keys include their canonical JSON hash. Their presence
+      // is therefore enough to reuse them without spending a KV read per shard.
+      if (local.incremental && file.kind === "asset-shard") continue;
+      const remoteText = await remote.get(file.key);
+      const remoteHash = canonicalHash(remoteText, `remote ${file.key}`);
+      if (remoteHash !== file.hash) {
+        throw new Error(`Refusing to overwrite immutable key with different content: ${file.key}`);
+      }
     }
   }
 
@@ -340,6 +430,16 @@ async function readHistory(historyPath) {
 
 async function recordWrite(historyPath, history, release, key) {
   history.writes.push({ at: new Date().toISOString(), release, key });
+  await mkdir(path.dirname(historyPath), { recursive: true });
+  const temporary = `${historyPath}.tmp-${process.pid}`;
+  await writeFile(temporary, `${JSON.stringify(history, null, 2)}\n`);
+  await rename(temporary, historyPath);
+}
+
+async function recordWrites(historyPath, history, release, keys) {
+  if (!keys.length) return;
+  const at = new Date().toISOString();
+  history.writes.push(...keys.map((key) => ({ at, release, key })));
   await mkdir(path.dirname(historyPath), { recursive: true });
   const temporary = `${historyPath}.tmp-${process.pid}`;
   await writeFile(temporary, `${JSON.stringify(history, null, 2)}\n`);
@@ -385,12 +485,17 @@ function enforceBudgets(options, plan, history, releaseName) {
 
 async function verifyRelease(local, remote) {
   const remoteKeys = await remote.list(`releases/${local.releaseName}/`);
+  const remoteAssetKeys = local.incremental
+    ? await remote.list("asset-shards/")
+    : remoteKeys;
   for (const file of local.files) {
-    if (!remoteKeys.has(file.key)) throw new Error(`Verification failed; missing ${file.key}.`);
-    const remoteText = await remote.get(file.key);
-    if (canonicalHash(remoteText, `remote ${file.key}`) !== file.hash) {
-      throw new Error(`Verification failed; hash mismatch for ${file.key}.`);
-    }
+    const keys = file.kind === "asset-shard" ? remoteAssetKeys : remoteKeys;
+    if (!keys.has(file.key)) throw new Error(`Verification failed; missing ${file.key}.`);
+  }
+  const manifest = local.files.find((file) => file.key === local.manifestKey);
+  const remoteManifest = await remote.get(local.manifestKey);
+  if (!manifest || canonicalHash(remoteManifest, `remote ${local.manifestKey}`) !== manifest.hash) {
+    throw new Error(`Verification failed; hash mismatch for ${local.manifestKey}.`);
   }
 }
 
@@ -420,11 +525,19 @@ export async function run(options, injectedRemote = null) {
 
   if (!options.apply || plan.writeCount === 0) return plan;
 
-  const manifest = plan.missingFiles.find((file) => file.key === local.manifestKey);
-  const shards = plan.missingFiles.filter((file) => file.key !== local.manifestKey);
-  for (const file of shards) {
-    await remote.put(file.key, file.path);
-    await recordWrite(options.historyPath, history, local.releaseName, file.key);
+  const manifest = plan.missingFiles.find((file) => file.kind === "release-manifest");
+  const shards = plan.missingFiles.filter((file) => file.kind === "asset-shard");
+  if (shards.length) {
+    if (typeof remote.putMany === "function") await remote.putMany(shards);
+    else {
+      for (const file of shards) await remote.put(file.key, file.path);
+    }
+    await recordWrites(
+      options.historyPath,
+      history,
+      local.releaseName,
+      shards.map((file) => file.key),
+    );
   }
   if (manifest) {
     await remote.put(manifest.key, manifest.path);
